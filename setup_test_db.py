@@ -2,7 +2,6 @@
 import psycopg2
 from os import path, remove, system
 from uuid import UUID, uuid4
-#sys.path.append(path.join(path.realpath(__file__)))
 
 from source.device_manager.user import hash_password, check_password
 from source.device_manager.device_log import LogLevel, LogEntry

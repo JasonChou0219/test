@@ -74,7 +74,7 @@ def run_experiment(experiment_id: int, q: queue.Queue):
         epicbox.configure(
             profiles=[epicbox.Profile('python', 'user_script:latest')])
         files = [{'name': script.fileName, 'content': script.data.encode()}]
-        #limit memory to 500MB
+        # limit memory to 500MB
         limits = {'cputime': None, 'realtime': None, 'memory': 500}
         result = epicbox.run('python',
                              f'python3 {script.fileName}',

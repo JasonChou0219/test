@@ -10,7 +10,7 @@ except ModuleNotFoundError as error:
 
 sila2lib_path = os.path.dirname(sila2lib.__file__)
 
-hugo_repository_path= os.path.dirname(os.path.abspath(__file__))
+hugo_repository_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # Copy the files
