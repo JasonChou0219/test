@@ -1,0 +1,37 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+yapf = "*"
+
+[packages]
+numpy = "*"
+sila2lib = "*"
+pyserial = "*"
+pandas = "*"
+opcua = "*"
+nose2 = "*"
+zeroconf = "*"
+influxdb = "*"
+python-hosts = "*"
+dacite = "*"
+appdirs = "*"
+filelock = "*"
+fastapi = "*"
+uvicorn = "*"
+#dataclasses = "*"
+pyjwt = "*"
+python-multipart = "*"
+psycopg2 = "*"
+epicbox = "*"
+apscheduler = "*"
+msgpack = "*"
+redis = "*"
+aioredis = "*"
+hiredis = "*"
+cryptography = "*"
+
+[requires]
