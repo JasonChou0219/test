@@ -1,0 +1,20 @@
+table {
+    width: 100%;
+}
+.circle {
+    height: 10px;
+    width: 10px;
+    background-color: grey;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.row:hover {
+    background-color: whitesmoke;
+}
+
+.edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}

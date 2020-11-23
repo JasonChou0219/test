@@ -1,0 +1,94 @@
+<div class="page">
+    <h1>Device Log</h1>
+    <form>
+        <mat-form-field>
+            <mat-label>From</mat-label>
+            <input
+                matInput
+                name="from"
+                (change)="getLog()"
+                [(ngModel)]="from"
+            />
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>To</mat-label>
+            <input matInput name="to" (change)="getLog()" [(ngModel)]="to" />
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label> Max entries per page </mat-label>
+            <mat-select
+                name="maxEntriesPerPage"
+                [(ngModel)]="maxEntriesPerPage"
+                (ngModelChange)="resetView()"
+            >
+                <mat-option [value]="100">100</mat-option>
+                <mat-option [value]="250">250</mat-option>
+                <mat-option [value]="500">500</mat-option>
+                <mat-option [value]="1000">1000</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <section>
+            <mat-checkbox
+                class="filter-checkbox"
+                name="showInfo"
+                [(ngModel)]="showInfo"
+                (ngModelChange)="getLog()"
+                >Info</mat-checkbox
+            >
+            <mat-checkbox
+                class="filter-checkbox"
+                name="showWarning"
+                [(ngModel)]="showWarning"
+                (ngModelChange)="getLog()"
+                >Warning</mat-checkbox
+            >
+            <mat-checkbox
+                class="filter-checkbox"
+                name="showCritical"
+                [(ngModel)]="showCritical"
+                (ngModelChange)="getLog()"
+                >Critical</mat-checkbox
+            >
+            <mat-checkbox
+                class="filter-checkbox"
+                name="showError"
+                [(ngModel)]="showError"
+                (ngModelChange)="getLog()"
+                >Error</mat-checkbox
+            >
+        </section>
+    </form>
+    <mat-label> {{ currentPage + 1 }}-{{ numPages() }}</mat-label>
+    <button mat-icon-button (click)="previousPage()">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-icon-button (click)="nextPage()">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+    <table class="log">
+        <ng-container *ngFor="let entry of logView">
+            <tr>
+                <td *ngIf="hasTypeInfo(entry.type)" class="log-type info">
+                    INFO
+                </td>
+                <td *ngIf="hasTypeWarning(entry.type)" class="log-type warn">
+                    WARNING
+                </td>
+                <td
+                    *ngIf="hasTypeCritical(entry.type)"
+                    class="log-type critical"
+                >
+                    CRITICAL
+                </td>
+                <td *ngIf="hasTypeError(entry.type)" class="log-type error">
+                    ERROR
+                </td>
+                <td class="log-time">{{ formatTimeStamp(entry.time) }}</td>
+                <td class="log-device">{{ entry.device }}</td>
+                <td class="log-message">{{ entry.message }}</td>
+            </tr>
+        </ng-container>
+    </table>
+</div>

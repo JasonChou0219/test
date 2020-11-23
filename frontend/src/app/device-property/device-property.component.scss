@@ -1,0 +1,64 @@
+.property {
+    display: flex;
+    flex-direction: row;
+}
+.property-name {
+    font-size: 1.25em;
+    padding-bottom: 0.5em;
+}
+.property-description {
+    color: rgba(0, 0, 0, 0.54);
+}
+.header {
+    padding-bottom: 1em;
+}
+.section-title {
+    font-size: 1em;
+    font-weight: 500;
+    padding-bottom: 0.5em;
+}
+.content {
+    flex-grow: 1;
+}
+.section-content {
+    padding-left: 0.5em;
+    padding-bottom: 1em;
+}
+.param-border {
+    border-style: solid;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 2px;
+    border-right-width: 0px;
+    border-color: #3f51b5;
+    //border-color: rgba(0, 0, 0, 0.54);
+    //border-radius: 4px;
+}
+.params {
+    padding-left: 4px;
+}
+.param-name {
+}
+
+.param-type {
+    font-weight: 500;
+    font-size: 0.8em;
+    padding-left: 1em;
+    color: rgba(0, 0, 0, 0.54);
+}
+.param-desc {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.8em;
+}
+.python-function {
+    //color: #0000ff;
+}
+.python-string {
+    color: #a31515;
+}
+.python-object {
+    font-style: italic;
+}
+.example-code {
+    width: 120em;
+}

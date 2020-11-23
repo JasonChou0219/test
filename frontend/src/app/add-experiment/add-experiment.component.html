@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Create Experiment</h2>
+<mat-dialog-content>
+    <form>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="experimentInfo.name" name="name" />
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Start</mat-label>
+            <input matInput [(ngModel)]="experimentInfo.start" name="start" />
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>End</mat-label>
+            <input matInput [(ngModel)]="experimentInfo.end" name="end" />
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Script</mat-label>
+            <mat-select [(ngModel)]="experimentInfo.script" name="script">
+                <mat-option
+                    *ngFor="let element of scripts"
+                    [value]="element.id"
+                >
+                    {{ element.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+    <h3>Book Devices:</h3>
+    <mat-selection-list #devs>
+        <mat-list-option *ngFor="let dev of devices" [value]="dev">
+            {{ dev.name }}
+        </mat-list-option>
+    </mat-selection-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button
+        mat-flat-button
+        color="primary"
+        (click)="add()"
+        [mat-dialog-close]="experimentInfo"
+    >
+        Add
+    </button>
+    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+</mat-dialog-actions>

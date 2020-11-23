@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Edit Device</h2>
+<form>
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input
+            matInput
+            value="{{ deviceWorkCopy.name }}"
+            [(ngModel)]="deviceWorkCopy.name"
+            name="name"
+        />
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="deviceWorkCopy.type" name="type">
+            <mat-option *ngFor="let type of deviceTypes" [value]="type.value">
+                {{ type.name }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input
+            matInput
+            value="{{ deviceWorkCopy.address }}"
+            [(ngModel)]="deviceWorkCopy.address"
+            name="address"
+        />
+    </mat-form-field>
+</form>
+<mat-dialog-actions>
+    <button mat-flat-button color="primary" [mat-dialog-close]="deviceWorkCopy">
+        Save
+    </button>
+    <button mat-button (click)="this.dialogRef.close()">
+        Cancel
+    </button>
+</mat-dialog-actions>

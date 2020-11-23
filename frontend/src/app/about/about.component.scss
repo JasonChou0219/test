@@ -1,0 +1,21 @@
+div.logos {
+    display: inline-block;
+}
+div.description{
+    display: block;
+    position: relative;
+    padding: 20px 20%;
+    p { font-size: 14px; font-weight: normal; line-height: 1.5em; color: #333; text-align: justify; }
+    p.small { font-size: 12px; line-height: 1.25em; }
+    p.intro { font-size: 16px; font-weight: normal; line-height: 1.625em; color: #333; }
+    h1 {font-size: 35px; font-weight: bold; line-height: 1.14em; color: #333; padding-top: 0.8em; }
+    h2.gross { font-size: 24px; font-weight: bold; line-height: 1.2em; color: #333; }
+    h2 { font-size: 20px; font-weight: bold; line-height: 1.2em; color: #333; }
+    h3 { font-size: 16px; font-weight: bold; line-height: 1.2em; color: #333; }
+    h4 { font-size: 16px; font-weight: bold; line-height: 1.2em; color: #333; border-left: 3px solid #cccccc; padding-left: 10px; }
+    h5 { font-size: 16px; font-weight: normal; line-height: 1.2em; color: #4d4d4d; }
+    h6 { font-size: 16px; font-weight: normal; line-height: 1.2em; color: #737373; font-style: italic; }
+    a { padding-bottom: 1px; border-bottom: 1px solid gray; -webkit-transition: all 100ms linear; color: #333; text-decoration: none; transition: all 100ms linear; }
+    a:hover{ border-bottom-width: 3px; border-bottom-color: #3c88d9; color: #3070b3; }
+}
+

@@ -1,0 +1,19 @@
+<ng-container *ngFor="let feature of features">
+    <div class="features">
+        <div class="feature-elements">
+            <app-data-handler-device-feature [feature]="feature"></app-data-handler-device-feature>
+        </div>
+        <div class="feature-elements">
+            <mat-checkbox
+                [(ngModel)]="metaDataCheckbox"
+            >
+            </mat-checkbox>
+        </div>
+        <div class="feature-elements">
+            <mat-checkbox
+                [(ngModel)]="dataTransferCheckbox"
+            >
+            </mat-checkbox>
+        </div>
+    </div>
+</ng-container>

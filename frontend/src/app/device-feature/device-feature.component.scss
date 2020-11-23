@@ -1,0 +1,28 @@
+.feature {
+    display: flex;
+    flex-direction: row;
+    //max-width: 500px;
+}
+.content {
+    flex-grow: 1;
+}
+.feature-name {
+    font-size: 1.25em;
+    padding-bottom: 0.5em;
+}
+.feature-description {
+    color: rgba(0, 0, 0, 0.54);
+}
+.header {
+    padding-bottom: 1em;
+}
+.section-title {
+    font-size: 1em;
+    font-weight: 500;
+    padding-bottom: 0.5em;
+}
+.section-content {
+    padding-left: 1em;
+    padding-bottom: 2em;
+    width: 100%;
+}

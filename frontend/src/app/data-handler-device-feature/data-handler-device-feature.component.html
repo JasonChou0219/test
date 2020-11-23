@@ -1,0 +1,43 @@
+<div class="feature">
+    <div *ngIf="expand; else noExpand">
+        <button mat-icon-button (click)="expand = false">
+            <mat-icon>expand_more</mat-icon>
+        </button>
+    </div>
+    <ng-template #noExpand>
+        <button mat-icon-button (click)="expand = true">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </ng-template>
+    <div class="section-content">
+        <div class="header">
+            <div class="feature-name">{{ feature.identifier }}</div>
+            <div class="feature-description">{{ feature.description }}</div>
+        </div>
+        <ng-container *ngIf="expand">
+            <div class="features">
+                    <div class="feature-elements"><p>Version {{ feature.feature_version }}</p></div>
+                    <div class="feature-elements">Meta</div>
+                    <div class="feature-elements">Active</div>
+            </div>
+            <div class="section-title">Commands</div>
+            <div class="section-content">
+                <div *ngFor="let command of feature.commands">
+                    <app-data-handler-device-command
+                        [featureIdentifier]="feature.identifier"
+                        [command]="command"
+                    ></app-data-handler-device-command>
+                </div>
+            </div>
+            <div class="section-title">Properties</div>
+            <div class="section-content">
+                <div *ngFor="let property of feature.properties">
+                    <app-data-handler-device-property
+                        [featureIdentifier]="feature.identifier"
+                        [property]="property"
+                    ></app-data-handler-device-property>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

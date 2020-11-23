@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Add Script</h2>
+<form>
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="script.name" name="name" />
+    </mat-form-field>
+</form>
+<app-file-selector
+    name="Select Script"
+    (fileSelect)="fileSelected($event)"
+></app-file-selector>
+<p>{{ file === undefined ? 'No File Selected' : script.fileName }}</p>
+<mat-dialog-actions>
+    <button
+        mat-flat-button
+        color="primary"
+        (click)="add()"
+        [mat-dialog-close]="script"
+    >
+        Add
+    </button>
+    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+</mat-dialog-actions>

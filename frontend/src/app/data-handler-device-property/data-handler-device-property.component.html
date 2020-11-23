@@ -1,0 +1,53 @@
+<div class="property">
+    <div *ngIf="expand; else noExpand">
+        <button mat-icon-button (click)="expand = false">
+            <mat-icon>expand_more</mat-icon>
+        </button>
+    </div>
+    <ng-template #noExpand>
+        <button mat-icon-button (click)="expand = true">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </ng-template>
+    <div class="content">
+        <div class="header">
+            <div class="checkbox-alignment">
+                <div class="property-name">{{ property.identifier }}</div>
+                <div class="checkbox-one">
+                    <mat-checkbox [(ngModel)]="metaDataCheckbox"></mat-checkbox>
+                </div>
+                <div class="checkbox-two">
+                    <mat-checkbox [(ngModel)]="dataTransferCheckbox"></mat-checkbox>
+                </div>
+            </div>
+            <div class="property-description">{{ property.description }}</div>
+        </div>
+        <div class="border" *ngIf="expand">
+            <div class="section-title">Response</div>
+            <div class="section-content">
+                <div class="param-border">
+                    <div class="params">
+                        <div>
+                            <span class="param-name">{{
+                                property.response.identifier
+                                }}</span>
+                            <span class="param-type">{{
+                                property.response.type
+                                }}</span>
+                        </div>
+                        <div class="param-desc">
+                            {{ property.response.description }}
+                        </div>
+                    </div>
+                </div>
+                <div class="polling-input">
+                    <mat-form-field>
+                        <mat-label>Polling interval</mat-label>
+                        <!-- Use ngIf to distinguish the default value depending on meta or not meta data selection! -->
+                        <input matInput [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

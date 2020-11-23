@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>User</h2>
+<form>
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input
+            matInput
+            value="{{ user.name }}"
+            [(ngModel)]="user.name"
+            name="name"
+        />
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Full Name</mat-label>
+        <input
+            matInput
+            value="{{ user.fullName }}"
+            [(ngModel)]="user.fullName"
+            name="fullName"
+        />
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Role</mat-label>
+        <mat-select [(ngModel)]="user.role" name="role">
+            <mat-option *ngFor="let role of roles" [value]="role">
+                {{ role }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</form>
+<mat-dialog-actions>
+    <button mat-flat-button color="primary" [mat-dialog-close]="user">
+        Save
+    </button>
+    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+</mat-dialog-actions>

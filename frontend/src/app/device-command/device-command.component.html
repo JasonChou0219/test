@@ -1,0 +1,117 @@
+<div class="command">
+    <div *ngIf="expand; else noExpand">
+        <button mat-icon-button (click)="expand = false">
+            <mat-icon>expand_more</mat-icon>
+        </button>
+    </div>
+    <ng-template #noExpand>
+        <button mat-icon-button (click)="expand = true">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </ng-template>
+    <div class="content">
+        <div class="header">
+            <div class="command-name">{{ command.identifier }}</div>
+            <div class="command-description">{{ command.description }}</div>
+        </div>
+
+        <div class="border" *ngIf="expand">
+            <div class="section-title">Parameters</div>
+            <div class="section-content">
+                <div
+                    class="param-border"
+                    *ngFor="let param of command.parameters; index as i"
+                >
+                    <div class="params">
+                        <div>
+                            <div>
+                                <span class="param-name">{{
+                                    param.identifier
+                                }}</span>
+                                <span class="param-type">{{ param.type }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ param.description }}
+                            </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Set value</mat-label>
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="paramValues[i]"
+                                />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">Responses</div>
+            <div class="section-content">
+                <div
+                    class="param-border"
+                    *ngFor="let response of command.responses"
+                >
+                    <div class="params">
+                        <div>
+                            <div>
+                                <span class="param-name">{{
+                                    response.identifier
+                                }}</span>
+                                <span class="param-type">{{
+                                    response.type
+                                }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ response.description }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">Usage</div>
+            <div class="section-content example-code">
+                <code>
+                    response =
+                    <span class="python-object">yourObject</span>.<span
+                        class="python-function"
+                        >call_command</span
+                    >(<span class="python-string"
+                        >"{{ featureIdentifier }}"</span
+                    >,<span class="python-string"
+                        >"{{ command.identifier }}"</span
+                    >,parameters: {{ '{' }}
+                    <ng-container
+                        *ngFor="
+                            let param of command.parameters;
+                            index as i;
+                            let last = last
+                        "
+                    >
+                        <span class="python-string"
+                            >"{{ param.identifier }}"</span
+                        >:
+                        <ng-container
+                            *ngIf="param.type === 'String'; else noString"
+                        >
+                            <span class="python-string">
+                                "{{ paramValues[i] }}"
+                            </span>
+                        </ng-container>
+                        <ng-template #noString>
+                            {{ paramValues[i] }}
+                        </ng-template>
+                        <ng-container *ngIf="!last">, </ng-container>
+                    </ng-container>
+                    {{ '}' }})
+                </code>
+            </div>
+            <div>
+                <button mat-flat-button color="primary" aria-label="Run">
+                    Run
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
