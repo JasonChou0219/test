@@ -1,6 +1,9 @@
+
 from typing import Any, Dict
 from typing import Union
+
 import datetime
+
 from google.protobuf.message import Message
 
 from .data_base import DataBase

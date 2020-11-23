@@ -9,7 +9,8 @@ from .thread_local_storage import get_storage
 async def get_redis_pool():
     storage = get_storage()
     if storage.get('redis') is None:
-        storage['redis'] = await aioredis.create_redis_pool('redis://localhost')
+        storage['redis'] = await aioredis.create_redis_pool('redis://localhost'
+                                                            )
     return storage['redis']
 
 

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from uuid import UUID, uuid4
 from datetime import datetime
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
@@ -32,6 +32,32 @@ ACTIVATED = True
 META = False
 
 
+def _call_feature_command_from_subprocess(info: DeviceInfo, feature: str,
+                                          command: str, parameters: Dict[str,
+                                                                         any],
+                                          connection):
+    try:
+        device = _create_device_instance(info.address, info.port, info.uuid,
+                                         info.name, info.type)
+        device.connect()
+        result = device.call_command(feature, command, parameters)
+        connection.send(result)
+    finally:
+        connection.close()
+
+
+def _get_feature_property_from_subprocess(info: DeviceInfo, feature: str,
+                                          prop: str, connection):
+    try:
+        device = _create_device_instance(info.address, info.port, info.uuid,
+                                         info.name, info.type)
+        device.connect()
+        result = device.call_property(feature, prop)
+        connection.send(result)
+    finally:
+        connection.close()
+
+
 def _create_device_instance(ip: str, port: int, uuid: UUID, name: str,
                             type: DeviceType):
     if type == DeviceType.SILA:
@@ -40,8 +66,19 @@ def _create_device_instance(ip: str, port: int, uuid: UUID, name: str,
         return DummyDevice(ip, port, uuid, name, type)
 
 
+def _get_device_instance_from_subprocess(ip: str, port: int, uuid: UUID, name: str, type: DeviceType, connection):
+    """Get a device instance for the device specified by the provided details
+    """
+    try:
+        device = _create_device_instance(ip, port, uuid, name, type)
+        connection.send(device)
+    finally:
+        connection.close()
+
+
 def _get_device_status_from_subprocess(info: DeviceInfo, connection):
-    """Get the current status of the specified device"""
+    """Get the current status of the specified device
+    """
     try:
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
@@ -52,7 +89,8 @@ def _get_device_status_from_subprocess(info: DeviceInfo, connection):
 
 
 def _get_device_features_from_subprocess(info: DeviceInfo, connection):
-    """Get the description of supported features of the specified device"""
+    """Get the description of supported features of the specified device
+    """
     try:
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
@@ -186,20 +224,66 @@ class DeviceManager:
             print('get_features process finished')
         return device_features
 
+    def call_feature_command(self, device: UUID, feature: str, command: str,
+                             params: Dict[str, any]):
+        device_info = self.get_device_info(device)
+        parent_conn, child_conn = Pipe()
+        process = Process(target=_get_feature_property_from_subprocess,
+                          args=(device_info, feature, command, params,
+                                child_conn))
+        result = None
+        try:
+            process.start()
+            result = parent_conn.recv()
+            process.join()
+        finally:
+            process.close()
+            print('call_feature_command process finished')
+        return result
+
+    def get_feature_property(self, device: UUID, feature: str, prop: str):
+        device_info = self.get_device_info(device)
+        parent_conn, child_conn = Pipe()
+        process = Process(target=_get_feature_property_from_subprocess,
+                          args=(device_info, feature, prop, child_conn))
+        result = None
+        try:
+            process.start()
+            result = parent_conn.recv()
+            process.join()
+        finally:
+            process.close()
+            print('get_feature_property process finished')
+        return result
+
     def add_features_for_data_handler(self, uuid: UUID):
         """Add the features of the device (specified by uuid) to the database
         Args:
             uuid: The uuid of the device for which to add the features to the database
         """
         device_info = self.get_device_info(uuid)
-        sila_device = _create_device_instance(device_info.address, device_info.port, device_info.uuid, device_info.name,
-                                              device_info.type)
+        parent_conn, child_conn = Pipe()
+        process = Process(target=_get_device_instance_from_subprocess,
+                          args=(device_info.address,
+                                device_info.port,
+                                device_info.uuid,
+                                device_info.name,
+                                device_info.type,
+                                child_conn))
+        try:
+            process.start()
+            sila_device = parent_conn.recv()
+            process.join()
+        finally:
+            process.close()
+
         sila_device.connect()
         features = self.get_features(uuid)
         with self.conn as conn:
             with conn.cursor() as cursor:
                 for feature in features:
-                    dynamic_feature = sila_device.getClient()._features[feature.identifier + '\n']
+                    dynamic_feature = sila_device.getClient()._features[
+                        feature.identifier + '\n']
                     cursor.execute(
                         'insert into features_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s) returning id',
                         [
@@ -211,7 +295,8 @@ class DeviceManager:
                         ])
                     feature_id = cursor.fetchone()[0]
                     for command in feature.commands:
-                        dynamic_command = dynamic_feature.commands[command.identifier]
+                        dynamic_command = dynamic_feature.commands[
+                            command.identifier]
                         cursor.execute(
                             'insert into commands_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s)' \
                             'returning id',
@@ -221,8 +306,12 @@ class DeviceManager:
                         for parameter in command.parameters:
                             if parameter.type != 'Void':
                                 data_parameters = dynamic_command.parameters
-                                parameter_index = list(data_parameters.fields.keys()).index(parameter.identifier)
-                                parameter.type = list(data_parameters.paths.keys())[parameter_index].split('/', 1)[1]
+                                parameter_index = list(
+                                    data_parameters.fields.keys()).index(
+                                        parameter.identifier)
+                                parameter.type = list(
+                                    data_parameters.paths.keys(
+                                    ))[parameter_index].split('/', 1)[1]
                                 cursor.execute(
                                     'insert into parameters_for_data_handler values' \
                                     '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
@@ -231,8 +320,11 @@ class DeviceManager:
                         for response in command.responses:
                             if response.type != 'Void':
                                 data_responses = dynamic_command.responses
-                                response_index = list(data_responses.fields.keys()).index(response.identifier)
-                                response.type = list(data_responses.paths.keys())[response_index].split('/', 1)[1]
+                                response_index = list(
+                                    data_responses.fields.keys()).index(
+                                        response.identifier)
+                                response.type = list(data_responses.paths.keys(
+                                ))[response_index].split('/', 1)[1]
                                 cursor.execute(
                                     'insert into parameters_for_data_handler values' \
                                     '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
@@ -240,8 +332,12 @@ class DeviceManager:
                                      "response", "command", command_id])
                         for intermediate in command.intermediates:
                             data_intermediates = dynamic_command.intermediate_responses
-                            intermediate_index = list(data_intermediates.fields.keys()).index(intermediate.identifier)
-                            intermediate.type = list(data_intermediates.paths.keys())[intermediate_index].split('/', 1)[1]
+                            intermediate_index = list(
+                                data_intermediates.fields.keys()).index(
+                                    intermediate.identifier)
+                            intermediate.type = list(
+                                data_intermediates.paths.keys(
+                                ))[intermediate_index].split('/', 1)[1]
                             cursor.execute(
                                 'insert into parameters_for_data_handler values' \
                                 '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
@@ -255,7 +351,8 @@ class DeviceManager:
                                     command_id
                                 ])
                     for property in feature.properties:
-                        dynamic_property = dynamic_feature.properties[property.identifier]
+                        dynamic_property = dynamic_feature.properties[
+                            property.identifier]
                         cursor.execute(
                             'insert into properties_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s)' \
                             'returning id',
@@ -264,8 +361,12 @@ class DeviceManager:
                         property_id = cursor.fetchone()[0]
                         response = property.response
                         data_responses = dynamic_property.responses
-                        response_index = list(data_responses.fields.keys()).index(response.identifier)
-                        response.type = list(data_responses.paths.keys())[response_index].split('/', 1)[1]
+                        response_index = list(
+                            data_responses.fields.keys()).index(
+                                response.identifier)
+                        response.type = list(
+                            data_responses.paths.keys())[response_index].split(
+                                '/', 1)[1]
                         cursor.execute(
                             'insert into parameters_for_data_handler values' \
                             '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
@@ -279,7 +380,8 @@ class DeviceManager:
                                     property_id
                                 ])
 
-    def get_features_for_data_handler(self, uuid: UUID) -> List[DeviceFeatureForDataHandler]:
+    def get_features_for_data_handler(
+            self, uuid: UUID) -> List[DeviceFeatureForDataHandler]:
         """Get the features of the device (specified by uuid) from the database
         Args:
             uuid: The uuid of the device for which to get the features from the database
@@ -288,19 +390,29 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,identifier,name,description,feature_version,feature_version_minor,feature_version_major from features_for_data_handler where device=%s',
-                    [str(uuid)]
-                )
+                    [str(uuid)])
                 result = cursor.fetchall()
-                features = [DeviceFeatureForDataHandler(id=row[0], identifier=row[1], name=row[2], description=row[3],
-                                                        feature_version=row[4], feature_version_minor=row[5],
-                                                        feature_version_major=row[6], commands=[], properties=[])
-                            for row in result]
+                features = [
+                    DeviceFeatureForDataHandler(id=row[0],
+                                                identifier=row[1],
+                                                name=row[2],
+                                                description=row[3],
+                                                feature_version=row[4],
+                                                feature_version_minor=row[5],
+                                                feature_version_major=row[6],
+                                                commands=[],
+                                                properties=[])
+                    for row in result
+                ]
                 for feature in features:
-                    feature.commands = self.get_commands_for_feature_for_data_handler(feature.id)
-                    feature.properties = self.get_properties_for_feature_for_data_handler(feature.id)
+                    feature.commands = self.get_commands_for_feature_for_data_handler(
+                        feature.id)
+                    feature.properties = self.get_properties_for_feature_for_data_handler(
+                        feature.id)
                 return features
 
-    def get_commands_for_feature_for_data_handler(self, feature_id) -> List[DeviceCommandForDataHandler]:
+    def get_commands_for_feature_for_data_handler(
+            self, feature_id) -> List[DeviceCommandForDataHandler]:
         """Get the commands of the feature (specified by feature_id) from the database
         Args:
             feature_id: The id of the feature for which to get the commands from the database
@@ -309,24 +421,36 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select identifier,name,description,observable,id,interval,meta_interval,activated,meta from commands_for_data_handler where feature=%s',
-                    [str(feature_id)]
-                )
+                    [str(feature_id)])
                 result = cursor.fetchall()
-                commands = [DeviceCommandForDataHandler(identifier=row[0], name=row[1], description=row[2],
-                                                        observable=row[3], parameters=[], responses=[],
-                                                        intermediates=[], defined_execution_errors=[], id=row[4],
-                                                        interval=row[5], meta_interval=row[6], activated=row[7],
-                                                        meta=row[8])
-                            for row in result]
+                commands = [
+                    DeviceCommandForDataHandler(identifier=row[0],
+                                                name=row[1],
+                                                description=row[2],
+                                                observable=row[3],
+                                                parameters=[],
+                                                responses=[],
+                                                intermediates=[],
+                                                defined_execution_errors=[],
+                                                id=row[4],
+                                                interval=row[5],
+                                                meta_interval=row[6],
+                                                activated=row[7],
+                                                meta=row[8]) for row in result
+                ]
                 for command in commands:
-                    command.parameters = self.get_parameters_for_command_for_data_handler(command.id)
-                    command.responses = self.get_responses_for_command_for_data_handler(command.id)
-                    command.intermediates = self.get_intermediates_for_command_for_data_handler(command.id)
+                    command.parameters = self.get_parameters_for_command_for_data_handler(
+                        command.id)
+                    command.responses = self.get_responses_for_command_for_data_handler(
+                        command.id)
+                    command.intermediates = self.get_intermediates_for_command_for_data_handler(
+                        command.id)
                     command.defined_execution_errors = \
                         self.get_defined_execution_errors_for_command_for_data_handler(command.id)
                 return commands
 
-    def get_parameters_for_command_for_data_handler(self, command_id) -> List[DeviceParameterForDataHandler]:
+    def get_parameters_for_command_for_data_handler(
+            self, command_id) -> List[DeviceParameterForDataHandler]:
         """Get the parameters of the command (specified by command_id) from the database
         Args:
             command_id: The id of the command for which to get the parameters from the database
@@ -335,15 +459,22 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
-                    ['parameter', 'command', str(command_id)]
-                )
+                    ['parameter', 'command',
+                     str(command_id)])
                 result = cursor.fetchall()
-                parameters = [DeviceParameterForDataHandler(type=row[0], identifier=row[1], name=row[2],
-                                                            description=row[3], id=row[4], value=row[5])
-                              for row in result]
+                parameters = [
+                    DeviceParameterForDataHandler(type=row[0],
+                                                  identifier=row[1],
+                                                  name=row[2],
+                                                  description=row[3],
+                                                  id=row[4],
+                                                  value=row[5])
+                    for row in result
+                ]
                 return parameters
 
-    def get_responses_for_command_for_data_handler(self, command_id) -> List[DeviceParameterForDataHandler]:
+    def get_responses_for_command_for_data_handler(
+            self, command_id) -> List[DeviceParameterForDataHandler]:
         """Get the responses of the command (specified by command_id) from the database
         Args:
             command_id: The id of the command for which to get the responses from the database
@@ -352,15 +483,22 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
-                    ['response', 'command', str(command_id)]
-                )
+                    ['response', 'command',
+                     str(command_id)])
                 result = cursor.fetchall()
-                responses = [DeviceParameterForDataHandler(type=row[0], identifier=row[1], name=row[2],
-                                                           description=row[3], id=row[4], value=row[5])
-                             for row in result]
+                responses = [
+                    DeviceParameterForDataHandler(type=row[0],
+                                                  identifier=row[1],
+                                                  name=row[2],
+                                                  description=row[3],
+                                                  id=row[4],
+                                                  value=row[5])
+                    for row in result
+                ]
                 return responses
 
-    def get_intermediates_for_command_for_data_handler(self, command_id) -> List[DeviceParameterForDataHandler]:
+    def get_intermediates_for_command_for_data_handler(
+            self, command_id) -> List[DeviceParameterForDataHandler]:
         """Get the intermediates of the command (specified by command_id) from the database
         Args:
             command_id: The id of the command for which to get the intermediates from the database
@@ -369,15 +507,22 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
-                    ['intermediate', 'command', str(command_id)]
-                )
+                    ['intermediate', 'command',
+                     str(command_id)])
                 result = cursor.fetchall()
-                intermediates = [DeviceParameterForDataHandler(type=row[0], identifier=row[1], name=row[2],
-                                                               description=row[3], id=row[4], value=row[5])
-                                 for row in result]
+                intermediates = [
+                    DeviceParameterForDataHandler(type=row[0],
+                                                  identifier=row[1],
+                                                  name=row[2],
+                                                  description=row[3],
+                                                  id=row[4],
+                                                  value=row[5])
+                    for row in result
+                ]
                 return intermediates
 
-    def get_defined_execution_errors_for_command_for_data_handler(self, command_id) -> List[str]:
+    def get_defined_execution_errors_for_command_for_data_handler(
+            self, command_id) -> List[str]:
         """Get the defined execution errors of the command (specified by command_id) from the database
         Args:
             command_id: The id of the command for which to get the defined execution errors from the database
@@ -386,14 +531,13 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select defined_execution_error from defined_execution_errors where parent_type=%s and parent=%s',
-                    ['command', str(command_id)]
-                )
+                    ['command', str(command_id)])
                 result = cursor.fetchall()
-                defined_execution_errors = [row[0]
-                                            for row in result]
+                defined_execution_errors = [row[0] for row in result]
                 return defined_execution_errors
 
-    def get_properties_for_feature_for_data_handler(self, feature_id) -> List[DevicePropertyForDataHandler]:
+    def get_properties_for_feature_for_data_handler(
+            self, feature_id) -> List[DevicePropertyForDataHandler]:
         """Get the properties of the feature (specified by feature_id) from the database
         Args:
             feature_id: The id of the feature for which to get the properties from the database
@@ -402,21 +546,30 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,identifier,name,description,observable,interval,meta_interval,activated,meta from properties_for_data_handler where feature=%s',
-                    [str(feature_id)]
-                )
+                    [str(feature_id)])
                 result = cursor.fetchall()
-                properties = [DevicePropertyForDataHandler(id = row[0], identifier=row[1], name=row[2],
-                                                           description=row[3], observable=row[4], response=None,
-                                                           defined_execution_errors=[], interval=row[5],
-                                                           meta_interval=row[6], activated=row[7], meta=row[8])
-                              for row in result]
+                properties = [
+                    DevicePropertyForDataHandler(id=row[0],
+                                                 identifier=row[1],
+                                                 name=row[2],
+                                                 description=row[3],
+                                                 observable=row[4],
+                                                 response=None,
+                                                 defined_execution_errors=[],
+                                                 interval=row[5],
+                                                 meta_interval=row[6],
+                                                 activated=row[7],
+                                                 meta=row[8]) for row in result
+                ]
                 for property in properties:
-                    property.response = self.get_response_for_property_for_data_handler(property.id)
+                    property.response = self.get_response_for_property_for_data_handler(
+                        property.id)
                     property.defined_execution_errors = \
                         self.get_defined_execution_errors_for_property_for_data_handler(property.id)
                 return properties
 
-    def get_response_for_property_for_data_handler(self, property_id) -> DeviceParameterForDataHandler:
+    def get_response_for_property_for_data_handler(
+            self, property_id) -> DeviceParameterForDataHandler:
         """Get the response of the property (specified by property_id) from the database
         Args:
             property_id: The id of the property for which to get the response from the database
@@ -425,14 +578,19 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
-                    ['response', 'property', str(property_id)]
-                )
+                    ['response', 'property',
+                     str(property_id)])
                 row = cursor.fetchone()
-                response = DeviceParameterForDataHandler(type=row[0], identifier=row[1], name=row[2],
-                                                         description=row[3], id=row[4], value=row[5])
+                response = DeviceParameterForDataHandler(type=row[0],
+                                                         identifier=row[1],
+                                                         name=row[2],
+                                                         description=row[3],
+                                                         id=row[4],
+                                                         value=row[5])
                 return response
 
-    def get_defined_execution_errors_for_property_for_data_handler(self, property_id) -> List[str]:
+    def get_defined_execution_errors_for_property_for_data_handler(
+            self, property_id) -> List[str]:
         """Get the defined execution errors of the property (specified by property_id) from the database
         Args:
             property_id: The id of the property for which to get the defined execution errors from the database
@@ -441,11 +599,9 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select defined_execution_error from defined_execution_errors where parent_type=%s and parent=%s',
-                    ['property', str(property_id)]
-                )
+                    ['property', str(property_id)])
                 result = cursor.fetchall()
-                defined_execution_errors = [row[0]
-                                            for row in result]
+                defined_execution_errors = [row[0] for row in result]
                 return defined_execution_errors
 
     def discover_sila_devices(self):

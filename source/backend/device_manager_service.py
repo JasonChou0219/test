@@ -6,7 +6,7 @@ from source.device_manager.device_layer.device_info import DeviceInfo
 from source.device_manager.device_manager import DeviceManager
 from source.device_manager.database import get_database_connection
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 
 class DeviceStatusModel(BaseModel):
@@ -59,6 +59,10 @@ class ScriptInfoModel(BaseModel):
     fileName: str
 
 
+class DeviceCommandParameters(BaseModel):
+    params: Dict[str, Any]
+
+
 class DeviceManagerService:
     def __init__(self):
         self.device_manager = DeviceManager()
@@ -95,8 +99,8 @@ class DeviceManagerService:
 
     def get_features_for_data_handler(self, uuid: UUID):
         return [
-            asdict(feature)
-            for feature in self.device_manager.get_features_for_data_handler(uuid)
+            asdict(feature) for feature in
+            self.device_manager.get_features_for_data_handler(uuid)
         ]
 
     def discover_sila_devices(self):

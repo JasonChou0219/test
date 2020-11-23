@@ -5,6 +5,7 @@ from apscheduler import events
 import time
 from datetime import datetime
 import source.device_manager.experiment as experiment
+from source.device_manager.device_manager import DeviceManager
 from source.device_manager.script import Script, get_user_script
 import redis
 import msgpack
@@ -12,8 +13,9 @@ from dataclasses import dataclass
 from enum import IntEnum
 import queue
 from typing import Optional
-import epicbox
-import multiprocessing
+import docker
+import docker_helper
+from threading import Thread
 
 
 class ExperimentStatus(IntEnum):
@@ -22,7 +24,7 @@ class ExperimentStatus(IntEnum):
     RUNNING = 2
     FINISHED_SUCCESSFUL = 3
     FINISHED_ERROR = 4
-    FINISHED_MANUAL = 5
+    FINISHED_MANUALLY = 5
     UNKNOWN = 6
 
 
@@ -31,7 +33,7 @@ class ExperimentState:
     experiment_id: int
     name: str
     job_id: int
-    process: multiprocessing.Process
+    container_id: str
     start_time: int
     end_time: int
     status: ExperimentStatus
@@ -40,6 +42,7 @@ class ExperimentState:
 class ProcessStatusEventType(IntEnum):
     STARTED = 0
     FINISHED_SUCCESSFUL = 1
+    FINISHED_MANUALLY = 2
     ERROR = 3
 
 
@@ -51,7 +54,7 @@ class ProcessStatusEvent:
 
 
 event_queue = queue.SimpleQueue()
-process_status_queue = multiprocessing.Queue()
+process_status_queue = queue.SimpleQueue()
 
 experiments = {}
 job_to_experiment = {}
@@ -61,41 +64,88 @@ redis_connection = redis.Redis(host='localhost')
 pubsub = redis_connection.pubsub()
 
 
-def start_experiment(process: multiprocessing.Process):
-    process.start()
+def start_data_handling_for_experiment(exp: experiment.Experiment):
+    device_manager = DeviceManager()
+    commands_to_call = {}
+    properties_to_call = {}
+    for device_booking in exp.deviceBookings:
+        device = device_manager.get_device_info(device_booking.device)
+        features = device_manager.get_features_for_data_handler(device.uuid)
+        for feature in features:
+            for command in feature.commands:
+                if (command.interval, device_booking.start,
+                        device_booking.end) in commands_to_call.keys():
+                    commands_to_call[(command.interval, device_booking.start,
+                                      device_booking.end)].append(
+                                          (command, feature, device))
+                else:
+                    commands_to_call[(command.interval, device_booking.start,
+                                      device_booking.end)] = [
+                                          (command, feature, device)
+                                      ]
+            for property in feature.properties:
+                if (property.interval, device_booking.start,
+                        device_booking.end) in properties_to_call.keys():
+                    properties_to_call[(property.interval,
+                                        device_booking.start,
+                                        device_booking.end)].append(
+                                            (property, feature, device))
+                else:
+                    properties_to_call[(property.interval,
+                                        device_booking.start,
+                                        device_booking.end)] = [
+                                            (property, feature, device)
+                                        ]
+    data_handler.create_jobs(commands_to_call, properties_to_call)
 
 
-def run_experiment(experiment_id: int, q: queue.Queue):
-    try:
-        q.put(ProcessStatusEvent(experiment_id,
-                                 ProcessStatusEventType.STARTED))
-        exp = experiment.get_experiment(experiment_id)
-        script = get_user_script(exp.scriptID)
-        epicbox.configure(
-            profiles=[epicbox.Profile('python', 'user_script:latest')])
-        files = [{'name': script.fileName, 'content': script.data.encode()}]
-        # limit memory to 500MB
-        limits = {'cputime': None, 'realtime': None, 'memory': 500}
-        result = epicbox.run('python',
-                             f'python3 {script.fileName}',
-                             files=files,
-                             limits=limits)
-        print(result)
-        if result['status_code'] == 0:
-            q.put(
-                ProcessStatusEvent(experiment_id,
-                                   ProcessStatusEventType.FINISHED_SUCCESSFUL))
-        else:
-            q.put(
-                ProcessStatusEvent(experiment_id,
-                                   ProcessStatusEventType.ERROR))
-    except Exception:
-        q.put(ProcessStatusEvent(experiment_id, ProcessStatusEventType.ERROR))
+def print_container_output(container):
+    container_output = container.attach(logs=False, stream=True)
+    for msg in container_output:
+        print(msg.decode())
+
+
+def wait_until_container_stops(container, experiment_id: int,
+                               status_queue: queue.SimpleQueue):
+    status = container.wait()
+    print(f'container stopped with StatusCode {status["StatusCode"]}')
+    if status['StatusCode'] == 0:
+        status_queue.put(
+            ProcessStatusEvent(experiment_id,
+                               ProcessStatusEventType.FINISHED_SUCCESSFUL))
+    else:
+        status_queue.put(
+            ProcessStatusEvent(experiment_id, ProcessStatusEventType.ERROR))
+    container.remove()
+
+
+def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
+
+    exp = experiment.get_experiment(experiment_id)
+    script = get_user_script(exp.scriptID)
+
+    client = docker.from_env()
+    container = docker_helper.create_script_container(client, exp.name,
+                                                      script.data)
+
+    #output_thread = Thread(target=print_container_output,
+    #                       args=(container, ))
+    wait_thread = Thread(target=wait_until_container_stops,
+                         args=(container, experiment_id, status_queue))
+    container.start()
+
+    #output_thread.start()
+    wait_thread.start()
+
+    status_queue.put(
+        ProcessStatusEvent(experiment_id, ProcessStatusEventType.STARTED,
+                           container.id))
     return
 
 
 def handle_process_status_events(event: ProcessStatusEvent):
     if event.event_type == ProcessStatusEventType.STARTED:
+        experiments[event.experiment_id].container_id = event.message
         experiments[event.experiment_id].status = ExperimentStatus.RUNNING
         print(f'{experiments[event.experiment_id].name} started')
     elif event.event_type == ProcessStatusEventType.FINISHED_SUCCESSFUL:
@@ -142,15 +192,13 @@ def schedule_future_experiments_from_database():
 def schedule_experiment(exp: experiment.SchedulingInfo):
     if (exp.id not in experiments) or (
             experiments[exp.id].status == ExperimentStatus.FINISHED):
-        process = multiprocessing.Process(target=run_experiment,
-                                          args=[exp.id, process_status_queue])
         job = scheduler.add_job(start_experiment,
                                 'date',
-                                args=[process],
+                                args=[exp.id, process_status_queue],
                                 name=f'experiment:{exp.name}',
                                 run_date=datetime.fromtimestamp(exp.start))
         experiments[exp.id] = ExperimentState(
-            exp.id, exp.name, job.id, process, exp.start, exp.end,
+            exp.id, exp.name, job.id, '0', exp.start, exp.end,
             ExperimentStatus.WAITING_FOR_EXECUTION)
         job_to_experiment[job.id] = exp.id
 
@@ -160,13 +208,11 @@ def schedule_experiment_now(exp: experiment.SchedulingInfo):
                                     ExperimentStatus.FINISHED):
         stop_experiment(exp.id)
 
-    process = multiprocessing.Process(target=run_experiment,
-                                      args=[exp.id, process_status_queue])
     job = scheduler.add_job(start_experiment,
-                            args=[process],
+                            args=[exp.id, process_status_queue],
                             name=f'experiment:{exp.name}')
     experiments[exp.id] = ExperimentState(
-        exp.id, exp.name, job.id, process, exp.start, exp.end,
+        exp.id, exp.name, job.id, '0', exp.start, exp.end,
         ExperimentStatus.WAITING_FOR_EXECUTION)
     job_to_experiment[job.id] = exp.id
 
@@ -176,11 +222,19 @@ def stop_experiment(experiment_id):
         experiment_entry = experiments[experiment_id]
         if experiment_entry.status == ExperimentStatus.WAITING_FOR_EXECUTION:
             scheduler.remove_job(experiment_entry.job_id)
-            experiment_entry.status = ExperimentStatus.FINISHED_MANUAL
-        elif experiment_entry.status == ExperimentStatus.RUNNING:
-            experiment_entry.process.terminate()
-            print('terminate process')
-            experiment_entry.status = ExperimentStatus.FINISHED_MANUAL
+            experiment_entry.status = ExperimentStatus.FINISHED_MANUALLY
+        elif (experiment_entry.status ==
+              ExperimentStatus.SUBMITED_FOR_EXECUTION) or (
+                  experiment_entry.status == ExperimentStatus.RUNNING):
+            try:
+                client = docker.from_env()
+                print(experiment_entry.container_id)
+                container = client.containers.get(
+                    experiment_entry.container_id)
+                container.stop(timeout=1)
+                experiment_entry.status = ExperimentStatus.FINISHED_MANUALLY
+            except Exception:
+                print("could not stop container")
 
 
 def get_experiment_status(experiment_id):

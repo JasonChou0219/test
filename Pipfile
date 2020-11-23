@@ -26,12 +26,11 @@ uvicorn = "*"
 pyjwt = "*"
 python-multipart = "*"
 psycopg2 = "*"
-epicbox = "*"
 apscheduler = "*"
 msgpack = "*"
 redis = "*"
 aioredis = "*"
 hiredis = "*"
-cryptography = "*"
+docker = "*"
 
 [requires]

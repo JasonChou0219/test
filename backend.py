@@ -9,7 +9,7 @@ from logging import error
 import traceback
 import sys
 
-from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel
+from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters
 import source.device_manager.user as user
 from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment
 
@@ -21,7 +21,7 @@ class Status(BaseModel):
 app = FastAPI()
 
 
-# handle uncaught exceptions
+#handle uncaught exceptions
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
@@ -43,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # must be replaced
-secret_key = b'\x13\\TyF\xca\x98=\x02W\xf8,\x07K#\xbc\x8b\xcdA'\
+secret_key= b'\x13\\TyF\xca\x98=\x02W\xf8,\x07K#\xbc\x8b\xcdA'\
                            b'\x05!\xf0\x1a\x05yK\xb3\x03b\x1b\xbd}1z\xc6&p'\
                            b'\xf2\xc2\x8d#~\xd0\x87@\xd8uj2Z\xf2\xb1\x14!\xe7'\
                            b'\xdc\xd0\xc6\xa3(\x9f\x8e{;'
@@ -221,15 +221,31 @@ def device_status(uuid: str, username: str = Depends(decode_token)):
     return device_manager_service.get_status(uuid)
 
 
-# @app.get('/api/deviceFeatures/{uuid}')
-# def device_features_for_data_handler(uuid: str, username: str = Depends(decode_token)):
-#     device_manager_service = DeviceManagerService()
-#     return {'data': device_manager_service.get_features_for_data_handler(uuid)}
-
 @app.get('/api/deviceFeatures/{uuid}')
-def device_features_for_data_handler(uuid: str, username: str = Depends(decode_token)):
+def device_features_for_data_handler(uuid: str,
+                                     username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
-    return {'data': device_manager_service.get_features(uuid)}
+    return {'data': device_manager_service.get_features_for_data_handler(uuid)}
+
+
+@app.post('/api/device/{uuid}/deviceFeatures/{feature}/command/{command_id}')
+def call_feature_command(uuid: str,
+                         feature: str,
+                         command_id: str,
+                         parameterList: DeviceCommandParameters,
+                         username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    return {'data': None}
+
+
+@app.get('/api/device/{uuid}/deviceFeatures/{feature}/property/{property_id}')
+def get_feature_property(uuid: str,
+                         feature: str,
+                         property_id: str,
+                         username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    return {'data': None}
+
 
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
