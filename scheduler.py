@@ -4,6 +4,7 @@ from apscheduler.job import Job
 from apscheduler import events
 import time
 from datetime import datetime
+import data_handler
 import source.device_manager.experiment as experiment
 from source.device_manager.device_manager import DeviceManager
 from source.device_manager.script import Script, get_user_script
@@ -124,6 +125,8 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
     exp = experiment.get_experiment(experiment_id)
     script = get_user_script(exp.scriptID)
 
+    start_data_handling_for_experiment(exp)
+
     client = docker.from_env()
     container = docker_helper.create_script_container(client, exp.name,
                                                       script.data)
@@ -191,7 +194,7 @@ def schedule_future_experiments_from_database():
 
 def schedule_experiment(exp: experiment.SchedulingInfo):
     if (exp.id not in experiments) or (
-            experiments[exp.id].status == ExperimentStatus.FINISHED):
+            experiments[exp.id].status == ExperimentStatus.FINISHED_SUCCESSFUL):
         job = scheduler.add_job(start_experiment,
                                 'date',
                                 args=[exp.id, process_status_queue],
@@ -205,7 +208,7 @@ def schedule_experiment(exp: experiment.SchedulingInfo):
 
 def schedule_experiment_now(exp: experiment.SchedulingInfo):
     if (exp.id in experiments) and (experiments[exp.id].status !=
-                                    ExperimentStatus.FINISHED):
+                                    ExperimentStatus.FINISHED_SUCCESSFUL):
         stop_experiment(exp.id)
 
     job = scheduler.add_job(start_experiment,
