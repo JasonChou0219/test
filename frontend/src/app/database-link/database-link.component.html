@@ -2,12 +2,13 @@
 <form>
     <mat-form-field>
         <mat-label>Name</mat-label>
-        <mat-select [(ngModel)]="databaseListWorkCopy" name="type">
-            <mat-option *ngFor="let database of databaseListWorkCopy" [value]="database.name">
+        <mat-select [(ngModel)]="databaseDeviceLink.databaseId" name="type">
+            <mat-option *ngFor="let database of databaseListWorkCopy" [value]="database.id">
                 {{ database.name }}
             </mat-option>
         </mat-select>
     </mat-form-field>
+<!--
     <mat-form-field>
         <mat-label>Address</mat-label>
         <input
@@ -26,9 +27,10 @@
             name="address"
         />
     </mat-form-field>
+    -->
 </form>
 <mat-dialog-actions>
-    <button mat-flat-button color="primary" [mat-dialog-close]="deviceWorkCopy">
+    <button mat-flat-button color="primary" [mat-dialog-close]="databaseDeviceLink">
         Save
     </button>
     <button mat-button (click)="this.dialogRef.close()">
