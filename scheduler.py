@@ -191,7 +191,10 @@ def schedule_future_experiments_from_database():
 
 def schedule_experiment(exp: experiment.SchedulingInfo):
     if (exp.id not in experiments) or (
-            experiments[exp.id].status == ExperimentStatus.FINISHED):
+            experiments[exp.id].status == ExperimentStatus.FINISHED_ERROR or
+            experiments[exp.id].status == ExperimentStatus.FINISHED_SUCCESSFUL
+            or experiments[exp.id].status
+            == ExperimentStatus.FINISHED_MANUALLY):
         job = scheduler.add_job(start_experiment,
                                 'date',
                                 args=[exp.id, process_status_queue],
@@ -204,8 +207,11 @@ def schedule_experiment(exp: experiment.SchedulingInfo):
 
 
 def schedule_experiment_now(exp: experiment.SchedulingInfo):
-    if (exp.id in experiments) and (experiments[exp.id].status !=
-                                    ExperimentStatus.FINISHED):
+    if (exp.id in experiments) and (
+            experiments[exp.id].status != ExperimentStatus.FINISHED_ERROR or
+            experiments[exp.id].status != ExperimentStatus.FINISHED_SUCCESSFUL
+            or
+            experiments[exp.id].status != ExperimentStatus.FINISHED_MANUALLY):
         stop_experiment(exp.id)
 
     job = scheduler.add_job(start_experiment,

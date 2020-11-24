@@ -179,6 +179,7 @@ def get_user(id: int, username: str = Depends(decode_token)):
         u = user.get_user(id)
         return User(id=u.id, name=u.name, fullName=u.fullName, role=u.role)
 
+
 @app.get('/api/devices')
 def get_devices(username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
