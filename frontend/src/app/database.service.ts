@@ -38,28 +38,45 @@ export class DatabaseService {
     serverUrl = SERVER_URL;
     constructor(private http: HttpClient) {
     }
-    addDatabase(database) {
-        this.databases.push(database);
+    async getDatabases() {
+        console.log('Returning databases');
         console.log(this.databases);
+        return this.databases;
+    }
+    // getDatabaseList will replace getDatabases once implemented in the backend
+    async getDatabaseList(): Promise<Database[]> {
+        return this.http
+            .get<DatabaseList>(this.serverUrl + '/api/databases/')
+            .pipe(map((databaseList) => databaseList.data))
+            .toPromise();
+        // Todo: Implement call to backend!
+    }
+    async getDatabase(id: string): Promise<Database> {
+        // Not implemented in the backend yet
+        // Not used yet
+        return this.http
+            .get<Database>(this.serverUrl + 'api/databases/' + id)
+            .toPromise();
     }
     async setDatabase(uuid: string, database: Database) {
+        // Not implemented in the backend yet
+        // may not be needed. Replac by linkDatabase?
         return this.http
             .put(this.serverUrl + '/api/database/' + uuid, database)
             .toPromise();
     }
-    getDatabases() {
-        console.log('Returning databases');
+    async newAddDatabase(database: Database) {
+        // Not implemented in backend yet
+        // Will replace addDatabase
+        return this.http
+            .post(this.serverUrl + '/api/databases', database)
+            .toPromise();
+    }
+    async addDatabase(database: Database) {
+        this.databases.push(database);
         console.log(this.databases);
-        return this.databases;
-
     }
-    clearDatabases() {
-        this.databases = [];
-        return this.databases;
-    }
-    deleteDatabase(database) {
-
-        // delete this.databases[database];
+    async deleteDatabase(database: Database) {
         database = this.databases.find(element => element.name === database.name);
         for ( var i = 0; i < this.databases.length; i++) { if (this.databases[i] === database) {
             this.databases.splice(i, 1 ); i--; } }
@@ -70,26 +87,21 @@ export class DatabaseService {
         //    .delete(this.serverUrl + '/api/databases/' + name)
         //    .toPromise();
     }
-
-    async getDatabaseList(): Promise<Database[]> {
+    async newDeleteDatabase(id: string) {
+        // Will replace deleteDatabase
+        // Not implemented in the backennd yet
         return this.http
-            .get<DatabaseList>(this.serverUrl + '/api/databases/')
-            .pipe(map((databaseList) => databaseList.data))
+            .delete(this.serverUrl + '/api/databases/' + id)
             .toPromise();
-        // Todo: Implement call to backend!
     }
-    async deleteDatabaseFromList(name: string) {
+    async linkDatabaseToDevice(uuid: string, id: string) {
+        // maybe use device, database instead of id, uuid
+        // Link a database (id) to a device (uuid)
         return this.http
-            .delete(this.serverUrl + '/api/databases/' + name)
+            .put(this.serverUrl + '/api/device/' + uuid, id)
             .toPromise();
-        // Todo: Add functional implementation. Create backend counterpart!
     }
-    async addDatabaseToList(database: Database) {
-        return this.http
-            .put(this.serverUrl + '/api/databases/' + database.name, database)
-            .toPromise();
-        // Todo: Add implementation call to backend!
-    }
+    /*
     async linkDatabaseToDevice(database: Database, device: Device) {
         return this.http
             .put(this.serverUrl + '/api/device/' + device, database)
@@ -97,11 +109,24 @@ export class DatabaseService {
         // Todo: Add functional implementation. Create backend counterpart
         //  Fix url
     }
-    async deleteDatabaseLinkToDevice(device: Device) {
+    '
+     */
+    async deleteDatabaseLinkToDevice(uuid: Device) {
         return this.http
-            .delete(this.serverUrl + '/api/device/' + device)
+            .delete(this.serverUrl + '/api/device/' + uuid)
             .toPromise();
         // Todo: Add functional implementation. Create backend counterpart
         //  Fix url
     }
+    clearDatabases() {
+        this.databases = [];
+        return this.databases;
+    }
+    //
+    // Checkmarks and polling intervals
+    //
+    async setPollingInterval() {
+        //
+    }
+
 }

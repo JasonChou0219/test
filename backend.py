@@ -21,7 +21,7 @@ class Status(BaseModel):
 app = FastAPI()
 
 
-#handle uncaught exceptions
+# handle uncaught exceptions
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)

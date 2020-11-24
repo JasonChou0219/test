@@ -50,7 +50,10 @@
 }
 .polling-input {
     flex-grow: 1;
-    padding-top: 0.2em;
+    padding-top: 0.4em;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
 }
 .param-border {
     border-style: solid;
