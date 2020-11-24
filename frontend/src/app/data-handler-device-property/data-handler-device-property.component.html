@@ -41,11 +41,16 @@
                     </div>
                 </div>
                 <div class="polling-input">
-                    <mat-form-field>
+                    <mat-form-field style=" margin-left: 0">
                         <mat-label>Polling interval</mat-label>
                         <!-- Use ngIf to distinguish the default value depending on meta or not meta data selection! -->
                         <input matInput [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
                     </mat-form-field>
+                    <mat-card-actions style="margin-left: 20px">
+                        <button mat-flat-button color="primary">
+                            Set
+                        </button>
+                    </mat-card-actions>
                 </div>
             </div>
         </div>

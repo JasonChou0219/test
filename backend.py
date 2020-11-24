@@ -21,7 +21,7 @@ class Status(BaseModel):
 app = FastAPI()
 
 
-#handle uncaught exceptions
+# handle uncaught exceptions
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
@@ -178,6 +178,7 @@ def get_user(id: int, username: str = Depends(decode_token)):
     if user.is_admin(username):
         u = user.get_user(id)
         return User(id=u.id, name=u.name, fullName=u.fullName, role=u.role)
+
 
 @app.get('/api/devices')
 def get_devices(username: str = Depends(decode_token)):
