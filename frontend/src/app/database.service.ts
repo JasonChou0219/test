@@ -15,6 +15,7 @@ export const TestDatabase: Database = {name: 'schedulerDB', address: 'localhost'
 
 export interface Database {
     // device_uuid: string;
+    // uuid?: string;
     name: string;
     address: string;
     port: number;
