@@ -18,19 +18,17 @@ import {
     DeviceStatus,
 } from '../device.service';
 import {DatabaseLinkComponent} from '../database-link/database-link.component';
-import {AddDatabaseComponent} from "../add-database/add-database.component";
+import {AddDatabaseComponent} from '../add-database/add-database.component';
 
 interface RowDataDevice {
     device: Device;
     status: DeviceStatus;
-    // database: Database;
+    database?: Database;
     detailsLoaded: boolean;
 }
 interface RowDataDatabase {
     database: Database;
     detailsLoaded: boolean;
-    // status: DatabaseStatus;
-    // database: Database;
 }
 
 @Component({
@@ -76,7 +74,7 @@ export class DataHandlerComponent implements OnInit {
     @ViewChild(MatTable) tableDatabases: MatTable<any>;
 
     databases = [];
-    newDatabase: Database = {name: '', address: '', port: 8888, online: false, status: ''};
+    newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888, online: false, status: ''};
     database: Database;
     selectedDatabase: Database;
     // getDatabases() {
@@ -89,10 +87,11 @@ export class DataHandlerComponent implements OnInit {
               public dialog: MatDialog
               ) {
         this.newDatabase = {
-            name: '',
-            address: '',
+            id: 1234567890,
+            name: 'InfluxDB',
+            address: '127.0.0.1',
             port: 8888,
-            status: '',
+            status: 'disconnected',
             online: false,
       };
   }
@@ -119,9 +118,12 @@ export class DataHandlerComponent implements OnInit {
       console.log(deviceList);
       const data: RowDataDevice[] = [];
       for (const dev of deviceList) {
+          const db = this.newDatabase; // test implementation until getDatabase is implemented in the backend
+          // const db = await this.databaseService.getDatabase(dev.uuid);
           data.push({
               device: dev,
               status: {online: false, status: ''},
+              database: db ,
               detailsLoaded: false,
           });
       }
@@ -159,7 +161,7 @@ export class DataHandlerComponent implements OnInit {
             data: this.dataSource[i].device,
         });
         const result = await dialogRef.afterClosed().toPromise();
-        await this.deviceService.setDevice(result.uuid, result);
+        await this.databaseService.linkDatabaseToDevice(this.dataSource[i].device.uuid, result.databaseId);
         await this.refreshDatabases();
         await this.refreshDevices();
     }

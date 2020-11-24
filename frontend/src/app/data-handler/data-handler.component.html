@@ -117,8 +117,7 @@
                             : { background: '#white' }
                     "
                 *matCellDef="let element">
-                <!-- {{ element.database.ip }} -->
-                Database Name
+                {{ element.database.name }}
             </td>
         </ng-container>
 
@@ -130,8 +129,7 @@
                             : { background: '#white' }
                     "
                 *matCellDef="let element">
-                Database-IP
-                <!--  {{ element.database.address }} -->
+                {{ element.database.address }}
             </td>
         </ng-container>
 
@@ -143,8 +141,7 @@
                             : { background: '#white' }
                     "
                 *matCellDef="let element">
-                Database-Port
-                <!--  {{ element.database.port }} -->
+                {{ element.database.port }}
             </td>
         </ng-container>
 
@@ -159,7 +156,7 @@
                 <!-- The Online status of the database is needed here! -->
                 <span
                     [ngStyle]="
-                        element.status.online
+                        element.database.online
                             ? { color: 'green' }
                             : { color: 'red' }
                     "
@@ -168,7 +165,7 @@
                 <span
                     class="circle"
                     [ngStyle]="
-                        element.status.online
+                        element.database.online
                             ? { 'background-color': 'green' }
                             : { 'background-color': 'red' }
                     "
@@ -187,9 +184,9 @@
                 *matCellDef="let element">
                 <!-- The Status of the database is needed here! -->
                 {{
-                    element.status.length == 0
-                        ? 'Unknown'
-                        : element.status.status
+                element.status.length == 0
+                    ? 'Unknown'
+                    : element.database.status
                 }}
             </td>
         </ng-container>
