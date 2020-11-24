@@ -179,7 +179,6 @@ def get_user(id: int, username: str = Depends(decode_token)):
         u = user.get_user(id)
         return User(id=u.id, name=u.name, fullName=u.fullName, role=u.role)
 
-
 @app.get('/api/devices')
 def get_devices(username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
@@ -222,10 +221,9 @@ def device_status(uuid: str, username: str = Depends(decode_token)):
 
 
 @app.get('/api/deviceFeatures/{uuid}')
-def device_features_for_data_handler(uuid: str,
-                                     username: str = Depends(decode_token)):
+def device_features(uuid: str, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
-    return {'data': device_manager_service.get_features_for_data_handler(uuid)}
+    return {'data': device_manager_service.get_features(uuid)}
 
 
 @app.post('/api/device/{uuid}/deviceFeatures/{feature}/command/{command_id}')
