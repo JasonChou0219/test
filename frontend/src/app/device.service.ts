@@ -330,7 +330,6 @@ export class DeviceService {
             .pipe(map((logEntries) => logEntries.data))
             .toPromise();
     }
-
     async getBookingInfo(from?: Date, to?: Date): Promise<BookingInfo[]> {
         let filterString = '';
         if (from && to) {

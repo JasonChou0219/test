@@ -1,5 +1,18 @@
 <div class="page">
-    <h1>Experiments</h1>
+    <div class="mat-card-header">
+        <div class="mat-card-header-entry"><h1>Experiments</h1></div>
+        <div class="mat-card-header-entry">
+            <div class="actions">
+                <button class="header" mat-icon-button color="primary" (click)="createExperiment()">
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button class="header" mat-icon-button color="primary" (click)="refresh()">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -97,13 +110,4 @@
             </td>
         </ng-container>
     </table>
-
-    <div class="actions">
-        <button mat-icon-button color="primary" (click)="createExperiment()">
-            <mat-icon>add</mat-icon>
-        </button>
-        <button mat-icon-button color="primary" (click)="refresh()">
-            <mat-icon>refresh</mat-icon>
-        </button>
-    </div>
 </div>

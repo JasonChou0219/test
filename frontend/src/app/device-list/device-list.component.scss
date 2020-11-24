@@ -1,5 +1,5 @@
 table {
-    width: 100%;
+    width: 99%;
 }
 
 .circle {
@@ -29,4 +29,24 @@ tr.row td {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+}
+button.header {
+    margin-left: 0;
+}
+button {
+    margin-left: 8px;
+}
+div.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+div.mat-card-header-entry {
+    margin: auto;
+}
+div.mat-card-header-entry:first-child {
+    margin-left: 0;
+}
+div.mat-card-header-entry:last-child {
+    margin-right: 1%;
 }

@@ -1,5 +1,18 @@
 <div class="page">
-    <h1>My Scripts</h1>
+    <div class="mat-card-header">
+        <div class="mat-card-header-entry"><h1>My Scripts</h1></div>
+        <div class="mat-card-header-entry">
+            <div class="actions">
+                <button class="header" mat-icon-button color="primary" (click)="createScript()">
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button class="header" mat-icon-button color="primary" (click)="refresh()">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <table
         mat-table
         [dataSource]="dataSource"
@@ -84,13 +97,4 @@
             *matRowDef="let row2; columns: ['expandedColumn']"
         ></tr>
     </table>
-
-    <mat-card-actions>
-        <button mat-icon-button color="primary" (click)="createScript()">
-            <mat-icon>add</mat-icon>
-        </button>
-        <button mat-icon-button color="primary" (click)="refresh()">
-            <mat-icon>refresh</mat-icon>
-        </button>
-    </mat-card-actions>
 </div>
