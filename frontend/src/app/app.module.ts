@@ -65,6 +65,7 @@ import { DataHandlerDeviceCommandComponent } from './data-handler-device-command
 import { DataHandlerDeviceFeatureComponent } from './data-handler-device-feature/data-handler-device-feature.component';
 import { DataHandlerDevicePropertyComponent } from './data-handler-device-property/data-handler-device-property.component';
 import { DatabaseLinkComponent } from './database-link/database-link.component';
+import { AddDatabaseComponent } from './add-database/add-database.component';
 
 @NgModule({
     declarations: [
@@ -99,6 +100,7 @@ import { DatabaseLinkComponent } from './database-link/database-link.component';
         DataHandlerDeviceFeatureComponent,
         DataHandlerDevicePropertyComponent,
         DatabaseLinkComponent,
+        AddDatabaseComponent,
     ],
     imports: [
         BrowserModule,

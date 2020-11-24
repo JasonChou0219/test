@@ -39,8 +39,13 @@ export class DatabaseService {
     constructor(private http: HttpClient) {
     }
     addDatabase(database) {
-        this.databases. push(database);
+        this.databases.push(database);
         console.log(this.databases);
+    }
+    async setDatabase(uuid: string, database: Database) {
+        return this.http
+            .put(this.serverUrl + '/api/database/' + uuid, database)
+            .toPromise();
     }
     getDatabases() {
         console.log('Returning databases');
@@ -53,11 +58,17 @@ export class DatabaseService {
         return this.databases;
     }
     deleteDatabase(database) {
-        // database = this.databases.find(element => element.name === database.name);
+
+        // delete this.databases[database];
+        database = this.databases.find(element => element.name === database.name);
         for ( var i = 0; i < this.databases.length; i++) { if (this.databases[i] === database) {
             this.databases.splice(i, 1 ); i--; } }
+        console.log('Deleting database');
         console.log(database);
         // delete this.databases[database];
+        // return this.http
+        //    .delete(this.serverUrl + '/api/databases/' + name)
+        //    .toPromise();
     }
 
     async getDatabaseList(): Promise<Database[]> {

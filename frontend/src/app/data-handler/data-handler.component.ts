@@ -18,12 +18,19 @@ import {
     DeviceStatus,
 } from '../device.service';
 import {DatabaseLinkComponent} from '../database-link/database-link.component';
+import {AddDatabaseComponent} from "../add-database/add-database.component";
 
-interface RowData {
+interface RowDataDevice {
     device: Device;
     status: DeviceStatus;
     // database: Database;
     detailsLoaded: boolean;
+}
+interface RowDataDatabase {
+    database: Database;
+    detailsLoaded: boolean;
+    // status: DatabaseStatus;
+    // database: Database;
 }
 
 @Component({
@@ -42,10 +49,9 @@ interface RowData {
     ],
 })
 export class DataHandlerComponent implements OnInit {
-    dataSource: RowData[] = [];
-    dataSourceActive: RowData[] = [];
-    dataSourceInactive: RowData[] = [];
-    tableColumns = [
+    dataSource: RowDataDevice[] = [];
+    databasesSource: RowDataDatabase[] = [];
+    tableDeviceColumns = [
         'name',
         'database',
         'address',
@@ -55,38 +61,28 @@ export class DataHandlerComponent implements OnInit {
         'edit',
         'data_transfer',
     ];
+    tableDatabaseColumns = [
+        'name',
+        'address',
+        'port',
+        'online',
+        'status',
+        'edit',
+    ];
     dataTransferCheckbox = false;
     metaDataCheckbox = false;
     selected: number | null = null;
-    active: boolean | null = null;
-    @ViewChild(MatTable) tableActive: MatTable<any>;
-    @ViewChild(MatTable) tableInactive: MatTable<any>;
+    @ViewChild(MatTable) tableDevices: MatTable<any>;
+    @ViewChild(MatTable) tableDatabases: MatTable<any>;
 
     databases = [];
     newDatabase: Database = {name: '', address: '', port: 8888, online: false, status: ''};
     database: Database;
     selectedDatabase: Database;
-    addDatabase() {
-        // console.log(this.databases);
-        // this.database.name = this.newDatabase.name;
-        // this.database.ip = this.newDatabase.ip;
-        // this.database.port = this.newDatabase.port;
-        const addedDatabase = this.newDatabase;
-        this.databaseService.addDatabase(addedDatabase);
-        window.alert(`Database ${addedDatabase.name} added`);
-    }
-    getDatabases() {
-       this.databases = this.databaseService.getDatabases();
-    }
-    deleteDatabase(database) {
-        // var _database: Database;
-        this.selectedDatabase = this.databases.find(element => element.name === database);
-        console.log(this.selectedDatabase);
-        // selectedDatbase.port = ;
-        // selectedDatabase.status = ;
-        // selectedDatabaseonline = ;
-        this.databaseService.deleteDatabase(this.selectedDatabase);
-    }
+    // getDatabases() {
+    //   this.databases = this.databaseService.getDatabases();
+    // }
+
   constructor(private route: ActivatedRoute,
               private databaseService: DatabaseService,
               public deviceService: DeviceService,
@@ -100,127 +96,91 @@ export class DataHandlerComponent implements OnInit {
             online: false,
       };
   }
+  async addDatabase() {
+        const dialogRef = this.dialog.open(AddDatabaseComponent
+        );
+        const result = await dialogRef.afterClosed().toPromise();
+        console.log(result);
+        // await this.databaseService.setDatabase('123456789', result); // This is the real implementation
+        this.databaseService.addDatabase(result);  // This is a mockup implementation
+        window.alert(`Database ${result.name} added`);
+        await this.refreshDatabases();
+  }
+  async deleteDatabase(database) {
+        // var _database: Database;
+        // this.selectedDatabase = this.databases.find(element => element.name === database.name);
+        // console.log(this.selectedDatabase);
+        this.databaseService.deleteDatabase(database);
+        await this.refreshDatabases();
+  }
   async getDevices() {
       const deviceList = await this.deviceService.getDeviceList();
-      const dataActive: RowData[] = [];
-      const dataInactive: RowData[] = [];
+      console.log('Returning devices');
+      console.log(deviceList);
+      const data: RowDataDevice[] = [];
       for (const dev of deviceList) {
-          const deviceStatus = await this.deviceService.getDeviceStatus(dev.uuid);
-          // if (dev.available)
-          if (deviceStatus.online) {
-              dataActive.push({
-                  device: dev,
-                  // database: this.selectedDatabase, // get the right database here!!!
-                  status: {online: false, status: ''},
-                  detailsLoaded: false,
-              });
-          }
-          else {
-              dataInactive.push({
-                  device: dev,
-                  // database: this.selectedDatabase, // get the right database here!!!
-                  status: {online: false, status: ''},
-                  detailsLoaded: false,
-              });
-          }
-      }
-      this.dataSourceActive = dataActive;
-      this.dataSourceInactive = dataInactive;
-      this.tableActive.renderRows();
-      for (let i = 0; i < this.dataSourceActive.length; i++) {
-          const promise = this.deviceService.getDeviceStatus(
-              this.dataSourceActive[i].device.uuid
-          );
-          await promise.then((status) => {
-              this.dataSourceActive[i].status = status;
-              this.tableActive.renderRows();
+          data.push({
+              device: dev,
+              status: {online: false, status: ''},
+              detailsLoaded: false,
           });
       }
-      this.tableInactive.renderRows();
-      for (let i = 0; i < this.dataSourceInactive.length; i++) {
+      this.dataSource = data;
+      this.tableDevices.renderRows();
+      for (let i = 0; i < this.dataSource.length; i++) {
           const promise = this.deviceService.getDeviceStatus(
-              this.dataSourceInactive[i].device.uuid
+              this.dataSource[i].device.uuid
           );
           await promise.then((status) => {
-              this.dataSourceInactive[i].status = status;
-              this.tableInactive.renderRows();
+              this.dataSource[i].status = status;
+              this.tableDevices.renderRows();
           });
       }
   }
-  /*
-  async getDevices() {
-        const deviceList = await this.deviceService.getDeviceList();
-        const data: RowData[] = [];
-        for (const dev of deviceList) {
-            data.push({
-                device: dev,
-                // database: this.selectedDatabase, // get the right database here!!!
-                status: { online: false, status: '' },
+
+  async getDatabases() {
+        const databaseList = await this.databaseService.getDatabases();
+        const databaseData: RowDataDatabase[] = [];
+        for (const db of databaseList) {
+            databaseData.push({
+                database: db,
                 detailsLoaded: false,
             });
         }
-        this.dataSource = data;
-        this.table.renderRows();
-        for (let i = 0; i < this.dataSource.length; i++) {
-            const promise = this.deviceService.getDeviceStatus(
-                this.dataSource[i].device.uuid
-            );
-            promise.then((status) => {
-                this.dataSource[i].status = status;
-                this.table.renderRows();
-            });
+        this.databasesSource = databaseData;
+        this.tableDatabases.renderRows();
+        for (let i = 0; i < this.databasesSource.length; i++) {
+            this.tableDatabases.renderRows();
         }
+  }
+
+  async link(i: number) {
+        const dialogRef = this.dialog.open(DatabaseLinkComponent, {
+            data: this.dataSource[i].device,
+        });
+        const result = await dialogRef.afterClosed().toPromise();
+        await this.deviceService.setDevice(result.uuid, result);
+        await this.refreshDatabases();
+        await this.refreshDevices();
     }
-    */
-    async link(i: number, active: boolean) {
-        if (active){
-            const dialogRef = this.dialog.open(DatabaseLinkComponent, {
-                data: this.dataSourceActive[i].device,
-            });
-            const result = await dialogRef.afterClosed().toPromise();
-            await this.deviceService.setDevice(result.uuid, result);
-        }
-        else {
-            const dialogRef = this.dialog.open(DatabaseLinkComponent, {
-                data: this.dataSourceInactive[i].device,
-            });
-            const result = await dialogRef.afterClosed().toPromise();
-            await this.deviceService.setDevice(result.uuid, result);
-        }
-        await this.refresh();
-    }
-    async refresh() {
+    async refreshDevices() {
         await this.getDevices();
     }
-    showDetails(i: number, active: boolean) {
-        /*const dialogRef = this.dialog.open(DeviceDetailComponent, {
-            data: this.dataSource[i].device,
-            width: '80%',
-        });
-
-
-        dialogRef.afterClosed().subscribe((result) => {});
-        */
-        if (active){
-            this.selected = this.selected === i ? null : i;
-            this.active = this.active === active ? null : active;
-            this.dataSourceActive[i].detailsLoaded = true;
-        }
-        else {
-            this.selected = this.selected === i ? null : i;
-            this.active = this.active === active ? null : active;
-            this.dataSourceInactive[i].detailsLoaded = true;
-        }
-        window.alert(`This.selected: ${this.selected}; i: ${i}; active: ${active}`);
+    async refreshDatabases() {
+        await this.getDatabases();
+    }
+    showDetails(i: number) {
+        this.selected = this.selected === i ? null : i;
+        this.dataSource[i].detailsLoaded = true;
 
     }
   ngOnInit(): void {
-        this.databases = this.databaseService.getDatabases();
-        console.log(this.databases);
+        // this.databases = this.databaseService.getDatabases();
         this.route.paramMap.subscribe(params => {
         // this.databases = [this.testDatabase];
         // this.selectedDatabase = this.databases.pop();
         this.getDevices();
+        this.getDatabases();
       });
   }
 

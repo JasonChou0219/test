@@ -11,6 +11,12 @@ h6 { font-size: 16px; font-weight: normal; line-height: 1.2em; color: #737373; f
 a { padding-bottom: 1px; border-bottom: 1px solid gray; -webkit-transition: all 100ms linear; color: #333; text-decoration: none; transition: all 100ms linear; }
 a:hover{ border-bottom-width: 3px; border-bottom-color: #3c88d9; color: #3070b3; }
 
+button.header {
+    margin-left: 0;
+}
+button {
+    margin-left: 8px;
+}
 div.features {
     //background: #3c88d9;
     display: flex;
@@ -19,8 +25,8 @@ div.features {
 div.feature-elements {
     //background: bisque;
     margin: auto;
-    margin-left: 0px;
-    margin-top: 0px;
+    margin-left: 0;
+    margin-top: 0;
     padding-right: 20px;
 }
 div.feature-elements:first-child {
