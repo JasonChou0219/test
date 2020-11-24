@@ -5,9 +5,9 @@ import {Device, SERVER_URL} from './device.service';
 import {map} from 'rxjs/operators';
 
 const TestDatabaseList: DatabaseList = {data: [
-        {name: 'deviceManagerDB', address: '127.0.0.1', port: 8888, online: true, status: 'connected'},
-        {name: 'TestDB', address: '10.152.248.1', port: 8888, online: true, status: 'connected'},
-        {name: 'schedulerDB', address: 'localhost', port: 8060, online: false, status: 'disconnected'}]
+        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888, online: true, status: 'connected'},
+        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888, online: true, status: 'connected'},
+        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060, online: false, status: 'disconnected'}]
 };
 
 // For test purposes:
@@ -15,17 +15,21 @@ export const TestDatabase: Database = {name: 'schedulerDB', address: 'localhost'
 
 export interface Database {
     // device_uuid: string;
-    // uuid?: string;
+    id?: number;
     name: string;
     address: string;
     port: number;
     online: boolean;
     status: string;
 }
-
+export interface DatabaseDeviceLink {
+    deviceId: string;
+    databaseId: number;
+}
 interface DatabaseList {
     data: Database[];
 }
+
 
 
 @Injectable({
@@ -90,16 +94,18 @@ export class DatabaseService {
     }
     async newDeleteDatabase(id: string) {
         // Will replace deleteDatabase
-        // Not implemented in the backennd yet
+        // Not implemented in the backend yet
         return this.http
             .delete(this.serverUrl + '/api/databases/' + id)
             .toPromise();
     }
-    async linkDatabaseToDevice(uuid: string, id: string) {
+    async linkDatabaseToDevice(uuid: string, id: number) {
         // maybe use device, database instead of id, uuid
         // Link a database (id) to a device (uuid)
+        console.log('Link data');
+        console.log(uuid, id);
         return this.http
-            .put(this.serverUrl + '/api/device/' + uuid, id)
+            .post(this.serverUrl + '/api/devices/' + uuid, id)
             .toPromise();
     }
     /*

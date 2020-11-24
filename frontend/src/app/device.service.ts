@@ -28,7 +28,6 @@ interface DiscoveredSilaDeviceList {
 export interface Device {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
-    // id: number
     uuid?: string;
     name: string;
     type: DeviceType;
@@ -36,8 +35,7 @@ export interface Device {
     port: number;
     available?: boolean;
     user?: number;
-    database?: Database;
-    // databaseUuid?: string
+    databaseId?: number;
 }
 
 export interface DeviceStatus {
@@ -79,7 +77,7 @@ export interface DeviceProperty {
     response: DeviceParameter;
     defined_execution_errors: string[];
     polling_interval_non_meta: number;  // May not be
-    // Todo: Implement with backend in the correct order yet
+    // Todo: Implement with backendin the correct order yet
     polling_interval_meta: number;  // May not be in the correct order yet
     active: boolean;  // May not be in the correct order yet
     meta: boolean;  // May not be in the correct order yet
