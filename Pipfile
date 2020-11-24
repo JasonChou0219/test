@@ -32,5 +32,6 @@ redis = "*"
 aioredis = "*"
 hiredis = "*"
 docker = "*"
+typing-extensions = "*"
 
 [requires]
