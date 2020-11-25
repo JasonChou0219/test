@@ -3,6 +3,12 @@ import { AddExperimentComponent } from '../add-experiment/add-experiment.compone
 import { MatDialog } from '@angular/material/dialog';
 import { Experiment, DeviceService } from '../device.service';
 import { format, parse, isValid } from 'date-fns';
+import {
+    ExperimentService,
+    ExperimentStatus,
+    ExperimentStatusMessage,
+} from '../experiment.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-jobs',
@@ -23,8 +29,10 @@ export class ExperimentsComponent implements OnInit {
     ];
     @ViewChild('table')
     table;
+    experimentStatus$: Observable<ExperimentStatusMessage>;
     constructor(
         private deviceService: DeviceService,
+        private experimentService: ExperimentService,
         public dialog: MatDialog
     ) {}
     parseFrom(date: string): Date {
@@ -103,6 +111,8 @@ export class ExperimentsComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        //this.experimentStatus$ = this.experimentService.getExperimentStatusStream();
+        this.experimentService.connect();
         this.getExperiments();
     }
 }

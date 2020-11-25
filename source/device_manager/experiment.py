@@ -1,12 +1,21 @@
 from dataclasses import dataclass
 from typing import List
 from datetime import datetime
+from enum import IntEnum
 from uuid import UUID
 import msgpack
-import redis
+import aioredis
 from source.device_manager.database import get_database_connection, get_redis_pool
 from source.device_manager.scheduler import BookingInfo, BookingInfoWithNames, get_device_bookings_for_experiment_inside_transaction, book_inside_transaction
 
+class ExperimentStatus(IntEnum):
+    WAITING_FOR_EXECUTION = 0
+    SUBMITED_FOR_EXECUTION = 1
+    RUNNING = 2
+    FINISHED_SUCCESSFUL = 3
+    FINISHED_ERROR = 4
+    FINISHED_MANUALLY = 5
+    UNKNOWN = 6
 
 @dataclass
 class SchedulingInfo:
@@ -99,10 +108,11 @@ def get_scheduling_info() -> List[SchedulingInfo]:
     now = int(datetime.timestamp(datetime.now()))
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute('select id, name, startTime, endTime, script '
-                           'from experiments '
-                           'where experiments.startTime>=%s '
-                           'order by experiments.startTime', [now])
+            cursor.execute(
+                'select id, name, startTime, endTime, script '
+                'from experiments '
+                'where experiments.startTime>=%s '
+                'order by experiments.startTime', [now])
             return [
                 SchedulingInfo(row[0], row[1], row[2], row[3], row[4])
                 for row in cursor
@@ -144,6 +154,10 @@ async def _publish_command(command: str, params: list):
                 'command': command,
                 'params': params
             }))
+
+async def receive_experiment_status(channel):
+    #while await channel.wait_message():
+    return msgpack.unpackb(await channel.get(), raw=False)
 
 
 async def start_experiment(experimentID: int):

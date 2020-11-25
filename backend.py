@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Depends, HTTPException, Request, Response
+from fastapi import FastAPI, Body, Depends, HTTPException, Request, Response, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
@@ -8,10 +8,13 @@ from typing import Optional, List
 from logging import error
 import traceback
 import sys
+import aioredis
+import msgpack
+from source.device_manager.database import get_redis_pool
 
 from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters
 import source.device_manager.user as user
-from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment
+from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
 
 
 class Status(BaseModel):
@@ -448,7 +451,7 @@ def set_user_script(scriptID: int,
 
 
 @app.put('/api/experiments/{experimentID}/status')
-async def run_experiment(status: Status,
+async def control_experiment(status: Status,
                          experimentID: int,
                          username: str = Depends(decode_token)):
     if status.running:
@@ -456,3 +459,14 @@ async def run_experiment(status: Status,
     else:
         await stop_experiment(experimentID)
     return
+
+@app.websocket("/ws/experiments")
+async def websocket_endpoint(websocket: WebSocket):#, username:str = Depends(decode_token)):
+    await websocket.accept()
+    pool = await get_redis_pool()
+    channel = await pool.subscribe('experiment_status')
+    while await channel.wait_message():
+        #message = await receive_experiment_status(channel)
+        message = msgpack.unpackb(await channel.get(), raw=False)
+        print(message)
+        await websocket.send_text(f'{message}')

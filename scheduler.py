@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 import data_handler
 import source.device_manager.experiment as experiment
+from source.device_manager.experiment import ExperimentStatus
 from source.device_manager.device_manager import DeviceManager
 from source.device_manager.script import Script, get_user_script
 import redis
@@ -17,16 +18,6 @@ from typing import Optional
 import docker
 import docker_helper
 from threading import Thread
-
-
-class ExperimentStatus(IntEnum):
-    WAITING_FOR_EXECUTION = 0
-    SUBMITED_FOR_EXECUTION = 1
-    RUNNING = 2
-    FINISHED_SUCCESSFUL = 3
-    FINISHED_ERROR = 4
-    FINISHED_MANUALLY = 5
-    UNKNOWN = 6
 
 
 @dataclass
@@ -63,6 +54,16 @@ job_to_experiment = {}
 scheduler = BackgroundScheduler()
 redis_connection = redis.Redis(host='localhost')
 pubsub = redis_connection.pubsub()
+
+
+def change_experiment_status(experiment_id: int, status: ExperimentStatus):
+    experiments[experiment_id].status = status
+    redis_connection.publish(
+        'experiment_status',
+        msgpack.packb({
+            'experimentId': experiment_id,
+            'status': status
+        }))
 
 
 def start_data_handling_for_experiment(exp: experiment.Experiment):
@@ -159,15 +160,15 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
 def handle_process_status_events(event: ProcessStatusEvent):
     if event.event_type == ProcessStatusEventType.STARTED:
         experiments[event.experiment_id].container_id = event.message
-        experiments[event.experiment_id].status = ExperimentStatus.RUNNING
+        change_experiment_status(event.experiment_id, ExperimentStatus.RUNNING)
         print(f'{experiments[event.experiment_id].name} started')
     elif event.event_type == ProcessStatusEventType.FINISHED_SUCCESSFUL:
-        experiments[
-            event.experiment_id].status = ExperimentStatus.FINISHED_SUCCESSFUL
+        change_experiment_status(event.experiment_id,
+                                 ExperimentStatus.FINISHED_SUCCESSFUL)
         print(f'{experiments[event.experiment_id].name} finished successfull')
     elif event.event_type == ProcessStatusEventType.ERROR:
-        experiments[
-            event.experiment_id].status = ExperimentStatus.FINISHED_ERROR
+        change_experiment_status(event.experiment_id,
+                                 ExperimentStatus.FINISHED_ERROR)
         print(f'{experiments[event.experiment_id].name} Error')
 
 
@@ -178,8 +179,9 @@ def event_listener(event):
 def handle_scheduling_events(event):
     if event.code == events.EVENT_JOB_SUBMITTED:
         if event.job_id in job_to_experiment:
-            experiment_entry = experiments[job_to_experiment[event.job_id]]
-            experiment_entry.status = ExperimentStatus.SUBMITED_FOR_EXECUTION
+            experiment_id = job_to_experiment[event.job_id]
+            experiment_entry = experiments[experiment_id]
+            change_experiment_status(experiment_id,ExperimentStatus.SUBMITED_FOR_EXECUTION)
             print(f'{experiment_entry.name} submitted')
     elif event.code == events.EVENT_JOB_REMOVED:
         if event.job_id in job_to_experiment:
@@ -187,13 +189,17 @@ def handle_scheduling_events(event):
             print(f'{experiment_entry.name} removed')
     elif event.code == events.EVENT_JOB_ERROR:
         if event.job_id in job_to_experiment:
-            experiment_entry = experiments[job_to_experiment[event.job_id]]
-            experiment_entry.status = ExperimentStatus.FINISHED_ERROR
+            experiment_id = job_to_experiment[event.job_id]
+            experiment_entry = experiments[experiment_id]
+            change_experiment_status(experiment_id,
+                                     ExperimentStatus.FINISHED_ERROR)
             print('scheduling error')
     elif event.code == events.EVENT_JOB_MISSED:
         if event.job_id in job_to_experiment:
-            experiment_entry = experiments[job_to_experiment[event.job_id]]
-            experiment_entry.status = ExperimentStatus.FINISHED_ERROR
+            experiment_id = job_to_experiment[event.job_id]
+            experiment_entry = experiments[experiment_id]
+            change_experiment_status(experiment_id,
+                                     ExperimentStatus.FINISHED_ERROR)
             print('experiment missed')
 
 
@@ -217,6 +223,8 @@ def schedule_experiment(exp: experiment.SchedulingInfo):
             exp.id, exp.name, job.id, '0', exp.start, exp.end,
             ExperimentStatus.WAITING_FOR_EXECUTION)
         job_to_experiment[job.id] = exp.id
+        change_experiment_status(exp.id,
+                                 ExperimentStatus.WAITING_FOR_EXECUTION)
 
 
 def schedule_experiment_now(exp: experiment.SchedulingInfo):
@@ -234,6 +242,7 @@ def schedule_experiment_now(exp: experiment.SchedulingInfo):
         exp.id, exp.name, job.id, '0', exp.start, exp.end,
         ExperimentStatus.WAITING_FOR_EXECUTION)
     job_to_experiment[job.id] = exp.id
+    change_experiment_status(exp.id, ExperimentStatus.WAITING_FOR_EXECUTION)
 
 
 def stop_experiment(experiment_id):
@@ -241,7 +250,9 @@ def stop_experiment(experiment_id):
         experiment_entry = experiments[experiment_id]
         if experiment_entry.status == ExperimentStatus.WAITING_FOR_EXECUTION:
             scheduler.remove_job(experiment_entry.job_id)
-            experiment_entry.status = ExperimentStatus.FINISHED_MANUALLY
+            change_experiment_status(experiment_id,
+                                      ExperimentStatus.FINISHED_MANUALLY)
+
         elif (experiment_entry.status ==
               ExperimentStatus.SUBMITED_FOR_EXECUTION) or (
                   experiment_entry.status == ExperimentStatus.RUNNING):
@@ -251,7 +262,8 @@ def stop_experiment(experiment_id):
                 container = client.containers.get(
                     experiment_entry.container_id)
                 container.stop(timeout=1)
-                experiment_entry.status = ExperimentStatus.FINISHED_MANUALLY
+                change_experiment_status(experiment_id,
+                                         ExperimentStatus.FINISHED_MANUALLY)
             except Exception:
                 print("could not stop container")
 

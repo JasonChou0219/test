@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-    DatabaseService,
-    Database,
-} from './database.service';
+import { DatabaseService, Database } from './database.service';
 
 export enum DeviceType {
     SILA = 0,
@@ -57,7 +54,7 @@ interface DeviceFeatureList {
 export interface DeviceParameter {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
-    id ?: number; // May not be in the correct order yet
+    id?: number; // May not be in the correct order yet
     type: string;
     identifier: string;
     name: string;
@@ -69,24 +66,24 @@ export interface DeviceParameter {
 export interface DeviceProperty {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
-    id ?: number;  // May not be in the correct order yet
+    id?: number; // May not be in the correct order yet
     identifier: string;
     name: string;
     description: string;
     observable: boolean;
     response: DeviceParameter;
     defined_execution_errors: string[];
-    polling_interval_non_meta: number;  // May not be
+    polling_interval_non_meta: number; // May not be
     // Todo: Implement with backendin the correct order yet
-    polling_interval_meta: number;  // May not be in the correct order yet
-    active: boolean;  // May not be in the correct order yet
-    meta: boolean;  // May not be in the correct order yet
+    polling_interval_meta: number; // May not be in the correct order yet
+    active: boolean; // May not be in the correct order yet
+    meta: boolean; // May not be in the correct order yet
 }
 
 export interface DeviceCommand {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
-    id ?: number;  // May not be in the correct order yet
+    id?: number; // May not be in the correct order yet
     identifier: string;
     name: string;
     description: string;
@@ -94,18 +91,18 @@ export interface DeviceCommand {
     parameters: DeviceParameter[];
     responses: DeviceParameter[];
     intermediates: DeviceParameter[];
-    defined_execution_errors ?: string[];
+    defined_execution_errors?: string[];
     // Todo: Implement with backend
-    polling_interval_non_meta: number;  // May not be in the correct order yet
-    polling_interval_meta: number;  // May not be in the correct order yet
-    active: boolean;  // May not be in the correct order yet
-    meta: boolean;  // May not be in the correct order yet
+    polling_interval_non_meta: number; // May not be in the correct order yet
+    polling_interval_meta: number; // May not be in the correct order yet
+    active: boolean; // May not be in the correct order yet
+    meta: boolean; // May not be in the correct order yet
 }
 
 export interface DeviceFeature {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
-    id ?: number;  // May not be in the correct order yet
+    id?: number; // May not be in the correct order yet
     identifier: string;
     name: string;
     description: string;
@@ -201,8 +198,10 @@ export interface ScriptInfoList {
     data: ScriptInfo[];
 }
 
-export const SERVER_URL = 'http://localhost:5000';
-// export const SERVER_URL = 'http://10.152.248.14:5000';
+export const SERVER_ADDRESS = 'localhost';
+//export const SERVER_ADDRESS = '10.152.248.14';
+export const SERVER_PORT = '5000';
+export const SERVER_URL = `http://${SERVER_ADDRESS}:${SERVER_PORT}`;
 
 @Injectable({
     providedIn: 'root',

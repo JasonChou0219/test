@@ -33,5 +33,6 @@ aioredis = "*"
 hiredis = "*"
 docker = "*"
 typing-extensions = "*"
+websockets = "*"
 
 [requires]
