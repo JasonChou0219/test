@@ -23,7 +23,7 @@ export class AddDeviceComponent implements OnInit {
         },
     ];
     dataSource = [];
-    tableColumns = ['uuid', 'name', 'address', 'port', 'hostname', 'select'];
+    tableColumns = ['name', 'uuid', 'address', 'port', 'hostname', 'select'];
 
     discoveryStarted = false;
     device: Device;
