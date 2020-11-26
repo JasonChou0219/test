@@ -77,6 +77,10 @@ export class ScriptsComponent implements OnInit {
         }
         this.selected = this.selected === i ? null : i;
     }
+    async cancel(i) {
+        await this.expand(i);
+        await this.getScript();
+            }
     refresh() {}
     async edit(i: number) {
         const info = this.dataSource[i].info;
