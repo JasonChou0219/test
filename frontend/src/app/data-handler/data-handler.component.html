@@ -104,7 +104,7 @@
                             ? { background: '#F5F5F5' }
                             : { background: '#white' }
                     "
-                *matCellDef="let element">
+                *matCellDef="let element; let i = dataIndex" (click)="showDetails(i)">
                 {{ element.device.name }}
             </td>
         </ng-container>
