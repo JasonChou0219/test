@@ -111,12 +111,14 @@ class DynamicSiLA2Client(SiLA2Client):
                 for feature_id_response in response.ImplementedFeatures:
                     feature_id = feature_id_response.value
                     # if we find a feature for which is already implemented ignore it
-                    if feature_id in ['SiLAService', 'SimulationController']:
-                        logging.debug(
-                            'Implemented standard feature {feature} found, '
-                            'skipping dynamic handling for this feature'.
-                            format(feature=feature_id))
-                        continue
+                    # in the case of the device manager, we actually want the standard features to be displayed as well,
+                    # so we deactivate this if-clause!
+                    # if feature_id in ['SiLAService', 'SimulationController']:
+                    #     logging.debug(
+                    #         'Implemented standard feature {feature} found, '
+                    #         'skipping dynamic handling for this feature'.
+                    #         format(feature=feature_id))
+                    #     continue
 
                     # read the feature definition
                     logging.info('Found implemented feature {feature}'.format(
