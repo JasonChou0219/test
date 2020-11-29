@@ -1,4 +1,5 @@
 #!/bin/env python3
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.job import Job
 from apscheduler import events
@@ -71,8 +72,8 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
     commands_to_call = {}
     properties_to_call = {}
     for device_booking in exp.deviceBookings:
-        device = device_manager.get_device_info(device_booking.device)
-        features = device_manager.get_features_for_data_handler(device.uuid)
+        device_uuid = device_booking.device
+        features = device_manager.get_features_for_data_handler(device_uuid)
         for feature in features:
             for command in feature.commands:
                 if command.activated:
@@ -80,34 +81,42 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                         interval_to_use = command.meta_interval
                     else:
                         interval_to_use = command.interval
-                    if (interval_to_use, device_booking.start,
-                            device_booking.end) in commands_to_call.keys():
-                        commands_to_call[(interval_to_use, device_booking.start,
-                                          device_booking.end)].append(
-                                              (command, feature, device))
+                    if (interval_to_use, device_booking.start, device_booking.end) in commands_to_call.keys():
+                        if device_uuid in commands_to_call[(interval_to_use,
+                                                       device_booking.start,
+                                                       device_booking.end)].keys():
+                            commands_to_call[(interval_to_use,
+                                              device_booking.start,
+                                              device_booking.end)][device_uuid].append((command, feature))
+                        else:
+                            commands_to_call[(interval_to_use,
+                                              device_booking.start,
+                                              device_booking.end)][device_uuid] = [(command, feature)]
                     else:
-                        commands_to_call[(interval_to_use, device_booking.start,
-                                          device_booking.end)] = [
-                                              (command, feature, device)
-                                          ]
+                        commands_to_call[(interval_to_use,
+                                          device_booking.start,
+                                          device_booking.end)] = {device_uuid: [(command, feature)]}
             for property in feature.properties:
                 if property.activated:
                     if property.meta:
                         interval_to_use = property.meta_interval
                     else:
                         interval_to_use = property.interval
-                    if (interval_to_use, device_booking.start,
-                            device_booking.end) in properties_to_call.keys():
-                        properties_to_call[(interval_to_use,
-                                            device_booking.start,
-                                            device_booking.end)].append(
-                                                (property, feature, device))
+                    if (interval_to_use, device_booking.start, device_booking.end) in properties_to_call.keys():
+                        if device_uuid in properties_to_call[(interval_to_use,
+                                                         device_booking.start,
+                                                         device_booking.end)].keys():
+                            properties_to_call[(interval_to_use,
+                                                device_booking.start,
+                                                device_booking.end)][device_uuid].append((property, feature))
+                        else:
+                            properties_to_call[(interval_to_use,
+                                                device_booking.start,
+                                                device_booking.end)][device_uuid] = [(property, feature)]
                     else:
                         properties_to_call[(interval_to_use,
                                             device_booking.start,
-                                            device_booking.end)] = [
-                                                (property, feature, device)
-                                            ]
+                                            device_booking.end)] = {device_uuid: [(property, feature)]}
     data_handler.create_jobs(commands_to_call, properties_to_call)
 
 

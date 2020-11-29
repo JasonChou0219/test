@@ -58,19 +58,18 @@ def _get_feature_property_from_subprocess(info: DeviceInfo, feature: str,
         connection.close()
 
 
-def _create_device_instance(ip: str, port: int, uuid: UUID, name: str,
-                            type: DeviceType):
+def _create_device_instance(ip: str, port: int, uuid: UUID, name: str, type: DeviceType):
     if type == DeviceType.SILA:
         return SilaDevice(ip, port, uuid, name)
     else:
         return DummyDevice(ip, port, uuid, name, type)
 
 
-def _get_device_instance_from_subprocess(ip: str, port: int, uuid: UUID, name: str, type: DeviceType, connection):
+def _get_device_instance_from_subprocess(info: DeviceInfo, connection):
     """Get a device instance for the device specified by the provided details
     """
     try:
-        device = _create_device_instance(ip, port, uuid, name, type)
+        device = _create_device_instance(info.address, info.port, info.uuid, info.name, info.type)
         connection.send(device)
     finally:
         connection.close()
@@ -205,6 +204,23 @@ class DeviceManager:
             print('get_status process finished')
         return device_status
 
+    def get_device_instance(self, uuid: UUID):
+        """Get a device instance for the specified device
+        Args:
+        uuid (uuid.UUID): The unique id of the device
+        """
+        device_info = self.get_device_info(uuid)
+        parent_conn, child_conn = Pipe()
+        process = Process(target=_get_device_instance_from_subprocess,
+                          args=(device_info, child_conn))
+        try:
+            process.start()
+            sila_device = parent_conn.recv()
+            process.join()
+        finally:
+            process.close()
+        return sila_device
+
     def get_features(self, uuid: UUID) -> List[DeviceFeature]:
         """Get the description of supported features of the specified device
         Args:
@@ -261,21 +277,7 @@ class DeviceManager:
         Args:
             uuid: The uuid of the device for which to add the features to the database
         """
-        device_info = self.get_device_info(uuid)
-        parent_conn, child_conn = Pipe()
-        process = Process(target=_get_device_instance_from_subprocess,
-                          args=(device_info.address,
-                                device_info.port,
-                                device_info.uuid,
-                                device_info.name,
-                                device_info.type,
-                                child_conn))
-        try:
-            process.start()
-            sila_device = parent_conn.recv()
-            process.join()
-        finally:
-            process.close()
+        sila_device = self.get_device_instance(uuid)
 
         sila_device.connect()
         features = self.get_features(uuid)
