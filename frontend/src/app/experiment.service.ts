@@ -17,6 +17,7 @@ export interface ExperimentStatusMessage {
     experimentId: number;
     status: ExperimentStatus;
 }
+
 const WEBSOCKET_URL = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments`;
 
 @Injectable({

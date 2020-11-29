@@ -467,9 +467,9 @@ async def control_experiment(status: Status,
 async def websocket_endpoint(websocket: WebSocket):#, username:str = Depends(decode_token)):
     await websocket.accept()
     pool = await get_redis_pool()
-    channel = await pool.subscribe('experiment_status')
-    while await channel.wait_message():
+    channels = await pool.subscribe('experiment_status')
+    while await channels[0].wait_message():
         #message = await receive_experiment_status(channel)
-        message = msgpack.unpackb(await channel.get(), raw=False)
-        print(message)
-        await websocket.send_text(f'{message}')
+        message = msgpack.unpackb(await channels[0].get(), raw=False)
+        print(f"{message}")
+        await websocket.send_text("{message}")
