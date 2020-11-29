@@ -48,7 +48,12 @@
                 </code>
             </div>
             <div>
-                <button mat-flat-button color="primary" aria-label="Run">
+                <button
+                    mat-flat-button
+                    color="primary"
+                    aria-label="Run"
+                    (click)="getProperty(property.identifier)"
+                >
                     Run
                 </button>
             </div>

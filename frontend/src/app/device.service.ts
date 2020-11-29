@@ -258,6 +258,32 @@ export class DeviceService {
             .pipe(map((featureList) => featureList.data))
             .toPromise();
     }
+    async callFeatureCommand(
+        device: string,
+        feature: string,
+        command: string,
+        params: Map<string, any>
+    ) {
+        return this.http
+            .post(
+                this.serverUrl +
+                    `/api/device/${device}/feature/${feature}/command/${command}`,
+                { params }
+            )
+            .toPromise();
+    }
+    async getFeatureProperty(
+        device: string,
+        feature: string,
+        property: string
+    ) {
+        return this.http
+            .get<any>(
+                this.serverUrl +
+                    `/api/device/${device}/feature/${feature}/property/${property}`
+            )
+            .toPromise();
+    }
     async discoverSilaDevices(): Promise<SilaServerInfo[]> {
         return this.http
             .get<DiscoveredSilaDeviceList>(

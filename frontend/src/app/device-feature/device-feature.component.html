@@ -20,6 +20,7 @@
             <div class="section-content">
                 <div *ngFor="let command of feature.commands">
                     <app-device-command
+                        [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
                         [command]="command"
                     ></app-device-command>
@@ -29,6 +30,7 @@
             <div class="section-content">
                 <div *ngFor="let property of feature.properties">
                     <app-device-property
+                        [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
                         [property]="property"
                     ></app-device-property>

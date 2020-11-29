@@ -230,23 +230,26 @@ def device_features(uuid: str, username: str = Depends(decode_token)):
     return {'data': device_manager_service.get_features(uuid)}
 
 
-@app.post('/api/device/{uuid}/deviceFeatures/{feature}/command/{command_id}')
+@app.post('/api/device/{uuid}/feature/{feature}/command/{command_id}')
 def call_feature_command(uuid: str,
                          feature: str,
                          command_id: str,
                          parameterList: DeviceCommandParameters,
                          username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
-    return {'data': None}
+    return device_manager_service.call_feature_command(uuid, feature,
+                                                       command_id,
+                                                       parameterList.params)
 
 
-@app.get('/api/device/{uuid}/deviceFeatures/{feature}/property/{property_id}')
+@app.get('/api/device/{uuid}/feature/{feature}/property/{property_id}')
 def get_feature_property(uuid: str,
                          feature: str,
                          property_id: str,
                          username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
-    return {'data': None}
+    return device_manager_service.get_feature_property(uuid, feature,
+                                                       property_id)
 
 
 @app.get('/api/silaDiscovery/')

@@ -17,6 +17,8 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     command: DeviceCommand;
     @Input()
     featureIdentifier: string;
+    @Input()
+    deviceUUID: string;
     paramValues: string[] = [];
     expand = false;
 

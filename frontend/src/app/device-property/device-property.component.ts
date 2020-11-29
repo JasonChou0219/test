@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DeviceProperty } from '../device.service';
+import { DeviceProperty, DeviceService } from '../device.service';
 
 @Component({
     selector: 'app-device-property',
@@ -11,10 +11,22 @@ export class DevicePropertyComponent implements OnInit {
     property: DeviceProperty;
     @Input()
     featureIdentifier: string;
+    @Input()
+    deviceUUID: string;
     execute = '';
     expand = false;
 
-    constructor() {}
+    constructor(private deviceService: DeviceService) {}
 
     ngOnInit(): void {}
+
+    getProperty(name: string) {
+        console.log(
+            this.deviceService.getFeatureProperty(
+                this.deviceUUID,
+                this.featureIdentifier,
+                name
+            )
+        );
+    }
 }

@@ -103,6 +103,16 @@ class DeviceManagerService:
             self.device_manager.get_features_for_data_handler(uuid)
         ]
 
+    def call_feature_command(self, device: UUID, feature: str, command_id: str,
+                             params: Dict[str, any]):
+        return self.device_manager.call_feature_command(
+            device, feature, command_id, params)
+
+    def get_feature_property(self, device: UUID, feature: str,
+                             property_id: str):
+        return self.device_manager.call_feature_command(
+            device, feature, property_id)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()
