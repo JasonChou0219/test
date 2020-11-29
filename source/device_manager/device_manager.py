@@ -244,7 +244,7 @@ class DeviceManager:
                              params: Dict[str, any]):
         device_info = self.get_device_info(device)
         parent_conn, child_conn = Pipe()
-        process = Process(target=_get_feature_property_from_subprocess,
+        process = Process(target=_call_feature_command_from_subprocess,
                           args=(device_info, feature, command, params,
                                 child_conn))
         result = None
