@@ -110,7 +110,7 @@ class DeviceManagerService:
 
     def get_feature_property(self, device: UUID, feature: str,
                              property_id: str):
-        return self.device_manager.call_feature_command(
+        return self.device_manager.get_feature_property(
             device, feature, property_id)
 
     def discover_sila_devices(self):
