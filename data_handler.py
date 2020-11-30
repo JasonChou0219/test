@@ -1,6 +1,9 @@
 import sys
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
+
+from influxdb import InfluxDBClient
+
 from source.device_manager import device_manager
 
 scheduler = BackgroundScheduler()
@@ -26,6 +29,25 @@ def save_commands(commands_to_call):
             try:
                 responses = sila_device.call_command(feature_id=feature.identifier+'\n', command_id=command.identifier,
                                                      parameters=parameters)
+                # TODO experiment
+                # TODO for a device write all points at the end
+                # TODO store to database specified in device
+                # TODO timeout call
+                # TODO meta / non-meta indicator
+                # TODO decide if we need to do something if responses == {}
+                # TODO report on different possible exceptions
+                if responses != {}:
+                    client = InfluxDBClient('localhost', 8086, 'root', 'root', 'device_manager')
+                    client.create_database('device_manager')
+                    point = {}
+                    tags = {'device': device_uuid, 'feature': feature.identifier, 'command': command.identifier}
+                    point['measurement'] = 'device_manager'
+                    point['tags'] = tags
+                    point['time'] = datetime.now()
+                    point['fields'] = responses
+                    points = [point]
+
+                    client.write_points(points)
                 print(responses)
             except:
                 print(sys.exc_info())
@@ -46,6 +68,25 @@ def save_properties(properties_to_call):
             try:
                 responses = sila_device.call_property(feature_id=feature.identifier+'\n',
                                                       property_id=property.identifier)
+                # TODO experiment
+                # TODO for a device write all points at the end
+                # TODO store to database specified in device
+                # TODO timeout call
+                # TODO meta / non-meta indicator
+                # TODO decide if we need to do something if responses == {}
+                # TODO report on different possible exceptions
+                if responses != {}:
+                    client = InfluxDBClient('localhost', 8086, 'root', 'root', 'device_manager')
+                    client.create_database('device_manager')
+                    point = {}
+                    tags = {'device': device_uuid, 'feature': feature.identifier, 'property': property.identifier}
+                    point['measurement'] = 'device_manager'
+                    point['tags'] = tags
+                    point['time'] = datetime.now()
+                    point['fields'] = responses
+                    points = [point]
+
+                    client.write_points(points)
                 print(responses)
             except:
                 print(sys.exc_info())

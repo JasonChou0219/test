@@ -145,7 +145,7 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
     exp = experiment.get_experiment(experiment_id)
     script = get_user_script(exp.scriptID)
 
-    #start_data_handling_for_experiment(exp)
+    start_data_handling_for_experiment(exp)
 
     client = docker.from_env()
     container = docker_helper.create_script_container(client, exp.name,
