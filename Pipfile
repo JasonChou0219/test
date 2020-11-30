@@ -34,5 +34,6 @@ hiredis = "*"
 docker = "*"
 typing-extensions = "*"
 websockets = "*"
+protobuf = "*"
 
 [requires]
