@@ -36,6 +36,7 @@ def save_commands(commands_to_call):
                 # TODO meta / non-meta indicator
                 # TODO decide if we need to do something if responses == {}
                 # TODO report on different possible exceptions
+                # TODO check if possible to make these 2 functions into a single one
                 if responses != {}:
                     client = InfluxDBClient('localhost', 8086, 'root', 'root', 'device_manager')
                     client.create_database('device_manager')
@@ -75,6 +76,7 @@ def save_properties(properties_to_call):
                 # TODO meta / non-meta indicator
                 # TODO decide if we need to do something if responses == {}
                 # TODO report on different possible exceptions
+                # TODO check if possible to make these 2 functions into a single one
                 if responses != {}:
                     client = InfluxDBClient('localhost', 8086, 'root', 'root', 'device_manager')
                     client.create_database('device_manager')
