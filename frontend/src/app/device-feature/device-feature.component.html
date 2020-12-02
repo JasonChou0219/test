@@ -18,7 +18,10 @@
             <p>Version {{ feature.feature_version }}</p>
             <div class="section-title">Commands</div>
             <div class="section-content">
-                <div *ngFor="let command of feature.commands">
+                <div
+                    class="list-entry"
+                    *ngFor="let command of feature.commands"
+                >
                     <app-device-command
                         [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
@@ -28,7 +31,10 @@
             </div>
             <div class="section-title">Properties</div>
             <div class="section-content">
-                <div *ngFor="let property of feature.properties">
+                <div
+                    class="list-entry"
+                    *ngFor="let property of feature.properties"
+                >
                     <app-device-property
                         [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
