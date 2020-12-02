@@ -20,15 +20,29 @@
                 <div class="param-border">
                     <div class="params">
                         <div>
-                            <span class="param-name">{{
-                                property.response.identifier
-                            }}</span>
-                            <span class="param-type">{{
-                                property.response.type
-                            }}</span>
+                            <div>
+                                <span class="param-name">{{
+                                    property.response.identifier
+                                }}</span>
+                                <span class="param-type">{{
+                                    property.response.type
+                                }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ property.response.description }}
+                            </div>
                         </div>
-                        <div class="param-desc">
-                            {{ property.response.description }}
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Return value</mat-label>
+                                <input
+                                    matInput
+                                    type="text"
+                                    placeholder="Return value"
+                                    value="{{this.returnValues[property.response.identifier]}}"
+                                    [disabled]=""
+                                />
+                            </mat-form-field>
                         </div>
                     </div>
                 </div>

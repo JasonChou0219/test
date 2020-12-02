@@ -20,6 +20,7 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     @Input()
     deviceUUID: string;
     paramValues: string[] = [];
+    returnValues: string[] = [];
     expand = false;
 
     constructor(private deviceService: DeviceService) {}
