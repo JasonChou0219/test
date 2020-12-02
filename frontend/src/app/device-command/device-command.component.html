@@ -40,7 +40,7 @@
                                 <input
                                     matInput
                                     type="text"
-                                    [(ngModel)]="paramValues[i]"
+                                    [(ngModel)]="paramValues[i].value"
                                 />
                             </mat-form-field>
                         </div>
@@ -96,11 +96,11 @@
                             *ngIf="param.type === 'String'; else noString"
                         >
                             <span class="python-string">
-                                "{{ paramValues[i] }}"
+                                "{{ paramValues[i].value }}"
                             </span>
                         </ng-container>
                         <ng-template #noString>
-                            {{ paramValues[i] }}
+                            {{ paramValues[i].value }}
                         </ng-template>
                         <ng-container *ngIf="!last">, </ng-container>
                     </ng-container>
@@ -108,7 +108,12 @@
                 </code>
             </div>
             <div>
-                <button mat-flat-button color="primary" aria-label="Run">
+                <button
+                    mat-flat-button
+                    color="primary"
+                    aria-label="Run"
+                    (click)="callCommand(command.identifier)"
+                >
                     Run
                 </button>
             </div>

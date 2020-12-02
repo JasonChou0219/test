@@ -20,9 +20,9 @@ export class DevicePropertyComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    getProperty(name: string) {
+    async getProperty(name: string) {
         console.log(
-            this.deviceService.getFeatureProperty(
+            await this.deviceService.getFeatureProperty(
                 this.deviceUUID,
                 this.featureIdentifier,
                 name
