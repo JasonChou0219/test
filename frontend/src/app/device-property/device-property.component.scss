@@ -36,6 +36,8 @@
 }
 .params {
     padding-left: 4px;
+    display: flex;
+    flex-direction: horizontal;
 }
 .param-name {
 }
@@ -61,4 +63,7 @@
 }
 .example-code {
     width: 120em;
+}
+.value-field {
+    padding-left: 1em;
 }

@@ -198,6 +198,19 @@ export interface ScriptInfoList {
     data: ScriptInfo[];
 }
 
+export interface FeaturePropertyResult {
+    name: string;
+    value: any;
+}
+export interface FeatureCommandParam {
+    name: string;
+    value: any;
+}
+export interface FeatureCommandResult {
+    name: string;
+    value: any;
+}
+
 export const SERVER_ADDRESS = 'localhost';
 //export const SERVER_ADDRESS = '10.152.248.14';
 export const SERVER_PORT = '5000';
@@ -262,10 +275,10 @@ export class DeviceService {
         device: string,
         feature: string,
         command: string,
-        params: Map<string, any>
-    ) {
+        params: FeatureCommandParam[]
+    ): Promise<FeatureCommandResult[]> {
         return this.http
-            .post(
+            .post<FeatureCommandResult[]>(
                 this.serverUrl +
                     `/api/device/${device}/feature/${feature}/command/${command}`,
                 { params }
@@ -276,9 +289,9 @@ export class DeviceService {
         device: string,
         feature: string,
         property: string
-    ) {
+    ): Promise<FeaturePropertyResult[]> {
         return this.http
-            .get<any>(
+            .get<FeaturePropertyResult[]>(
                 this.serverUrl +
                     `/api/device/${device}/feature/${feature}/property/${property}`
             )

@@ -66,8 +66,17 @@ class ScriptInfoModel(BaseModel):
     fileName: str
 
 
+class DeviceCommandParameter(BaseModel):
+    name: str
+    value: Any
+
+
+#class DeviceCommandParameters(BaseModel):
+#    params: Dict[str, Any]
+
+
 class DeviceCommandParameters(BaseModel):
-    params: Dict[str, Any]
+    params: List[DeviceCommandParameter]
 
 
 class DeviceManagerService:
@@ -111,14 +120,24 @@ class DeviceManagerService:
         ]
 
     def call_feature_command(self, device: UUID, feature: str, command_id: str,
-                             params: Dict[str, any]):
-        return self.device_manager.call_feature_command(
-            device, feature, command_id, params)
+                             params: List[DeviceCommandParameter]):
+        param_dict = {}
+        for param in params:
+            param_dict[param.name] = param.value
+
+        return [{
+            'name': name.split('/')[0],
+            'value': value
+        } for name, value in self.device_manager.call_feature_command(
+            device, feature, command_id, param_dict).items()]
 
     def get_feature_property(self, device: UUID, feature: str,
                              property_id: str):
-        return self.device_manager.get_feature_property(
-            device, feature, property_id)
+        return [{
+            'name': name.split('/')[0],
+            'value': value
+        } for name, value in self.device_manager.get_feature_property(
+            device, feature, property_id).items()]
 
     def add_database(self, database: NewDatabaseModel):
         self.device_manager.add_database(database.name, database.address, database.port)

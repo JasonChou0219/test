@@ -5,7 +5,11 @@ import {
     OnChanges,
     SimpleChanges,
 } from '@angular/core';
-import { DeviceCommand } from '../device.service';
+import {
+    DeviceCommand,
+    DeviceService,
+    FeatureCommandParam,
+} from '../device.service';
 
 @Component({
     selector: 'app-device-command',
@@ -19,16 +23,33 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     featureIdentifier: string;
     @Input()
     deviceUUID: string;
-    paramValues: string[] = [];
+    paramValues: FeatureCommandParam[] = [];
+    returnValues: string[] = [];
     expand = false;
 
-    constructor() {}
+    constructor(private deviceService: DeviceService) {}
 
-    ngOnChanges(changes: SimpleChanges) {
-        for (const param of this.command.parameters) {
+    ngOnChanges(hanges: SimpleChanges) {
+        /*for (const param of this.command.parameters) {
             this.paramValues.push('');
         }
+        */
+        this.paramValues = this.command.parameters.map((param) => {
+            return { name: param.identifier, value: '' };
+        });
+        console.log(this.paramValues);
     }
 
     ngOnInit(): void {}
+
+    async callCommand(name: string) {
+        console.log(
+            await this.deviceService.callFeatureCommand(
+                this.deviceUUID,
+                this.featureIdentifier,
+                name,
+                this.paramValues
+            )
+        );
+    }
 }
