@@ -41,7 +41,7 @@ def _call_feature_command_from_subprocess(info: DeviceInfo, feature: str,
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
         device.connect()
-        result = device.call_command(feature, command, parameters)
+        result = device.call_command(feature+'\n', command, parameters)
         connection.send(result)
     finally:
         connection.close()
@@ -53,7 +53,7 @@ def _get_feature_property_from_subprocess(info: DeviceInfo, feature: str,
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
         device.connect()
-        result = device.call_property(feature, prop)
+        result = device.call_property(feature+'\n', prop)
         connection.send(result)
     finally:
         connection.close()
