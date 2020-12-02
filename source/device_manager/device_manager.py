@@ -312,27 +312,24 @@ class DeviceManager:
                                 parameter_index = list(
                                     data_parameters.fields.keys()).index(
                                         parameter.identifier)
-                                parameter.type = list(
-                                    data_parameters.paths.keys(
-                                    ))[parameter_index].split('/', 1)[1]
-                                cursor.execute(
-                                    'insert into parameters_for_data_handler values' \
-                                    '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
-                                    [parameter.identifier, parameter.name, parameter.description, parameter.type, None,
-                                     "parameter", "command", command_id])
+                                parameter.type = list(data_parameters.paths.keys())[parameter_index].split('/', 1)[1]
+                            cursor.execute(
+                                'insert into parameters_for_data_handler values' \
+                                '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
+                                [parameter.identifier, parameter.name, parameter.description, parameter.type, None,
+                                 "parameter", "command", command_id])
                         for response in command.responses:
                             if response.type != 'Void':
                                 data_responses = dynamic_command.responses
                                 response_index = list(
                                     data_responses.fields.keys()).index(
                                         response.identifier)
-                                response.type = list(data_responses.paths.keys(
-                                ))[response_index].split('/', 1)[1]
-                                cursor.execute(
-                                    'insert into parameters_for_data_handler values' \
-                                    '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
-                                    [response.identifier, response.name, response.description, response.type, None,
-                                     "response", "command", command_id])
+                                response.type = list(data_responses.paths.keys())[response_index].split('/', 1)[1]
+                            cursor.execute(
+                                'insert into parameters_for_data_handler values' \
+                                '(default,%s,%s,%s,%s,%s,%s,%s,%s)',
+                                [response.identifier, response.name, response.description, response.type, None,
+                                 "response", "command", command_id])
                         for intermediate in command.intermediates:
                             data_intermediates = dynamic_command.intermediate_responses
                             intermediate_index = list(
