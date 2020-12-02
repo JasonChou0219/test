@@ -13,6 +13,7 @@ export class DevicePropertyComponent implements OnInit {
     featureIdentifier: string;
     @Input()
     deviceUUID: string;
+    returnValues: string[] = [];
     execute = '';
     expand = false;
 

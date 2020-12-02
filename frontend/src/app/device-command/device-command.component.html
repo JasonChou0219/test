@@ -67,6 +67,18 @@
                                 {{ response.description }}
                             </div>
                         </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Return value</mat-label>
+                                <input
+                                    matInput
+                                    type="text"
+                                    placeholder="Return value"
+                                    value="{{this.returnValues[response.identifier]}}"
+                                    [disabled]=""
+                                />
+                            </mat-form-field>
+                        </div>
                     </div>
                 </div>
             </div>
