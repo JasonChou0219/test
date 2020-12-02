@@ -1,6 +1,7 @@
 from typing import List, Dict
 from uuid import UUID, uuid4
 from datetime import datetime
+
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
 from source.device_manager.device_layer.device_info import DeviceInfo, DeviceStatus
 from source.device_manager.device_layer.device_interface import DeviceInterface, DeviceType, DeviceError
@@ -168,8 +169,8 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s)',
-                    [str(uuid), name, type, address, port, True, None])
+                    'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s)',
+                    [str(uuid), name, type, address, port, True, None, None])
         self.add_features_for_data_handler(uuid)
 
     def delete_device(self, uuid: UUID):
@@ -605,6 +606,19 @@ class DeviceManager:
                 result = cursor.fetchall()
                 defined_execution_errors = [row[0] for row in result]
                 return defined_execution_errors
+
+    def add_database(self, name: str, address: str, port: int):
+        """Add a new database to the database
+        Args:
+            name: The name of the new database that should be added to the database
+            address: The IP address of the new database that should be added to the database
+            port: The port of the new database that should be added to the database
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'insert into databases values (default,%s,%s,%s)',
+                    [name, address, port])
 
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery

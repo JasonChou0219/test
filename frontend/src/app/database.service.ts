@@ -70,14 +70,14 @@ export class DatabaseService {
             .put(this.serverUrl + '/api/database/' + uuid, database)
             .toPromise();
     }
-    async newAddDatabase(database: Database) {
+    async addDatabase(database: Database) {
         // Not implemented in backend yet
         // Will replace addDatabase
         return this.http
             .post(this.serverUrl + '/api/databases', database)
             .toPromise();
     }
-    async addDatabase(database: Database) {
+    async oldAddDatabase(database: Database) {
         this.databases.push(database);
         console.log(this.databases);
     }

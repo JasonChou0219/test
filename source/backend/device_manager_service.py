@@ -9,6 +9,12 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
 
+class NewDatabaseModel(BaseModel):
+    name: str
+    address: str
+    port: int
+
+
 class DeviceStatusModel(BaseModel):
     online: bool
     status: str
@@ -29,6 +35,7 @@ class DeviceInfoModel(BaseModel):
     port: int
     available: bool = True
     user: Optional[int] = None
+    database_id: Optional[int] = None
 
 
 class BookingModel(BaseModel):
@@ -112,6 +119,9 @@ class DeviceManagerService:
                              property_id: str):
         return self.device_manager.get_feature_property(
             device, feature, property_id)
+
+    def add_database(self, database: NewDatabaseModel):
+        self.device_manager.add_database(database.name, database.address, database.port)
 
     def discover_sila_devices(self):
         return [

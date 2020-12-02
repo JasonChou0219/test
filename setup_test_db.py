@@ -456,7 +456,8 @@ def add_devices(c):
             'address varchar(256), '\
             'port integer,' \
             'available boolean, ' \
-            'userID integer)')
+            'userID integer, ' \
+            'databaseID integer)')
     for device in devices:
         c.execute('insert into devices values (default,%s,%s,%s,%s,%s,%s,%s)',
                   [
@@ -538,6 +539,15 @@ def add_defined_execution_errors(c):
               'parent integer)')
 
 
+def add_databases(c):
+    c.execute('drop table if exists databases')
+    c.execute('create table databases ' \
+              '(id serial primary key, ' \
+              'name varchar(256), ' \
+              'address varchar(256), ' \
+              'port integer)')
+
+
 def add_logs(c):
     c.execute('drop table if exists log')
     c.execute('create table log'\
@@ -616,6 +626,7 @@ def main():
     add_properties_for_data_handler(c)
     add_parameters_for_data_handler(c)
     add_defined_execution_errors(c)
+    add_databases(c)
     add_logs(c)
     add_booking_info(c)
     add_experiments(c)

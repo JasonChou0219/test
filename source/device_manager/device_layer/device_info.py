@@ -18,3 +18,4 @@ class DeviceInfo:
     port: int
     available: bool = True
     user: Optional[int] = None
+    database_id: Optional[int] = None

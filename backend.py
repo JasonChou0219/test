@@ -12,7 +12,8 @@ import aioredis
 import msgpack
 from source.device_manager.database import get_redis_pool
 
-from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters
+from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, \
+    ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, NewDatabaseModel
 import source.device_manager.user as user
 from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
 
@@ -250,6 +251,13 @@ def get_feature_property(uuid: str,
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_feature_property(uuid, feature,
                                                        property_id)
+
+
+@app.post('/api/databases')
+def add_database(database: NewDatabaseModel, username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.add_database(database)
+    return
 
 
 @app.get('/api/silaDiscovery/')
