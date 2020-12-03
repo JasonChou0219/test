@@ -24,20 +24,12 @@ const WEBSOCKET_URL = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments`;
     providedIn: 'root',
 })
 export class ExperimentService {
-    socket$; //: WebSocketSubject<ExperimentStatusMessage>;
+    socket$: WebSocketSubject<ExperimentStatusMessage>;
     constructor() {
         this.socket$ = webSocket(WEBSOCKET_URL);
     }
 
     getExperimentStatusStream(): Observable<ExperimentStatusMessage> {
         return this.socket$.asObservable();
-    }
-    connect() {
-        this.socket$.subscribe(
-            (msg) => {
-                console.log(msg);
-            },
-            (error) => console.log(error)
-        );
     }
 }

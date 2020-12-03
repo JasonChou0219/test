@@ -3,6 +3,8 @@ import { AddExperimentComponent } from '../add-experiment/add-experiment.compone
 import { MatDialog } from '@angular/material/dialog';
 import { Experiment, DeviceService } from '../device.service';
 import { format, parse, isValid } from 'date-fns';
+import { tap } from 'rxjs/operators';
+
 import {
     ExperimentService,
     ExperimentStatus,
@@ -30,6 +32,16 @@ export class ExperimentsComponent implements OnInit {
     @ViewChild('table')
     table;
     experimentStatus$: Observable<ExperimentStatusMessage>;
+
+    statusMap = [
+        'waiting for execution',
+        'submited for execution',
+        'running',
+        'successfull',
+        'error',
+        'stoped manually',
+        'unkown',
+    ];
     constructor(
         private deviceService: DeviceService,
         private experimentService: ExperimentService,
@@ -111,8 +123,9 @@ export class ExperimentsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        //this.experimentStatus$ = this.experimentService.getExperimentStatusStream();
-        this.experimentService.connect();
+        this.experimentStatus$ = this.experimentService
+            .getExperimentStatusStream()
+            .pipe(tap((msg) => console.log(msg)));
         this.getExperiments();
     }
 }

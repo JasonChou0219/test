@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Depends, HTTPException, Request, Response, WebSocket
+from fastapi import FastAPI, Body, Depends, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
@@ -9,6 +9,7 @@ from logging import error
 import traceback
 import sys
 import aioredis
+import json
 import msgpack
 from source.device_manager.database import get_redis_pool
 
@@ -471,13 +472,19 @@ async def control_experiment(status: Status,
         await stop_experiment(experimentID)
     return
 
+
+#Todo allow authentification !
 @app.websocket("/ws/experiments")
-async def websocket_endpoint(websocket: WebSocket):#, username:str = Depends(decode_token)):
-    await websocket.accept()
+async def experiment_status_websocket(
+        websocket: WebSocket):  #, username:str = Depends(decode_token)):
     pool = await get_redis_pool()
     channels = await pool.subscribe('experiment_status')
-    while await channels[0].wait_message():
-        #message = await receive_experiment_status(channel)
-        message = msgpack.unpackb(await channels[0].get(), raw=False)
-        print(f"{message}")
-        await websocket.send_text("{message}")
+    await websocket.accept()
+    print("Websocket connect")
+    try:
+        while await channels[0].wait_message():
+            message = msgpack.unpackb(await channels[0].get(), raw=False)
+            await websocket.send_json(data=message)
+        await websocket.close(code=1000)
+    except WebSocketDisconnect:
+        print("Websocket disconnect")
