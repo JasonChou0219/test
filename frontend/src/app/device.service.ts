@@ -71,10 +71,10 @@ export interface DeviceProperty {
     name: string;
     description: string;
     observable: boolean;
-    response: DeviceParameter;
+    responses: DeviceParameter[];
     defined_execution_errors: string[];
     polling_interval_non_meta: number; // May not be
-    // Todo: Implement with backendin the correct order yet
+    // Todo: Implement with backend in the correct order yet
     polling_interval_meta: number; // May not be in the correct order yet
     active: boolean; // May not be in the correct order yet
     meta: boolean; // May not be in the correct order yet
@@ -212,7 +212,7 @@ export interface FeatureCommandResult {
 }
 
 export const SERVER_ADDRESS = 'localhost';
-//export const SERVER_ADDRESS = '10.152.248.14';
+// export const SERVER_ADDRESS = '10.152.248.14';
 export const SERVER_PORT = '5000';
 export const SERVER_URL = `http://${SERVER_ADDRESS}:${SERVER_PORT}`;
 

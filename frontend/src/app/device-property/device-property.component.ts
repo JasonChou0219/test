@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DeviceProperty, DeviceService } from '../device.service';
+import {DeviceProperty, DeviceService, FeaturePropertyResult} from '../device.service';
 
 @Component({
     selector: 'app-device-property',
@@ -13,7 +13,7 @@ export class DevicePropertyComponent implements OnInit {
     featureIdentifier: string;
     @Input()
     deviceUUID: string;
-    returnValues: string[] = [];
+    returnValues: FeaturePropertyResult[] = [];
     execute = '';
     expand = false;
 
@@ -23,11 +23,12 @@ export class DevicePropertyComponent implements OnInit {
 
     async getProperty(name: string) {
         console.log(
-            await this.deviceService.getFeatureProperty(
+            this.returnValues = await this.deviceService.getFeatureProperty(
                 this.deviceUUID,
                 this.featureIdentifier,
                 name
             )
         );
+        console.log(this.returnValues.find(item => item.name === name.toLowerCase()).value);
     }
 }

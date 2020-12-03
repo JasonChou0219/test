@@ -24,19 +24,20 @@
         </div>
         <div class="border" *ngIf="expand">
             <div class="section-title">Response</div>
+            <div>Test responses content: {{property.responses}}</div>
             <div class="section-content">
-                <div class="param-border">
+                <div class="param-border" *ngFor="let response of property.responses; index as j">
                     <div class="params">
                         <div>
                             <span class="param-name">{{
-                                property.response.identifier
+                                response.identifier
                                 }}</span>
                             <span class="param-type">{{
-                                property.response.type
+                                response.type
                                 }}</span>
                         </div>
                         <div class="param-desc">
-                            {{ property.response.description }}
+                            {{ response.description }}
                         </div>
                     </div>
                 </div>

@@ -27,12 +27,17 @@ function buildPropertyTree(property: DeviceProperty): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: property.identifier });
     nodes.push({ name: 'Description', value: property.description });
-    nodes.push({
-        name: 'Response',
-        children: buildParameterTree(property.response),
-    });
+    const responseChilds: TreeNode[] = [];
+    for (const response of property.responses) {
+        responseChilds.push({
+            name: response.name,
+            children: buildParameterTree(response),
+        });
+    }
+    nodes.push({ name: 'Responses', children: responseChilds });
     return nodes;
 }
+
 function buildCommandTree(command: DeviceCommand): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: command.identifier });
@@ -116,7 +121,7 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
         this.features = await this.deviceService.getDeviceFeatures(
             this.device.uuid
         );
-        //this.dataSource.data = buildFeaturesTree(this.features);
+        // this.dataSource.data = buildFeaturesTree(this.features);
     }
     hasChild = (_: number, node: TreeNode) =>
         !!node.children && node.children.length > 0;
