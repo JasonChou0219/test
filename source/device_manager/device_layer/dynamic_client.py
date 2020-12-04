@@ -239,6 +239,10 @@ class DynamicSiLA2Client(SiLA2Client):
 
         # set the parameters
         for parameter_path in parameters:
+            # Ensure to except parameters that are implemented in the xml, but not the actual server implementation
+            # if 'emptyparameter' in parameter_path:  # Intercept by parameter name
+            if parameters[parameter_path] == '':  # Intercept by empty value
+                break
             command_object.parameters.set_value(
                 path=parameter_path, value=parameters[parameter_path])
 
