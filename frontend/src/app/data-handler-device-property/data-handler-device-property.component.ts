@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import { DeviceProperty } from '../device.service';
+import {CheckboxParam, DatabaseService} from "../database.service";
 // import {CustomPollingInterval} from '../data-handler-device-feature/data-handler-device-feature.component';
 
 export interface CustomPollingInterval {
@@ -16,15 +17,24 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
     property: DeviceProperty;
     @Input()
     featureIdentifier: string;
+    @Input()
+    uuid: string;
     execute = '';
     expand = false;
-    dataTransferCheckbox = false;
-    metaDataCheckbox = false;
+    checkboxes: CheckboxParam[] = [];
+    dataTransferCheckbox = false;  // Delete once properly implemented
+    metaDataCheckbox = false;  // Delete once properly implemented
     defaultPollingInterval = 60;
     customPollingInterval: CustomPollingInterval;
-  constructor() { }
 
-  ngOnInit(): void {
-  }
+    constructor(private databaseService: DatabaseService) {}
+    // ngOnChanges(changes: SimpleChanges) {
+        // Update and send changes of checkboxes to backend
+    //    }
+
+    ngOnInit(): void {
+        // Get all checkbox vakues for all commands on init
+        // this.checkboxes = this.databaseService.getCheckboxInfoProperty(this.uuid, this.featureIdentifier, this.property);
+    }
 
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {element} from 'protractor';
-import {Device, SERVER_URL} from './device.service';
+import {Device, DeviceCommand, DeviceProperty, SERVER_URL} from './device.service';
 import {map} from 'rxjs/operators';
 
 const TestDatabaseList: DatabaseList = {data: [
@@ -30,6 +30,11 @@ interface DatabaseList {
     data: Database[];
 }
 
+export interface CheckboxParam {
+    name: string;
+    value_active: boolean;
+    value_meta: boolean;
+}
 
 
 @Injectable({
@@ -134,6 +139,18 @@ export class DatabaseService {
     //
     async setPollingInterval() {
         //
+    }
+    async getCheckboxInfoDevice(uuid: string) {
+        // return checkboxInfo
+    }
+    async getCheckboxInfoFeature(uuid: string, featureIdentifier: string) {
+        // return checkboxInfo
+    }
+    async getCheckboxInfoCommand(uuid: string, featureIdentifier: string, command: DeviceCommand) {
+        // return checkboxInfo
+    }
+    async getCheckboxInfoProperty(uuid: string, featureIdentifier: string, property: DeviceProperty) {
+        // return checkboxInfo
     }
 
 }

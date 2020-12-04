@@ -12,7 +12,10 @@
     <div class="content">
         <div class="header">
             <div class="checkbox-alignment">
-                <div class="property-name">{{ property.identifier }}</div>
+                <div class="property-name" *ngIf="property.observable === false, else observable">{{ property.identifier }}</div>
+                <ng-template #observable>
+                    <div class="property-name">[observable] {{ property.identifier }}</div>
+                </ng-template>
                 <div class="checkbox-one">
                     <mat-checkbox [(ngModel)]="metaDataCheckbox"></mat-checkbox>
                 </div>

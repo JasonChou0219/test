@@ -9,6 +9,8 @@ import { DeviceFeature } from '../device.service';
 export class DataHandlerDeviceFeatureComponent implements OnInit {
     @Input()
     feature: DeviceFeature;
+    @Input()
+    uuid: string;
     expand = false;
   constructor() { }
 
