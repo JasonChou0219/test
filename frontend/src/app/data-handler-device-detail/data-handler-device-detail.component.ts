@@ -28,12 +28,10 @@ function buildPropertyTree(property: DeviceProperty): TreeNode[] {
     nodes.push({ name: 'Identifier', value: property.identifier });
     nodes.push({ name: 'Description', value: property.description });
     const responseChilds: TreeNode[] = [];
-    for (const response of property.responses) {
-        responseChilds.push({
-            name: response.name,
-            children: buildParameterTree(response),
+    responseChilds.push({
+            name: property.response.name,
+            children: buildParameterTree(property.response),
         });
-    }
     nodes.push({ name: 'Responses', children: responseChilds });
     return nodes;
 }

@@ -71,7 +71,7 @@ export interface DeviceProperty {
     name: string;
     description: string;
     observable: boolean;
-    responses: DeviceParameter[];
+    response: DeviceParameter;
     defined_execution_errors: string[];
     polling_interval_non_meta: number; // May not be
     // Todo: Implement with backend in the correct order yet
@@ -411,13 +411,11 @@ export class DeviceService {
             .delete(this.serverUrl + '/api/bookings/' + id)
             .toPromise();
     }
-
     async createExperiment(experiment: ExperimentBookingInfo) {
         return this.http
             .post(this.serverUrl + '/api/experiments', experiment)
             .toPromise();
     }
-
     async getExperiments(): Promise<Experiment[]> {
         return this.http
             .get<ExperimentList>(this.serverUrl + '/api/experiments')

@@ -8,7 +8,7 @@ import {
 import {
     DeviceCommand,
     DeviceService,
-    FeatureCommandParam,
+    FeatureCommandParam, FeatureCommandResult,
 } from '../device.service';
 
 @Component({
@@ -24,7 +24,7 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     @Input()
     deviceUUID: string;
     paramValues: FeatureCommandParam[] = [];
-    returnValues: string[] = [];
+    returnValues: FeatureCommandResult[] = [];
     expand = false;
 
     constructor(private deviceService: DeviceService) {}
@@ -35,21 +35,28 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
         }
         */
         this.paramValues = this.command.parameters.map((param) => {
-            return { name: param.identifier, value: '' };
+            return { name: param.identifier.toLowerCase() + '/' + param.type.toLowerCase(), value: '' };
         });
         console.log(this.paramValues);
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.returnValues = [{
+            name: 'test_name',
+            value: '[None] press run!',
+        }];
+    }
 
     async callCommand(name: string) {
         console.log(
-            await this.deviceService.callFeatureCommand(
+            this.returnValues = await this.deviceService.callFeatureCommand(
                 this.deviceUUID,
                 this.featureIdentifier,
                 name,
                 this.paramValues
             )
         );
+        console.log(this.returnValues);
+        // console.log(this.returnValues.find(item => item.name === name.toLowerCase()).value);
     }
 }

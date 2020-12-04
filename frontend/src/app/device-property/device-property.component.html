@@ -16,21 +16,20 @@
         </div>
         <div class="border" *ngIf="expand">
             <div class="section-title">Response</div>
-            <div>Test responses content: {{property.responses}}</div>
             <div class="section-content">
-                <div class="param-border" *ngFor="let response of property.responses; index as j">
+                <div class="param-border">
                     <div class="params">
                         <div>
                             <div>
                                 <span class="param-name">{{
-                                    response.identifier
+                                    property.response.identifier
                                 }}</span>
                                 <span class="param-type">{{
-                                    response.type
+                                    property.response.type
                                 }}</span>
                             </div>
                             <div class="param-desc">
-                                {{ response.description }}
+                                {{ property.response.description }}
                             </div>
                         </div>
                         <div>
@@ -38,11 +37,12 @@
                                 <mat-label>Return value</mat-label>
                                 <input
                                     matInput
+                                    disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value=" {{this.returnValues[j].value}}/ {{response.identifier.toLowerCase()}}"
-                                    [disabled]=""
-                                />
+                                    value=" {{this.returnValues[0].value}}"
+                                    />
+                                <!--/ {{property.response.identifier.toLowerCase()}}"-->
                             </mat-form-field>
                         </div>
                     </div>

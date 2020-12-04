@@ -51,7 +51,7 @@
             <div class="section-content">
                 <div
                     class="param-border"
-                    *ngFor="let response of command.responses"
+                    *ngFor="let response of command.responses index as j"
                 >
                     <div class="params">
                         <div>
@@ -72,10 +72,10 @@
                                 <mat-label>Return value</mat-label>
                                 <input
                                     matInput
+                                    disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value="{{this.returnValues[response.identifier]}}"
-                                    [disabled]=""
+                                    value="{{this.returnValues[j].value}}"
                                 />
                             </mat-form-field>
                         </div>

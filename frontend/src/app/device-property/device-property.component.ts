@@ -19,16 +19,22 @@ export class DevicePropertyComponent implements OnInit {
 
     constructor(private deviceService: DeviceService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.returnValues = [{
+            name: 'test_name',
+            value: '[None] press run!',
+        }];
+    }
 
     async getProperty(name: string) {
-        console.log(
+        console.log('testing 1',
             this.returnValues = await this.deviceService.getFeatureProperty(
                 this.deviceUUID,
                 this.featureIdentifier,
                 name
             )
         );
+        console.log(this.returnValues);
         console.log(this.returnValues.find(item => item.name === name.toLowerCase()).value);
     }
 }
