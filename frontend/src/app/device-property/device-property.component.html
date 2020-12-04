@@ -11,7 +11,10 @@
     </ng-template>
     <div class="content">
         <div class="header">
-            <div class="property-name">{{ property.identifier }}</div>
+            <div class="property-name" *ngIf="property.observable === false, else observable">{{ property.identifier }}</div>
+            <ng-template #observable>
+                <div class="property-name">[observable] {{ property.identifier }}</div>
+            </ng-template>
             <div class="property-description">{{ property.description }}</div>
         </div>
         <div class="border" *ngIf="expand">

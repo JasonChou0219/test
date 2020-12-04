@@ -11,7 +11,10 @@
     </ng-template>
     <div class="content">
         <div class="header">
-            <div class="command-name">{{ command.identifier }}</div>
+            <div class="command-name" *ngIf="command.observable === false, else observable">{{ command.identifier }}</div>
+            <ng-template #observable>
+                <div class="command-name">[observable] {{ command.identifier }}</div>
+            </ng-template>
             <div class="command-description">{{ command.description }}</div>
         </div>
 
