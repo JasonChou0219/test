@@ -109,7 +109,7 @@ export class DataHandlerComponent implements OnInit {
         // var _database: Database;
         // this.selectedDatabase = this.databases.find(element => element.name === database.name);
         // console.log(this.selectedDatabase);
-        this.databaseService.deleteDatabase(database.id);
+        await this.databaseService.deleteDatabase(database.id);
         await this.refreshDatabases();
   }
   async getDevices() {
