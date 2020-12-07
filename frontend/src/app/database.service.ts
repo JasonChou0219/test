@@ -48,13 +48,13 @@ export class DatabaseService {
     serverUrl = SERVER_URL;
     constructor(private http: HttpClient) {
     }
-    async getDatabases() {
+    async oldGetDatabases() {
         console.log('Returning databases');
         console.log(this.databases);
         return this.databases;
     }
     // getDatabaseList will replace getDatabases once implemented in the backend
-    async getDatabaseList(): Promise<Database[]> {
+    async getDatabases(): Promise<Database[]> {
         return this.http
             .get<DatabaseList>(this.serverUrl + '/api/databases/')
             .pipe(map((databaseList) => databaseList.data))

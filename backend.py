@@ -254,6 +254,12 @@ def get_feature_property(uuid: str,
                                                        property_id)
 
 
+@app.get('/api/databases')
+def get_databases(username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    return {'data': device_manager_service.get_databases()}
+
+
 @app.post('/api/databases')
 def add_database(database: NewDatabaseModel, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()

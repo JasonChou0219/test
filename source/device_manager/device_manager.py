@@ -2,6 +2,7 @@ from typing import List, Dict
 from uuid import UUID, uuid4
 from datetime import datetime
 
+from source.device_manager.device_layer.database_info import DatabaseInfo
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
 from source.device_manager.device_layer.device_info import DeviceInfo, DeviceStatus
 from source.device_manager.device_layer.device_interface import DeviceInterface, DeviceType, DeviceError
@@ -603,6 +604,18 @@ class DeviceManager:
                 result = cursor.fetchall()
                 defined_execution_errors = [row[0] for row in result]
                 return defined_execution_errors
+
+    def get_database_info_list(self) -> List[DatabaseInfo]:
+        """Returns a list of database information from the database"""
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'select id,name,address,port from databases'
+                )
+                result = cursor.fetchall()
+                return [
+                    DatabaseInfo(row[0], row[1], row[2], row[3]) for row in result
+                ]
 
     def add_database(self, name: str, address: str, port: int):
         """Add a new database to the database

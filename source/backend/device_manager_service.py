@@ -146,6 +146,11 @@ class DeviceManagerService:
         } for name, value in self.device_manager.get_feature_property(
             device, feature, property_id).items()]
 
+    def get_databases(self):
+        return [
+            asdict(database) for database in self.device_manager.get_database_info_list()
+        ]
+
     def add_database(self, database: NewDatabaseModel):
         self.device_manager.add_database(database.name, database.address, database.port)
 
