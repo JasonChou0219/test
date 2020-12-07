@@ -14,7 +14,7 @@ import msgpack
 from source.device_manager.database import get_redis_pool
 
 from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, \
-    ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, NewDatabaseModel
+    ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, NewDatabaseModel, DatabaseInfoModel
 import source.device_manager.user as user
 from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
 
@@ -258,6 +258,15 @@ def get_feature_property(uuid: str,
 def add_database(database: NewDatabaseModel, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
     device_manager_service.add_database(database)
+    return
+
+
+@app.put('/api/databases/{uuid}')
+def set_database(id: int,
+                 database: DatabaseInfoModel,
+                 username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.set_database(id, database)
     return
 
 

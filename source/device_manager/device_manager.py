@@ -617,6 +617,23 @@ class DeviceManager:
                     'insert into databases values (default,%s,%s,%s)',
                     [name, address, port])
 
+    def set_database(self, id: int, name: str, address: str, port: int):
+        """Updates a database in the database
+        Args:
+            id: The id of the database to update
+            name: The new name to set to the database
+            address: The new IP address to set to the database
+            port: The new port to set to the database0
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'update databases set name=%s, address=%s, port=%s ' \
+                    'where id=%s',
+                    [
+                        name, address, port, id
+                    ])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:

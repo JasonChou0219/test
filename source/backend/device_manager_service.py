@@ -15,6 +15,13 @@ class NewDatabaseModel(BaseModel):
     port: int
 
 
+class DatabaseInfoModel(BaseModel):
+    id: int
+    name: str
+    address: str
+    port: int
+
+
 class DeviceStatusModel(BaseModel):
     online: bool
     status: str
@@ -141,6 +148,9 @@ class DeviceManagerService:
 
     def add_database(self, database: NewDatabaseModel):
         self.device_manager.add_database(database.name, database.address, database.port)
+
+    def set_database(self, id: int, database: DatabaseInfoModel):
+        self.device_manager.set_database(database.id, database.name, database.address, database.port)
 
     def discover_sila_devices(self):
         return [
