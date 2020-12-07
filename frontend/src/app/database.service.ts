@@ -86,7 +86,7 @@ export class DatabaseService {
         this.databases.push(database);
         console.log(this.databases);
     }
-    async deleteDatabase(database: Database) {
+    async oldDeleteDatabase(database: Database) {
         database = this.databases.find(element => element.name === database.name);
         for ( var i = 0; i < this.databases.length; i++) { if (this.databases[i] === database) {
             this.databases.splice(i, 1 ); i--; } }
@@ -97,7 +97,7 @@ export class DatabaseService {
         //    .delete(this.serverUrl + '/api/databases/' + name)
         //    .toPromise();
     }
-    async newDeleteDatabase(id: string) {
+    async deleteDatabase(id: string) {
         // Will replace deleteDatabase
         // Not implemented in the backend yet
         return this.http

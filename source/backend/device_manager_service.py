@@ -160,6 +160,9 @@ class DeviceManagerService:
     def set_database(self, id: int, database: DatabaseInfoModel):
         self.device_manager.set_database(database.id, database.name, database.address, database.port)
 
+    def delete_database(self, id: int):
+        self.device_manager.delete_database(id)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()

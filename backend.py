@@ -282,6 +282,13 @@ def set_database(id: int,
     return
 
 
+@app.delete('/api/databases/{id}')
+def delete_database(id: int, username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.delete_database(id)
+    return
+
+
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
     device_manager_service = DeviceManagerService()

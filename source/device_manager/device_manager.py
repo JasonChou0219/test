@@ -663,6 +663,16 @@ class DeviceManager:
                         name, address, port, id
                     ])
 
+    def delete_database(self, id: int):
+        """Delete a database from the database
+        Args:
+            id: The id of the database
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('delete from databases where id=%s',
+                               [id])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:
