@@ -267,6 +267,12 @@ def add_database(database: NewDatabaseModel, username: str = Depends(decode_toke
     return
 
 
+@app.get('/api/databases/{uuid}')
+def get_database(id: int, username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    return device_manager_service.get_database(id)
+
+
 @app.put('/api/databases/{uuid}')
 def set_database(id: int,
                  database: DatabaseInfoModel,

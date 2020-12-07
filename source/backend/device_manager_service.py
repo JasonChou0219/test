@@ -151,6 +151,9 @@ class DeviceManagerService:
             asdict(database) for database in self.device_manager.get_database_info_list()
         ]
 
+    def get_database(self, id: int):
+        return asdict(self.device_manager.get_database_info(id))
+
     def add_database(self, database: NewDatabaseModel):
         self.device_manager.add_database(database.name, database.address, database.port)
 

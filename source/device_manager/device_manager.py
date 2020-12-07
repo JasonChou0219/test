@@ -617,6 +617,22 @@ class DeviceManager:
                     DatabaseInfo(row[0], row[1], row[2], row[3]) for row in result
                 ]
 
+    def get_database_info(self, id: int) -> DatabaseInfo:
+        """Returns the specified database info
+        Args:
+            id: The id of the database
+        Returns:
+            DatabaseInfo: An instance of Database info
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'select id,name,address,port from databases ' \
+                    'where id=%s',
+                    [str(id)])
+                database = cursor.fetchone()
+                return DatabaseInfo(database[0], database[1], database[2], database[3])
+
     def add_database(self, name: str, address: str, port: int):
         """Add a new database to the database
         Args:
