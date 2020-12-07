@@ -7,5 +7,3 @@ class DatabaseInfo:
     name: str
     address: str
     port: int
-    online: bool
-    status: str
