@@ -10,15 +10,17 @@ import source.device_manager.experiment as experiment
 from source.device_manager.experiment import ExperimentStatus
 from source.device_manager.device_manager import DeviceManager
 from source.device_manager.script import Script, get_user_script
+from source.device_manager.device import get_device_info
 import redis
 import msgpack
-from dataclasses import dataclass
+from dataclasses import dataclass,asdict
 from enum import IntEnum
 import queue
 from typing import Optional
 import docker
 import docker_helper
 from threading import Thread
+import json
 
 
 @dataclass
@@ -145,12 +147,16 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
 
     exp = experiment.get_experiment(experiment_id)
     script = get_user_script(exp.scriptID)
+    devices = [
+        asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
+    ]
 
     #start_data_handling_for_experiment(exp)
 
     client = docker.from_env()
     container = docker_helper.create_script_container(client, exp.name,
-                                                      script.data)
+                                                      script.data,
+                                                      f'devices={devices}')
 
     #output_thread = Thread(target=print_container_output, args=(container, ))
     wait_thread = Thread(target=wait_until_container_stops,
