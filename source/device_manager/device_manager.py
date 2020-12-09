@@ -16,6 +16,7 @@ from source.device_manager.database import get_database_connection
 from source.device_manager.scheduler import BookingInfo, get_booking_entry, get_device_booking_info, get_booking_info, book, id_is_valid, delete_booking_entry
 from source.device_manager.scheduler import BookingInfoWithNames, get_device_booking_info_with_names, get_booking_info_with_names
 from source.device_manager.device_layer.dynamic_client import delete_dynamic_client
+import source.device_manager.device
 import source.device_manager.experiment as experiment
 import source.device_manager.script as script
 
@@ -118,16 +119,8 @@ class DeviceManager:
 
     def get_device_info_list(self) -> List[DeviceInfo]:
         """Returns a list of devices information from the database"""
-        with self.conn as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    'select uuid,name,type,address,port,available,userID,databaseID from devices'
-                )
-                result = cursor.fetchall()
-                return [
-                    DeviceInfo(row[0], row[1], row[2], row[3], row[4],
-                               bool(row[5]), row[6], row[7]) for row in result
-                ]
+        return source.device_manager.device.get_device_info_list()
+
 
     def get_device_info(self, uuid: UUID) -> DeviceInfo:
         """Returns the specified device info
@@ -136,42 +129,22 @@ class DeviceManager:
         Returns:
             DeviceInterface: A instancieted Device
         """
-        with self.conn as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    'select uuid,name,type,address,port,available,userID,databaseID from devices '\
-                    'where uuid=%s',
-                    [str(uuid)])
-                dev = cursor.fetchone()
-                return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
-                                  bool(dev[5]), dev[6], dev[7])
+        return source.device_manager.device.get_device_info(uuid)
 
     def set_device(self, device: DeviceInfo):
         """Updates a device in the database
         Args:
             device: The device that should replace the one in the database
         """
-        with self.conn as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    'update devices set name=%s, type=%s,address=%s,port=%s '\
-                    'where uuid=%s',
-                    [
-                        device.name, device.type, device.address, device.port,
-                        str(device.uuid)
-                    ])
+        source.device_manager.device.set_device(device)
 
     def add_device(self, name: str, type: DeviceType, address: str, port: int):
         """Add a new device to the database
         Args:
             device: The new device that should be added to the database
         """
-        uuid = uuid4()
-        with self.conn as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s)',
-                    [str(uuid), name, type, address, port, True, None, None])
+        uuid = source.device_manager.device.add_device(name, type, address,
+                                                       port)
         self.add_features_for_data_handler(uuid)
 
     def delete_device(self, uuid: UUID):
@@ -179,13 +152,7 @@ class DeviceManager:
         Args:
             uuid (uuid.UUID): The unique id of the device
         """
-        device = self.get_device_info(uuid)
-        if device.type == DeviceType.SILA:
-            delete_dynamic_client(uuid)
-        with self.conn as conn:
-            with conn.cursor() as cursor:
-                cursor.execute('delete from devices where uuid=%s',
-                               [str(uuid)])
+        source.device_manager.device.delete_device(uuid)
 
     def get_status(self, uuid: UUID) -> DeviceStatus:
         """Get the current status of the specified device
