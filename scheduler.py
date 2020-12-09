@@ -129,6 +129,7 @@ def print_container_output(container):
 def wait_until_container_stops(container, experiment_id: int,
                                status_queue: queue.SimpleQueue):
     status = container.wait()
+    print(container.logs())
     print(f'container stopped with StatusCode {status["StatusCode"]}')
     if status['StatusCode'] == 0:
         status_queue.put(
@@ -151,8 +152,7 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
     container = docker_helper.create_script_container(client, exp.name,
                                                       script.data)
 
-    #output_thread = Thread(target=print_container_output,
-    #                       args=(container, ))
+    #output_thread = Thread(target=print_container_output, args=(container, ))
     wait_thread = Thread(target=wait_until_container_stops,
                          args=(container, experiment_id, status_queue))
     container.start()

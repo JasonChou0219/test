@@ -37,7 +37,7 @@ def _create_temporary_tar(data: str):
 def create_script_container(docker_client, container_name: str, data: str):
     container = docker_client.containers.create(
         'user_script',
-        'python script.py',
+        'python main.py',
         name=container_name,
     )
     tar = _create_temporary_tar(data)
