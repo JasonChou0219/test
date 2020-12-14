@@ -163,6 +163,9 @@ class DeviceManagerService:
     def delete_database(self, id: int):
         self.device_manager.delete_database(id)
 
+    def link_database(self, device_uuid: UUID, database_id: int):
+        self.device_manager.link_database(device_uuid, database_id)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()

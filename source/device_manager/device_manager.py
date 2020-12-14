@@ -640,6 +640,18 @@ class DeviceManager:
                 cursor.execute('delete from databases where id=%s',
                                [id])
 
+    def link_database(self, device_uuid: UUID, database_id: int):
+        """Link a device to a database
+        Args:
+            device_uuid: The UUID of the device to link
+            database_id: The id of the database to link
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'update devices set databaseID = %s where uuid = %s',
+                    [database_id, device_uuid])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:

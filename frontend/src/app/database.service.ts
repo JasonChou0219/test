@@ -110,7 +110,7 @@ export class DatabaseService {
         console.log('Link data');
         console.log(uuid, id);
         return this.http
-            .post(this.serverUrl + '/api/devices/' + uuid, id)
+            .put(this.serverUrl + '/api/devices/' + uuid + '/database', id)
             .toPromise();
     }
     /*
