@@ -139,7 +139,6 @@ export class DataHandlerComponent implements OnInit {
           });
       }
   }
-
   async getDatabases() {
         const databaseList = await this.databaseService.getDatabases();
         const databaseData: RowDataDatabase[] = [];
@@ -175,6 +174,11 @@ export class DataHandlerComponent implements OnInit {
         this.selected = this.selected === i ? null : i;
         this.dataSource[i].detailsLoaded = true;
 
+    }
+
+    async setCheckboxDeviceLevel(device: Device) {
+     await this.databaseService.setCheckboxDeviceLevel(device.uuid);
+     this.refreshDevices();
     }
   ngOnInit(): void {
         // this.databases = this.databaseService.getDatabases();

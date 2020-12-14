@@ -48,11 +48,6 @@ export class DatabaseService {
     serverUrl = SERVER_URL;
     constructor(private http: HttpClient) {
     }
-    async oldGetDatabases() {
-        console.log('Returning databases');
-        console.log(this.databases);
-        return this.databases;
-    }
     // getDatabaseList will replace getDatabases once implemented in the backend
     async getDatabases(): Promise<Database[]> {
         return this.http
@@ -85,17 +80,6 @@ export class DatabaseService {
     async oldAddDatabase(database: Database) {
         this.databases.push(database);
         console.log(this.databases);
-    }
-    async oldDeleteDatabase(database: Database) {
-        database = this.databases.find(element => element.name === database.name);
-        for ( var i = 0; i < this.databases.length; i++) { if (this.databases[i] === database) {
-            this.databases.splice(i, 1 ); i--; } }
-        console.log('Deleting database');
-        console.log(database);
-        // delete this.databases[database];
-        // return this.http
-        //    .delete(this.serverUrl + '/api/databases/' + name)
-        //    .toPromise();
     }
     async deleteDatabase(id: string) {
         // Will replace deleteDatabase
@@ -137,6 +121,18 @@ export class DatabaseService {
     //
     // Checkmarks and polling intervals
     //
+    async setCheckboxDeviceLevel(uuid: string, active: boolean) {
+    }
+    async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
+    }
+    async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean, active: boolean,
+                                  metaInterval: number, nonMetaInterval: number) {
+    }
+    async setCheckboxPropertyLevel(uuid: string, featureId: number, propertyId: number, meta: boolean, active: boolean,
+                                   metaInterval: number, nonMetaInterval: number) {
+    }
+
+    /*
     async setPollingInterval() {
         //
     }
@@ -152,5 +148,5 @@ export class DatabaseService {
     async getCheckboxInfoProperty(uuid: string, featureIdentifier: string, property: DeviceProperty) {
         // return checkboxInfo
     }
-
+    */
 }

@@ -32,7 +32,8 @@ export interface Device {
     port: number;
     available?: boolean;
     user?: number;
-    databaseId?: number;
+    databaseId: number;
+    databaseActive?: boolean;
 }
 
 export interface DeviceStatus {
@@ -74,7 +75,6 @@ export interface DeviceProperty {
     response: DeviceParameter;
     defined_execution_errors: string[];
     polling_interval_non_meta: number; // May not be
-    // Todo: Implement with backend in the correct order yet
     polling_interval_meta: number; // May not be in the correct order yet
     active: boolean; // May not be in the correct order yet
     meta: boolean; // May not be in the correct order yet
@@ -92,7 +92,6 @@ export interface DeviceCommand {
     responses: DeviceParameter[];
     intermediates: DeviceParameter[];
     defined_execution_errors?: string[];
-    // Todo: Implement with backend
     polling_interval_non_meta: number; // May not be in the correct order yet
     polling_interval_meta: number; // May not be in the correct order yet
     active: boolean; // May not be in the correct order yet
@@ -116,6 +115,8 @@ export interface DeviceFeature {
     feature_version_major: number;
     commands: DeviceCommand[];
     properties: DeviceProperty[];
+    active?: boolean;
+    meta?: boolean;
 }
 
 export enum LogLevel {

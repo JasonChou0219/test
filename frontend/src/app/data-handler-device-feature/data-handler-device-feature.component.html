@@ -25,6 +25,7 @@
                 <div *ngFor="let command of feature.commands">
                     <app-data-handler-device-command
                         [featureIdentifier]="feature.identifier"
+                        [featureId]="feature.id"
                         [command]="command"
                         [uuid]="uuid"
                     ></app-data-handler-device-command>
@@ -35,6 +36,7 @@
                 <div *ngFor="let property of feature.properties">
                     <app-data-handler-device-property
                         [featureIdentifier]="feature.identifier"
+                        [featureId]="feature.id"
                         [property]="property"
                         [uuid]="uuid"
                     ></app-data-handler-device-property>

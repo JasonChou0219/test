@@ -17,10 +17,22 @@
                     <div class="command-name">[observable] {{ command.identifier }}</div>
                 </ng-template>
                 <div class="checkbox-one">
-                    <mat-checkbox [(ngModel)]="metaDataCheckbox"></mat-checkbox>
+                    <mat-checkbox
+                        [checked]="command.meta"
+                        [(ngModel)]="command.meta"
+                        (change)="setCheckboxCommandLevel(uuid, featureId, command.id, command.meta, command.active,
+                        command.polling_interval_meta, command.polling_interval_non_meta)"
+                                            >
+                    </mat-checkbox>
                 </div>
                 <div class="checkbox-two">
-                    <mat-checkbox [(ngModel)]="dataTransferCheckbox"></mat-checkbox>
+                    <mat-checkbox
+                        [checked]="command.active"
+                        [(ngModel)]="command.active"
+                        (change)="setCheckboxCommandLevel(uuid, featureId, command.id, command.meta, command.active,
+                        command.polling_interval_meta, command.polling_interval_non_meta)"
+                    >
+                    </mat-checkbox>
                 </div>
             </div>
             <div class="command-description">{{ command.description }}</div>
@@ -73,7 +85,8 @@
                     <mat-form-field style=" margin-left: 0">
                         <mat-label>Polling interval</mat-label>
                         <!-- Use ngIf to distinguish the default value depending on meta or not meta data selection! -->
-                        <input matInput [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
+                        <input matInput *ngIf="command.meta"; else elseBlock [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
+                        <ng-template #elseBlock [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
                     </mat-form-field>
                     <mat-card-actions style="margin-left: 20px">
                         <button mat-flat-button color="primary">

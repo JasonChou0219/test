@@ -16,6 +16,8 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
     @Input()
     property: DeviceProperty;
     @Input()
+    featureId: number;
+    @Input()
     featureIdentifier: string;
     @Input()
     uuid: string;
@@ -28,13 +30,17 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
     customPollingInterval: CustomPollingInterval;
 
     constructor(private databaseService: DatabaseService) {}
+    async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean,
+                                  active: boolean, metaInterval: number, nonMetaInterval: number) {
+        await this.databaseService.setCheckboxCommandLevel(uuid, featureId, commandId,
+            meta, active, metaInterval, nonMetaInterval);
+        // Maybe I need to refresh here,but hopefully the two-way binding works...
+        // Maybe I should just pass the commandInterface
+    }
     // ngOnChanges(changes: SimpleChanges) {
-        // Update and send changes of checkboxes to backend
+    // Update and send changes of checkboxes to backend
     //    }
-
     ngOnInit(): void {
-        // Get all checkbox vakues for all commands on init
-        // this.checkboxes = this.databaseService.getCheckboxInfoProperty(this.uuid, this.featureIdentifier, this.property);
     }
 
 }

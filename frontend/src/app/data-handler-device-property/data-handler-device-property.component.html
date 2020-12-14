@@ -17,10 +17,22 @@
                     <div class="property-name">[observable] {{ property.identifier }}</div>
                 </ng-template>
                 <div class="checkbox-one">
-                    <mat-checkbox [(ngModel)]="metaDataCheckbox"></mat-checkbox>
+                    <mat-checkbox
+                        [checked]="property.meta"
+                        [(ngModel)]="property.meta"
+                        (change)="setCheckboxCommandLevel(uuid, featureId, property.id, property.meta,
+                        property.active, property.polling_interval_meta, property.polling_interval_non_meta )"
+                    >
+                    </mat-checkbox>
                 </div>
                 <div class="checkbox-two">
-                    <mat-checkbox [(ngModel)]="dataTransferCheckbox"></mat-checkbox>
+                    <mat-checkbox
+                        [checked]="property.active"
+                        [(ngModel)]="property.active"
+                        (change)="setCheckboxCommandLevel(uuid, featureId, property.id, property.meta,
+                        property.active, property.polling_interval_meta, property.polling_interval_non_meta )"
+                    >
+                    </mat-checkbox>
                 </div>
             </div>
             <div class="property-description">{{ property.description }}</div>
