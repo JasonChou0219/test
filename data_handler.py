@@ -20,8 +20,8 @@ def save_commands(commands_to_call):
 
         device_info = dev_manager.get_device_info(device_uuid)
 
-        if device_info.database_id is not None:
-            database_info = dev_manager.get_database_info(device_info.database_id)
+        if device_info.databaseId is not None:
+            database_info = dev_manager.get_database_info(device_info.databaseId)
 
             for command_info in commands_to_call[device_uuid]:
 
@@ -72,8 +72,8 @@ def save_properties(properties_to_call):
 
         device_info = dev_manager.get_device_info(device_uuid)
 
-        if device_info.database_id is not None:
-            database_info = dev_manager.get_database_info(device_info.database_id)
+        if device_info.databaseId is not None:
+            database_info = dev_manager.get_database_info(device_info.databaseId)
 
             for property_info in properties_to_call[device_uuid]:
 
