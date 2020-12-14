@@ -2,7 +2,7 @@ from typing import List, Dict
 from uuid import UUID, uuid4
 from datetime import datetime
 
-from source.device_manager.device_layer.database_info import DatabaseInfo
+from source.device_manager.device_layer.database_info import DatabaseInfo, DatabaseStatus
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
 from source.device_manager.device_layer.device_info import DeviceInfo, DeviceStatus
 from source.device_manager.device_layer.device_interface import DeviceInterface, DeviceType, DeviceError
@@ -107,6 +107,18 @@ def _get_device_features_from_subprocess(info: DeviceInfo, connection):
     finally:
         connection.close()
 
+
+def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
+    """Get the current status of the specified database
+    """
+    # Todo: Implement this function
+    try:
+        # Create a connection to the InfluxDB. Ping...
+        # If online, return true, else: false.
+        pass
+    finally:
+        # close the connection if necessary
+        pass
 
 class DeviceManager:
     """ Device Manager Implementation"""
@@ -599,6 +611,30 @@ class DeviceManager:
                     [str(id)])
                 database = cursor.fetchone()
                 return DatabaseInfo(database[0], database[1], database[2], database[3])
+
+
+    def get_database_status(self, id: int) -> DatabaseStatus:
+        """Get the current status of the specified database
+        Args:
+            id: The id of the database
+        """
+        database_info = self.get_database_info(id)
+        parent_conn, child_conn = Pipe()
+        process = Process(target=_get_database_status_from_subprocess,
+                          args=(database_info, child_conn))
+        device_status = None
+        # Todo: Add proper implementation here!
+        try:
+            # process.start()
+            # database_status = parent_conn.recv()
+            # process.join()
+            database_status = DeviceStatus(True, 'Not implemented yet!')
+        finally:
+            # process.close()
+            # print('get_status process finished')
+            pass
+        return database_status
+
 
     def add_database(self, name: str, address: str, port: int):
         """Add a new database to the database

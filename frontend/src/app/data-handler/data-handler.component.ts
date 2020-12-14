@@ -120,9 +120,14 @@ export class DataHandlerComponent implements OnInit {
               address: '-',
               port: 0,
           };
-          console.log('dev.id:', typeof dev.databaseId);
-          if (dev.databaseId !== undefined) {
-              console.log('In if statement');
+          console.log('dev.databaseId:', dev.databaseId);
+          if (dev.databaseId === null) {
+              console.log('1 In if statement');
+              console.log('ID', dev.databaseId);
+          } else if (dev.databaseId === undefined) {
+              console.log('1 In elif statement');
+              console.log('ID', dev.databaseId);
+          } else {
               db = await this.databaseService.getDatabase(dev.databaseId);
           }
 
@@ -131,7 +136,9 @@ export class DataHandlerComponent implements OnInit {
               online: false,
               status: '',
           };
-          if (db.id !== undefined) {
+          if (db.id === null) {
+          } else if (db.id === undefined) {
+          } else {
               dbStatus = await this.databaseService.getDatabaseStatus(db.id);
           }
           data.push({
@@ -145,6 +152,7 @@ export class DataHandlerComponent implements OnInit {
       this.dataSource = data;
       this.tableDevices.renderRows();
       for (let i = 0; i < this.dataSource.length; i++) {
+          // Todo: This should be done using multiple threads in the backend to reduce slow loops in the frontend
           const promise = this.deviceService.getDeviceStatus(
               this.dataSource[i].device.uuid
           );
@@ -152,13 +160,18 @@ export class DataHandlerComponent implements OnInit {
               this.dataSource[i].status = status;
               this.tableDevices.renderRows();
           });
-          const promiseDB = this.databaseService.getDatabaseStatus(
-              this.databasesSource[i].database.id
-          );
-          await promiseDB.then((status) => {
-              this.dataSource[i].databaseStatus = status;
-              this.tableDevices.renderRows();
-          });
+          const databaseId = this.dataSource[i].device.databaseId;
+          if (databaseId === null) {
+          } else if (databaseId === undefined) {
+          } else {
+              const promiseDB = this.databaseService.getDatabaseStatus(
+                  this.dataSource[i].device.databaseId
+              );
+              await promiseDB.then((status) => {
+                  this.dataSource[i].databaseStatus = status;
+                  this.tableDevices.renderRows();
+              });
+          }
       }
   }
   async getDatabases() {

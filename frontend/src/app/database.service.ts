@@ -59,8 +59,6 @@ export class DatabaseService {
     }
     async getDatabase(id: number): Promise<Database> {
         // Not implemented in the backend yet
-        console.log('GetDatabase is executing......');
-        console.log('ID:', id);
         return this.http
             .get<Database>(this.serverUrl + '/api/databases/' + id)
             .toPromise();

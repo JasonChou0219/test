@@ -5,7 +5,6 @@ from os import path
 from .data_directories import DATA_DIRECTORY
 from .thread_local_storage import get_storage
 
-
 async def get_redis_pool():
     storage = get_storage()
     if storage.get('redis') is None:

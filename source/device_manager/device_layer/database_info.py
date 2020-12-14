@@ -7,3 +7,8 @@ class DatabaseInfo:
     name: str
     address: str
     port: int
+
+@dataclass
+class DatabaseStatus:
+    online: bool
+    status: str
