@@ -6,7 +6,7 @@ import {
     transition,
     trigger,
 } from '@angular/animations';
-import { DatabaseService, Database} from '../database.service';
+import {DatabaseService, Database, DatabaseStatus} from '../database.service';
 import { ActivatedRoute } from '@angular/router';
 import {element} from 'protractor';
 import {MatDialogRef} from '@angular/material/dialog';
@@ -28,6 +28,7 @@ interface RowDataDevice {
 }
 interface RowDataDatabase {
     database: Database;
+    status: DatabaseStatus;
     detailsLoaded: boolean;
 }
 
@@ -101,7 +102,7 @@ export class DataHandlerComponent implements OnInit {
         const result = await dialogRef.afterClosed().toPromise();
         console.log(result);
         // await this.databaseService.setDatabase('123456789', result); // This is the real implementation
-        this.databaseService.addDatabase(result);  // This is a mockup implementation
+        await this.databaseService.addDatabase(result);  // This is a mockup implementation
         window.alert(`Database ${result.name} added`);
         await this.refreshDatabases();
   }
@@ -118,7 +119,8 @@ export class DataHandlerComponent implements OnInit {
       console.log(deviceList);
       const data: RowDataDevice[] = [];
       for (const dev of deviceList) {
-          const db = this.newDatabase; // test implementation until getDatabase is implemented in the backend
+          const db = await this.databaseService.getDatabase(dev.databaseId);
+          //    this.newDatabase; // test implementation until getDatabase is implemented in the backend
           // const db = await this.databaseService.getDatabase(dev.uuid);
           data.push({
               device: dev,
@@ -145,13 +147,20 @@ export class DataHandlerComponent implements OnInit {
         for (const db of databaseList) {
             databaseData.push({
                 database: db,
+                status: {online: false, status:''},
                 detailsLoaded: false,
             });
         }
         this.databasesSource = databaseData;
         this.tableDatabases.renderRows();
-        for (let i = 0; i < this.databasesSource.length; i++) {
-            this.tableDatabases.renderRows();
+        for (let i = 0; i < this.dataSource.length; i++) {
+            const promise = this.databaseService.getDatabaseStatus(
+                this.databasesSource[i].database.id
+            );
+            await promise.then((status) => {
+                this.databasesSource[i].status = status;
+                this.tableDevices.renderRows();
+            });
         }
   }
 
@@ -176,8 +185,8 @@ export class DataHandlerComponent implements OnInit {
 
     }
 
-    async setCheckboxDeviceLevel(device: Device) {
-     await this.databaseService.setCheckboxDeviceLevel(device.uuid);
+    async setCheckboxDeviceLevel(device: Device, active: boolean) {
+     await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
      this.refreshDevices();
     }
   ngOnInit(): void {

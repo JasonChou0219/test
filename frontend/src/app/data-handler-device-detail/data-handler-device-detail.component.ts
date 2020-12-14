@@ -9,7 +9,7 @@ import {
 } from '../device.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import {DatabaseService} from "../database.service";
+import {DatabaseService} from '../database.service';
 
 interface TreeNode {
     name: string;
@@ -123,8 +123,8 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
         );
         // this.dataSource.data = buildFeaturesTree(this.features);
     }
-    async setCheckboxFeatureLevel(uuid: string, featureId: number) {
-        await this.databaseService.setCheckboxFeatureLevel(uuid, featureId);
+    async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
+        await this.databaseService.setCheckboxFeatureLevel(uuid, featureId, active, meta);
         await this.getFeatures();
     }
     hasChild = (_: number, node: TreeNode) =>

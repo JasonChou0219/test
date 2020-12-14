@@ -14,6 +14,7 @@ export class AddDatabaseComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public database: Database,
     ) {
         this.databaseInfo = {
+            id: 0,
             name: 'InfluxDB',
             address: '127.0.0.1',
             port: 8060,

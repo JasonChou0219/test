@@ -218,9 +218,9 @@
                 *matCellDef="let element" style="text-align: right; padding-right: 46px">
                 <mat-checkbox
                     [checked]="element.device.databaseActive"
-                    (change)="setCheckboxDeviceLevel(element.device)"
-                    [(ngModel)]="element.device.databaseActive"
+                    (change)="setCheckboxDeviceLevel(element.device, element.device.databaseActive)"
                 ></mat-checkbox>
+                <!--[(ngModel)]="element.device.databaseActive"-->
             </td>
         </ng-container>
         <!-- Expanded Row-->
