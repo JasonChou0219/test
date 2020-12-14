@@ -123,7 +123,7 @@ export class DatabaseService {
     }
     '
      */
-    async deleteDatabaseLinkToDevice(uuid: Device) {
+    async deleteDatabaseLinkToDevice(uuid: string) {
         return this.http
             .delete(this.serverUrl + '/api/devices/' + uuid + '/database')
             .toPromise();
