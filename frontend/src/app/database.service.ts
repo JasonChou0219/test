@@ -5,13 +5,13 @@ import {Device, DeviceCommand, DeviceProperty, SERVER_URL} from './device.servic
 import {map} from 'rxjs/operators';
 
 const TestDatabaseList: DatabaseList = {data: [
-        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888, online: true, status: 'connected'},
-        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888, online: true, status: 'connected'},
-        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060, online: false, status: 'disconnected'}]
+        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888},
+        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888},
+        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060}]
 };
 
 // For test purposes:
-export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888, online: true, status: 'connected' };
+export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888};
 
 export interface Database {
     // device_uuid: string;

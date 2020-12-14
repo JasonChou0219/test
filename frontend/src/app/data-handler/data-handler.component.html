@@ -45,16 +45,16 @@
         </ng-container>
 
         <ng-container matColumnDef="online">
-            <th mat-header-cell *matHeaderCellDef>Database online</th>
+            <th mat-header-cell *matHeaderCellDef>DB online</th>
             <td mat-cell style="width: 5%" *matCellDef="let element">
-                {{ element.database.online }}
+                {{ element.status.online }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell style="width: 15%" *matCellDef="let element">
-                {{ element.database.status }}
+                {{ element.status.status }}
             </td>
         </ng-container>
         <ng-container matColumnDef="edit">
@@ -155,8 +155,10 @@
                 *matCellDef="let element">
                 <!-- The Online status of the database is needed here! -->
                 <span
+
                     [ngStyle]="
-                        element.database.online
+                        dataSource[]
+                        element.status.online
                             ? { color: 'green' }
                             : { color: 'red' }
                     "
@@ -165,7 +167,7 @@
                 <span
                     class="circle"
                     [ngStyle]="
-                        element.database.online
+                        element.status.online
                             ? { 'background-color': 'green' }
                             : { 'background-color': 'red' }
                     "

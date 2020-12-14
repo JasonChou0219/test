@@ -75,7 +75,7 @@ export class DataHandlerComponent implements OnInit {
     @ViewChild(MatTable) tableDatabases: MatTable<any>;
 
     databases = [];
-    newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888, online: false, status: ''};
+    newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888};
     database: Database;
     selectedDatabase: Database;
     // getDatabases() {
@@ -92,8 +92,6 @@ export class DataHandlerComponent implements OnInit {
             name: 'InfluxDB',
             address: '127.0.0.1',
             port: 8888,
-            status: 'disconnected',
-            online: false,
       };
   }
   async addDatabase() {
