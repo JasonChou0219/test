@@ -62,13 +62,13 @@ export class DatabaseService {
         console.log('GetDatabase is executing......');
         console.log('ID:', id);
         return this.http
-            .get<Database>(this.serverUrl + 'api/databases/' + id)
+            .get<Database>(this.serverUrl + '/api/databases/' + id)
             .toPromise();
     }
     async getDatabaseStatus(id: number): Promise<DatabaseStatus> {
         // Not implemented in the backend yet
         return this.http
-            .get<DatabaseStatus>(this.serverUrl + 'api/databaseStatus/' + id)
+            .get<DatabaseStatus>(this.serverUrl + '/api/databaseStatus/' + id)
             .toPromise();
     }
     async setDatabase(uuid: string, database: Database) {
