@@ -145,13 +145,13 @@ export class DataHandlerComponent implements OnInit {
         for (const db of databaseList) {
             databaseData.push({
                 database: db,
-                status: {online: false, status:''},
+                status: {online: false, status: ''},
                 detailsLoaded: false,
             });
         }
         this.databasesSource = databaseData;
         this.tableDatabases.renderRows();
-        for (let i = 0; i < this.dataSource.length; i++) {
+        for (let i = 0; i < this.databasesSource.length; i++) {
             const promise = this.databaseService.getDatabaseStatus(
                 this.databasesSource[i].database.id
             );

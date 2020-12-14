@@ -77,7 +77,7 @@ export class DeviceListComponent implements OnInit {
             const promise = this.deviceService.getDeviceStatus(
                 this.dataSource[i].device.uuid
             );
-            promise.then((status) => {
+            await promise.then((status) => {
                 this.dataSource[i].status = status;
                 this.table.renderRows();
             });
