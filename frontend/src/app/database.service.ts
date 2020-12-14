@@ -94,7 +94,7 @@ export class DatabaseService {
         console.log('Link data');
         console.log(uuid, id);
         return this.http
-            .post(this.serverUrl + '/api/devices/' + uuid, id)
+            .put(this.serverUrl + '/api/devices/' + uuid + '/database', id)
             .toPromise();
     }
     /*
@@ -107,9 +107,9 @@ export class DatabaseService {
     }
     '
      */
-    async deleteDatabaseLinkToDevice(uuid: Device) {
+    async deleteDatabaseLinkToDevice(uuid: string) {
         return this.http
-            .delete(this.serverUrl + '/api/device/' + uuid)
+            .delete(this.serverUrl + '/api/devices/' + uuid + '/database')
             .toPromise();
         // Todo: Add functional implementation. Create backend counterpart
         //  Fix url
