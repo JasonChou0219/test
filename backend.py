@@ -282,6 +282,7 @@ def set_database(id: int,
     return
 
 
+# TODO: Unlink device from database when database is deleted
 @app.delete('/api/databases/{id}')
 def delete_database(id: int, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
