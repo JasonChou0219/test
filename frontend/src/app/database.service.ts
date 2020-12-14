@@ -14,7 +14,6 @@ const TestDatabaseList: DatabaseList = {data: [
 export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888};
 
 export interface Database {
-    // device_uuid: string;
     id?: number;
     name: string;
     address: string;
@@ -60,8 +59,8 @@ export class DatabaseService {
     }
     async getDatabase(id: number): Promise<Database> {
         // Not implemented in the backend yet
-        // Not used yet
         console.log('GetDatabase is executing......');
+        console.log('ID:', id);
         return this.http
             .get<Database>(this.serverUrl + 'api/databases/' + id)
             .toPromise();
@@ -113,9 +112,6 @@ export class DatabaseService {
         this.databases = [];
         return this.databases;
     }
-    //
-    // Checkmarks and polling intervals
-    //
     async setCheckboxDeviceLevel(uuid: string, active: boolean) {
     }
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
@@ -127,21 +123,4 @@ export class DatabaseService {
                                    metaInterval: number, nonMetaInterval: number) {
     }
 
-    /*
-    async setPollingInterval() {
-        //
-    }
-    async getCheckboxInfoDevice(uuid: string) {
-        // return checkboxInfo
-    }
-    async getCheckboxInfoFeature(uuid: string, featureIdentifier: string) {
-        // return checkboxInfo
-    }
-    async getCheckboxInfoCommand(uuid: string, featureIdentifier: string, command: DeviceCommand) {
-        // return checkboxInfo
-    }
-    async getCheckboxInfoProperty(uuid: string, featureIdentifier: string, property: DeviceProperty) {
-        // return checkboxInfo
-    }
-    */
 }

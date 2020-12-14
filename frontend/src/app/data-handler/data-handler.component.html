@@ -157,7 +157,7 @@
                 <span
 
                     [ngStyle]="
-                        element.status.online
+                        element.databaseStatus.online
                             ? { color: 'green' }
                             : { color: 'red' }
                     "
@@ -166,7 +166,7 @@
                 <span
                     class="circle"
                     [ngStyle]="
-                        element.status.online
+                        element.databaseStatus.online
                             ? { 'background-color': 'green' }
                             : { 'background-color': 'red' }
                     "
@@ -185,9 +185,9 @@
                 *matCellDef="let element">
                 <!-- The Status of the database is needed here! -->
                 {{
-                element.status.length == 0
+                element.databaseStatus.length == 0
                     ? 'Unknown'
-                    : element.database.status
+                    : element.databaseStatus.status
                 }}
             </td>
         </ng-container>

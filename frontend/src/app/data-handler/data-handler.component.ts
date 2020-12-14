@@ -24,6 +24,7 @@ interface RowDataDevice {
     device: Device;
     status: DeviceStatus;
     database?: Database;
+    databaseStatus?: DatabaseStatus;
     detailsLoaded: boolean;
 }
 interface RowDataDatabase {
@@ -78,9 +79,6 @@ export class DataHandlerComponent implements OnInit {
     newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888};
     database: Database;
     selectedDatabase: Database;
-    // getDatabases() {
-    //   this.databases = this.databaseService.getDatabases();
-    // }
 
   constructor(private route: ActivatedRoute,
               private databaseService: DatabaseService,
@@ -117,13 +115,30 @@ export class DataHandlerComponent implements OnInit {
       console.log(deviceList);
       const data: RowDataDevice[] = [];
       for (const dev of deviceList) {
-          const db = await this.databaseService.getDatabase(dev.databaseId);
-          //    this.newDatabase; // test implementation until getDatabase is implemented in the backend
-          // const db = await this.databaseService.getDatabase(dev.uuid);
+          let db: Database = {
+              name: '-',
+              address: '-',
+              port: 0,
+          };
+          console.log('dev.id:', typeof dev.databaseId);
+          if (dev.databaseId !== undefined) {
+              console.log('In if statement');
+              db = await this.databaseService.getDatabase(dev.databaseId);
+          }
+
+          console.log('Got database');
+          let dbStatus: DeviceStatus = {
+              online: false,
+              status: '',
+          };
+          if (db.id !== undefined) {
+              dbStatus = await this.databaseService.getDatabaseStatus(db.id);
+          }
           data.push({
               device: dev,
               status: {online: false, status: ''},
               database: db ,
+              databaseStatus: {online: false, status: ''},
               detailsLoaded: false,
           });
       }
@@ -135,6 +150,13 @@ export class DataHandlerComponent implements OnInit {
           );
           await promise.then((status) => {
               this.dataSource[i].status = status;
+              this.tableDevices.renderRows();
+          });
+          const promiseDB = this.databaseService.getDatabaseStatus(
+              this.databasesSource[i].database.id
+          );
+          await promiseDB.then((status) => {
+              this.dataSource[i].databaseStatus = status;
               this.tableDevices.renderRows();
           });
       }
@@ -180,7 +202,6 @@ export class DataHandlerComponent implements OnInit {
     showDetails(i: number) {
         this.selected = this.selected === i ? null : i;
         this.dataSource[i].detailsLoaded = true;
-
     }
 
     async setCheckboxDeviceLevel(device: Device, active: boolean) {
