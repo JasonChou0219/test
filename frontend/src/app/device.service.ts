@@ -32,7 +32,7 @@ export interface Device {
     port: number;
     available?: boolean;
     user?: number;
-    databaseId: number;
+    databaseId?: number;
     databaseActive?: boolean;
 }
 

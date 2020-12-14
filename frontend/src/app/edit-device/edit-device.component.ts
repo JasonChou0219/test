@@ -38,6 +38,8 @@ export class EditDeviceComponent implements OnInit {
             port: device.port,
             available: device.available,
             user: device.user,
+            databaseId: device.databaseId,
+            databaseActive: device.databaseActive,
         };
     }
 

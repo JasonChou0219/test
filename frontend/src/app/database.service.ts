@@ -11,7 +11,7 @@ const TestDatabaseList: DatabaseList = {data: [
 };
 
 // For test purposes:
-export const TestDatabase: Database = {name: 'schedulerDB', address: 'localhost', port: 8888, online: true, status: 'connected' };
+export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888, online: true, status: 'connected' };
 
 export interface Database {
     // device_uuid: string;
@@ -19,8 +19,6 @@ export interface Database {
     name: string;
     address: string;
     port: number;
-    online: boolean;
-    status: string;
 }
 export interface DatabaseDeviceLink {
     deviceId: string;
@@ -29,7 +27,10 @@ export interface DatabaseDeviceLink {
 interface DatabaseList {
     data: Database[];
 }
-
+export interface DatabaseStatus {
+    online: boolean;
+    status: string;
+}
 export interface CheckboxParam {
     name: string;
     value_active: boolean;
@@ -50,17 +51,25 @@ export class DatabaseService {
     }
     // getDatabaseList will replace getDatabases once implemented in the backend
     async getDatabases(): Promise<Database[]> {
+        console.log('GetDatabases is executing......');
         return this.http
             .get<DatabaseList>(this.serverUrl + '/api/databases/')
             .pipe(map((databaseList) => databaseList.data))
             .toPromise();
         // Todo: Implement call to backend!
     }
-    async getDatabase(id: string): Promise<Database> {
+    async getDatabase(id: number): Promise<Database> {
         // Not implemented in the backend yet
         // Not used yet
+        console.log('GetDatabase is executing......');
         return this.http
             .get<Database>(this.serverUrl + 'api/databases/' + id)
+            .toPromise();
+    }
+    async getDatabaseStatus(id: number): Promise<DatabaseStatus> {
+        // Not implemented in the backend yet
+        return this.http
+            .get<DatabaseStatus>(this.serverUrl + 'api/databaseStatus/' + id)
             .toPromise();
     }
     async setDatabase(uuid: string, database: Database) {
@@ -76,10 +85,6 @@ export class DatabaseService {
         return this.http
             .post(this.serverUrl + '/api/databases', database)
             .toPromise();
-    }
-    async oldAddDatabase(database: Database) {
-        this.databases.push(database);
-        console.log(this.databases);
     }
     async deleteDatabase(id: string) {
         // Will replace deleteDatabase
@@ -97,16 +102,6 @@ export class DatabaseService {
             .put(this.serverUrl + '/api/devices/' + uuid + '/database', id)
             .toPromise();
     }
-    /*
-    async linkDatabaseToDevice(database: Database, device: Device) {
-        return this.http
-            .put(this.serverUrl + '/api/device/' + device, database)
-            .toPromise();
-        // Todo: Add functional implementation. Create backend counterpart
-        //  Fix url
-    }
-    '
-     */
     async deleteDatabaseLinkToDevice(uuid: string) {
         return this.http
             .delete(this.serverUrl + '/api/devices/' + uuid + '/database')
