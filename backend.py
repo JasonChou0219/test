@@ -296,6 +296,13 @@ def link_database(uuid: str, id: int = Body(...), username: str = Depends(decode
     return
 
 
+@app.delete('/api/devices/{uuid}/database')
+def unlink_database(uuid: str, username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.unlink_database(uuid)
+    return
+
+
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
     device_manager_service = DeviceManagerService()

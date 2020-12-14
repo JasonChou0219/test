@@ -652,6 +652,17 @@ class DeviceManager:
                     'update devices set databaseID = %s where uuid = %s',
                     [database_id, device_uuid])
 
+    def unlink_database(self, device_uuid: UUID):
+        """Removes the database link of the specified device
+        Args:
+            device_uuid: The UUID of the device for which to remove the database link
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'update devices set databaseID = %s where uuid = %s',
+                    [None, device_uuid])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:
