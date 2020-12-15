@@ -16,6 +16,8 @@
                 <ng-template #observable>
                     <div class="command-name">[observable] {{ command.identifier }}</div>
                 </ng-template>
+
+
                 <div class="checkbox-one">
                     <mat-checkbox
                         [checked]="command.meta"
@@ -55,6 +57,16 @@
                             <div class="param-desc">
                                 {{ param.description }}
                             </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Set value</mat-label>
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="paramValues[i].value"
+                                />
+                            </mat-form-field>
                         </div>
                     </div>
                 </div>

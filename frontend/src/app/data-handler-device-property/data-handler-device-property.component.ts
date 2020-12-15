@@ -38,7 +38,7 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
         if (meta === undefined || null) { meta = false; } else { meta = !meta; }
         if (active === undefined || null) { active = false; } else { active = !active; }
 
-        await this.databaseService.setCheckboxCommandLevel(uuid, featureId, commandId,
+        await this.databaseService.setCheckboxPropertyLevel(uuid, featureId, commandId,
             meta, active, metaInterval, nonMetaInterval);
         // Maybe I need to refresh here,but hopefully the two-way binding works...
         // Maybe I should just pass the commandInterface

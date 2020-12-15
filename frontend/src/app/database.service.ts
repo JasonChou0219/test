@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {element} from 'protractor';
-import {Device, DeviceCommand, DeviceProperty, SERVER_URL} from './device.service';
+import {Device, DeviceCommand, DeviceProperty, FeatureCommandParam, SERVER_URL} from './device.service';
 import {map} from 'rxjs/operators';
 
 const TestDatabaseList: DatabaseList = {data: [
@@ -115,7 +115,7 @@ export class DatabaseService {
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
     }
     async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean, active: boolean,
-                                  metaInterval: number, nonMetaInterval: number) {
+                                  metaInterval: number, nonMetaInterval: number, parameters: FeatureCommandParam[]) {
     }
     async setCheckboxPropertyLevel(uuid: string, featureId: number, propertyId: number, meta: boolean, active: boolean,
                                    metaInterval: number, nonMetaInterval: number) {
