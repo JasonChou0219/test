@@ -127,9 +127,9 @@ def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
         ping = timeit.timeit(stmt='def ping(): _client.ping()')
         retention_policy = _client.get_list_retention_policies()
         print(ping, version, retention_policy)
-        connection.send(DatabaseStatus(True, retention_policy))
+        connection.send(DatabaseStatus(True, f'v.{version}'))
         # Todo: Switch this to implementation below once new DatabaseInfo class is implemented
-        # connection.send(DatabaseStatus(True, retention_policy, '', ping, version))
+        # connection.send(DatabaseStatus(True, retention_policy, '', ping, f'v.{version}'))
     except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as e:
         print(e)
         err = type(e).__name__

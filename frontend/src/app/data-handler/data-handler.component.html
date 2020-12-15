@@ -47,7 +47,12 @@
         <ng-container matColumnDef="online">
             <th mat-header-cell *matHeaderCellDef>DB online</th>
             <td mat-cell style="width: 5%" *matCellDef="let element">
-                {{ element.status.online }}
+                <span [ngStyle]="{'color': element.status.online ? 'green' : 'red' }">
+                </span>
+                <span
+                    class="circle"
+                    [ngStyle]="{'background-color': element.status.online ? 'green' : 'red' }">
+                </span>
             </td>
         </ng-container>
 
