@@ -22,7 +22,7 @@ export class DevicePropertyComponent implements OnInit {
     ngOnInit(): void {
         this.returnValues = [{
             name: 'test_name',
-            value: '[None] press run!',
+            value: '[None]',
         }];
     }
 

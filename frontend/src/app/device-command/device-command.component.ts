@@ -41,10 +41,14 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        this.returnValues = [{
-            name: 'test_name',
-            value: '[None] press run!',
-        }];
+        let param: FeatureCommandResult;
+        for (let i = 0; i < this.command.responses.length; i++) {
+            param = {
+                name: 'test_name',
+                value: '[None]',
+            };
+            this.returnValues.push(param);
+        }
     }
 
     async callCommand(name: string) {
