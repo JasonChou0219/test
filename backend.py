@@ -273,7 +273,7 @@ def get_database(id: int, username: str = Depends(decode_token)):
     return device_manager_service.get_database(id)
 
 @app.get('/api/databaseStatus/{id}')
-def device_status(id: int, username: str = Depends(decode_token)):
+def database_status(id: int, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_database_status(id)
 
