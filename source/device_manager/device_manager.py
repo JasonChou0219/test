@@ -1,6 +1,8 @@
 from typing import List, Dict
 from uuid import UUID, uuid4
 from datetime import datetime
+import requests
+import timeit
 
 from source.device_manager.device_layer.database_info import DatabaseInfo, DatabaseStatus
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
@@ -22,6 +24,7 @@ import source.device_manager.script as script
 
 from sila2lib.fdl_parser.fdl_parser import FDLParser
 from dataclasses import asdict
+from influxdb import InfluxDBClient
 from multiprocessing import Process, Pipe
 
 import logging
@@ -112,13 +115,30 @@ def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
     """Get the current status of the specified database
     """
     # Todo: Implement this function
+    # db_name = 'schedulerDB'
+    # db_username='schedulerApplication',
+    # db_password='DigInBio'
+    _client = InfluxDBClient(host=info.address, port=info.port, username='schedulerApplication', password='DigInBio',
+                             database=info.name)
     try:
-        # Create a connection to the InfluxDB. Ping...
-        # If online, return true, else: false.
-        pass
+        # Todo: Allow the use of username and password in the future (From the frontend to here)
+        # connection = InfluxDBClient(host=host, port=port, username=username, password=password, database=database)
+        version = _client.ping()
+        ping = timeit.timeit(stmt='def ping(): _client.ping()')
+        retention_policy = _client.get_list_retention_policies()
+        print(ping, version, retention_policy)
+        connection.send(DatabaseStatus(True, retention_policy))
+        # Todo: Switch this to implementation below once new DatabaseInfo class is implemented
+        # connection.send(DatabaseStatus(True, retention_policy, '', ping, version))
+    except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as e:
+        print(e)
+        err = type(e).__name__
+        connection.send(DatabaseStatus(False, err))
+        # Todo: Switch this to implementation below once new DatabaseInfo class is implemented
+        #connection.send(DatabaseStatus(False, '', err, None, ''))
     finally:
-        # close the connection if necessary
-        pass
+        connection.close()
+
 
 class DeviceManager:
     """ Device Manager Implementation"""
@@ -625,14 +645,13 @@ class DeviceManager:
         device_status = None
         # Todo: Add proper implementation here!
         try:
-            # process.start()
-            # database_status = parent_conn.recv()
-            # process.join()
-            database_status = DeviceStatus(True, 'Not implemented yet!')
+            process.start()
+            database_status = parent_conn.recv()
+            process.join()
+            # database_status = DatabaseStatus(True, 'Not implemented yet!')
         finally:
-            # process.close()
-            # print('get_status process finished')
-            pass
+            process.close()
+            print('get_status process finished')
         return database_status
 
 
