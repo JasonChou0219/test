@@ -26,6 +26,7 @@ interface RowDataDevice {
     database?: Database;
     databaseStatus?: DatabaseStatus;
     detailsLoaded: boolean;
+
 }
 interface RowDataDatabase {
     database: Database;
@@ -57,7 +58,7 @@ export class DataHandlerComponent implements OnInit {
         'address',
         'port',
         'online',
-        'status',
+        'policy',
         'edit',
         'data_transfer',
     ];
@@ -109,18 +110,26 @@ export class DataHandlerComponent implements OnInit {
         await this.databaseService.deleteDatabase(database.id);
         await this.refreshDatabases();
   }
+  /*
   async getDevices() {
       const deviceList = await this.deviceService.getDeviceList();
       console.log('Returning devices');
       console.log(deviceList);
       const data: RowDataDevice[] = [];
+      // if (this.dataSource.length === 0) {
+      //    console.log('Im empty inside');
+      //    data = [];
+      // }
       for (const dev of deviceList) {
+          console.log('dev.databaseId:', dev.databaseId);
           let db: Database = {
               name: '-',
               address: '-',
               port: 0,
           };
-          console.log('dev.databaseId:', dev.databaseId);
+
+
+
           if (dev.databaseId === null) {
               console.log('1 In if statement');
               console.log('ID', dev.databaseId);
@@ -131,8 +140,7 @@ export class DataHandlerComponent implements OnInit {
               db = await this.databaseService.getDatabase(dev.databaseId);
           }
 
-          console.log('Got database');
-          let dbStatus: DeviceStatus = {
+          let dbStatus: DatabaseStatus = {
               online: false,
               status: '',
           };
@@ -150,13 +158,13 @@ export class DataHandlerComponent implements OnInit {
           });
       }
       this.dataSource = data;
-      this.tableDevices.renderRows();
       for (let i = 0; i < this.dataSource.length; i++) {
           // Todo: This should be done using multiple threads in the backend to reduce slow loops in the frontend
           const promise = this.deviceService.getDeviceStatus(
               this.dataSource[i].device.uuid
           );
           await promise.then((status) => {
+              console.log(status);
               this.dataSource[i].status = status;
               this.tableDevices.renderRows();
           });
@@ -172,8 +180,65 @@ export class DataHandlerComponent implements OnInit {
                   this.tableDevices.renderRows();
               });
           }
+          this.tableDevices.renderRows();
       }
   }
+  */
+  async getDevices() {
+        const deviceList = await this.deviceService.getDeviceList();
+        console.log('Returning devices');
+        console.log(deviceList);
+        let data: RowDataDevice[] = [];
+        if (this.dataSource.length === 0) {
+            console.log('Im empty inside');
+        } else {
+
+            console.log('Ive got friends:', this.dataSource.length)
+        }
+
+        let db: Database = {
+            name: '-',
+            address: '-',
+            port: 0,
+        };
+        for (const dev of deviceList) {
+            // If available, get the info of the linked database
+            if (dev.databaseId !== null && dev.databaseId !== undefined) {
+                db = await this.databaseService.getDatabase(dev.databaseId);
+            }
+            data.push({
+                device: dev,
+                status: {online: false, status: ''},
+                database: db ,
+                databaseStatus: {online: false, status: ''},
+                detailsLoaded: false,
+            });
+        }
+        this.dataSource = data;
+        for (let i = 0; i < this.dataSource.length; i++) {
+            // Get the status of the device itself
+            const promise = this.deviceService.getDeviceStatus(
+                this.dataSource[i].device.uuid
+            );
+            await promise.then((status) => {
+                console.log(status);
+                this.dataSource[i].status = status;
+            });
+            // Get the status of the linked database
+            const databaseId = this.dataSource[i].device.databaseId;
+            if (databaseId !== null && databaseId !== undefined) {
+                const promiseDB = this.databaseService.getDatabaseStatus(
+                    this.dataSource[i].device.databaseId
+                );
+                await promiseDB.then((status) => {
+                    this.dataSource[i].databaseStatus = status;
+                    this.tableDevices.renderRows();
+                });
+            }
+        }
+        this.tableDevices.renderRows();
+    }
+
   async getDatabases() {
         const databaseList = await this.databaseService.getDatabases();
         const databaseData: RowDataDatabase[] = [];
@@ -219,7 +284,7 @@ export class DataHandlerComponent implements OnInit {
 
     async setCheckboxDeviceLevel(device: Device, active: boolean) {
      await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
-     this.refreshDevices();
+     // this.refreshDevices();
     }
   ngOnInit(): void {
         // this.databases = this.databaseService.getDatabases();

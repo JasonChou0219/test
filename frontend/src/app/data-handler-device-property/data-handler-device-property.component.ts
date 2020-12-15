@@ -30,8 +30,14 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
     customPollingInterval: CustomPollingInterval;
 
     constructor(private databaseService: DatabaseService) {}
+
     async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean,
                                   active: boolean, metaInterval: number, nonMetaInterval: number) {
+        console.log(meta, active, metaInterval, nonMetaInterval);
+        // Toggle the current value
+        if (meta === undefined || null) { meta = false; } else { meta = !meta; }
+        if (active === undefined || null) { active = false; } else { active = !active; }
+
         await this.databaseService.setCheckboxCommandLevel(uuid, featureId, commandId,
             meta, active, metaInterval, nonMetaInterval);
         // Maybe I need to refresh here,but hopefully the two-way binding works...

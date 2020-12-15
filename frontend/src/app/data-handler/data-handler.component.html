@@ -175,8 +175,8 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>DB status</th>
+        <ng-container matColumnDef="policy">
+            <th mat-header-cell *matHeaderCellDef>DB retention policy</th>
             <td mat-cell style="width: 15%" [ngStyle]="
                         element.status.online
                             ? { background: '#F5F5F5' }
@@ -211,11 +211,8 @@
 
         <ng-container matColumnDef="data_transfer">
             <th mat-header-cell *matHeaderCellDef style="text-align: right">Data transfer</th>
-            <td mat-cell [ngStyle]="
-                        element.status.online
-                            ? { background: '#F5F5F5' }
-                            : { background: '#white' }
-                    "
+            <td mat-cell
+                [ngStyle]="{'background': element.status.online ?  '#F5F5F5' : '#white' }"
                 *matCellDef="let element" style="text-align: right; padding-right: 46px">
                 <mat-checkbox
                     [checked]="element.device.databaseActive"

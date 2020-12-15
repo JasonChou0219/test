@@ -9,18 +9,18 @@
         <div class="feature-elements">
             <mat-checkbox
                 [checked]="feature.meta"
+                [(ngModel)]="feature.meta"
                 (change)="setCheckboxFeatureLevel(device.uuid, feature.id, feature.active, feature.meta)"
             >
             </mat-checkbox>
-            <!--[(ngModel)]="feature.active"-->
         </div>
         <div class="feature-elements">
             <mat-checkbox
                 [checked]="feature.active"
+                [(ngModel)]="feature.active"
                 (change)="setCheckboxFeatureLevel(device.uuid, feature.id, feature.active, feature.meta)"
             >
             </mat-checkbox>
-            <!--[(ngModel)]="feature.active"-->
         </div>
     </div>
 </ng-container>

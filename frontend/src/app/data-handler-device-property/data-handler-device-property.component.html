@@ -19,20 +19,20 @@
                 <div class="checkbox-one">
                     <mat-checkbox
                         [checked]="property.meta"
+                        [(ngModel)]="property.meta"
                         (change)="setCheckboxCommandLevel(uuid, featureId, property.id, property.meta,
                         property.active, property.polling_interval_meta, property.polling_interval_non_meta )"
                     >
                     </mat-checkbox>
-                    <!--[(ngModel)]="property.active"-->
                 </div>
                 <div class="checkbox-two">
                     <mat-checkbox
                         [checked]="property.active"
+                        [(ngModel)]="property.active"
                         (change)="setCheckboxCommandLevel(uuid, featureId, property.id, property.meta,
                         property.active, property.polling_interval_meta, property.polling_interval_non_meta )"
                     >
                     </mat-checkbox>
-                    <!--[(ngModel)]="property.active"-->
                 </div>
             </div>
             <div class="property-description">{{ property.description }}</div>
@@ -57,13 +57,23 @@
                     </div>
                 </div>
                 <div class="polling-input">
-                    <mat-form-field style=" margin-left: 0">
-                        <mat-label>Polling interval</mat-label>
-                        <!-- Use ngIf to distinguish the default value depending on meta or not meta data selection! -->
-                        <input matInput [(ngModel)]="this.customPollingInterval" placeholder="default: {{this.defaultPollingInterval}} s" />
-                    </mat-form-field>
+                    <!-- Use ngIf to distinguish the default value depending on meta or not meta data selection! -->
+                    <ng-container *ngIf="property.meta; else elseBlock">
+                        <mat-form-field style=" margin-left: 0">
+                            <mat-label>Polling interval (meta)</mat-label>
+                            <input matInput  [(ngModel)]="property.polling_interval_meta" placeholder="if: {{property.polling_interval_meta}} s" />
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-template #elseBlock>
+                        <mat-form-field style=" margin-left: 0">
+                            <mat-label>Polling interval (non-meta)</mat-label>
+                            <input matInput  [(ngModel)]="property.polling_interval_non_meta" placeholder="else: {{property.polling_interval_non_meta}} s" />
+                        </mat-form-field>
+                    </ng-template>
                     <mat-card-actions style="margin-left: 20px">
-                        <button mat-flat-button color="primary">
+                        <button
+                            mat-flat-button color="primary"
+                            (click)="setCheckboxCommandLevel(uuid, featureId, property.id, property.meta, property.active, property.polling_interval_meta, property.polling_interval_non_meta)">
                             Set
                         </button>
                     </mat-card-actions>
