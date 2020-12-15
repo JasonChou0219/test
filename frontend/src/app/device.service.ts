@@ -275,7 +275,7 @@ export class DeviceService {
     getDeviceFeaturesDataHandler(uuid: string): Promise<DeviceFeature[]> {
         return this.http
             .get<DeviceFeatureList>(
-                this.serverUrl + '/api/deviceFeatures/' + uuid
+                this.serverUrl + '/api/deviceFeaturesDataHandler/' + uuid
             )
             .pipe(map((featureList) => featureList.data))
             .toPromise();

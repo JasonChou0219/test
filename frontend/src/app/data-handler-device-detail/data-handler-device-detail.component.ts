@@ -118,9 +118,9 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
     constructor(public deviceService: DeviceService,
                 private databaseService: DatabaseService) {}
 
-                async getFeatures() {
+    async getFeatures() {
         // get features of devices that are currently online
-        this.features = await this.deviceService.getDeviceFeaturesDataHandler(
+        this.features = await this.deviceService.getDeviceFeatures(
             this.device.uuid
         );
         // this.dataSource.data = buildFeaturesTree(this.features);
@@ -128,9 +128,11 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
 
     async getFeaturesDataHandler() {
         // get features of devices that are currently online
+        console.log('Im working');
         this.features = await this.deviceService.getDeviceFeaturesDataHandler(
             this.device.uuid
         );
+        console.log(this.features);
     }
 
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
