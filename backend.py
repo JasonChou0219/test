@@ -232,6 +232,12 @@ def device_features(uuid: str, username: str = Depends(decode_token)):
     return {'data': device_manager_service.get_features(uuid)}
 
 
+@app.get('/api/deviceFeaturesDataHandler/{uuid}')
+def device_features(uuid: str, username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    return {'data': device_manager_service.get_features_for_data_handler(uuid)}
+
+
 @app.post('/api/device/{uuid}/feature/{feature}/command/{command_id}')
 def call_feature_command(uuid: str,
                          feature: str,

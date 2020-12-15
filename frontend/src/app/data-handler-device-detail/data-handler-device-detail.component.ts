@@ -117,12 +117,22 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
 
     constructor(public deviceService: DeviceService,
                 private databaseService: DatabaseService) {}
-    async getFeatures() {
-        this.features = await this.deviceService.getDeviceFeatures(
+
+                async getFeatures() {
+        // get features of devices that are currently online
+        this.features = await this.deviceService.getDeviceFeaturesDataHandler(
             this.device.uuid
         );
         // this.dataSource.data = buildFeaturesTree(this.features);
     }
+
+    async getFeaturesDataHandler() {
+        // get features of devices that are currently online
+        this.features = await this.deviceService.getDeviceFeaturesDataHandler(
+            this.device.uuid
+        );
+    }
+
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
         console.log('Klick mich', meta, active);
         // Toggle the current value
@@ -130,11 +140,14 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
         if (active === undefined || null) { active = false; } else { active = !active; }
 
         await this.databaseService.setCheckboxFeatureLevel(uuid, featureId, active, meta);
-        await this.getFeatures();
+        // await this.getFeatures();
+        await this.getFeaturesDataHandler();
     }
+
     hasChild = (_: number, node: TreeNode) =>
         !!node.children && node.children.length > 0;
     ngOnInit(): void {
-        this.getFeatures();
+        // this.getFeatures();
+        this.getFeaturesDataHandler();
     }
 }

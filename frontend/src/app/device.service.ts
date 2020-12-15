@@ -272,6 +272,14 @@ export class DeviceService {
             .pipe(map((featureList) => featureList.data))
             .toPromise();
     }
+    getDeviceFeaturesDataHandler(uuid: string): Promise<DeviceFeature[]> {
+        return this.http
+            .get<DeviceFeatureList>(
+                this.serverUrl + '/api/deviceFeatures/' + uuid
+            )
+            .pipe(map((featureList) => featureList.data))
+            .toPromise();
+    }
     async callFeatureCommand(
         device: string,
         feature: string,
