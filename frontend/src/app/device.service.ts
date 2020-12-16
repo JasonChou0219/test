@@ -33,7 +33,7 @@ export interface Device {
     available?: boolean;
     user?: number;
     databaseId?: number;
-    dataHandlerActive?: boolean;
+    dataHandlerActive: boolean;
 }
 
 export interface DeviceStatus {
@@ -115,8 +115,8 @@ export interface DeviceFeature {
     feature_version_major: number;
     commands: DeviceCommand[];
     properties: DeviceProperty[];
-    active?: boolean;
-    meta?: boolean;
+    active: boolean;
+    meta: boolean;
 }
 
 export enum LogLevel {
