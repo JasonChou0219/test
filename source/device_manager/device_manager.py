@@ -34,7 +34,7 @@ logger.addHandler(DeviceManagerLogHandler(logging.WARNING))
 
 INTERVAL = 30
 META_INTERVAL = 3600
-ACTIVATED = True
+ACTIVE = True
 META = False
 
 
@@ -295,7 +295,7 @@ class DeviceManager:
                             feature.feature_version_major,
                             feature.feature_version_minor,
                             str(uuid),
-                            ACTIVATED,
+                            ACTIVE,
                             META
                         ])
                     feature_id = cursor.fetchone()[0]
@@ -306,7 +306,7 @@ class DeviceManager:
                             'insert into commands_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s)' \
                             'returning id',
                             [command.identifier, command.name, command.description, command.observable, INTERVAL,
-                             META_INTERVAL, ACTIVATED, META, feature_id])
+                             META_INTERVAL, ACTIVE, META, feature_id])
                         command_id = cursor.fetchone()[0]
                         for parameter in command.parameters:
                             if parameter.type != 'Void':
@@ -359,7 +359,7 @@ class DeviceManager:
                             'insert into properties_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s)' \
                             'returning id',
                             [property.identifier, property.name, property.description, property.observable, INTERVAL,
-                             META_INTERVAL, ACTIVATED, META, feature_id])
+                             META_INTERVAL, ACTIVE, META, feature_id])
                         property_id = cursor.fetchone()[0]
                         response = property.response
                         data_responses = dynamic_property.responses
@@ -439,7 +439,7 @@ class DeviceManager:
                                                 id=row[4],
                                                 interval=row[5],
                                                 meta_interval=row[6],
-                                                activated=row[7],
+                                                active=row[7],
                                                 meta=row[8]) for row in result
                 ]
                 for command in commands:
@@ -562,7 +562,7 @@ class DeviceManager:
                                                  defined_execution_errors=[],
                                                  interval=row[5],
                                                  meta_interval=row[6],
-                                                 activated=row[7],
+                                                 active=row[7],
                                                  meta=row[8]) for row in result
                 ]
                 for property in properties:

@@ -20,7 +20,7 @@ class DeviceParameterForDataHandler(DeviceParameter):
 class DataHandlerConfig:
     interval: int
     meta_interval: int
-    activated: bool
+    active: bool
     meta: bool
 
 

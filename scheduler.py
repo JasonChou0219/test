@@ -78,7 +78,7 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
         features = device_manager.get_features_for_data_handler(device_uuid)
         for feature in features:
             for command in feature.commands:
-                if command.activated:
+                if command.active:
                     if command.meta:
                         interval_to_use = command.meta_interval
                     else:
@@ -99,7 +99,7 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                                           device_booking.start,
                                           device_booking.end)] = {device_uuid: [(command, feature)]}
             for property in feature.properties:
-                if property.activated:
+                if property.active:
                     if property.meta:
                         interval_to_use = property.meta_interval
                     else:
