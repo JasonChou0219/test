@@ -39,7 +39,7 @@ export class EditDeviceComponent implements OnInit {
             available: device.available,
             user: device.user,
             databaseId: device.databaseId,
-            databaseActive: device.databaseActive,
+            dataHandlerActive: device.dataHandlerActive,
         };
     }
 

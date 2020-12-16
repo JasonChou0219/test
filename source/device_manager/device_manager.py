@@ -404,7 +404,7 @@ class DeviceManager:
                                                 feature_version_major=row[6],
                                                 commands=[],
                                                 properties=[],
-                                                activated=row[7],
+                                                active=row[7],
                                                 meta=row[8])
                     for row in result
                 ]

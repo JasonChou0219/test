@@ -43,7 +43,7 @@ class DeviceInfoModel(BaseModel):
     available: bool = True
     user: Optional[int] = None
     database_id: Optional[int] = None
-    activated: Optional[bool] = True
+    active: Optional[bool] = True
 
 
 class BookingModel(BaseModel):

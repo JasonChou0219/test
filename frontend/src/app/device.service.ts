@@ -33,7 +33,7 @@ export interface Device {
     available?: boolean;
     user?: number;
     databaseId?: number;
-    databaseActive?: boolean;
+    dataHandlerActive?: boolean;
 }
 
 export interface DeviceStatus {
