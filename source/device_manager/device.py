@@ -11,12 +11,12 @@ def get_device_info_list() -> List[DeviceInfo]:
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                'select uuid,name,type,address,port,available,userID,databaseID from devices'
+                'select uuid,name,type,address,port,available,userID,databaseID,activated from devices'
             )
             result = cursor.fetchall()
             return [
                 DeviceInfo(row[0], row[1], row[2], row[3], row[4],
-                           bool(row[5]), row[6], row[7]) for row in result
+                           bool(row[5]), row[6], row[7], row[8]) for row in result
             ]
 
 
@@ -30,12 +30,12 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                'select uuid,name,type,address,port,available,userID,databaseID from devices '\
+                'select uuid,name,type,address,port,available,userID,databaseID,activated from devices '\
                 'where uuid=%s',
                 [str(uuid)])
             dev = cursor.fetchone()
             return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
-                              bool(dev[5]), dev[6], dev[7])
+                              bool(dev[5]), dev[6], dev[7], dev[8])
 
 
 def set_device(device: DeviceInfo):
@@ -63,8 +63,8 @@ def add_device(name: str, type: DeviceType, address: str, port: int) -> UUID:
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s)',
-                [str(uuid), name, type, address, port, True, None, None])
+                'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                [str(uuid), name, type, address, port, True, None, None, True])
     return uuid
 
 

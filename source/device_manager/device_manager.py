@@ -288,13 +288,15 @@ class DeviceManager:
                     dynamic_feature = sila_device.getClient()._features[
                         feature.identifier + '\n']
                     cursor.execute(
-                        'insert into features_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s) returning id',
+                        'insert into features_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s) returning id',
                         [
                             feature.identifier, feature.name,
                             feature.description, feature.feature_version,
                             feature.feature_version_major,
                             feature.feature_version_minor,
-                            str(uuid)
+                            str(uuid),
+                            ACTIVATED,
+                            META
                         ])
                     feature_id = cursor.fetchone()[0]
                     for command in feature.commands:
@@ -389,7 +391,7 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select id,identifier,name,description,feature_version,feature_version_minor,feature_version_major from features_for_data_handler where device=%s',
+                    'select id,identifier,name,description,feature_version,feature_version_minor,feature_version_major,activated,meta from features_for_data_handler where device=%s',
                     [str(uuid)])
                 result = cursor.fetchall()
                 features = [
@@ -401,7 +403,9 @@ class DeviceManager:
                                                 feature_version_minor=row[5],
                                                 feature_version_major=row[6],
                                                 commands=[],
-                                                properties=[])
+                                                properties=[],
+                                                activated=row[7],
+                                                meta=row[8])
                     for row in result
                 ]
                 for feature in features:

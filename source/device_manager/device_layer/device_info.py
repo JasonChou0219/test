@@ -19,3 +19,4 @@ class DeviceInfo:
     available: bool = True
     user: Optional[int] = None
     databaseId: Optional[int] = None
+    activated: Optional[bool] = True

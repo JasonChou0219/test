@@ -457,7 +457,8 @@ def add_devices(c):
             'port integer,' \
             'available boolean, ' \
             'userID integer, ' \
-            'databaseID integer)')
+            'databaseID integer, ' \
+            'activated boolean)')
     for device in devices:
         c.execute('insert into devices values (default,%s,%s,%s,%s,%s,%s,%s)',
                   [
@@ -477,7 +478,9 @@ def add_features_for_data_handler(c):
               'feature_version varchar(256), ' \
               'feature_version_major integer, ' \
               'feature_version_minor integer, ' \
-              'device UUID)')
+              'device UUID, ' \
+              'activated boolean, ' \
+              'meta boolean)')
 
 
 def add_commands_for_data_handler(c):

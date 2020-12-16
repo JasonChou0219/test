@@ -82,3 +82,5 @@ class DeviceFeatureForDataHandler(DeviceFeature):
     id: int
     commands: List[DeviceCommandForDataHandler]
     properties: List[DevicePropertyForDataHandler]
+    activated: bool
+    meta: bool
