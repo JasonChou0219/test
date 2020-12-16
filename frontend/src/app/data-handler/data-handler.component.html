@@ -192,10 +192,10 @@
                 [ngStyle]="{'background': element.status.online ?  '#EAFAEA' : '#white' }"
                 *matCellDef="let element" style="text-align: right; padding-right: 46px">
                 <mat-checkbox
-                    [checked]="element.device.databaseActive"
-                    (change)="setCheckboxDeviceLevel(element.device, element.device.databaseActive)"
+                    [checked]="element.device.dataHandlerActive"
+                    (change)="setCheckboxDeviceLevel(element.device, element.device.dataHandlerActive)"
                 ></mat-checkbox>
-                <!--[(ngModel)]="element.device.databaseActive"-->
+                <!--[(ngModel)]="element.device.dataHandlerActive"-->
             </td>
         </ng-container>
         <!-- Expanded Row-->
