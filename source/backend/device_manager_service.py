@@ -173,6 +173,9 @@ class DeviceManagerService:
     def unlink_database(self, device_uuid: UUID):
         self.device_manager.unlink_database(device_uuid)
 
+    def set_device_attributes_for_data_handler(self, device_uuid: UUID, active: bool):
+        self.device_manager.set_device_attributes_for_data_handler(device_uuid, active)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()

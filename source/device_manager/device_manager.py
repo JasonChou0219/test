@@ -722,6 +722,36 @@ class DeviceManager:
                     'update devices set databaseID = %s where uuid = %s',
                     [None, device_uuid])
 
+    def set_device_attributes_for_data_handler(self, device_uuid: UUID, active: bool):
+        """Set the 'active' attribute of the specified device and its features, commands and properties
+        to the specified value
+        Args:
+            device_uuid: The UUID of the device
+            active: The new value of the 'active' attribute
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                # Update the device
+                cursor.execute(
+                    'update devices set activated = %s where uuid = %s',
+                    [active, device_uuid])
+                # Update the features of the device and get the ids of the features
+                cursor.execute(
+                    'update features_for_data_handler set activated = %s where device = %s returning id',
+                    [active, device_uuid])
+                feature_ids = cursor.fetchall()
+                # Convert to string of comma separated ids
+                feature_ids = ','.join(str(x[0]) for x in feature_ids)
+                # Update the commands and properties
+                cursor.execute(
+                    'update commands_for_data_handler set activated = %s where feature in ({feature_ids})'.format(
+                        feature_ids=feature_ids),
+                    [active])
+                cursor.execute(
+                    'update properties_for_data_handler set activated = %s where feature in ({feature_ids})'.format(
+                        feature_ids=feature_ids),
+                    [active])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:

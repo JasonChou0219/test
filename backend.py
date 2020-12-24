@@ -314,6 +314,15 @@ def unlink_database(uuid: str, username: str = Depends(decode_token)):
     return
 
 
+@app.put('/api/devices/{uuid}/dataHandler')
+def set_device_attributes_for_data_handler(uuid: str,
+                                           active: bool = Body(...),
+                                           username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.set_device_attributes_for_data_handler(uuid, active)
+    return
+
+
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
     device_manager_service = DeviceManagerService()
