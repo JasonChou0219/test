@@ -3,12 +3,14 @@
 :: installation is different to the wheel and allows just that.All
 
 :: The following code uninstalls the standard installation and replaces it with the binary build. pipenv doesn't
-:: implement the --no-binary flag. Thus pip is used. Protobuf is added to the pipfile afterwards for completenes sake
+:: implement the --no-binary flag. Thus pip is used. Protobuf is added to the pipfile afterwards for completeness sake
 :: (Cosmetic issue).
 
+pipenv uninstall protobuf
+pip uninstall protobuf
 pip cache purge
 set PIP_NO_CACHE_DIR=false
-set PIP_NO_BINARY=":all"
+set PIP_NO_BINARY=":all:"
 :: set  PIP_NO_BINARY=protobuf
 pip install --no-binary=:all: protobuf
 pipenv install protobuf

@@ -12,6 +12,7 @@ class DeviceStatus:
 @dataclass
 class DeviceInfo:
     uuid: UUID
+    server_uuid: UUID
     name: str
     type: int
     address: str

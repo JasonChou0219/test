@@ -33,15 +33,17 @@ export class AddDeviceComponent implements OnInit {
     ) {
         this.device = {
             uuid: '',
+            server_uuid: '',
             name: '',
             type: DeviceType.SILA,
             address: '',
             port: 80,
             available: true,
+            dataHandlerActive: false,
         };
     }
     select(i: number) {
-        this.device.uuid = this.dataSource[i].uuid;
+        this.device.server_uuid = this.dataSource[i].uuid;
         this.device.name = this.dataSource[i].name;
         this.device.address = this.dataSource[i].ip;
         this.device.port = this.dataSource[i].port;

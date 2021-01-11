@@ -12,6 +12,7 @@ from hashlib import sha256
 
 devices = [{
     'uuid': uuid4(),
+    'server_uuid': uuid4(),
     'name': "Device 1",
     'type': DeviceType.SILA,
     'address': "192.168.0.20",
@@ -20,6 +21,7 @@ devices = [{
     'user': None
 }, {
     'uuid': uuid4(),
+    'server_uuid': uuid4(),
     'name': "Device 2",
     'type': DeviceType.CUSTOM,
     'address': "192.168.0.25",
@@ -28,6 +30,7 @@ devices = [{
     'user': 1
 }, {
     'uuid': uuid4(),
+    'server_uuid': uuid4(),
     'name': "Device 3",
     'type': DeviceType.SILA,
     'address': "192.168.0.40",
@@ -451,6 +454,7 @@ def add_devices(c):
     c.execute('create table devices '\
             '(id serial primary key, '\
             'uuid UUID, '\
+            'server_uuid UUID, '\
             'name varchar(256), '\
             'type integer, '\
             'address varchar(256), '\
@@ -460,9 +464,9 @@ def add_devices(c):
             'databaseID integer, ' \
             'activated boolean)')
     for device in devices:
-        c.execute('insert into devices values (default,%s,%s,%s,%s,%s,%s,%s)',
+        c.execute('insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s)',
                   [
-                      str(device['uuid']), device['name'], device['type'],
+                      str(device['uuid']), str(device['server_uuid']), device['name'], device['type'],
                       device['address'], device['port'], device['available'],
                       device['user']
                   ])

@@ -26,6 +26,7 @@ export interface Device {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
     uuid?: string;
+    server_uuid: string;
     name: string;
     type: DeviceType;
     address: string;

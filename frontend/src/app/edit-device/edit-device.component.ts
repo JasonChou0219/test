@@ -32,6 +32,7 @@ export class EditDeviceComponent implements OnInit {
     ) {
         this.deviceWorkCopy = {
             uuid: device.uuid,
+            server_uuid: device.server_uuid,
             name: device.name,
             type: device.type,
             address: device.address,

@@ -159,7 +159,7 @@ class DeviceManager:
         Args:
             uuid (uuid.UUID): The unique id of the device
         Returns:
-            DeviceInterface: A instancieted Device
+            DeviceInterface: A instantiated Device
         """
         return source.device_manager.device.get_device_info(uuid)
 
@@ -170,12 +170,12 @@ class DeviceManager:
         """
         source.device_manager.device.set_device(device)
 
-    def add_device(self, name: str, type: DeviceType, address: str, port: int):
+    def add_device(self, server_uuid: UUID, name: str, type: DeviceType, address: str, port: int):
         """Add a new device to the database
         Args:
             device: The new device that should be added to the database
         """
-        uuid = source.device_manager.device.add_device(name, type, address,
+        uuid = source.device_manager.device.add_device(server_uuid, name, type, address,
                                                        port)
         self.add_features_for_data_handler(uuid)
 
@@ -184,7 +184,8 @@ class DeviceManager:
         Args:
             uuid (uuid.UUID): The unique id of the device
         """
-        source.device_manager.device.delete_device(uuid)
+        dev_info = self.get_device_info(uuid)
+        source.device_manager.device.delete_device(dev_info.uuid, dev_info.server_uuid)
 
     def get_status(self, uuid: UUID) -> DeviceStatus:
         """Get the current status of the specified device
@@ -204,6 +205,10 @@ class DeviceManager:
             process.close()
             print('get_status process finished')
         return device_status
+
+    def get_status_of_device_list(self, uuid: UUID) -> DeviceStatus:
+        # Todo: Check status for a list of databases with a threadpool
+        return
 
     def get_device_instance(self, uuid: UUID):
         """Get a device instance for the specified device
@@ -276,7 +281,7 @@ class DeviceManager:
     def add_features_for_data_handler(self, uuid: UUID):
         """Add the features of the device (specified by uuid) to the database
         Args:
-            uuid: The uuid of the device for which to add the features to the database
+            server_uuid: The uuid of the device for which to add the features to the database
         """
         sila_device = self.get_device_instance(uuid)
 
@@ -657,6 +662,11 @@ class DeviceManager:
             process.close()
             print('get_status process finished')
         return database_status
+
+
+    def get_database_status_list(self, id: int) -> DatabaseStatus:
+        # Todo: Check status for a list of databases with a threadpool
+        return
 
 
     def add_database(self, name: str, address: str, port: int):
