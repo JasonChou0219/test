@@ -117,6 +117,9 @@ export class DatabaseService {
             .toPromise();
     }
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
+        return this.http
+            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/dataHandler', {active, meta})
+            .toPromise();
     }
     async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean, active: boolean,
                                   metaInterval: number, nonMetaInterval: number, parameters: FeatureCommandParam[]) {
