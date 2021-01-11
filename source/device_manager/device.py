@@ -16,7 +16,7 @@ def get_device_info_list() -> List[DeviceInfo]:
             result = cursor.fetchall()
             return [
                 DeviceInfo(row[0], row[1], row[2], row[3], row[4],
-                           bool(row[5]), row[6], row[7], row[8], row[9]) for row in result
+                           row[5], row[6], row[7], row[8], row[9]) for row in result
             ]
 
 
@@ -35,7 +35,7 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
                 [str(uuid)])
             dev = cursor.fetchone()
             return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
-                              bool(dev[5]), dev[6], dev[7], dev[8], dev[9])
+                              dev[5], dev[6], dev[7], dev[8], dev[9])
 
 
 def set_device(device: DeviceInfo):

@@ -28,8 +28,8 @@ class DeviceStatusModel(BaseModel):
 
 
 class NewDeviceModel(BaseModel):
-    uuid: UUID
-    server_uuid: UUID
+    uuid: str
+    server_uuid: str
     name: str
     type: int
     address: str

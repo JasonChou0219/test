@@ -65,7 +65,6 @@ def _get_feature_property_from_subprocess(info: DeviceInfo, feature: str,
 
 
 def _create_device_instance(ip: str, port: int, uuid: UUID, name: str, type: DeviceType):
-    print('YADDDDA:', ip, port)
     if type == DeviceType.SILA:
         return SilaDevice(ip, port, uuid, name)
     else:

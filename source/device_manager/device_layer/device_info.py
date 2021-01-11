@@ -10,19 +10,6 @@ class DeviceStatus:
 
 
 @dataclass
-class DeviceInfoOld:
-    uuid: UUID
-    name: str
-    type: int
-    address: str
-    port: int
-    available: bool = True
-    user: Optional[int] = None
-    databaseId: Optional[int] = None
-    dataHandlerActive: Optional[bool] = True
-
-
-@dataclass
 class DeviceInfo:
     uuid: UUID
     server_uuid: UUID
