@@ -270,22 +270,23 @@ export class DataHandlerComponent implements OnInit {
         await this.databaseService.linkDatabaseToDevice(this.dataSource[i].device.uuid, result.databaseId);
         await this.refreshDatabases();
         await this.refreshDevices();
-    }
-    async refreshDevices() {
+  }
+  async refreshDevices() {
         await this.getDevices();
-    }
-    async refreshDatabases() {
+  }
+  async refreshDatabases() {
         await this.getDatabases();
-    }
-    showDetails(i: number) {
+  }
+  showDetails(i: number) {
         this.selected = this.selected === i ? null : i;
         this.dataSource[i].detailsLoaded = true;
-    }
+  }
 
-    async setCheckboxDeviceLevel(device: Device, active: boolean) {
-     await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
-     // this.refreshDevices();
-    }
+  async setCheckboxDeviceLevel(device: Device, active: boolean) {
+      await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
+      this.refreshDevices();
+  }
+
   ngOnInit(): void {
         // this.databases = this.databaseService.getDatabases();
         this.route.paramMap.subscribe(params => {
