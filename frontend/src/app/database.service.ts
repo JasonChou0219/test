@@ -110,8 +110,11 @@ export class DatabaseService {
         this.databases = [];
         return this.databases;
     }
-    // PUT /api/devices/{uuid}/dataHandler
+
     async setCheckboxDeviceLevel(uuid: string, active: boolean) {
+        return this.http
+            .put(this.serverUrl + '/api/devices/' + uuid + '/dataHandler', active)
+            .toPromise();
     }
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
     }

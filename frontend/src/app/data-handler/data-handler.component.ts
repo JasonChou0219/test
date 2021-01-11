@@ -283,8 +283,8 @@ export class DataHandlerComponent implements OnInit {
     }
 
     async setCheckboxDeviceLevel(device: Device, active: boolean) {
-     await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
-     // this.refreshDevices();
+        await this.databaseService.setCheckboxDeviceLevel(device.uuid, active);
+        this.refreshDevices();
     }
   ngOnInit(): void {
         // this.databases = this.databaseService.getDatabases();
