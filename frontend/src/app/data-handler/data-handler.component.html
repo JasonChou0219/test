@@ -193,7 +193,8 @@
                 *matCellDef="let element" style="text-align: right; padding-right: 46px">
                 <mat-checkbox
                     [checked]="element.device.dataHandlerActive"
-                    (change)="setCheckboxDeviceLevel(element.device, !element.device.dataHandlerActive)"
+                    [(ngModel)]="element.device.dataHandlerActive"
+                    (change)="setCheckboxDeviceLevel(element.device, element.device.dataHandlerActive)"
                 ></mat-checkbox>
                 <!--[(ngModel)]="element.device.dataHandlerActive"-->
             </td>
