@@ -34,10 +34,8 @@ def delete_dynamic_client(uuid: UUID):
     lock_file = get_sila_device_lock_file(uuid)
     if os.path.exists(directory):
         shutil.rmtree(directory)
-
     if os.path.exists(lock_file):
         os.remove(lock_file)
-
 
 @dataclass
 class FunctionParameterDescription:

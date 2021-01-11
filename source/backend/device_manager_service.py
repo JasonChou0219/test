@@ -28,6 +28,8 @@ class DeviceStatusModel(BaseModel):
 
 
 class NewDeviceModel(BaseModel):
+    uuid: UUID
+    server_uuid: UUID
     name: str
     type: int
     address: str
@@ -36,6 +38,7 @@ class NewDeviceModel(BaseModel):
 
 class DeviceInfoModel(BaseModel):
     uuid: UUID
+    server_uuid: UUID
     name: str
     type: int
     address: str
@@ -102,11 +105,11 @@ class DeviceManagerService:
 
     def set_device(self, uuid: UUID, dev):
         self.device_manager.set_device(
-            DeviceInfo(dev.uuid, dev.name, dev.type, dev.address, dev.port,
+            DeviceInfo(dev.uuid, dev.server_uuid, dev.name, dev.type, dev.address, dev.port,
                        dev.available, dev.user))
 
     def add_device(self, dev):
-        self.device_manager.add_device(dev.name, dev.type, dev.address,
+        self.device_manager.add_device(dev.server_uuid, dev.name, dev.type, dev.address,
                                        dev.port)
 
     def delete_device(self, uuid: UUID):
