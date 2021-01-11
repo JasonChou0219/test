@@ -17,7 +17,7 @@ export class AddDatabaseComponent implements OnInit {
             id: 0,
             name: 'InfluxDB',
             address: '127.0.0.1',
-            port: 8060,
+            port: 8086,
         };
     }
     ngOnInit(): void {
