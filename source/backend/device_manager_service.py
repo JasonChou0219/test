@@ -179,6 +179,9 @@ class DeviceManagerService:
     def set_device_attributes_for_data_handler(self, device_uuid: UUID, active: bool):
         self.device_manager.set_device_attributes_for_data_handler(device_uuid, active)
 
+    def set_feature_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, active: bool, meta: bool):
+        self.device_manager.set_feature_attributes_for_data_handler(device_uuid, feature_id, active, meta)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()

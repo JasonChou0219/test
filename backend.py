@@ -323,6 +323,17 @@ def set_device_attributes_for_data_handler(uuid: str,
     return
 
 
+@app.put('/api/devices/{uuid}/features/{id}/dataHandler')
+def set_feature_attributes_for_data_handler(uuid: str,
+                                            id: str,
+                                            active: bool = Body(...),
+                                            meta: bool = Body(...),
+                                            username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.set_feature_attributes_for_data_handler(uuid, id, active, meta)
+    return
+
+
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
     device_manager_service = DeviceManagerService()
