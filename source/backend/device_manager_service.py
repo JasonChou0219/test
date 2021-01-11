@@ -21,6 +21,8 @@ class DatabaseInfoModel(BaseModel):
     address: str
     port: int
 
+class DeviceUuidListModel(BaseModel):
+    uuid_list: List[UUID]
 
 class DeviceStatusModel(BaseModel):
     online: bool
@@ -118,6 +120,11 @@ class DeviceManagerService:
     def get_status(self, uuid: UUID):
         return asdict(self.device_manager.get_status(uuid))
 
+    def get_status_list(self, uuid_list: UUID):
+        return [
+            asdict(self.device_manager.get_status_list(uuid_list))
+        ]
+
     def get_features(self, uuid: UUID):
         return [
             asdict(feature)
@@ -157,6 +164,11 @@ class DeviceManagerService:
 
     def get_database_status(self, id: int):
         return asdict(self.device_manager.get_database_status(id))
+
+    def get_database_status_list(self, uuid_list: UUID):
+        return [
+            asdict(self.device_manager.get_status_list(uuid_list))
+        ]
 
     def get_database(self, id: int):
         return asdict(self.device_manager.get_database_info(id))
