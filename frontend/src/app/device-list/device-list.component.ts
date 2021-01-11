@@ -12,6 +12,7 @@ import {
     DeviceType,
     Device,
     DeviceStatus,
+    DeviceUuidList,
 } from '../device.service';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -83,7 +84,47 @@ export class DeviceListComponent implements OnInit {
             });
         }
     }
+    /*
+    async getDevices() {
+        const deviceList = await this.deviceService.getDeviceList();
+        const data: RowData[] = [];
+        for (const dev of deviceList) {
+            data.push({
+                device: dev,
+                status: { online: false, status: '' },
+                detailsLoaded: false,
+            });
+        }
+        this.dataSource = data;
+        this.table.renderRows();
+        // const deviceUuidList: DeviceUuidList = {data: []};
+        const deviceUuidList: string[] = [];
+        for (let i = 0; i < this.dataSource.length; i++) {
+            deviceUuidList.push(
+                this.dataSource[i].device.uuid
+            );
+        }
+        const deviceStatusList = await this.deviceService.getDeviceStatusList(deviceUuidList);
+        console.log('heya');
+        console.log(deviceStatusList);
+        for (let i = 0; i < this.dataSource.length; i++) {
+            this.dataSource[i].status = deviceStatusList.data[i];
+        }
+        console.log('hoo')
+        this.table.renderRows();
 
+        for (let i = 0; i < this.dataSource.length; i++) {
+            const promise = this.deviceService.getDeviceStatus(
+                this.dataSource[i].device.uuid
+            );
+            await promise.then((status) => {
+                this.dataSource[i].status = status;
+                this.table.renderRows();
+            });
+        }
+
+    }
+    */
     async add() {
         const dialogRef = this.dialog.open(AddDeviceComponent, {
             width: '100%',
