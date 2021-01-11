@@ -45,6 +45,11 @@ export interface DeviceStatus {
 interface DeviceList {
     data: Device[];
 }
+
+export interface DeviceUuidList {
+    data: string[];
+}
+
 interface DeviceStatusList {
     data: DeviceStatus[];
 }
@@ -265,6 +270,30 @@ export class DeviceService {
             .get<DeviceStatus>(this.serverUrl + '/api/deviceStatus/' + uuid)
             .toPromise();
     }
+    /*
+    // Todo: Add a function that passes a list of device uuids to the backend and returns the respective status elements
+    async setDeviceStatusList(uuid: string, device: Device) {
+        return this.http
+            .put(this.serverUrl + '/api/devices/' + uuid, device)
+            .toPromise();
+    }
+
+     
+    async getDeviceStatusList(uuidList: string[]): Promise<DeviceStatus[]> {
+        console.log('uuidList in service');
+        console.log(uuidList);
+        const deviceStatusList: DeviceStatusList = {
+            data: [
+                {online: true, status: 'test'},
+                {online: false, status: 'test1'},
+                {online: true, status: 'test2'}
+                ]
+        };
+        return deviceStatusList;
+    }
+    */
+
+
     getDeviceFeatures(uuid: string): Promise<DeviceFeature[]> {
         return this.http
             .get<DeviceFeatureList>(

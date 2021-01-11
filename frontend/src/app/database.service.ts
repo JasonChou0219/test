@@ -71,7 +71,7 @@ export class DatabaseService {
     }
     async setDatabase(uuid: string, database: Database) {
         // Not implemented in the backend yet
-        // may not be needed. Replac by linkDatabase?
+        // may not be needed. Replace by linkDatabase?
         return this.http
             .put(this.serverUrl + '/api/database/' + uuid, database)
             .toPromise();
