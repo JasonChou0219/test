@@ -137,9 +137,9 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
 
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
         console.log('Klick mich', meta, active);
-        // Toggle the current value
-        if (meta === undefined || null) { meta = false; } else { meta = !meta; }
-        if (active === undefined || null) { active = false; } else { active = !active; }
+        // Check parameters
+        if (meta === undefined || null) { meta = false; }
+        if (active === undefined || null) { active = false; }
 
         await this.databaseService.setCheckboxFeatureLevel(uuid, featureId, active, meta);
         // await this.getFeatures();
