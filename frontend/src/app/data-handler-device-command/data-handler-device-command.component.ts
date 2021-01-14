@@ -33,9 +33,9 @@ export class DataHandlerDeviceCommandComponent implements OnInit, OnChanges {
   async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean,
                                 active: boolean, metaInterval: number, nonMetaInterval: number) {
       console.log(meta, active, metaInterval, nonMetaInterval, this.paramValues);
-      // Toggle the current value
-      if (meta === undefined || null) { meta = false; } else { meta = !meta; }
-      if (active === undefined || null) { active = false; } else { active = !active; }
+      // Check parameters
+      if (meta === undefined || null) { meta = false; }
+      if (active === undefined || null) { active = false; }
 
       await this.databaseService.setCheckboxCommandLevel(uuid, featureId, commandId,
             meta, active, metaInterval, nonMetaInterval, this.paramValues);
