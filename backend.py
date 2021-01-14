@@ -15,7 +15,7 @@ from source.device_manager.database import get_redis_pool
 
 from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, DeviceUuidListModel, \
     NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
-    NewDatabaseModel, DatabaseInfoModel
+    NewDatabaseModel, DatabaseInfoModel, DeviceCommandParameter
 import source.device_manager.user as user
 from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
 
@@ -340,6 +340,32 @@ def set_feature_attributes_for_data_handler(uuid: str,
                                             username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
     device_manager_service.set_feature_attributes_for_data_handler(uuid, id, active, meta)
+    return
+
+
+@app.put('/api/devices/{uuid}/features/{feature_id}/commands/{command_id}/dataHandler')
+def set_command_attributes_for_data_handler(uuid: str,
+                                            feature_id: str,
+                                            command_id: str,
+                                            parameters: List[DeviceCommandParameter],
+                                            active: bool = Body(...),
+                                            meta: bool = Body(...),
+                                            nonMetaInterval: int = Body(default=None),
+                                            metaInterval: int = Body(default=None),
+                                            username: str = Depends(decode_token)):
+    print("parameters:")
+    print(parameters)
+    print("active:")
+    print(active)
+    print("meta")
+    print(meta)
+    print("nonMetaInterval")
+    print(nonMetaInterval)
+    print("metaInterval")
+    print(metaInterval)
+    device_manager_service = DeviceManagerService()
+    device_manager_service.set_command_attributes_for_data_handler(uuid, feature_id, command_id, active, meta,
+                                                                   nonMetaInterval, metaInterval, parameters)
     return
 
 
