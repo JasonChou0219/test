@@ -220,7 +220,7 @@ export class DataHandlerComponent implements OnInit {
             const promise = this.deviceService.getDeviceStatus(
                 this.dataSource[i].device.uuid
             );
-            await promise.then((status) => {
+            promise.then((status) => {
                 console.log(status);
                 this.dataSource[i].status = status;
             });
@@ -230,7 +230,7 @@ export class DataHandlerComponent implements OnInit {
                 const promiseDB = this.databaseService.getDatabaseStatus(
                     this.dataSource[i].device.databaseId
                 );
-                await promiseDB.then((status) => {
+                promiseDB.then((status) => {
                     this.dataSource[i].databaseStatus = status;
                     this.tableDevices.renderRows();
                 });
