@@ -208,20 +208,6 @@ class DeviceManager:
             print('get_status process finished')
         return device_status
 
-    def get_status_list(self, uuid_list: [UUID]) -> [DeviceStatus]:
-        # Todo: Check status for a list of databases with a threadpool. Delete comments
-        for device_uuid in uuid_list:
-            print(device_uuid)
-        with mpp.ThreadPool(processes=50) as pool:
-            results = [pool.apply_async(self.get_status, [device_uuid]) for device_uuid in uuid_list]
-            device_status_list = []
-            for async_result in results:
-                try:
-                    device_status_list.append(async_result.get())
-                    print(device_status_list[-1])
-                except ValueError as e:
-                    print(e)
-        return device_status_list
 
     def get_device_instance(self, uuid: UUID):
         """Get a device instance for the specified device
@@ -675,19 +661,6 @@ class DeviceManager:
             process.close()
             print('get_status process finished')
         return database_status
-
-
-    def get_database_status_list(self, id_list: List[int]) -> [DatabaseStatus]:
-        # Todo: Check status for a list of databases with a threadpool
-        with mpp.ThreadPool(processes=50) as pool:
-            results = [pool.apply_async(self.get_database_status, [database_id]) for database_id in id_list]
-            database_status_list = []
-            for async_result in results:
-                try:
-                    database_status_list.append(async_result.get())
-                except ValueError as e:
-                    print(e)
-        return database_status_list
 
 
     def add_database(self, name: str, address: str, port: int):

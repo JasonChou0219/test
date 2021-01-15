@@ -13,8 +13,8 @@ import json
 import msgpack
 from source.device_manager.database import get_redis_pool
 
-from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, DeviceUuidListModel, \
-    NewDeviceModel, BookingModel, ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
+from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, \
+    ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
     NewDatabaseModel, DatabaseInfoModel, DeviceCommandParameter
 import source.device_manager.user as user
 from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
@@ -226,14 +226,6 @@ def device_status(uuid: str, username: str = Depends(decode_token)):
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_status(uuid)
 
-
-@app.get('/api/deviceStatusList/{uuidList}')
-def device_status_list(uuid_list: List[str], username: str = Depends(decode_token)):
-    print('UUIDLIST_0', uuid_list)
-    device_manager_service = DeviceManagerService()
-    return {
-        'data': device_manager_service.get_status_list(uuid_list)
-    }
 
 @app.get('/api/deviceFeatures/{uuid}')
 def device_features(uuid: str, username: str = Depends(decode_token)):
