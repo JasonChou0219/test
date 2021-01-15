@@ -52,9 +52,10 @@ export class DataHandlerDeviceCommandComponent implements OnInit, OnChanges {
         this.paramValues = this.command.parameters.map((param) => {
             return { name: param.identifier.toLowerCase() + '/' + param.type.toLowerCase(), value: '' };
         });
-        console.log(this.paramValues);
     }
 
     ngOnInit(): void {
+      console.log('parameters:');
+      console.log(this.command);
     }
 }

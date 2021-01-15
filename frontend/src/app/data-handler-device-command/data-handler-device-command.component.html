@@ -65,6 +65,7 @@
                                     matInput
                                     type="text"
                                     [(ngModel)]="paramValues[i].value"
+                                    placeholder="{{command.parameters[i].value}}"
                                 />
                             </mat-form-field>
                         </div>
@@ -98,13 +99,13 @@
                     <ng-container *ngIf="command.meta; else elseBlock">
                         <mat-form-field style=" margin-left: 0">
                             <mat-label>Polling interval (meta)</mat-label>
-                            <input matInput  [(ngModel)]="command.polling_interval_meta" placeholder="if: {{command.polling_interval_meta}} s" />
+                            <input matInput  [(ngModel)]="command.polling_interval_meta" placeholder="{{command.polling_interval_meta}} s" />
                         </mat-form-field>
                     </ng-container>
                     <ng-template #elseBlock>
                         <mat-form-field style=" margin-left: 0">
                             <mat-label>Polling interval (non-meta)</mat-label>
-                            <input matInput  [(ngModel)]="command.polling_interval_non_meta" placeholder="else: {{command.polling_interval_non_meta}} s" />
+                            <input matInput  [(ngModel)]="command.polling_interval_non_meta" placeholder="{{command.polling_interval_non_meta}} s" />
                         </mat-form-field>
                     </ng-template>
                     <mat-card-actions style="margin-left: 20px">

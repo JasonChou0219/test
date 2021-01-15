@@ -495,8 +495,8 @@ def add_commands_for_data_handler(c):
               'name varchar(256), ' \
               'description text, ' \
               'observable boolean, ' \
-              'interval integer, ' \
-              'meta_interval integer, ' \
+              'polling_interval_non_meta integer, ' \
+              'polling_interval_meta integer, ' \
               'activated boolean, ' \
               'meta boolean, ' \
               'feature integer)')
@@ -510,8 +510,8 @@ def add_properties_for_data_handler(c):
               'name varchar(256), ' \
               'description text, ' \
               'observable boolean, ' \
-              'interval integer, ' \
-              'meta_interval integer, ' \
+              'polling_interval_non_meta integer, ' \
+              'polling_interval_meta integer, ' \
               'activated boolean, ' \
               'meta boolean, ' \
               'feature integer)')

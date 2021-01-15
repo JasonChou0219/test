@@ -110,80 +110,7 @@ export class DataHandlerComponent implements OnInit {
         await this.databaseService.deleteDatabase(database.id);
         await this.refreshDatabases();
   }
-  /*
-  async getDevices() {
-      const deviceList = await this.deviceService.getDeviceList();
-      console.log('Returning devices');
-      console.log(deviceList);
-      const data: RowDataDevice[] = [];
-      // if (this.dataSource.length === 0) {
-      //    console.log('Im empty inside');
-      //    data = [];
-      // }
-      for (const dev of deviceList) {
-          console.log('dev.databaseId:', dev.databaseId);
-          let db: Database = {
-              name: '-',
-              address: '-',
-              port: 0,
-          };
 
-
-
-          if (dev.databaseId === null) {
-              console.log('1 In if statement');
-              console.log('ID', dev.databaseId);
-          } else if (dev.databaseId === undefined) {
-              console.log('1 In elif statement');
-              console.log('ID', dev.databaseId);
-          } else {
-              db = await this.databaseService.getDatabase(dev.databaseId);
-          }
-
-          let dbStatus: DatabaseStatus = {
-              online: false,
-              status: '',
-          };
-          if (db.id === null) {
-          } else if (db.id === undefined) {
-          } else {
-              dbStatus = await this.databaseService.getDatabaseStatus(db.id);
-          }
-          data.push({
-              device: dev,
-              status: {online: false, status: ''},
-              database: db ,
-              databaseStatus: {online: false, status: ''},
-              detailsLoaded: false,
-          });
-      }
-      this.dataSource = data;
-      for (let i = 0; i < this.dataSource.length; i++) {
-          // Todo: This should be done using multiple threads in the backend to reduce slow loops in the frontend
-          const promise = this.deviceService.getDeviceStatus(
-              this.dataSource[i].device.uuid
-          );
-          await promise.then((status) => {
-              console.log(status);
-              this.dataSource[i].status = status;
-              this.tableDevices.renderRows();
-          });
-          const databaseId = this.dataSource[i].device.databaseId;
-          if (databaseId === null) {
-          } else if (databaseId === undefined) {
-          } else {
-              const promiseDB = this.databaseService.getDatabaseStatus(
-                  this.dataSource[i].device.databaseId
-              );
-              await promiseDB.then((status) => {
-                  this.dataSource[i].databaseStatus = status;
-                  this.tableDevices.renderRows();
-              });
-          }
-          this.tableDevices.renderRows();
-      }
-  }
-  */
   async getDevices() {
         const deviceList = await this.deviceService.getDeviceList();
         console.log('Returning devices');
@@ -193,7 +120,7 @@ export class DataHandlerComponent implements OnInit {
             console.log('Im empty inside');
         } else {
 
-            console.log('Ive got friends:', this.dataSource.length)
+            console.log('Ive got friends:', this.dataSource.length);
         }
 
         let db: Database = {
@@ -290,8 +217,6 @@ export class DataHandlerComponent implements OnInit {
   ngOnInit(): void {
         // this.databases = this.databaseService.getDatabases();
         this.route.paramMap.subscribe(params => {
-        // this.databases = [this.testDatabase];
-        // this.selectedDatabase = this.databases.pop();
         this.getDevices();
         this.getDatabases();
       });

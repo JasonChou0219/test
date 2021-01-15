@@ -112,8 +112,6 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
     treeControl = new NestedTreeControl<TreeNode>((node) => node.children);
     dataSource = new MatTreeNestedDataSource<TreeNode>();
     features: DeviceFeature[] = [];
-    dataTransferCheckbox = false;
-    metaDataCheckbox = false;
 
     constructor(public deviceService: DeviceService,
                 private databaseService: DatabaseService) {}
@@ -136,7 +134,6 @@ export class DataHandlerDeviceDetailComponent implements OnInit {
     }
 
     async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
-        console.log('Klick mich', meta, active);
         // Check parameters
         if (meta === undefined || null) { meta = false; }
         if (active === undefined || null) { active = false; }

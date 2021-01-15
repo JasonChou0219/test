@@ -428,7 +428,7 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select identifier,name,description,observable,id,interval,meta_interval,activated,meta from commands_for_data_handler where feature=%s',
+                    'select identifier,name,description,observable,id,polling_interval_non_meta,polling_interval_meta,activated,meta from commands_for_data_handler where feature=%s',
                     [str(feature_id)])
                 result = cursor.fetchall()
                 commands = [
@@ -441,8 +441,8 @@ class DeviceManager:
                                                 intermediates=[],
                                                 defined_execution_errors=[],
                                                 id=row[4],
-                                                interval=row[5],
-                                                meta_interval=row[6],
+                                                polling_interval_non_meta=row[5],
+                                                polling_interval_meta=row[6],
                                                 active=row[7],
                                                 meta=row[8]) for row in result
                 ]
@@ -553,7 +553,7 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select id,identifier,name,description,observable,interval,meta_interval,activated,meta from properties_for_data_handler where feature=%s',
+                    'select id,identifier,name,description,observable,polling_interval_non_meta,polling_interval_meta,activated,meta from properties_for_data_handler where feature=%s',
                     [str(feature_id)])
                 result = cursor.fetchall()
                 properties = [
@@ -564,8 +564,8 @@ class DeviceManager:
                                                  observable=row[4],
                                                  response=None,
                                                  defined_execution_errors=[],
-                                                 interval=row[5],
-                                                 meta_interval=row[6],
+                                                 polling_interval_non_meta=row[5],
+                                                 polling_interval_meta=row[6],
                                                  active=row[7],
                                                  meta=row[8]) for row in result
                 ]
@@ -794,7 +794,7 @@ class DeviceManager:
                     [device_active, device_uuid])
 
     def set_command_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, command_id: str, active: bool,
-                                                meta: bool, interval: int, meta_interval: int, parameters):
+                                                meta: bool, polling_interval_non_meta: int, polling_interval_meta: int, parameters):
         """Set the attributes of the specified command to the specified values
         Args:
             device_uuid: The uuid of the device
@@ -802,22 +802,22 @@ class DeviceManager:
             command_id: the id of the command
             active: The new value of the 'active' attribute
             meta: The new value of the 'meta' attribute
-            interval: The new value of the 'interval' attribute
-            meta_interval: The new value of the 'meta_interval' attribute
+            polling_interval_non_meta: The new value of the 'polling_interval_non_meta' attribute
+            polling_interval_meta: The new value of the 'polling_interval_meta' attribute
             parameters: The new values of the parameters of the command
         """
         # TODO parameters
-        # Check if interval values are specified: if not, use defaults
-        if interval is None:
-            interval = INTERVAL
-        if meta_interval is None:
-            meta_interval = META_INTERVAL
+        # Check if polling_interval_non_meta values are specified: if not, use defaults
+        if polling_interval_non_meta is None:
+            polling_interval_non_meta = INTERVAL
+        if polling_interval_meta is None:
+            polling_interval_meta = META_INTERVAL
         with self.conn as conn:
             with conn.cursor() as cursor:
                 # Update the command
                 cursor.execute(
-                    'update commands_for_data_handler set activated = %s, meta = %s, interval = %s, meta_interval = %s where id = %s',
-                    [active, meta, interval, meta_interval, command_id])
+                    'update commands_for_data_handler set activated = %s, meta = %s, polling_interval_non_meta = %s, polling_interval_meta = %s where id = %s',
+                    [active, meta, polling_interval_non_meta, polling_interval_meta, command_id])
                 # Retrieve the 'active' and 'meta' attributes of the commands and properties of the feature
                 cursor.execute(
                     'select activated, meta from commands_for_data_handler where feature = %s',

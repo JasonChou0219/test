@@ -18,8 +18,8 @@ class DeviceParameterForDataHandler(DeviceParameter):
 
 @dataclass
 class DataHandlerConfig:
-    interval: int
-    meta_interval: int
+    polling_interval_non_meta: int
+    polling_interval_meta: int
     active: bool
     meta: bool
 
