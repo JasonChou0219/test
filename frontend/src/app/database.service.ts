@@ -48,53 +48,39 @@ export class DatabaseService {
     serverUrl = SERVER_URL;
     constructor(private http: HttpClient) {
     }
-    // getDatabaseList will replace getDatabases once implemented in the backend
     async getDatabases(): Promise<Database[]> {
         console.log('GetDatabases is executing......');
         return this.http
             .get<DatabaseList>(this.serverUrl + '/api/databases/')
             .pipe(map((databaseList) => databaseList.data))
             .toPromise();
-        // Todo: Implement call to backend!
     }
     async getDatabase(id: number): Promise<Database> {
-        // Not implemented in the backend yet
         return this.http
             .get<Database>(this.serverUrl + '/api/databases/' + id)
             .toPromise();
     }
     async getDatabaseStatus(id: number): Promise<DatabaseStatus> {
-        // Not implemented in the backend yet
         return this.http
             .get<DatabaseStatus>(this.serverUrl + '/api/databaseStatus/' + id)
             .toPromise();
     }
     async setDatabase(uuid: string, database: Database) {
-        // Not implemented in the backend yet
-        // may not be needed. Replace by linkDatabase?
         return this.http
             .put(this.serverUrl + '/api/database/' + uuid, database)
             .toPromise();
     }
     async addDatabase(database: Database) {
-        // Not implemented in backend yet
-        // Will replace addDatabase
         return this.http
             .post(this.serverUrl + '/api/databases', database)
             .toPromise();
     }
     async deleteDatabase(id: string) {
-        // Will replace deleteDatabase
-        // Not implemented in the backend yet
         return this.http
             .delete(this.serverUrl + '/api/databases/' + id)
             .toPromise();
     }
     async linkDatabaseToDevice(uuid: string, id: number) {
-        // maybe use device, database instead of id, uuid
-        // Link a database (id) to a device (uuid)
-        console.log('Link data');
-        console.log(uuid, id);
         return this.http
             .put(this.serverUrl + '/api/devices/' + uuid + '/database', id)
             .toPromise();
@@ -103,8 +89,6 @@ export class DatabaseService {
         return this.http
             .delete(this.serverUrl + '/api/devices/' + uuid + '/database')
             .toPromise();
-        // Todo: Add functional implementation. Create backend counterpart
-        //  Fix url
     }
     clearDatabases() {
         this.databases = [];
@@ -124,7 +108,8 @@ export class DatabaseService {
     async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean, active: boolean,
                                   metaInterval: number, nonMetaInterval: number, parameters: FeatureCommandParam[]) {
         return this.http
-            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/commands/' + commandId + '/dataHandler', {parameters, active, meta, nonMetaInterval, metaInterval})
+            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/commands/' + commandId +
+                '/dataHandler', {parameters, active, meta, nonMetaInterval, metaInterval})
             .toPromise();
     }
     async setCheckboxPropertyLevel(uuid: string, featureId: number, propertyId: number, meta: boolean, active: boolean,
