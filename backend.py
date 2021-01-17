@@ -59,11 +59,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# must be replaced
-#secret_key= b'\x13\\TyF\xca\x98=\x02W\xf8,\x07K#\xbc\x8b\xcdA'\
-#                           b'\x05!\xf0\x1a\x05yK\xb3\x03b\x1b\xbd}1z\xc6&p'\
-#                           b'\xf2\xc2\x8d#~\xd0\x87@\xd8uj2Z\xf2\xb1\x14!\xe7'\
-#                           b'\xdc\xd0\xc6\xa3(\x9f\x8e{;'
 
 secret_key = base64.b64decode(config['Security']['SecretKey'])
 
