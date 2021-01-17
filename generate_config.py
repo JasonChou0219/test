@@ -13,6 +13,12 @@ config = configparser.ConfigParser()
 config['Security'] = {
     'SecretKey': base64.b64encode(secrets.token_bytes(64)).decode()
 }
+config['Database'] = {
+    'host': 'localhost',
+    'port': 5432,
+    'user': 'postgres',
+    'password': '1234'
+}
 
 os.makedirs(DIRECTORY, exist_ok=True)
 with open(CONFIG_FILE, 'w') as configfile:

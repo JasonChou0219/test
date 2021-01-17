@@ -4,6 +4,8 @@ from os import path
 
 from .data_directories import DATA_DIRECTORY
 from .thread_local_storage import get_storage
+from .global_storage import get_global_storage
+
 
 async def get_redis_pool():
     storage = get_storage()
@@ -16,9 +18,9 @@ async def get_redis_pool():
 def get_database_connection():
     storage = get_storage()
     if storage.get('conn') is None:
-        #TODO read connection parameters from config file
-        storage['conn'] = psycopg2.connect(host='localhost',
-                                           port=5432,
-                                           user='postgres',
-                                           password='1234')
+        config = get_global_storage().get('config')['Database']
+        storage['conn'] = psycopg2.connect(host=config['host'],
+                                           port=config['port'],
+                                           user=config['user'],
+                                           password=config['password'])
     return storage['conn']

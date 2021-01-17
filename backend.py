@@ -15,6 +15,7 @@ import configparser
 import base64
 from source.device_manager.database import get_redis_pool
 from source.device_manager.data_directories import DATA_DIRECTORY
+from source.device_manager.global_storage import get_global_storage
 
 from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, \
     ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
@@ -34,6 +35,8 @@ try:
 except Exception:
     print("Could not read Config File!")
     exit()
+
+get_global_storage()['config'] = config
 
 app = FastAPI()
 
