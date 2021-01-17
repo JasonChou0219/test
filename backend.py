@@ -14,6 +14,7 @@ import msgpack
 import configparser
 import base64
 from source.device_manager.database import get_redis_pool
+from source.device_manager.data_directories import DATA_DIRECTORY
 
 from source.backend.device_manager_service import DeviceManagerService, DeviceInfoModel, NewDeviceModel, BookingModel, \
     ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
@@ -29,7 +30,7 @@ class Status(BaseModel):
 config = configparser.ConfigParser()
 
 try:
-    config.read('/etc/sila2-device-manager/device-manager.conf')
+    config.read(f'{DATA_DIRECTORY}/device-manager.conf')
 except Exception:
     print("Could not read Config File!")
     exit()

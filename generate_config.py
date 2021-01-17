@@ -3,8 +3,10 @@ import secrets
 import base64
 import configparser
 import os
+from source.device_manager.data_directories import DATA_DIRECTORY
 
-DIRECTORY = '/etc/sila2-device-manager'
+#DIRECTORY = '/etc/sila2-device-manager'
+DIRECTORY = DATA_DIRECTORY
 CONFIG_FILE = f'{DIRECTORY}/device-manager.conf'
 
 config = configparser.ConfigParser()
