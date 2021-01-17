@@ -3,7 +3,7 @@
 Lamas/SiLA2_Device_Manager is an open-source framework for laboratory automation with a modern IoT interface. It provides the user with a device management system for SiLA devices, a scheduler and a scripting and experiment planning utility.
 
 
-## Device Manager
+## Development Enviroment
 
 ### Setup
 1. Install Docker (v2.3.0.5)  
@@ -23,6 +23,9 @@ The next time you want use the containers you can start them directly:
 4. Setup a test database:  
 Run `python setup_test_db.py` from inside your pipenv enviroment.
 
+5. Create Config File:  
+Run `python generate_config.py` from inside your pipenv enviroment.
+
 
 ### Starting the Backend development Server
 
@@ -32,3 +35,11 @@ Run `./run_backend_server.sh` from inside your pipenv enviroment.
 #### Windows
 Run `./run_backend_server.bat` from inside your pipenv enviroment.
 
+## Server Deployment 
+
+1. Install nginx
+On ubuntu this can be installed with apt 
+`sudo apt install nginx`
+
+2. Install Postgresql
+`sudo apt install postgresql`
