@@ -188,6 +188,11 @@ class DeviceManagerService:
         self.device_manager.set_command_attributes_for_data_handler(device_uuid, feature_id, command_id, active, meta,
                                                                     interval, meta_interval, parameters)
 
+    def set_property_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, property_id: str,
+                                                 active: bool, meta: bool, interval: int, meta_interval: int):
+        self.device_manager.set_property_attributes_for_data_handler(device_uuid, feature_id, property_id, active, meta,
+                                                                     interval, meta_interval)
+
     def discover_sila_devices(self):
         return [
             asdict(dev) for dev in self.device_manager.discover_sila_devices()

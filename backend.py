@@ -370,6 +370,21 @@ def set_command_attributes_for_data_handler(uuid: str,
     return
 
 
+@app.put('/api/devices/{uuid}/features/{feature_id}/properties/{property_id}/dataHandler')
+def set_property_attributes_for_data_handler(uuid: str,
+                                             feature_id: str,
+                                             property_id: str,
+                                             active: bool = Body(...),
+                                             meta: bool = Body(...),
+                                             nonMetaInterval: int = Body(default=None),
+                                             metaInterval: int = Body(default=None),
+                                             username: str = Depends(decode_token)):
+    device_manager_service = DeviceManagerService()
+    device_manager_service.set_property_attributes_for_data_handler(uuid, feature_id, property_id, active, meta,
+                                                                    nonMetaInterval, metaInterval)
+    return
+
+
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
     device_manager_service = DeviceManagerService()

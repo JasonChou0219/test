@@ -858,6 +858,70 @@ class DeviceManager:
                     'update devices set activated = %s where uuid = %s',
                     [device_active, device_uuid])
 
+    def set_property_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, property_id: str,
+                                                 active: bool, meta: bool, polling_interval_non_meta: int,
+                                                 polling_interval_meta: int):
+        """Set the attributes of the specified property to the specified values
+        Args:
+            device_uuid: The uuid of the device
+            feature_id: The id of the feature
+            property_id: the id of the property
+            active: The new value of the 'active' attribute
+            meta: The new value of the 'meta' attribute
+            polling_interval_non_meta: The new value of the 'polling_interval_non_meta' attribute
+            polling_interval_meta: The new value of the 'polling_interval_meta' attribute
+        """
+        # Check if polling_interval_non_meta values are specified: if not, use defaults
+        if polling_interval_non_meta is None:
+            polling_interval_non_meta = INTERVAL
+        if polling_interval_meta is None:
+            polling_interval_meta = META_INTERVAL
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                # Update the property
+                cursor.execute(
+                    'update properties_for_data_handler set activated = %s, meta = %s, polling_interval_non_meta = %s, polling_interval_meta = %s where id = %s',
+                    [active, meta, polling_interval_non_meta, polling_interval_meta, property_id])
+                # Retrieve the 'active' and 'meta' attributes of the commands and properties of the feature
+                cursor.execute(
+                    'select activated, meta from commands_for_data_handler where feature = %s',
+                    [feature_id])
+                feature_commands_attributes = cursor.fetchall()
+                cursor.execute(
+                    'select activated, meta from properties_for_data_handler where feature = %s',
+                    [feature_id])
+                feature_properties_attributes = cursor.fetchall()
+                # Update the feature 'active' and 'meta' attributes to be consistent with
+                # the new property 'active' and 'meta' attributes:
+                # - if all commands and properties of a feature are active, then the feature should be active as well
+                # - otherwise the feature should NOT be active
+                # And similar for the 'meta' attribute
+                feature_active = True
+                feature_meta = True
+                for command_attributes in feature_commands_attributes:
+                    feature_active = feature_active and command_attributes[0]
+                    feature_meta = feature_meta and command_attributes[1]
+                for property_attributes in feature_properties_attributes:
+                    feature_active = feature_active and property_attributes[0]
+                    feature_meta = feature_meta and property_attributes[1]
+                cursor.execute(
+                    'update features_for_data_handler set activated = %s, meta = %s where id = %s',
+                    [feature_active, feature_meta, feature_id])
+                # Retrieve the 'active' attribute of the features of the device
+                cursor.execute(
+                    'select activated from features_for_data_handler where device = %s',
+                    [device_uuid])
+                device_features_active = cursor.fetchall()
+                # Update the device 'active' attribute to be consistent with the new feature 'active' attribute:
+                # - if all features of a device are active, then the device should be active as well
+                # - otherwise the device should NOT be active
+                device_active = True
+                for feature_active in device_features_active:
+                    device_active = device_active and feature_active[0]
+                cursor.execute(
+                    'update devices set activated = %s where uuid = %s',
+                    [device_active, device_uuid])
+
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
         Returns:
