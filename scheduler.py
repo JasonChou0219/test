@@ -151,7 +151,7 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
         asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
     ]
 
-    #start_data_handling_for_experiment(exp)
+    start_data_handling_for_experiment(exp)
 
     client = docker.from_env()
     container = docker_helper.create_script_container(client, exp.name,
