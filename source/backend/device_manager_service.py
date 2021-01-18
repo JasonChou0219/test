@@ -236,9 +236,15 @@ class DeviceManagerService:
             for experiment in self.device_manager.get_user_experiments(user)
         ]
 
+
     def create_experiment(self, name: str, start: int, end: int, user: int,
                           devices: List[UUID], script: int) -> bool:
         return self.device_manager.create_experiment(name, start, end, user,
+                                                     devices, script)
+
+    def edit_experiment(self, experimentID: int, name: str, start: int, end: int, user: int,
+                          devices: List[UUID], script: int) -> bool:
+        return self.device_manager.edit_experiment(experimentID, name, start, end, user,
                                                      devices, script)
 
     def delete_experiment(self, experimentID: int):

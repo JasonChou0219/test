@@ -1014,6 +1014,11 @@ class DeviceManager:
         return experiment.create_experiment(name, start, end, user, devices,
                                             script)
 
+    def edit_experiment(self, experimentID: int, name: str, start: int, end: int, user: int,
+                          devices: List[UUID], script: int) -> int:
+        return experiment.edit_experiment(experimentID, name, start, end, user, devices,
+                                            script)
+
     def delete_experiment(self, experimentID: int):
         return experiment.delete_experiment(experimentID)
 

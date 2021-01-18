@@ -431,6 +431,11 @@ export class DeviceService {
             .post(this.serverUrl + '/api/experiments', experiment)
             .toPromise();
     }
+    async editExperiment(experimentID: number, experiment: ExperimentBookingInfo) {
+        return this.http
+            .put(this.serverUrl + '/api/experiments/edit/' + experimentID, experiment)
+            .toPromise();
+    }
     async getExperiments(): Promise<Experiment[]> {
         return this.http
             .get<ExperimentList>(this.serverUrl + '/api/experiments')
