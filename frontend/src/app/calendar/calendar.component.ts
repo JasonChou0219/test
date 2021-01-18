@@ -7,11 +7,11 @@ import { parse, isValid } from 'date-fns';
 import { UserService } from '../user.service';
 
 @Component({
-    selector: 'app-scheduler',
-    templateUrl: './scheduler.component.html',
-    styleUrls: ['./scheduler.component.scss'],
+    selector: 'app-calendar',
+    templateUrl: './calendar.component.html',
+    styleUrls: ['./calendar.component.scss'],
 })
-export class SchedulerComponent implements OnInit {
+export class CalendarComponent implements OnInit {
     viewDate: Date = new Date();
     view: CalendarView = CalendarView.Week;
     data: any[] = [];

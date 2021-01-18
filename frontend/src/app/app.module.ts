@@ -41,7 +41,7 @@ import { HttpErrorInterceptor } from './http-error.interceptor';
 import { LogViewComponent } from './log-view/log-view.component';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { SchedulerComponent } from './scheduler/scheduler.component';
+import { CalendarComponent } from './calendar/calendar.component';
 import { AddBookingComponent } from './add-booking/add-booking.component';
 import { AdminAreaComponent } from './admin-area/admin-area.component';
 import { SetUserComponent } from './set-user/set-user.component';
@@ -77,7 +77,7 @@ import { AddDatabaseComponent } from './add-database/add-database.component';
         EditDeviceComponent,
         LoginComponent,
         LogViewComponent,
-        SchedulerComponent,
+        CalendarComponent,
         AddBookingComponent,
         DataHandlerComponent,
         AdminAreaComponent,

@@ -4,7 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { DeviceListComponent } from './device-list/device-list.component';
 import { LogViewComponent } from './log-view/log-view.component';
 import { AuthGuard } from './auth.guard';
-import { SchedulerComponent } from './scheduler/scheduler.component';
+import { CalendarComponent } from './calendar/calendar.component';
 import { DataHandlerComponent } from './data-handler/data-handler.component';
 import { AdminAreaComponent } from './admin-area/admin-area.component';
 import { UserAreaComponent } from './user-area/user-area.component';
@@ -20,8 +20,8 @@ const routes: Routes = [
     },
     { path: 'login', component: LoginComponent },
     {
-        path: 'scheduler',
-        component: SchedulerComponent,
+        path: 'calendar',
+        component: CalendarComponent,
         canActivate: [AuthGuard],
     },
     {
