@@ -15,7 +15,7 @@ python implementation evolves, the Device manager updates will incorporate new c
 
 Backend
 ========
-include a pictogram of the backend that is more detailled than the general one. Include redis, postgreSQL, device layer,
+include a pictogram of the backend that is more detailed than the general one. Include redis, postgreSQL, device layer,
 dynamic client, sila_device, data-handler, influxDB, FatsAPI, scheduler, experiment environment and how they interact
 Written in python.
 

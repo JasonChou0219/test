@@ -21,10 +21,11 @@ The log-in view is a security feature, that ensures that only registered users h
 network. Once logged-in, you can add new users, delete users and reset passwords. The device manager uses the Angular
 Authentication tool (AuthInterceptor) which relies on a HttpInterceptor interface to grant access to permitted users.
 
-.. image:: src/login_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the login page with entered admin credentials
+//.. image:: src/login_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the login page with entered admin credentials
+
 
 Devices view
 -------------
@@ -40,10 +41,10 @@ This device tree enables the user to run commands and request properties interac
 lowest level of the device tree, the command/property level, a run button can be clicked to execute the the function.
 For functions that require user input, the parameters can be entered in the corresponding text box.
 
-.. image:: src/devices_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the main page, the devices list, including general device details
+//.. image:: src/devices_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the main page, the devices list, including general device details
 
 **Device-discovery**
 
@@ -55,10 +56,10 @@ dynamic client. Client files are stored in the local temporary folder named afte
 
 *[...]Temp/device-manager/SiLA/<device-UUID>/*
 
-.. image:: src/devices_discovery_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the discovery feature for adding new devices to the manager
+//.. image:: src/devices_discovery_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the discovery feature for adding new devices to the manager
 
 Data handler view
 ------------------
@@ -79,38 +80,38 @@ Measurement data (Temperature, pressure, etc. etc.) on the contrary is usually q
 data handler distinguishes between the two. Since there is no way to distinguish the two automatically in a reliable
 fashion, the user can specify the type for each command using the meta-checkbox. Depending on the selection, a default value is implemented
 (1h for meta-data, 60s for measurement data). Obviously, different users have different needs regarding polling
-intervalls, thus the defaults can be overwritten to transfer data according to a custom polling interval.
+intervals, thus the defaults can be overwritten to transfer data according to a custom polling interval.
 
 Only one configuration can be stored at a time. Future releases will include the possibility to upload and download
 configuration files and select configuration files for a specific booking.
 
 
-.. image:: src/data_handler_main_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the data handler feature
+//.. image:: src/data_handler_main_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the data handler feature
 
 My scripts view
 -----------------
 
-.. image:: src/my_scripts_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the scripting environment
+//.. image:: src/my_scripts_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the scripting environment
 
 Experiments view
 -----------------
 
-.. image:: src/experiments_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the experiment creation feature
+//.. image:: src/experiments_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the experiment creation feature
 
 Booking view
 --------------
 
-.. image:: src/booking_view.png
-    :width: 800
-    :height: 200
-    :alt: A view of the device booking system
+//.. image:: src/booking_view.png
+//    :width: 800
+//    :height: 200
+//    :alt: A view of the device booking system
 

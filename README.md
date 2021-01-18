@@ -45,3 +45,13 @@ Visit: `http://nginx.org/en/download.html`
 
 2. Install PostgreSQL
 `sudo apt install postgresql`
+
+
+## Documentation
+Documentation can be generated using sphinx.
+1. Run the following command from within the docs folder
+To generate a pdf:
+`make latexpdf`
+To generate a html-file
+`make html`
+2. The file will be stored in the _build folder inside the docs folder

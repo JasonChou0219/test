@@ -35,5 +35,6 @@ docker = "*"
 typing-extensions = "*"
 websockets = "*"
 protobuf = "*"
+sphinx = "*"
 
 [requires]
