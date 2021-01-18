@@ -80,9 +80,9 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
             for command in feature.commands:
                 if command.active:
                     if command.meta:
-                        interval_to_use = command.meta_interval
+                        interval_to_use = command.polling_interval_meta
                     else:
-                        interval_to_use = command.interval
+                        interval_to_use = command.polling_interval_non_meta
                     if (interval_to_use, device_booking.start, device_booking.end) in commands_to_call.keys():
                         if device_uuid in commands_to_call[(interval_to_use,
                                                        device_booking.start,
@@ -101,9 +101,9 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
             for property in feature.properties:
                 if property.active:
                     if property.meta:
-                        interval_to_use = property.meta_interval
+                        interval_to_use = property.polling_interval_meta
                     else:
-                        interval_to_use = property.interval
+                        interval_to_use = property.polling_interval_non_meta
                     if (interval_to_use, device_booking.start, device_booking.end) in properties_to_call.keys():
                         if device_uuid in properties_to_call[(interval_to_use,
                                                          device_booking.start,
