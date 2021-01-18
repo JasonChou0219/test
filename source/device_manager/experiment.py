@@ -121,6 +121,7 @@ def get_scheduling_info() -> List[SchedulingInfo]:
 
 def create_experiment(name: str, start: int, end: int, user: int,
                       devices: List[UUID], script: int) -> int:
+    print(name, start, end, user, devices, script)
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
@@ -137,13 +138,32 @@ def create_experiment(name: str, start: int, end: int, user: int,
             return experiment_id
 
 
-def delete_experiment(experimentID: int):
+def edit_experiment(experiment_id: int, name: str, start: int, end: int, user: int,
+                    devices: List[UUID], script: int) -> int:
+    print(experiment_id, name, start, end, user, devices, script)
+    with get_database_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                'update experiments set name=%s, start=%s, end=%s, user=%s, script=%s where id=%s',
+                [name, start, end, user, script, experiment_id])
+            # Todo: Implement the function to change the experiment in the database. Fix old bookings
+            #  and add new ones!
+            for device in devices:
+                #
+                #
+                #
+                #
+                return -1
+    return experiment_id
+
+
+def delete_experiment(experiment_id: int):
     with get_database_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('delete from experiments where id=%s',
-                           [experimentID])
+                           [experiment_id])
             cursor.execute('delete from bookings where experiment=%s',
-                           [experimentID])
+                           [experiment_id])
 
 
 async def _publish_command(command: str, params: list):
@@ -160,13 +180,13 @@ async def receive_experiment_status(channel):
     return msgpack.unpackb(await channel.get(), raw=False)
 
 
-async def start_experiment(experimentID: int):
-    await _publish_command('start', [experimentID])
+async def start_experiment(experiment_id: int):
+    await _publish_command('start', [experiment_id])
 
 
-async def stop_experiment(experimentID: int):
-    await _publish_command('stop', [experimentID])
+async def stop_experiment(experiment_id: int):
+    await _publish_command('stop', [experiment_id])
 
 
-async def get_status(experimentID: int):
-    await _publish_command('status', [experimentID])
+async def get_status(experiment_id: int):
+    await _publish_command('status', [experiment_id])

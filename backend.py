@@ -467,6 +467,21 @@ def create_experiment(experiment: ExperimentBookingModel,
     return
 
 
+@app.put('/api/experiments/edit/{experimentID}')
+def edit_experiment(experimentID: int,
+                    experiment: ExperimentBookingModel,
+                    username: str = Depends(decode_token)):
+    print(f'experiment data {experiment}')
+    userID = user.get_user_by_name(username).id
+    device_manager_service = DeviceManagerService()
+    device_manager_service.edit_experiment(experimentID, experiment.name,
+                                           experiment.start,
+                                           experiment.end, userID,
+                                           experiment.devices,
+                                           experiment.scriptID)
+    return
+
+
 @app.delete('/api/experiments/{experimentID}')
 def delete_experiment(experimentID: int,
                       username: str = Depends(decode_token)):
