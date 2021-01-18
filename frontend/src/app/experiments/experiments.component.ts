@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AddExperimentComponent } from '../add-experiment/add-experiment.component';
+import { EditExperimentComponent} from '../edit-experiment/edit-experiment.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTable } from '@angular/material/table';
 import { Experiment, DeviceService } from '../device.service';
 import { format, parse, isValid } from 'date-fns';
 import { tap } from 'rxjs/operators';
@@ -11,6 +13,7 @@ import {
     ExperimentStatusMessage,
 } from '../experiment.service';
 import { Observable } from 'rxjs';
+
 
 @Component({
     selector: 'app-jobs',
@@ -29,8 +32,9 @@ export class ExperimentsComponent implements OnInit {
         'running',
         'edit',
     ];
-    @ViewChild('table')
-    table;
+    // @ViewChild('table')
+    // table;
+    @ViewChild(MatTable) table: MatTable<any>;
     experimentStatus$: Observable<ExperimentStatusMessage>;
 
     statusMap = [
@@ -103,10 +107,31 @@ export class ExperimentsComponent implements OnInit {
     }
     async getExperiments() {
         this.dataSource = await this.deviceService.getExperiments();
+        // this.table.renderRows();
+    }
+    refresh() {
+        this.getExperiments();
         this.table.renderRows();
     }
-    refresh() {}
-    edit(i: number) {}
+    async edit(i: number) {
+        const dialogRef = this.dialog.open(EditExperimentComponent, {
+            data: this.dataSource[i],
+        });
+        const result = await dialogRef.afterClosed().toPromise();
+        const start = this.parseFrom(result.start);
+        const end = this.parseTo(result.end);
+        await this.deviceService.editExperiment(
+                result.id,
+            {
+                name: result.name,
+                start: start.getTime() / 1000,
+                end: end.getTime() / 1000,
+                devices: result.devices,
+                scriptID: result.scriptID,
+            }
+            );
+        await this.getExperiments();
+    }
     async startExperiment(i: number) {
         await this.deviceService.startExperiment(this.dataSource[i].id);
     }
