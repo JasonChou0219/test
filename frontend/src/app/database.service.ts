@@ -114,6 +114,10 @@ export class DatabaseService {
     }
     async setCheckboxPropertyLevel(uuid: string, featureId: number, propertyId: number, meta: boolean, active: boolean,
                                    metaInterval: number, nonMetaInterval: number) {
+        return this.http
+            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/properties/' + propertyId +
+                '/dataHandler', {active, meta, nonMetaInterval, metaInterval})
+            .toPromise();
     }
 
 }
