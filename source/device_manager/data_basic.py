@@ -1,15 +1,11 @@
-
 from typing import Any, Dict
 from typing import Union
-
 import datetime
 
 from google.protobuf.message import Message
-
 from .data_base import DataBase
 
 from ...framework import SiLAFramework_pb2 as silaFW_pb2
-
 from ...fdl_parser.fdl_parser import FDLParser
 from ...fdl_parser.type_basic import BasicType
 
