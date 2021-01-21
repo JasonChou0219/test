@@ -81,7 +81,9 @@ export class ScriptsComponent implements OnInit {
         await this.expand(i);
         await this.getScript();
             }
-    refresh() {}
+    refresh() {
+        this.getScript();
+    }
     async edit(i: number) {
         const info = this.dataSource[i].info;
         const dialogRef = this.dialog.open(EditScriptComponent, {

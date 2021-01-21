@@ -7,7 +7,7 @@ Welcome to SiLA2_device_manager's documentation!
 ================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
 .. include:: 01_Introduction.rst
