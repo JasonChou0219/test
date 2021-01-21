@@ -442,7 +442,14 @@ scripts = [
         'user': 1,
         'data': '# WIP\n'
                 '# This example will show you how to import a device client\n'
-                '# This is work in progress'
+                '# This is work in progress\n\n'
+                '# ...\n\n'
+                '# You can call functions as described for every command and property in the device feature explorer under "Usage"\n'
+                '# To call the property "StartYear" of the HelloSiLA example device use:\n'
+                'StartYear = yourObject.call_property("GreetingProvider","StartYear")\n\n'
+                '# To run the "SayHello" command use:\n'
+                'response = yourObject.call_command("GreetingProvider","SayHello",parameters: { "Name": })\n\n'
+                '# Note: you need to replace the "yourObject" part of the command with the client object of that device!'
     },
     {
         'name': 'InfluxDB example',
@@ -453,10 +460,28 @@ scripts = [
                 'influx_client = InfluxDBClient(host=\'localhost\', port=8086, username=\'root\', password=\'root\', database=\'device_manager\')\n\n'
                 '# Check connection\n'
                 'print(f\'Checking connectivity. DB server version: {influx_client.ping()}\')\n\n'
-                '# This is an example query. Replace the variables in <>.\n'
-                '# results = client_object.db_client.query(\n'
-                '# SELECT <measurement> FROM "<db_name>"."<db_policy>"."<field>" WHERE experiment_name = \'<run_name>\' GROUP BY position \n'
-                '# ORDER BY DESC LIMIT 1\')\n'
+                'for i in range(0, 100, 1):\n'
+                '# This is an example write operation\n'
+                '\tdata_point = {\n'
+                '\t\t"measurement": "testMeasurement",\n'
+                '\t\t"tags": {\n'
+                '\t\t\t"experiment_name": "influxDB_test"\n'
+                '\t\t},\n'
+                '\t\t"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),\n'
+                '\t\t"fields": {\n'
+                '\t\t\t"test_number": np.random.rand(1)\n'
+                '\t\t}\n'
+                '\t}\n'
+                '\t try:\n'
+                '\t\tinflux_client.write_point([data_point])\n'
+                '\texcept:\n'
+                '\t\t print("This did not work...")\n\n'
+                '\t# This is an example query.\n'
+                '\tresults = influx_client.query(\n'
+                '\t\tSELECT test_number FROM "device_manager"."autogen"."testMeasurement" WHERE experiment_name = \'influxDB_test\' GROUP BY position \n'
+                '\t\tORDER BY DESC LIMIT 1\')\n'
+                '\tprint(results)\n\n'
+                '\ttime.sleep(10)\n\n'
     }
 ]
 
