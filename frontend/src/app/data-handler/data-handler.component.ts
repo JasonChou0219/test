@@ -64,6 +64,7 @@ export class DataHandlerComponent implements OnInit {
     ];
     tableDatabaseColumns = [
         'name',
+        'username',
         'address',
         'port',
         'online',
@@ -77,7 +78,7 @@ export class DataHandlerComponent implements OnInit {
     @ViewChild(MatTable) tableDatabases: MatTable<any>;
 
     databases = [];
-    newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888};
+    newDatabase: Database = {id: 1234567890, name: 'InfluxDB', address: '127.0.0.1', port: 8888, username: 'root', password: 'root'};
     database: Database;
     selectedDatabase: Database;
 
@@ -91,6 +92,8 @@ export class DataHandlerComponent implements OnInit {
             name: 'InfluxDB',
             address: '127.0.0.1',
             port: 8888,
+            username: 'root',
+            password: 'root',
       };
   }
   async addDatabase() {
@@ -115,7 +118,7 @@ export class DataHandlerComponent implements OnInit {
         const deviceList = await this.deviceService.getDeviceList();
         console.log('Returning devices');
         console.log(deviceList);
-        let data: RowDataDevice[] = [];
+        const data: RowDataDevice[] = [];
         if (this.dataSource.length === 0) {
             console.log('Im empty inside');
         } else {
@@ -127,7 +130,9 @@ export class DataHandlerComponent implements OnInit {
             name: '-',
             address: '-',
             port: 0,
-        };
+            username: '-',
+            password: '-',
+      };
         for (const dev of deviceList) {
             // If available, get the info of the linked database
             if (dev.databaseId !== null && dev.databaseId !== undefined) {
@@ -194,7 +199,12 @@ export class DataHandlerComponent implements OnInit {
             data: this.dataSource[i].device,
         });
         const result = await dialogRef.afterClosed().toPromise();
-        await this.databaseService.linkDatabaseToDevice(this.dataSource[i].device.uuid, result.databaseId);
+        if (result.databaseId === 0) {
+            await this.databaseService.deleteDatabaseLinkToDevice(this.dataSource[i].device.uuid);
+        }
+        else {
+            await this.databaseService.linkDatabaseToDevice(this.dataSource[i].device.uuid, result.databaseId);
+        }
         await this.refreshDatabases();
         await this.refreshDevices();
   }

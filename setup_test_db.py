@@ -604,7 +604,9 @@ def add_databases(c):
               '(id serial primary key, ' \
               'name varchar(256), ' \
               'address varchar(256), ' \
-              'port integer)')
+              'port integer,'
+              'username varchar(256),'
+              'password varchar(256))')
 
 
 def add_logs(c):

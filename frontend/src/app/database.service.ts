@@ -5,19 +5,21 @@ import {Device, DeviceCommand, DeviceProperty, FeatureCommandParam, SERVER_URL} 
 import {map} from 'rxjs/operators';
 
 const TestDatabaseList: DatabaseList = {data: [
-        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888},
-        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888},
-        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060}]
+        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888, username: 'root', password: 'root'},
+        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888, username: 'root', password: 'root'},
+        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060, username: 'root', password: 'root'}]
 };
 
 // For test purposes:
-export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888};
+export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888, username: 'root', password: 'root'};
 
 export interface Database {
     id?: number;
     name: string;
     address: string;
     port: number;
+    username: string;
+    password: string;
 }
 export interface DatabaseDeviceLink {
     deviceId: string;

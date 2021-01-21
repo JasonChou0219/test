@@ -19,6 +19,20 @@
         </mat-form-field>
     </div>
 </div>
+<div class="add-database-form">
+    <div class="forms" style="margin-right: 2em">
+        <mat-form-field>
+            <mat-label>Username</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.username" placeholder="root" />
+        </mat-form-field>
+    </div>
+    <div class="forms" style="margin-right: 2em">
+        <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.password" placeholder="root" />
+        </mat-form-field>
+    </div>
+</div>
 <mat-dialog-actions>
     <button mat-flat-button color="primary" [mat-dialog-close]="databaseInfo">
         Add
