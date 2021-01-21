@@ -85,7 +85,7 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                         interval_to_use = command.polling_interval_non_meta
                     if (interval_to_use, device_booking.end) in commands_to_call.keys():
                         if device_uuid in commands_to_call[(interval_to_use,
-                                                       device_booking.end)].keys():
+                                                            device_booking.end)].keys():
                             commands_to_call[(interval_to_use,
                                               device_booking.end)][device_uuid].append((command, feature))
                         else:
@@ -102,7 +102,7 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                         interval_to_use = property.polling_interval_non_meta
                     if (interval_to_use, device_booking.end) in properties_to_call.keys():
                         if device_uuid in properties_to_call[(interval_to_use,
-                                                         device_booking.end)].keys():
+                                                              device_booking.end)].keys():
                             properties_to_call[(interval_to_use,
                                                 device_booking.end)][device_uuid].append((property, feature))
                         else:
@@ -150,12 +150,12 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
                                                       script.data,
                                                       f'devices={devices}')
 
-    #output_thread = Thread(target=print_container_output, args=(container, ))
+    # output_thread = Thread(target=print_container_output, args=(container, ))
     wait_thread = Thread(target=wait_until_container_stops,
                          args=(container, experiment_id, status_queue))
     container.start()
 
-    #output_thread.start()
+    # output_thread.start()
     wait_thread.start()
 
     status_queue.put(
@@ -188,7 +188,7 @@ def handle_scheduling_events(event):
         if event.job_id in job_to_experiment:
             experiment_id = job_to_experiment[event.job_id]
             experiment_entry = experiments[experiment_id]
-            change_experiment_status(experiment_id,ExperimentStatus.SUBMITED_FOR_EXECUTION)
+            change_experiment_status(experiment_id, ExperimentStatus.SUBMITED_FOR_EXECUTION)
             print(f'{experiment_entry.name} submitted')
     elif event.code == events.EVENT_JOB_REMOVED:
         if event.job_id in job_to_experiment:
@@ -258,7 +258,7 @@ def stop_experiment(experiment_id):
         if experiment_entry.status == ExperimentStatus.WAITING_FOR_EXECUTION:
             scheduler.remove_job(experiment_entry.job_id)
             change_experiment_status(experiment_id,
-                                      ExperimentStatus.FINISHED_MANUALLY)
+                                     ExperimentStatus.FINISHED_MANUALLY)
 
         elif (experiment_entry.status ==
               ExperimentStatus.SUBMITED_FOR_EXECUTION) or (

@@ -8,6 +8,7 @@ import aioredis
 from source.device_manager.database import get_database_connection, get_redis_pool
 from source.device_manager.scheduler import BookingInfo, BookingInfoWithNames, get_device_bookings_for_experiment_inside_transaction, book_inside_transaction
 
+
 class ExperimentStatus(IntEnum):
     WAITING_FOR_EXECUTION = 0
     SUBMITED_FOR_EXECUTION = 1
@@ -16,6 +17,7 @@ class ExperimentStatus(IntEnum):
     FINISHED_ERROR = 4
     FINISHED_MANUALLY = 5
     UNKNOWN = 6
+
 
 @dataclass
 class SchedulingInfo:

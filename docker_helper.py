@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-import docker
 import tarfile
 import uuid
-from threading import Thread
 import os
-import sys
-import time
 from source.device_manager.data_directories import TEMP_DIRECTORY
 
 
@@ -45,7 +41,7 @@ def _create_temporary_tar(script_data: str, devices_data: str):
     return tar_file
 
 
-def create_script_container(docker_client, container_name: str, script_data: str,devices_data:str):
+def create_script_container(docker_client, container_name: str, script_data: str, devices_data: str):
     container = docker_client.containers.create(
         'user_script',
         'python main.py',
