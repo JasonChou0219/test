@@ -794,7 +794,8 @@ class DeviceManager:
                     [device_active, device_uuid])
 
     def set_command_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, command_id: str, active: bool,
-                                                meta: bool, polling_interval_non_meta: int, polling_interval_meta: int, parameters):
+                                                meta: bool, polling_interval_non_meta: int, polling_interval_meta: int,
+                                                parameters):
         """Set the attributes of the specified command to the specified values
         Args:
             device_uuid: The uuid of the device
@@ -806,7 +807,6 @@ class DeviceManager:
             polling_interval_meta: The new value of the 'polling_interval_meta' attribute
             parameters: The new values of the parameters of the command
         """
-        # TODO parameters
         # Check if polling_interval_non_meta values are specified: if not, use defaults
         if polling_interval_non_meta is None:
             polling_interval_non_meta = INTERVAL
@@ -814,6 +814,11 @@ class DeviceManager:
             polling_interval_meta = META_INTERVAL
         with self.conn as conn:
             with conn.cursor() as cursor:
+                # Update parameter values
+                for parameter in parameters:
+                    cursor.execute(
+                        'update parameters_for_data_handler set value = %s where identifier = %s and used_as = %s and parent_type = %s and parent = %s',
+                        [parameter.value, parameter.name, 'parameter', 'command', command_id])
                 # Update the command
                 cursor.execute(
                     'update commands_for_data_handler set activated = %s, meta = %s, polling_interval_non_meta = %s, polling_interval_meta = %s where id = %s',

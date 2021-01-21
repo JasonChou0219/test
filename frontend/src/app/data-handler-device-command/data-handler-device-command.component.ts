@@ -50,7 +50,7 @@ export class DataHandlerDeviceCommandComponent implements OnInit, OnChanges {
         */
         // Update and send changes of checkboxes to backend
         this.paramValues = this.command.parameters.map((param) => {
-            return { name: param.identifier.toLowerCase() + '/' + param.type.toLowerCase(), value: '' };
+            return { name: param.identifier, value: '' };
         });
     }
 
