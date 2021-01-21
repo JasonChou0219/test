@@ -17,6 +17,8 @@ def _delete_file(file_name: str):
 def _set_script_filename(tarinfo):
     tarinfo.name = 'script.py'
     return tarinfo
+
+
 def _set_devices_filename(tarinfo):
     tarinfo.name = 'devices.py'
     return tarinfo
