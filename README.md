@@ -22,7 +22,7 @@ For some IDE's this requires some changes in the settings menu.
 If no IDE is used you can enter the environment by entering: `pipenv shell`
 
 ## Generating the documentation
-This README contains the bare essentials to get the device manager up and running. For a more detailled description and 
+This README contains the bare essentials to get the device manager up and running. For a more detailed description and 
 further information read the documentation. The documentation can be generated using sphinx.
 1. Run the following command from within the docs folder  
 To generate a pdf (Perl and latexmk required):
