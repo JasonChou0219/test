@@ -23,6 +23,16 @@ export class DatabaseLinkComponent implements OnInit {
   }
   async ngOnInit() {
       this.databaseListWorkCopy = await this.databaseService.getDatabases();
+      const defaultDb: Database = {
+          id: 0,
+          name: '-',
+          address: '-',
+          port: 0,
+          username: '',
+          password: '',
+      };
+      this.databaseListWorkCopy.push(defaultDb);
+      console.log(this.databaseListWorkCopy)
   }
 
 }

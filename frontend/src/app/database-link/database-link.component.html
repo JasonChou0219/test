@@ -4,7 +4,7 @@
         <mat-label>Name</mat-label>
         <mat-select [(ngModel)]="databaseDeviceLink.databaseId" name="type">
             <mat-option *ngFor="let database of databaseListWorkCopy" [value]="database.id">
-                {{ database.name }}
+                {{ database.name }} [{{database.username}}]
             </mat-option>
         </mat-select>
     </mat-form-field>
