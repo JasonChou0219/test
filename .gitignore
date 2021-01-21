@@ -19,3 +19,4 @@ testserver
 .tmp
 user_script_env/*.tar
 /docs/build/
+/docs/source/figures/

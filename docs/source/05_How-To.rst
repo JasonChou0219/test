@@ -9,59 +9,71 @@ connect to the frontend from any internet capable device with a modern browser. 
 following URLs:
 
 If the server is running locally:
+
     `localhost:4200 <http://localhost:4200>`_ or `127.0.0.1:4200 <http://127.0.0.1:4200>`_
 
 If the server is running on another computer within your network:
+
     <host-server-ip\>:4200
 
-Login view
+Login page
 -----------
 
 The log-in view is a security feature, that ensures that only registered users have access to the devices in your
-network. Once logged-in, you can add new users, delete users and reset passwords. The device manager uses the Angular
+network. The Open Authorization protocol 2 (OAuth2) is used to secure communication between the backend and frontend.
+Once logged-in, you can add new users, delete users and reset passwords. The device manager frontend uses the Angular
 Authentication tool (AuthInterceptor) which relies on a HttpInterceptor interface to grant access to permitted users.
+If accessed from the host machine, the url of the login-page is `<localhost:4200/login>`_. The default username is
+**admin** and the default password is **1234**. It is strongly recommended to change the default password of the admin
+account.
 
-//.. image:: src/login_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the login page with entered admin credentials
+.. image:: figures/login.png
+    :width: 800
+    :alt: A view of the login page with entered admin credentials
 
 
-Devices view
+Main page - Devices
 -------------
-The devices view is the device managers main view. Registered devices are listed here and some useful detail is provided
-on first sight. Several buttons allow the user to expand the visible detail of the device, change its current name or
+The devices page is the device managers main view. Registered devices are listed here and some useful detail is provided
+on first sight. This includes the devices server name, address, port. Furthermore, the connection status is indicated. In a future version other devices types than SiLA, such as offline devices, custom device or OPC-UA types shall be supported.
+Several buttons allow the user to expand the visible detail of the device, change its current name, or
 remove the device from the manager. Clicking on the device name or the information icon expands the view of the selected
 device, showing the implemented features and the respective descriptions. Each feature can be expanded even further to
-to investigate which (observable) commands and properties are implemented by the feature. Exploring individual commands
-and properties shows the user useful information on functionality and usage. Required parameters and responses are
-displayed with the attributed SiLA-datatype.
+investigate which (observable) commands and (observable) properties are implemented by the feature. Exploring individual
+commands and properties shows the user useful information on functionality and usage. Required parameters and responses
+are displayed with the attributed SiLA-datatype.
 
-This device tree enables the user to run commands and request properties interactively from within the browser. On the
-lowest level of the device tree, the command/property level, a run button can be clicked to execute the the function.
-For functions that require user input, the parameters can be entered in the corresponding text box.
+.. image:: figures/devices.png
+    :width: 800
+    :alt: A view of the main page, the devices list, including general device details
 
-//.. image:: src/devices_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the main page, the devices list, including general device details
-
-**Device-discovery**
-
-The device manager uses the SiLA2-Autodiscovery feature which relies on  multicast DNS service discovery (`zeroconf <https://pypi.org/project/zeroconf/>`_) to register its services in
-the network. New devices can be added by clicking the "plus"-button on the top right of the devices table. Device
-discovery can be started from within a new window that pops up. The discovery scans for SiLA devices and displays the
+Device discovery
+^^^^^^^^^^^^^^^^^^
+The device manager uses the SiLA2 auto-discovery functionality which relies on multicast DNS service discovery
+(`zeroconf <https://pypi.org/project/zeroconf/>`_) to register its services in
+the network. New devices can be added by clicking the "plus"-button on the top right of the device table. Device
+discovery is started from within a new pop-up window. The discovery mode scans for SiLA devices in the network and displays the
 basic information it was registered with by the server. This information is used to connect to the server using a
-dynamic client. Client files are stored in the local temporary folder named after the server-UUID:
+dynamic client. The client files are stored in the local temporary folder named after the devices server-UUID:
+Relative path to the directory: *[...]temp/device-manager/SiLA/<device-UUID>/*
 
-*[...]Temp/device-manager/SiLA/<device-UUID>/*
+.. image:: figures/discovery.png
+    :width: 800
+    :alt: A view of the discovery feature for adding new devices to the manager
 
-//.. image:: src/devices_discovery_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the discovery feature for adding new devices to the manager
+SiLA Explorer - The device tree
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Each device is that is added to the device manager is assigned an internal UUID. This way devices with the same server
+name can be uniquely identified. The device tree enables the user to run commands and request properties interactively
+from within the browser. On the lowest level of the device tree, the command/property level, a run button can be clicked
+to execute the function. For functions that require user input, the parameters can be entered in the corresponding text
+box. The syntax by which the call can be incorporated into python scripts in the scripting environment is shown.
 
-Data handler view
+.. image:: figures/device-tree.png
+    :width: 800
+    :alt: A view of the discovery feature for adding new devices to the manager
+
+The data handler
 ------------------
 `InfluxDB <https://www.influxdata.com/Y>`_ databases can be registered and linked to devices. InfluxDB is a time-series database that is well suited for
 experimental data. To be able to use this feature, an InfluxDB server must be running within your network. Providing the
@@ -91,15 +103,15 @@ configuration files and select configuration files for a specific booking.
 //    :height: 200
 //    :alt: A view of the data handler feature
 
-My scripts view
------------------
+Scripting environment - Scripts
+--------------------------------
 
 //.. image:: src/my_scripts_view.png
 //    :width: 800
 //    :height: 200
 //    :alt: A view of the scripting environment
 
-Experiments view
+Experiments
 -----------------
 
 //.. image:: src/experiments_view.png
@@ -107,8 +119,8 @@ Experiments view
 //    :height: 200
 //    :alt: A view of the experiment creation feature
 
-Booking view
---------------
+Device calendar
+------------------
 
 //.. image:: src/booking_view.png
 //    :width: 800

@@ -24,6 +24,10 @@ Auto-discovery of SiLA devices
 Explain the zeroconf concept and explain what information is broadcasted via the network. Explain, that it is necessary/
 better to name the server.
 
+Dynamic client
+---------------
+
+
 Execution of Experiments
 -------------------------
 postgreSQL -> script as tar -> container (docker_helper.py -> put archive) -> extract -> use
