@@ -93,7 +93,7 @@ def save_properties(properties_to_call):
                     # TODO EmptyParameters must not be passed; simply pass {} instead
                     if responses != {}:
                         client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root', 'device_manager')
-                        client.create_database('device_manager')
+                        client.create_database(database_info.name)
                         point = {}
                         tags = {'device': device_uuid, 'feature': feature.identifier, 'property': property.identifier}
                         point['measurement'] = 'device_manager'
@@ -115,13 +115,13 @@ def create_jobs(commands_to_call, properties_to_call):
         scheduler.add_job(save_commands,
                           'interval',
                           seconds=key[0],
-                          start_date=datetime.fromtimestamp(key[1]),
-                          end_date=datetime.fromtimestamp(key[2]),
+                          start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
+                          end_date=datetime.fromtimestamp(key[1]),
                           args=[commands_to_call[key]])
     for key in properties_to_call.keys():
         scheduler.add_job(save_properties,
                           'interval',
                           seconds=key[0],
-                          start_date=datetime.fromtimestamp(key[1]),
-                          end_date=datetime.fromtimestamp(key[2]),
+                          start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
+                          end_date=datetime.fromtimestamp(key[1]),
                           args=[properties_to_call[key]])
