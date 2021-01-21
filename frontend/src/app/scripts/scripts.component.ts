@@ -52,6 +52,7 @@ export class ScriptsComponent implements OnInit {
             fileName: result.fileName,
             data: result.data,
         });
+        this.getScript();
     }
     async getScript() {
         this.dataSource = await (
