@@ -354,16 +354,6 @@ def set_command_attributes_for_data_handler(uuid: str,
                                             nonMetaInterval: int = Body(default=None),
                                             metaInterval: int = Body(default=None),
                                             username: str = Depends(decode_token)):
-    print("parameters:")
-    print(parameters)
-    print("active:")
-    print(active)
-    print("meta")
-    print(meta)
-    print("nonMetaInterval")
-    print(nonMetaInterval)
-    print("metaInterval")
-    print(metaInterval)
     device_manager_service = DeviceManagerService()
     device_manager_service.set_command_attributes_for_data_handler(uuid, feature_id, command_id, active, meta,
                                                                    nonMetaInterval, metaInterval, parameters)
