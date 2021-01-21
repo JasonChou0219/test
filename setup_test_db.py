@@ -426,12 +426,39 @@ experiments = [{
     1
 }]
 
-scripts = [{
-    'name': 'script 1',
-    'fileName': 'script1.py',
-    'user': 1,
-    'data': 'print("Hello World!")'
-}]
+scripts = [
+    {
+        'name': 'Hello device!',
+        'fileName': 'Hello_device.py',
+        'user': 1,
+        'data': '# You can use this code editor like a regular scripting environment. \n'
+                '# If you require specific python packages for your script, you can import them here. \n'
+                '# Note: Packages you want to import must be specified in the dockerfile! \n\n'
+                'print("Hello World!")'
+    },
+    {
+        'name': 'Device example',
+        'fileName': 'device_example.py',
+        'user': 1,
+        'data': '# WIP\n'
+                '# This example will show you how to import a device client\n'
+                '# This is work in progress'
+    },
+    {
+        'name': 'InfluxDB example',
+        'fileName': 'influx_example.py',
+        'user': 1,
+        'data': 'from influxdb import InfluxDBClient\n\n\n'
+                '# Instantiate the database client.\n'
+                'influx_client = InfluxDBClient(host=\'localhost\', port=8086, username=\'root\', password=\'root\', database=\'device_manager\')\n\n'
+                '# Check connection\n'
+                'print(f\'Checking connectivity. DB server version: {influx_client.ping()}\')\n\n'
+                '# This is an example query. Replace the variables in <>.\n'
+                '# results = client_object.db_client.query(\n'
+                '# SELECT <measurement> FROM "<db_name>"."<db_policy>"."<field>" WHERE experiment_name = \'<run_name>\' GROUP BY position \n'
+                '# ORDER BY DESC LIMIT 1\')\n'
+    }
+]
 
 
 def add_user(c):
