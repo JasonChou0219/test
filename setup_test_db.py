@@ -442,7 +442,14 @@ scripts = [
         'user': 1,
         'data': '# WIP\n'
                 '# This example will show you how to import a device client\n'
-                '# This is work in progress'
+                '# This is work in progress\n\n'
+                '# ...\n\n'
+                '# You can call functions as described for every command and property in the device feature explorer under "Usage"\n'
+                '# To call the property "StartYear" of the HelloSiLA example device use:\n'
+                'StartYear = yourObject.call_property("GreetingProvider","StartYear")\n\n'
+                '# To run the "SayHello" command use:\n'
+                'response = yourObject.call_command("GreetingProvider","SayHello",parameters: { "Name": })\n\n'
+                '# Note: you need to replace the "yourObject" part of the command with the client object of that device!'
     },
     {
         'name': 'InfluxDB example',
