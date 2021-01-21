@@ -83,20 +83,16 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                         interval_to_use = command.polling_interval_meta
                     else:
                         interval_to_use = command.polling_interval_non_meta
-                    if (interval_to_use, device_booking.start, device_booking.end) in commands_to_call.keys():
+                    if (interval_to_use, device_booking.end) in commands_to_call.keys():
                         if device_uuid in commands_to_call[(interval_to_use,
-                                                       device_booking.start,
                                                        device_booking.end)].keys():
                             commands_to_call[(interval_to_use,
-                                              device_booking.start,
                                               device_booking.end)][device_uuid].append((command, feature))
                         else:
                             commands_to_call[(interval_to_use,
-                                              device_booking.start,
                                               device_booking.end)][device_uuid] = [(command, feature)]
                     else:
                         commands_to_call[(interval_to_use,
-                                          device_booking.start,
                                           device_booking.end)] = {device_uuid: [(command, feature)]}
             for property in feature.properties:
                 if property.active:
@@ -104,20 +100,16 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                         interval_to_use = property.polling_interval_meta
                     else:
                         interval_to_use = property.polling_interval_non_meta
-                    if (interval_to_use, device_booking.start, device_booking.end) in properties_to_call.keys():
+                    if (interval_to_use, device_booking.end) in properties_to_call.keys():
                         if device_uuid in properties_to_call[(interval_to_use,
-                                                         device_booking.start,
                                                          device_booking.end)].keys():
                             properties_to_call[(interval_to_use,
-                                                device_booking.start,
                                                 device_booking.end)][device_uuid].append((property, feature))
                         else:
                             properties_to_call[(interval_to_use,
-                                                device_booking.start,
                                                 device_booking.end)][device_uuid] = [(property, feature)]
                     else:
                         properties_to_call[(interval_to_use,
-                                            device_booking.start,
                                             device_booking.end)] = {device_uuid: [(property, feature)]}
     data_handler.create_jobs(commands_to_call, properties_to_call)
 
