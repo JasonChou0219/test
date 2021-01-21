@@ -13,6 +13,8 @@ class NewDatabaseModel(BaseModel):
     name: str
     address: str
     port: int
+    username: str
+    password: str
 
 
 class DatabaseInfoModel(BaseModel):
@@ -20,6 +22,8 @@ class DatabaseInfoModel(BaseModel):
     name: str
     address: str
     port: int
+    username: str
+    password: str
 
 
 class DeviceStatusModel(BaseModel):
@@ -162,10 +166,11 @@ class DeviceManagerService:
         return asdict(self.device_manager.get_database_info(id))
 
     def add_database(self, database: NewDatabaseModel):
-        self.device_manager.add_database(database.name, database.address, database.port)
+        self.device_manager.add_database(database.name, database.address, database.port, database.username, database.password)
 
     def set_database(self, id: int, database: DatabaseInfoModel):
-        self.device_manager.set_database(database.id, database.name, database.address, database.port)
+        self.device_manager.set_database(database.id, database.name, database.address, database.port,
+                                         database.username, database.password)
 
     def delete_database(self, id: int):
         self.device_manager.delete_database(id)

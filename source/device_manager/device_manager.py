@@ -24,10 +24,9 @@ import source.device_manager.script as script
 
 from sila2lib.fdl_parser.fdl_parser import FDLParser
 from dataclasses import asdict
-from influxdb import InfluxDBClient
+from influxdb import InfluxDBClient, exceptions
 from multiprocessing import Process, Pipe
 from multiprocessing import pool as mpp
-
 
 import logging
 
@@ -120,8 +119,9 @@ def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
     # db_name = 'schedulerDB'
     # db_username='schedulerApplication',
     # db_password='DigInBio'
-    _client = InfluxDBClient(host=info.address, port=info.port, username='schedulerApplication', password='DigInBio',
+    _client = InfluxDBClient(host=info.address, port=info.port, username=info.username, password=info.password,
                              database=info.name)
+    print('Database Name', info.name)
     try:
         # Todo: Allow the use of username and password in the future (From the frontend to here)
         # connection = InfluxDBClient(host=host, port=port, username=username, password=password, database=database)
@@ -132,12 +132,14 @@ def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
         connection.send(DatabaseStatus(True, f'v.{version}'))
         # Todo: Switch this to implementation below once new DatabaseInfo class is implemented
         # connection.send(DatabaseStatus(True, retention_policy, '', ping, f'v.{version}'))
-    except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as e:
+    except (requests.ConnectionError, requests.HTTPError, requests.Timeout, exceptions.InfluxDBClientError,
+            exceptions.InfluxDBServerError) as e:
         print(e)
         err = type(e).__name__
+        print('ERROR MESSAGE', err)
         connection.send(DatabaseStatus(False, err))
         # Todo: Switch this to implementation below once new DatabaseInfo class is implemented
-        #connection.send(DatabaseStatus(False, '', err, None, ''))
+        # connection.send(DatabaseStatus(False, '', err, None, ''))
     finally:
         connection.close()
 
@@ -617,11 +619,11 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select id,name,address,port from databases'
+                    'select id,name,address,port, username, password from databases'
                 )
                 result = cursor.fetchall()
                 return [
-                    DatabaseInfo(row[0], row[1], row[2], row[3]) for row in result
+                    DatabaseInfo(row[0], row[1], row[2], row[3], row[4], row[5]) for row in result
                 ]
 
     def get_database_info(self, id: int) -> DatabaseInfo:
@@ -634,11 +636,11 @@ class DeviceManager:
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select id,name,address,port from databases ' \
+                    'select id,name,address,port, username, password from databases ' \
                     'where id=%s',
                     [str(id)])
                 database = cursor.fetchone()
-                return DatabaseInfo(database[0], database[1], database[2], database[3])
+                return DatabaseInfo(database[0], database[1], database[2], database[3], database[4], database[5])
 
 
     def get_database_status(self, id: int) -> DatabaseStatus:
@@ -663,34 +665,38 @@ class DeviceManager:
         return database_status
 
 
-    def add_database(self, name: str, address: str, port: int):
+    def add_database(self, name: str, address: str, port: int, username: str, password: str):
         """Add a new database to the database
         Args:
             name: The name of the new database that should be added to the database
             address: The IP address of the new database that should be added to the database
             port: The port of the new database that should be added to the database
+            username: The username that is needed as login credential for the new database
+            password: The password for the new database login
         """
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'insert into databases values (default,%s,%s,%s)',
-                    [name, address, port])
+                    'insert into databases values (default,%s,%s,%s,%s,%s)',
+                    [name, address, port, username, password])
 
-    def set_database(self, id: int, name: str, address: str, port: int):
+    def set_database(self, id: int, name: str, address: str, port: int, username: str, password: str):
         """Updates a database in the database
         Args:
             id: The id of the database to update
             name: The new name to set to the database
             address: The new IP address to set to the database
-            port: The new port to set to the database0
+            port: The new port to set to the database
+            username: The username to set to the new database
+            password: The password to set to the new database
         """
         with self.conn as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'update databases set name=%s, address=%s, port=%s ' \
+                    'update databases set name=%s, address=%s, port=%s, username=%s, password=%s ' \
                     'where id=%s',
                     [
-                        name, address, port, id
+                        name, address, port, username, password, id
                     ])
 
     def delete_database(self, id: int):

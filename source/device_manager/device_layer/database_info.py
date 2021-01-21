@@ -7,6 +7,8 @@ class DatabaseInfo:
     name: str
     address: str
     port: int
+    username: str
+    password: str
 
 @dataclass
 class DatabaseInfoNew:
