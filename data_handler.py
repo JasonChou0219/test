@@ -44,8 +44,9 @@ def save_commands(commands_to_call):
                     # TODO check if possible to make these 2 functions into a single one
                     # TODO EmptyParameters must not be passed; simply pass {} instead
                     if responses != {}:
-                        client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root', 'device_manager')
-                        client.create_database('device_manager')
+                        client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root',
+                                                database_info.name)
+                        client.create_database(database_info.name)
                         point = {}
                         tags = {'device': device_uuid, 'feature': feature.identifier, 'command': command.identifier}
                         point['measurement'] = 'device_manager'
@@ -92,7 +93,8 @@ def save_properties(properties_to_call):
                     # TODO check if possible to make these 2 functions into a single one
                     # TODO EmptyParameters must not be passed; simply pass {} instead
                     if responses != {}:
-                        client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root', 'device_manager')
+                        client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root',
+                                                database_info.name)
                         client.create_database(database_info.name)
                         point = {}
                         tags = {'device': device_uuid, 'feature': feature.identifier, 'property': property.identifier}
