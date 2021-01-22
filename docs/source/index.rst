@@ -16,9 +16,9 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 03_Installation.rst
 
-.. include:: 04_Software_Architecture.rst
+.. include:: 04_How-To.rst
 
-.. include:: 05_How-To.rst
+.. include:: 05_Software_Architecture.rst
 
 .. include:: 06_FAQ.rst
 

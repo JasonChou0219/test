@@ -433,7 +433,7 @@ scripts = [
         'user': 1,
         'data': '# You can use this code editor like a regular scripting environment. \n'
                 '# If you require specific python packages for your script, you can import them here. \n'
-                '# Note: Packages you want to import must be specified in the dockerfile! \n\n'
+                '# Note: Packages you want to import must be specified in the dockerfiles requirements.txt! \n\n'
                 'print("Hello World!")'
     },
     {
@@ -455,7 +455,9 @@ scripts = [
         'name': 'InfluxDB example',
         'fileName': 'influx_example.py',
         'user': 1,
-        'data': 'from influxdb import InfluxDBClient\n\n\n'
+        'data': 'from influxdb import InfluxDBClient\n'
+                'from datetime import datetime\n'
+                'import numpy as np\n\n\n'
                 '# Instantiate the database client.\n'
                 'influx_client = InfluxDBClient(host=\'localhost\', port=8086, username=\'root\', password=\'root\', database=\'device_manager\')\n\n'
                 '# Check connection\n'

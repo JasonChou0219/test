@@ -75,12 +75,12 @@ box. The syntax by which the call can be incorporated into python scripts in the
 
 The data handler
 ------------------
-`InfluxDB <https://www.influxdata.com/Y>`_ databases can be registered and linked to devices. InfluxDB is a time-series
+`InfluxDB <https://portal.influxdata.com/downloads/>`_ databases can be registered and linked to devices. InfluxDB is a time-series
 database that is well suited for experimental data. To be able to use this feature, an InfluxDB server must be running
 within your network. Providing the connection details to the device manager is sufficient. A username and password can
 be added optionally for additional security. A registered database can be linked to a device to setup automatic data
 transfer. Data transfer is started as soon as the booking of a device commences, i.e. the experiment the device is
-used in in is started. The database-device link can be deleted by selecting the empty database in the dropdown menu.
+used in is started. The database-device link can be deleted by selecting the empty database in the dropdown menu.
 
 The data handler will execute the configured calls in the user-specified polling intervals and
 store the responses in the linked database with experiment name, device name, and user name as tags. To activate the data
@@ -97,6 +97,10 @@ each command using the meta-checkbox. Depending on the selection, a default valu
 (1h for meta-data, 60s for measurement data). Obviously, different users have different needs regarding polling
 intervals, thus the defaults can be overwritten to transfer data according to a custom polling interval.
 
+.. image:: figures/data-handler.png
+    :width: 800
+    :alt: A view of the data handler feature
+
 Only one configuration can be stored at a time. Future releases will include the possibility to upload and download
 configuration files and select configuration files for a specific booking. The data handler simplifies data-acquisition
 and encourages collection of all data and meta-data for improved data integrity. The separation of the data acquisition
@@ -107,19 +111,44 @@ from the user script used in the experiment has several advantages:
     3. Data-acquisition is out-sourced to a separate process. This way data-acquisition is guaranteed to continue in case an experiment crashes.
     4. The data can be easily accessed from within the user script. An example script is provided in the scripts-section of the application.
 
-//.. image:: src/data_handler_main_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the data handler feature
+.. image:: figures/data-handler-tree.png
+    :width: 800
+    :alt: A view of the data handler feature
 
 Scripting environment - Scripts
 --------------------------------
 
+This page allows the user to upload, create and edit scripts. The main view shows a list of all saved scripts.
+Clicking on the script name or the **<>**-icon opens the script editor. TThe code editor is based on the
+`Monaco Editor <https://www.npmjs.com/package/ngx-monaco-editor>`_ and includes syntax highlighting. Auto-completion is
+not supported. Registered scripts can be assigned to experiments in the experiment section. A script assigned to an
+experiment is executed in a docker container. The docker image is created based on the provided dockerfile which is
+stored in the folder *user_script_env*. If non-standard python packages are required for the script execution, they must
+be specified in the *requirements.txt*.
 
-//.. image:: src/my_scripts_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the scripting environment
+.. image:: figures/scripts.png
+    :width: 800
+    :alt: A view of the scripting environment
+
+Device integration
+^^^^^^^^^^^^^^^^^^^^
+All registered devices can be accessed in the scripting environment. However, used devices should be selected in the
+experiment setup phase. A dictionary with all device clients can be imported. Instantiating the client enables the user
+to execute all functions the device offers. Further information on the python syntax for the device object access can be
+found in the *'Device example'* in the scripting environment. It is recommended to select all used devices during the
+experiment setup phase to avoid multi-access and interference with other experiments. Selecting a device will reserve
+the device for exclusive use for that script.
+
+.. warning::
+    Scripts are not checked for programming errors. Check your code in an IDE before scheduling any experiments!
+
+
+[WIP] Process monitoring
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Scripts are executed in a docker container. Interaction with a running docker container is limited. The *stdout* of the
+docker container is transferred to the frontend by websockets. For real-time visualization of process data we recommend
+using `chronograf <https://www.influxdata.com/time-series-platform/chronograf/>`_. Chronograf offers a complete interface
+for the influxDB database. All data collected by the data handler can be visualized using the chronograf IoT frontend.
 
 Experiments
 -----------------

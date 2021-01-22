@@ -12,12 +12,16 @@ full standard yet.  The standards implementations are still being actively  deve
 SiLA-Python working group and some of our members are actively contributing too both repositories. As the standards
 python implementation evolves, the Device manager updates will incorporate new changes.
 
+Include C4 diagrams of software architecture
+Maybe include UML diagrams here as well.
 
 Backend
 ========
 include a pictogram of the backend that is more detailed than the general one. Include redis, postgreSQL, device layer,
 dynamic client, sila_device, data-handler, influxDB, FatsAPI, scheduler, experiment environment and how they interact
 Written in python.
+
+Create documentation of backend API automatically using sphinx.
 
 Auto-discovery of SiLA devices
 -------------------------------
@@ -39,3 +43,4 @@ Frontend
 =========
 Angular, material design, long term support, industry standard,  written in TypeScript (JavaScript compatible),
 
+Create documentation of frontend API automatically using sphinx.
