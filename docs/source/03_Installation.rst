@@ -18,7 +18,7 @@ Setting up the python environment
 This project requires python3.6 or higher. The latest python distribution can be downloaded `here <https://pypi.org/project/pipenv/>`_.
 
 Before running any code in this project, all required python packages must be installed.
-It is strongly recommended to set up virtual environment. The project is shipped with a pipfile that contains
+It is strongly recommended to set up a virtual environment. The project is shipped with a pipfile that contains
 information on all required packages and their respective versions and dependencies.
 To set up the python environment in the most user friendly way, *pipenv* is recommended.
 *Pipenv* provides both, a virtual environment and the well known *pip* python package management.
@@ -45,7 +45,7 @@ feel free to use the supplied requirements.txt
 3. Entering the virtual environment
 
    Most IDE's support automatic detection of virtual environments and will start the console in this environment.
-   For some IDE's this requires some changes in the settings menu.
+   For some IDE's this requires some manual changes in the settings menu.
    If no IDE is used you can enter the environment by entering the following code from the project main directory:
 
 .. code-block:: console
@@ -53,6 +53,7 @@ feel free to use the supplied requirements.txt
    pipenv shell
 
 4. [Windows only] Manual re-installation of protobuf
+
     The standard wheel installation of protobuf doesn't allow the use of multiple files with the same name in the same
     pool. All SiLA devices implement the standard features, thus every device will add a file with that feature name to
     the pool. The protobuf --no-binary installation is different to the pre-compiled wheel installation and allows

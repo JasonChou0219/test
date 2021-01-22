@@ -33,11 +33,13 @@ account.
 
 
 Main page - Devices
--------------
+---------------------
 The devices page is the device managers main view. Registered devices are listed here and some useful detail is provided
 on first sight. This includes the devices server name, address, port. Furthermore, the connection status is indicated. In a future version other devices types than SiLA, such as offline devices, custom device or OPC-UA types shall be supported.
 Several buttons allow the user to expand the visible detail of the device, change its current name, or
-remove the device from the manager. Clicking on the device name or the information icon expands the view of the selected
+remove the device from the manager.
+
+Clicking on the device name or the information icon expands the view of the selected
 device, showing the implemented features and the respective descriptions. Each feature can be expanded even further to
 investigate which (observable) commands and (observable) properties are implemented by the feature. Exploring individual
 commands and properties shows the user useful information on functionality and usage. Required parameters and responses
@@ -139,6 +141,11 @@ found in the *'Device example'* in the scripting environment. It is recommended 
 experiment setup phase to avoid multi-access and interference with other experiments. Selecting a device will reserve
 the device for exclusive use for that script.
 
+.. code-block:: python
+
+        This is example python code that will show how the device clients can be imported, instantiated, and used.
+        The exact implementation is still WIP
+
 .. warning::
     Scripts are not checked for programming errors. Check your code in an IDE before scheduling any experiments!
 
@@ -152,11 +159,45 @@ for the influxDB database. All data collected by the data handler can be visuali
 
 Experiments
 -----------------
+Automated experiments (or processes) require access to devices via a well-specified interface, a script that
+orchestrates device operation and a database to store relevant information. The experiments view enables the user to
+setup such workflows and schedule their execution. On the experiments page new experiments can be created by pressing
+the the 'plus'-symbol. The experiment execution time, the script to be executed, as well as the devices required for
+execution can be defined in a pop-up form. Creation of experiments that require the booking of devices unavailable
+during the desired time-frame is not possible. If two experiments must access the same device simultaneously, a booking
+should be avoided. The device is still accessible to the script.
 
-//.. image:: src/experiments_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the experiment creation feature
+.. warning::
+    This is a safety measure to avoid potentially detrimental consequences caused by multiple access to state-sensitive devices.
+
+The main view of the experiments tab shows a list of scheduled experiments, accompanied by the most important
+information such as the start and end time of the experiment, booked devices, the user script and the current status of
+the experiment. Scheduled experiments automatically create a booking entry in the calendar view.
+The experiment status may be one of the following:
+
++------------+-------------------------------------------+
+| Status     |                  Meaning                  |
++============+===========================================+
+| unknown    | The experiment has not been started yet   |
++------------+-------------------------------------------+
+| finished   | Docker container finished with exit code 0|
++------------+-------------------------------------------+
+| running    | Docker container is still running. The    |
+|            | scheduled end time has not yet elapsed    |
++------------+-------------------------------------------+
+| error      | Docker container finished with exit code 1|
++------------+-------------------------------------------+
+
+It is possible to start experiments before their scheduled starting time by pressing the 'play'-icon. A running
+experiment can be aborted prematurely by pressing the 'stop'-button.
+
+.. image:: figures/experiments.png
+    :width: 800
+    :alt: A view of the experiment view
+
+.. note::
+    In development mode the scheduler.py script must be running for experiments to be executed.
+
 
 Device calendar
 ------------------
