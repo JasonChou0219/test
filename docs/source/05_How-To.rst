@@ -75,28 +75,37 @@ box. The syntax by which the call can be incorporated into python scripts in the
 
 The data handler
 ------------------
-`InfluxDB <https://www.influxdata.com/Y>`_ databases can be registered and linked to devices. InfluxDB is a time-series database that is well suited for
-experimental data. To be able to use this feature, an InfluxDB server must be running within your network. Providing the
-connection details to the device manager is sufficient. A registered database can be linked to a device for data
-transfer. Data transfer is started as soon as the booking of a device commences.
+`InfluxDB <https://www.influxdata.com/Y>`_ databases can be registered and linked to devices. InfluxDB is a time-series
+database that is well suited for experimental data. To be able to use this feature, an InfluxDB server must be running
+within your network. Providing the connection details to the device manager is sufficient. A username and password can
+be added optionally for additional security. A registered database can be linked to a device to setup automatic data
+transfer. Data transfer is started as soon as the booking of a device commences, i.e. the experiment the device is
+used in in is started. The database-device link can be deleted by selecting the empty database in the dropdown menu.
 
-The implementation of the data handler will run the configured commands in the user-specified polling intervals and
-store the responses in the linked database with experiment name, device name and user name as tags. To activate the data
+The data handler will execute the configured calls in the user-specified polling intervals and
+store the responses in the linked database with experiment name, device name, and user name as tags. To activate the data
 acquisition for a selected device, the "active"-checkbox must be ticked. If responses of certain functions, or features
 all together, should not be stored, further checkboxes can be found on the lower levels of the device tree to deactivate
 data transfer. This is crucial to disable the execution of set commands for example.
 
 Most types of data can be classified as either meta-data or measurement data. Typically, meta-data doesn't need to be
-queried on a continuous basis. In most cases, requesting meta data (device ID, calibration data, etc. etc.) once at the beginning of an experiment is sufficient.
-Measurement data (Temperature, pressure, etc. etc.) on the contrary is usually queried on a more frequent basis. The
-data handler distinguishes between the two. Since there is no way to distinguish the two automatically in a reliable
-fashion, the user can specify the type for each command using the meta-checkbox. Depending on the selection, a default value is implemented
+queried on a continuous basis. In most cases, requesting meta data (device ID, calibration data, etc. etc.) once at the
+beginning of an experiment is sufficient. Measurement data (Temperature, pressure, etc. etc.) on the contrary is usually
+queried on a more frequent basis. The data handler distinguishes between the two data types. Since there is no way to
+distinguish the type of data queried by a call automatically in a reliable fashion, the user can specify the type for
+each command using the meta-checkbox. Depending on the selection, a default value is implemented
 (1h for meta-data, 60s for measurement data). Obviously, different users have different needs regarding polling
 intervals, thus the defaults can be overwritten to transfer data according to a custom polling interval.
 
 Only one configuration can be stored at a time. Future releases will include the possibility to upload and download
-configuration files and select configuration files for a specific booking.
+configuration files and select configuration files for a specific booking. The data handler simplifies data-acquisition
+and encourages collection of all data and meta-data for improved data integrity. The separation of the data acquisition
+from the user script used in the experiment has several advantages:
 
+    1. The query calls are not part of the user-script, improving readability and making the script shorter.
+    2. Reduces the amount of code that needs to be written by the operator.
+    3. Data-acquisition is out-sourced to a separate process. This way data-acquisition is guaranteed to continue in case an experiment crashes.
+    4. The data can be easily accessed from within the user script. An example script is provided in the scripts-section of the application.
 
 //.. image:: src/data_handler_main_view.png
 //    :width: 800
@@ -105,6 +114,7 @@ configuration files and select configuration files for a specific booking.
 
 Scripting environment - Scripts
 --------------------------------
+
 
 //.. image:: src/my_scripts_view.png
 //    :width: 800

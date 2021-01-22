@@ -5,6 +5,7 @@ It provides the user with a device management system for SiLA devices, a schedul
 planning utility.
 
 # Installation
+Read the docs for more detailed information. Follow the [instructions](##Generating the documentation) to create the documentation with sphinx.
 
 ## Setting up the python environment
 1. Install pipenv  

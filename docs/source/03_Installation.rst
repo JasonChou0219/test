@@ -52,6 +52,19 @@ feel free to use the supplied requirements.txt
 
    pipenv shell
 
+4. [Windows only] Manual re-installation of protobuf
+    The standard wheel installation of protobuf doesn't allow the use of multiple files with the same name in the same
+    pool. All SiLA devices implement the standard features, thus every device will add a file with that feature name to
+    the pool. The protobuf --no-binary installation is different to the pre-compiled wheel installation and allows
+    multiple files with the same name in the pool. Run the *protobuf_no_binary_install.bat* in the main directory to
+    replace the existing wheel installation. The issue is discussed in this thread in the
+    `protobuf GitHub repository issue #3002 <https://github.com/protocolbuffers/protobuf/issues/3002>`_.
+
+.. code-block:: console
+
+   protobuf_no_binary_install.bat
+
+
 Setting up the javascript run-time environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The frontend is written in typescript. A javascript run-time environment is needed to compile the code. It is recommended
