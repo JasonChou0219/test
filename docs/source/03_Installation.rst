@@ -1,13 +1,7 @@
 Installation
 =============
 
-This software depends on third-party software. At the time of this release, all third-party software is free-to use and open-source. The respective version numbers are indicated. It cannot be guaranteed that this software will remain compatible with future releases. The repository and this document will be updated to reflect major version updates of third-party software.
-
-Prerequisites
-----------------
-Hardware:
-
-Software:
+This software depends on third-party software. At the time of this release, all third-party software is free-to use and open-source. The respective version numbers are indicated. It cannot be guaranteed that this software will remain compatible with future releases. The repository and this document will be updated to reflect major version updates of third-party so
 
 Guide
 ------

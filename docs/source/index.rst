@@ -20,9 +20,9 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 05_Software_Architecture.rst
 
-.. include:: 06_FAQ.rst
+.. include:: 09_FAQ.rst
 
-.. include:: 10_To-do.rst
+.. include:: 10_Todo.rst
 
 Indices and tables
 ==================
