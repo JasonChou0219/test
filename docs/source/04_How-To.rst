@@ -201,9 +201,18 @@ experiment can be aborted prematurely by pressing the 'stop'-button.
 
 Device calendar
 ------------------
+If a device is assigned to a specific experiment, a booking is automatically created for the entire timeframe of the experiment.
+A device can only be assigned to an experiment if it is available throughout the experiments start and end time. The
+calendar page visualizes these bookings and provides the user with additional information on the booking, such as the respective
+experiment, script and the user who created it. Furthermore, it is possible to create bookings manually. This allows the
+reservation of devices. In a future release, non-SiLA devices and "offline"-devices will be available as well. The
+calendar could be used as a laboratory-wide booking system for other legacy devices such as autoclaves or other resources.
 
-//.. image:: src/booking_view.png
-//    :width: 800
-//    :height: 200
-//    :alt: A view of the device booking system
+It is possible to delete bookings manually. Even automatically created bookings can be deleted. However, this would
+circumvent the in-built security mechanism and may lead to devices being accessed by multiple experimental scripts at
+the same time.
+
+.. image:: figures/calendar.png
+    :width: 800
+    :alt: A view of device bookings. TThe calendar.
 
