@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to SiLA2_device_manager's documentation!
-================================================
+=================================================
 
 .. toctree::
    :maxdepth: 3
@@ -20,13 +20,13 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 05_Software_Architecture.rst
 
-.. include:: 09_FAQ.rst
+.. include:: 06_FAQ.rst
 
-.. include:: 10_Todo.rst
+.. include:: 07_Todo.rst
 
-.. include:: 11_Contact.rst
+.. include:: 08_Contact.rst
 
-.. include:: 12_License.rst
+.. include:: 09_License.rst
 
 Indices and tables
 ==================
