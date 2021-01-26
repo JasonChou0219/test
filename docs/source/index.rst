@@ -24,6 +24,10 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 10_Todo.rst
 
+.. include:: 11_Contact.rst
+
+.. include:: 12_License.rst
+
 Indices and tables
 ==================
 
