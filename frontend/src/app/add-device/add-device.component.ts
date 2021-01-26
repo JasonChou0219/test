@@ -47,7 +47,6 @@ export class AddDeviceComponent implements OnInit {
         this.device.name = this.dataSource[i].name;
         this.device.address = this.dataSource[i].ip;
         this.device.port = this.dataSource[i].port;
-        this.device.server_uuid = this.dataSource[i].server_uuid;
     }
     async discovery() {
         this.discoveryStarted = true;
