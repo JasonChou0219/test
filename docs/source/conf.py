@@ -20,7 +20,7 @@ version = open("../../VERSION", "rt").read()
 
 # -- Project information -----------------------------------------------------
 
-project = 'SiLA2_device_manager'
+project = 'SiLA2 device manager'
 copyright = '2021, Lukas Bromig, David Leiter, Alexandru-Virgil Mardale'
 author = 'Lukas Bromig, David Leiter, Alexandru-Virgil Mardale'
 

@@ -1,7 +1,11 @@
 Installation
 =============
 
-This software depends on third-party software. At the time of this release, all third-party software is free-to use and open-source. The respective version numbers are indicated. It cannot be guaranteed that this software will remain compatible with future releases. The repository and this document will be updated to reflect major version updates of third-party so
+This software depends on third-party software. At the time of this release, all third-party software is free-to use and
+open-source. The respective version numbers are indicated. It cannot be guaranteed that this software will remain
+compatible with future releases of these packages. Hence, we recommend installing the appropriate software version as
+specified in this guide or as specified in the pipfile. The repository and this document will be updated to reflect
+major version updates of third-party software.
 
 Guide
 ------
