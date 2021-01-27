@@ -1,4 +1,4 @@
-Software Arcitecture
+Software Architecture
 =====================
 
 General architecture
@@ -23,13 +23,27 @@ Written in python.
 
 Create documentation of backend API automatically using sphinx.
 
-Auto-discovery of SiLA devices
+Discovery of SiLA devices
 -------------------------------
 Explain the zeroconf concept and explain what information is broadcasted via the network. Explain, that it is necessary/
 better to name the server.
 
+All SiLA servers implement Multicast DNS (mDNS) and DNS-based Service Discovery (DNS-SD). The SiLA2 specifications for
+device discovery are defined in the `SiLA Part (B) - Mapping Specification <https://docs.google.com/document/d/1-shgqdYW4sgYIb5vWZ8xTwCUO_bqE13oBEX8rYY_SJA/edit#heading=h.w2jcp32bd1a5>`_.
+The SiLA2 Device Manager uses the `python-zeroconf <https://github.com/jstasiak/python-zeroconf>`_ implementation to
+discover registered services.
+
 Dynamic client
 ---------------
+The dynamic client is capable of connecting to a server without any prior knowledge of the servers functionality. In SiLA2
+this is made possible by standard features. The SiLA Service feature contains the necessary functions
+(Get_ImplementedFeatures(), and Get_FeatureDefinition()) to query the information necessary to construct the client once a
+connection has been established.
+
+The SiLA2 Device Manager uses the SiLA_python dynamic client. The created client files are stored as temporary data on the
+host machine the device machine is running on. The client files are deleted if the device is deleted within the application.
+When a device is added to application, a UUID is assigned for internal reference. This UUID is displayed in the expandable device detail information
+on the frontend main page and is used. This UUID is also used as storage name for the device client files.
 
 
 Execution of Experiments
@@ -39,11 +53,15 @@ postgreSQL -> script as tar -> container (docker_helper.py -> put archive) -> ex
 The data handler
 -----------------
 
+
 Backend API
 ------------
 
+The python backend uses the `FastAPI web framework <https://fastapi.tiangolo.com/>`_. The source code is open-source and
+available in the `fastapi repository <https://github.com/tiangolo/fastapi>`_.
 
-.. include:: backend.rst
+.. automodule:: backend
+    :members:
 
 
 Frontend

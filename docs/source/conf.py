@@ -34,9 +34,16 @@ release = f'01.02.2021, {version}'
 # ones.
 extensions = [
     'sphinx_material',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.autodoc'
 ]
+#    'sphinx.ext.napoleon'
+
+autodoc_default_flags = ['members', 'inherited-members', 'show-inheritance']
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": False,
+    "show-inheritance": True,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

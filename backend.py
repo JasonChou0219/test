@@ -1,3 +1,21 @@
+"""
+:PROJECT: SiLA2_device_manager
+
+:details: The API of the backend.
+
+:file:    backend.py
+:authors: Lukas Bromig, David Leiter, Alexandru Mardale
+
+:date: (creation)          2021-01-27
+:date: (last modification) 2021-01-27
+
+**Copyright**:
+This file is provided "AS IS" with NO WARRANTY OF ANY KIND,
+INCLUDING THE WARRANTIES OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+For further Information see LICENSE file that comes with this distribution.
+"""
+
 from fastapi import FastAPI, Body, Depends, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm

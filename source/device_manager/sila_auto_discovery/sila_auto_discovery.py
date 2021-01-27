@@ -7,6 +7,7 @@ from typing import List
 
 @dataclass
 class SilaServerInfo:
+    """ Stores SiLA device information displayed by the server in the network via mDNS """
     uuid: str
     name: str
     ip: str
@@ -44,7 +45,9 @@ class Listener(ServiceListener):
 def find() -> List[SilaServerInfo]:
     """
     Return a list of SilaServerInfo where each entry represents the information about a server discovered on the network
+
     :return: list of SilaServerInfo
+    :rtype: List[SiLaServerInfo]
     """
 
     zeroconf = Zeroconf()
