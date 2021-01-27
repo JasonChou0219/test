@@ -24,6 +24,7 @@ from source.device_manager.experiment import get_experiment_user, start_experime
 
 
 class Status(BaseModel):
+    """ Class containing the status of a running experiment"""
     running: bool
 
 
@@ -70,6 +71,7 @@ refresh_expiration_delta = 3600 * 12 * 7  # A Week
 
 
 class User(BaseModel):
+    """ Contains user information for user management and user authentication """
     id: Optional[int]
     name: str
     fullName: str
@@ -79,16 +81,28 @@ class User(BaseModel):
 
 
 class ResetPasswordData(BaseModel):
+    """ Required for resetting of passwords """
     newPassword: str
     oldPassword: Optional[str]
 
 
 class LoginCredentials(BaseModel):
+    """ Required for user authentification during login"""
     username: str
     password: str
 
 
 def create_token(username: str, expiration: int):
+    """
+    Creates an authentification token for the current user
+
+    :param username: The name of the current user
+    :type username: str
+    :param expiration: Expiration date of the user token
+    :type expiration: int
+    :return: Returns username, expiration date, secret key and JWT algorithm
+    :rtype: dict
+    """
     return jwt.encode({
         'sub': username,
         'exp': expiration,
@@ -96,12 +110,29 @@ def create_token(username: str, expiration: int):
 
 
 def decode_token(token: str = Depends(oauth2_scheme)):
+    """
+    Decodes and verifies token using the JWT algorithm HS256
+
+    :param token: The user token
+    :type token: str
+    :return: user key/ payload
+    :rtype: str
+    """
     payload = jwt.decode(token, secret_key, algorithms='HS256')
     return payload.get('sub')
 
 
 @app.post('/api/login')
 def login(form: OAuth2PasswordRequestForm = Depends()):
+    """
+    Transfer authentication details for Auth2 authentication. Compare authentication data with registered users.
+    Create access token and assign expiration date.
+
+    :param form: A form containing the necessary authentication details
+    :type form: OAuth2PasswordRequestForm
+    :return: A dictionary of authentication elements such as tokens and expiration date
+    :rtype: dict
+    """
     if not user.authenticate(form.username, form.password):
         raise HTTPException(401, 'Could not authenticate')
 
@@ -139,6 +170,14 @@ def get_users(username: str = Depends(decode_token)):
 
 @app.get('/api/users/me')
 def get_current_user(username: str = Depends(decode_token)):
+    """
+    Fetches the details of the current user.
+
+    :param username: The name of the current user
+    :type: str
+    :return: An object containing information on the current user
+    :rtype: User
+    """
     current_user = user.get_user_by_name(username)
     return User(id=current_user.id,
                 name=current_user.name,
@@ -148,6 +187,15 @@ def get_current_user(username: str = Depends(decode_token)):
 
 @app.post('/api/users')
 def add_user(new_user: User, username: str = Depends(decode_token)):
+    """
+    Saves a new user to the postgreSQL database
+
+    :param new_user: Information of the new user
+    :type new_user: User
+    :param username: The name of hte executing user
+    :type username: str
+    :return: None
+    """
     if user.is_admin(username):
         try:
             user.add_user(new_user.name, new_user.fullName,
@@ -161,6 +209,17 @@ def add_user(new_user: User, username: str = Depends(decode_token)):
 @app.put('/api/users/{id}')
 def update_user(id: int, new_user: User,
                 username: str = Depends(decode_token)):
+    """
+    Updates the stored information of an existing user. Can be used to change the user role or name.
+
+    :param id: Internally assigned user id
+    :type id: int
+    :param new_user: The updated user information
+    :type new_user: User
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     if user.is_admin(username):
         user.update_user(id, new_user.name, new_user.fullName,
                          new_user.newPassword, new_user.role)
@@ -171,6 +230,17 @@ def update_user(id: int, new_user: User,
 def reset_password(id: int,
                    password_data: ResetPasswordData,
                    username: str = Depends(decode_token)):
+    """
+    Changes the password of the user to a new one.
+
+    :param id: Internally assigned user id
+    :type id: int
+    :param password_data: Contains the old and the new password
+    :type password_data: ResetPasswordData
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     print(password_data.newPassword)
     if user.is_admin(username):
         user.set_password(id, password_data.newPassword)
@@ -183,6 +253,15 @@ def reset_password(id: int,
 
 @app.delete('/api/users/{id}')
 def delete_user(id: int, username: str = Depends(decode_token)):
+    """
+    Delete a user from the postgreSQL
+
+    :param id: Internally assigned user id
+    :type id: int
+    :param username: The name of the executing user
+    :type username int
+    :return: None
+    """
     if user.is_admin(username):
         user.delete_user(id)
     return
@@ -190,6 +269,16 @@ def delete_user(id: int, username: str = Depends(decode_token)):
 
 @app.get('/api/users/{id}')
 def get_user(id: int, username: str = Depends(decode_token)):
+    """
+    Fetches detailed information of a user from the postgreSQL database
+
+    :param id: Internally assigned user id
+    :type id: int
+    :param username: The name of the executing user
+    :type username: int
+    :return: An object containing the user information
+    :rtype: User
+    """
     if user.is_admin(username):
         u = user.get_user(id)
         return User(id=u.id, name=u.name, fullName=u.fullName, role=u.role)
@@ -203,6 +292,15 @@ def get_devices(username: str = Depends(decode_token)):
 
 @app.post('/api/devices')
 def add_device(device: NewDeviceModel, username: str = Depends(decode_token)):
+    """
+    Addition of a new device to the postgreSQL database
+
+    :param device: Device information object including name, type, address, port etc. etc. but without an assigned internal UUID4
+    :type device: NewDeviceModel
+    :param username: The name of the executing user
+    :type username: int
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.add_device(device)
     return
@@ -210,6 +308,16 @@ def add_device(device: NewDeviceModel, username: str = Depends(decode_token)):
 
 @app.get('/api/devices/{uuid}')
 def get_device(uuid: str, username: str = Depends(decode_token)):
+    """
+    Get device information for a provided device-uuid
+
+    :param uuid: Unique identifier (UUID4) of the device used for internal reference
+    :type uuid: str
+    :param username:
+    :type username: str
+    :return: Device information including name, type, address, port etc. etc.
+    :rtype: DeviceInfo
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_device(uuid)
 
@@ -218,6 +326,16 @@ def get_device(uuid: str, username: str = Depends(decode_token)):
 def set_device(uuid: str,
                device: DeviceInfoModel,
                username: str = Depends(decode_token)):
+    """
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param device: A device information object
+    :type device: DeviceInfoModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.set_device(uuid, device)
     return
@@ -225,6 +343,15 @@ def set_device(uuid: str,
 
 @app.delete('/api/devices/{uuid}')
 def delete_device(uuid: str, username: str = Depends(decode_token)):
+    """
+    Delete the device from postgreSQL database and delete generated dynamic client files in temporary data
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.delete_device(uuid)
     return
@@ -232,18 +359,46 @@ def delete_device(uuid: str, username: str = Depends(decode_token)):
 
 @app.get('/api/deviceStatus/{uuid}')
 def device_status(uuid: str, username: str = Depends(decode_token)):
+    """
+    Get the availability status of the device by pinging the device server and retrieving the booking information
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: An object containing status information
+    :rtype: DeviceStatus
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_status(uuid)
 
 
 @app.get('/api/deviceFeatures/{uuid}')
 def device_features(uuid: str, username: str = Depends(decode_token)):
+    """
+    Get all features and associated information of the requested device.
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: List of SiLA feature objects that include all associated information
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_features_for_data_handler(uuid)}
 
 
 @app.get('/api/deviceFeaturesDataHandler/{uuid}')
 def device_features(uuid: str, username: str = Depends(decode_token)):
+    """
+    Get all features and associated information of the requested device.
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: List of SiLA feature objects that include all associated information
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_features_for_data_handler(uuid)}
 
@@ -254,6 +409,21 @@ def call_feature_command(uuid: str,
                          command_id: str,
                          parameterList: DeviceCommandParameters,
                          username: str = Depends(decode_token)):
+    """
+    Executes the specified command and returns the response
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param feature: The name of the feature the command belongs to
+    :type feature: str
+    :param command_id: the id of the command to be called
+    :type command_id: str
+    :param parameterList: A list of parameters required by the command
+    :type parameterList: DeviceCommandParameters
+    :param username: The name of the executing user
+    :type username: str
+    :return: The response of the call
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.call_feature_command(uuid, feature,
                                                        command_id,
@@ -265,6 +435,19 @@ def get_feature_property(uuid: str,
                          feature: str,
                          property_id: str,
                          username: str = Depends(decode_token)):
+    """
+    Requests the specified property and returns the response
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param feature: The name of the feature the property belongs to
+    :type feature: str
+    :param property_id: The id of the property
+    :type property_id: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: The response of the call
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_feature_property(uuid, feature,
                                                        property_id)
@@ -272,12 +455,29 @@ def get_feature_property(uuid: str,
 
 @app.get('/api/databases')
 def get_databases(username: str = Depends(decode_token)):
+    """
+    Retrieves all information on the registered databases
+
+    :param username: The name of the executing user
+    :type username: str
+    :return: Returns a list of objects containing database information
+    :rtype: List[DatabaseInfo]
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_databases()}
 
 
 @app.post('/api/databases')
 def add_database(database: NewDatabaseModel, username: str = Depends(decode_token)):
+    """
+    Add a new database to the system. The database information is stored in the postgreSQL database.
+
+    :param database: An object containing the information of the new database, i.e. connection details and name.
+    :type database: NewDatabaseModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.add_database(database)
     return
@@ -285,11 +485,31 @@ def add_database(database: NewDatabaseModel, username: str = Depends(decode_toke
 
 @app.get('/api/databases/{id}')
 def get_database(id: int, username: str = Depends(decode_token)):
+    """
+    Get information on a specific database
+
+    :param id: Internally assigned id of the database
+    :type id: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: An object containing information on the database
+    :rtype: DatabaseInfo
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_database(id)
 
 @app.get('/api/databaseStatus/{id}')
 def database_status(id: int, username: str = Depends(decode_token)):
+    """
+    Check the connection status of the database by pinging the database server
+
+    :param id: Internally assigned id of the database
+    :type id: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: An object containing the status information
+    :rtype: DatabaseStatus
+    """
     device_manager_service = DeviceManagerService()
     return device_manager_service.get_database_status(id)
 
@@ -297,6 +517,17 @@ def database_status(id: int, username: str = Depends(decode_token)):
 def set_database(id: int,
                  database: DatabaseInfoModel,
                  username: str = Depends(decode_token)):
+    """
+
+
+    :param id: Internally assigned id of the database
+    :type id: int
+    :param database: An object containing database information
+    :type database: DatabaseInfoModel
+    :param username: The name of the executing user
+    :type username: str
+    :return:
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.set_database(id, database)
     return
@@ -305,6 +536,15 @@ def set_database(id: int,
 # TODO: Unlink device from database when database is deleted
 @app.delete('/api/databases/{id}')
 def delete_database(id: int, username: str = Depends(decode_token)):
+    """
+    Delete a registered database from the postgreSQL database
+
+    :param id: Internally assigned database id
+    :type id: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.delete_database(id)
     return
@@ -312,6 +552,17 @@ def delete_database(id: int, username: str = Depends(decode_token)):
 
 @app.put('/api/devices/{uuid}/database')
 def link_database(uuid: str, id: int = Body(...), username: str = Depends(decode_token)):
+    """
+    Link a database to a device. Required for the data-handler functionality.
+
+    :param uuid: Internally assigned device-uuid (uuid4)
+    :type uuid: str
+    :param id: Internally assigned database id
+    :type id: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.link_database(uuid, id)
     return
@@ -319,6 +570,15 @@ def link_database(uuid: str, id: int = Body(...), username: str = Depends(decode
 
 @app.delete('/api/devices/{uuid}/database')
 def unlink_database(uuid: str, username: str = Depends(decode_token)):
+    """
+    Unlink a database from a device. The link is deleted.
+
+    :param uuid: Internally assigned device-uuid (uuid4)
+    :type uuid: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.unlink_database(uuid)
     return
@@ -328,6 +588,17 @@ def unlink_database(uuid: str, username: str = Depends(decode_token)):
 def set_device_attributes_for_data_handler(uuid: str,
                                            active: bool = Body(...),
                                            username: str = Depends(decode_token)):
+    """
+    Sets the available attribute of the device status to the specified state.
+
+    :param uuid: Internally assigned device-uuid
+    :type uuid: str
+    :param active: The new state setting of the device
+    :type active: bool
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.set_device_attributes_for_data_handler(uuid, active)
     return
@@ -335,12 +606,28 @@ def set_device_attributes_for_data_handler(uuid: str,
 
 @app.put('/api/devices/{uuid}/features/{id}/dataHandler')
 def set_feature_attributes_for_data_handler(uuid: str,
-                                            id: str,
+                                            feature_id: str,
                                             active: bool = Body(...),
                                             meta: bool = Body(...),
                                             username: str = Depends(decode_token)):
+    """
+    Set the state of the data acquisition mode on a feature level. De/Activate data acquisition and switch from meta to
+    non-meta polling interval.
+
+    :param uuid: Internally assigned device-uuid
+    :type uuid: str
+    :param feature_id: The SiLA id of the feature
+    :type feature_id: str
+    :param active: The state of the data-handler data acquisition mode of this feature of the device. To be set!
+    :type active: bool
+    :param meta: The kind of polling interval that shall be used. To be set! Defaults to meta (True).
+    :type meta: bool
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
-    device_manager_service.set_feature_attributes_for_data_handler(uuid, id, active, meta)
+    device_manager_service.set_feature_attributes_for_data_handler(uuid, feature_id, active, meta)
     return
 
 
@@ -354,6 +641,31 @@ def set_command_attributes_for_data_handler(uuid: str,
                                             nonMetaInterval: int = Body(default=None),
                                             metaInterval: int = Body(default=None),
                                             username: str = Depends(decode_token)):
+    """
+    Set the state of the data acquisition mode on a command level. De/Activate data acquisition and switch from meta to
+    non-meta polling interval.
+
+    :param uuid: Internally assigned device-uuid
+    :type uuid: str
+    :param feature_id: The SiLA id of the feature the command belongs to
+    :type feature_id: str
+    :param command_id: The SiLA id of the command
+    :type command_id: str
+    :param parameters: The parameter to be used by the data-handler
+    :type parameters: List[DeviceCommandParameter]
+    :param active: The state of the data-handler data acquisition mode this command of the device. To be set!
+    :type active: bool
+    :param meta: The kind of polling interval that shall be used. To be set! Defaults to meta (True).
+    :type meta: bool
+    :param nonMetaInterval: Polling interval for non-meta data acquisition
+    :type nonMetaInterval: int
+    :param metaInterval: Polling interval for meta data acquisition
+    :type metaInterval: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    :return:
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.set_command_attributes_for_data_handler(uuid, feature_id, command_id, active, meta,
                                                                    nonMetaInterval, metaInterval, parameters)
@@ -369,6 +681,28 @@ def set_property_attributes_for_data_handler(uuid: str,
                                              nonMetaInterval: int = Body(default=None),
                                              metaInterval: int = Body(default=None),
                                              username: str = Depends(decode_token)):
+    """
+    Set the state of the data acquisition mode on a property level. De/Activate data acquisition and switch from meta to
+    non-meta polling interval.
+
+    :param uuid: Internally assigned device-uuid
+    :type uuid: str
+    :param feature_id: The SiLA id of the feature the property belongs to
+    :type feature_id: str
+    :param property_id: The SiLA id of the property
+    :type property_id: str
+    :param active: The state of the data-handler data acquisition mode this property of the device. To be set!
+    :type active: bool
+    :param meta: The kind of polling interval that shall be used. To be set! Defaults to meta (True).
+    :type meta: bool
+    :param nonMetaInterval: Polling interval for non-meta data acquisition
+    :type nonMetaInterval:cint
+    :param metaInterval: Polling interval for meta data acquisition
+    :type metaInterval: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.set_property_attributes_for_data_handler(uuid, feature_id, property_id, active, meta,
                                                                     nonMetaInterval, metaInterval)
@@ -377,6 +711,12 @@ def set_property_attributes_for_data_handler(uuid: str,
 
 @app.get('/api/silaDiscovery/')
 def sila_discovery():
+    """
+    Searches for all registered SiLA devices on the network and returns the information
+
+    :return: Returns a list containing all discovered devices and the corresponding information available
+    :rtype: List[List[SilaServerInfo]]
+    """
     device_manager_service = DeviceManagerService()
     data = device_manager_service.discover_sila_devices()
     return {'data': device_manager_service.discover_sila_devices()}
@@ -390,6 +730,26 @@ def device_log(start: int = 0,
                excludeCritical: bool = False,
                excludeError: bool = False,
                username: str = Depends(decode_token)):
+    """
+    Get the device logs.
+
+    :param start: Time of the first log entry to be gathered. Defaults to 0.
+    :type start: int, optional
+    :param end: Time of the last log entry to be gathered.  Defaults to current time.
+    :type end: int, optional
+    :param excludeInfo: Filter Info log level messages
+    :type excludeInfo: bool, optional
+    :param excludeWarning:Filter Warning log level messages
+    :type excludeWarning: bool, optional
+    :param excludeCritical:Filter Critical log level messages
+    :type excludeCritical: bool, optional
+    :param excludeError: Filter Error log level messages
+    :type excludeError: bool, optional
+    :param username: The name of the executing user
+    :type username: str
+    :return: A dictionary containing the requested log messages
+    :rtype: dict
+    """
     device_manager_service = DeviceManagerService()
     return {
         'data':
@@ -407,6 +767,18 @@ def device_log(start: int = 0,
 def get_booking_list(start: int = 0,
                      end: int = 2**32 - 1,
                      username: str = Depends(decode_token)):
+    """
+    Fetches the registered bookings from the postgreSQL database
+
+    :param start: The time of the first booking to be gathered. Defaults to 0.
+    :type start: int, optional
+    :param end: The time of the last booking to be gathered.
+    :type end: int, optional
+    :param username: The name of the executing user
+    :type username: str
+    :return: A list of all bookings
+    :rtype: List[booking_info]
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_bookings(start, end)}
 
@@ -414,6 +786,15 @@ def get_booking_list(start: int = 0,
 @app.post('/api/bookings')
 def book_device(bookingInfo: BookingModel,
                 username: str = Depends(decode_token)):
+    """
+    Store a booking for a device in the postgreSQL database
+
+    :param bookingInfo: The booking information
+    :type bookingInfo: BookingModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     device_manager_service.book_device(bookingInfo.name, bookingInfo.user,
                                        bookingInfo.device, bookingInfo.start,
@@ -426,6 +807,20 @@ def get_device_booking_list(uuid: str,
                             start: int = 0,
                             end: int = datetime.now().timestamp(),
                             username: str = Depends(decode_token)):
+    """
+    Fetches a list of device bookings
+
+    :param uuid: Internally assigned device uuid
+    :type uuid: str
+    :param start: The time of the first booking entry to be gathered. Defaults to 0.
+    :type start: int, optional
+    :param end: The time of the last booking entry to be gathered. Defaults to current time.
+    :type end: int, optional
+    :param username: The name of the executing user
+    :type username: str
+    :return: List of booking information objects for the device
+    :rtype: List[BookingInfoWithNames]
+    """
     device_manager_service = DeviceManagerService()
     return {
         'data': device_manager_service.get_device_bookings(uuid, start, end)
@@ -434,12 +829,31 @@ def get_device_booking_list(uuid: str,
 
 @app.get('/api/bookings/{bookingID}')  #, methods=['GET', 'DELETE'])
 def get_booking(bookingID: int, username: str = Depends(decode_token)):
+    """
+    Get booking information for a booking id
+
+    :param bookingID: The id of the requested booking
+    :type bookingID: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: Information of the booking
+    :rtype: BookingInfo
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_booking_entry(bookingID)}
 
 
 @app.delete('/api/bookings/{bookingID}')  #, methods=['GET', 'DELETE'])
 def delete_booking(bookingID: int, username: str = Depends(decode_token)):
+    """
+    Delete a booking from the  postgreSQL by id
+
+    :param bookingID: The booking id
+    :type bookingID: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     current_user = user.get_user_by_name(username)
     device_manager_service = DeviceManagerService()
     booking_entry = device_manager_service.get_booking_entry(bookingID)
@@ -455,6 +869,14 @@ def delete_booking(bookingID: int, username: str = Depends(decode_token)):
 
 @app.get('/api/experiments')
 def get_experiments(username: str = Depends(decode_token)):
+    """
+    Get information of all stored experiments
+
+    :param username: The name of the executing user
+    :type username: str
+    :return: Returns a list of experiments with the corresponding information
+    :rtype: List[Experiment]
+    """
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_all_experiments()}
 
@@ -462,7 +884,15 @@ def get_experiments(username: str = Depends(decode_token)):
 @app.post('/api/experiments')
 def create_experiment(experiment: ExperimentBookingModel,
                       username: str = Depends(decode_token)):
+    """
+    Store a new experiment in the postgreSQL database
 
+    :param experiment: The new experiment
+    :type experiment: ExperimentBookingModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     userID = user.get_user_by_name(username).id
     device_manager_service = DeviceManagerService()
     device_manager_service.create_experiment(experiment.name, experiment.start,
@@ -476,6 +906,17 @@ def create_experiment(experiment: ExperimentBookingModel,
 def edit_experiment(experimentID: int,
                     experiment: ExperimentBookingModel,
                     username: str = Depends(decode_token)):
+    """
+    Edit an already existing experiment
+
+    :param experimentID: The internal experiment id
+    :type experimentID: int
+    :param experiment: The experiment information object
+    :type experiment: ExperimentBookingModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     print(f'experiment data {experiment}')
     userID = user.get_user_by_name(username).id
     device_manager_service = DeviceManagerService()
@@ -490,7 +931,15 @@ def edit_experiment(experimentID: int,
 @app.delete('/api/experiments/{experimentID}')
 def delete_experiment(experimentID: int,
                       username: str = Depends(decode_token)):
+    """
+    Delete an experiment from the postgreSQL database.
 
+    :param experimentID: The internal id of the experiment to be deleted
+    :type experimentID: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     current_user = user.get_user_by_name(username)
     device_manager_service = DeviceManagerService()
     if (get_experiment_user(experimentID) !=
@@ -505,6 +954,14 @@ def delete_experiment(experimentID: int,
 
 @app.get('/api/scripts')
 def get_user_scripts_info(username: str = Depends(decode_token)):
+    """
+    Get the information of all registered user-scripts
+
+    :param username: The name of the executing user
+    :type username: str
+    :return: A list of script objects that contain the script content and information
+    :rtype: List[Script]
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     return {
@@ -514,6 +971,16 @@ def get_user_scripts_info(username: str = Depends(decode_token)):
 
 @app.get('/api/scripts/{scriptID}')
 def get_user_script(scriptID: int, username: str = Depends(decode_token)):
+    """
+    Get the information of a specific user-scripts
+
+    :param scriptID: The internally assigned script id
+    :type scriptID: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: The script object containing the scripts content and information
+    :rtype: Script
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     script_info = device_manager_service.get_user_script_info(scriptID)
@@ -529,6 +996,15 @@ def get_user_script(scriptID: int, username: str = Depends(decode_token)):
 @app.post('/api/scripts')
 def upload_user_script(script: ScriptModel,
                        username: str = Depends(decode_token)):
+    """
+    Add a new script object to the postgreSQL database
+
+    :param script: The script object containing content and additional information
+    :type script: ScriptModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     device_manager_service.create_user_script(script.name, script.fileName,
@@ -538,6 +1014,15 @@ def upload_user_script(script: ScriptModel,
 
 @app.delete('/api/scripts/{scriptID}')
 def delete_user_script(scriptID: int, username: str = Depends(decode_token)):
+    """
+    Delete a specific user-script from the postgreSQL database
+
+    :param scriptID: The id of the script
+    :type scriptID: str
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     script_info = device_manager_service.get_user_script_info(scriptID)
@@ -556,6 +1041,17 @@ def delete_user_script(scriptID: int, username: str = Depends(decode_token)):
 def set_user_script_info(scriptID: int,
                          info: ScriptInfoModel,
                          username: str = Depends(decode_token)):
+    """
+
+
+    :param scriptID: The id of the script
+    :type scriptID: int
+    :param info: The object containing information and content of the script
+    :type info: ScriptInfoModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     script_info = device_manager_service.get_user_script_info(scriptID)
@@ -575,6 +1071,18 @@ def set_user_script_info(scriptID: int,
 def set_user_script(scriptID: int,
                     script: ScriptModel,
                     username: str = Depends(decode_token)):
+    """
+
+
+    :param scriptID: The id of the script
+
+    :type scriptID: int
+    :param script: The object containing the script content and information
+    :type script: ScriptModel
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     device_manager_service = DeviceManagerService()
     current_user = user.get_user_by_name(username)
     script_info = device_manager_service.get_user_script_info(scriptID)
@@ -595,6 +1103,17 @@ def set_user_script(scriptID: int,
 async def control_experiment(status: Status,
                          experimentID: int,
                          username: str = Depends(decode_token)):
+    """
+    Asynchronous function to keep track of the experiment status. Updates the experiment status in the databse.
+
+    :param status: The status whether the experiment is running or not
+    :type status: bool
+    :param experimentID: The id of the experiment
+    :type experimentID: int
+    :param username: The name of the executing user
+    :type username: str
+    :return: None
+    """
     if status.running:
         await start_experiment(experimentID)
     else:
@@ -606,6 +1125,13 @@ async def control_experiment(status: Status,
 @app.websocket("/ws/experiments")
 async def experiment_status_websocket(
         websocket: WebSocket):  #, username:str = Depends(decode_token)):
+    """
+    Asynchronous function that forwards the experiment status via websocket
+
+    :param websocket: The websocket the information is transferred by
+    :type websocket: Websocket
+    :return: None
+    """
     pool = await get_redis_pool()
     channels = await pool.subscribe('experiment_status')
     await websocket.accept()
