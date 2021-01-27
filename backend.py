@@ -87,14 +87,14 @@ class ResetPasswordData(BaseModel):
 
 
 class LoginCredentials(BaseModel):
-    """ Required for user authentification during login"""
+    """ Required for user authentication during login """
     username: str
     password: str
 
 
 def create_token(username: str, expiration: int):
     """
-    Creates an authentification token for the current user
+    Creates an authentication token for the current user
 
     :param username: The name of the current user
     :type username: str
@@ -259,7 +259,7 @@ def delete_user(id: int, username: str = Depends(decode_token)):
     :param id: Internally assigned user id
     :type id: int
     :param username: The name of the executing user
-    :type username int
+    :type username: int
     :return: None
     """
     if user.is_admin(username):
@@ -696,7 +696,7 @@ def set_property_attributes_for_data_handler(uuid: str,
     :param meta: The kind of polling interval that shall be used. To be set! Defaults to meta (True).
     :type meta: bool
     :param nonMetaInterval: Polling interval for non-meta data acquisition
-    :type nonMetaInterval:cint
+    :type nonMetaInterval: int
     :param metaInterval: Polling interval for meta data acquisition
     :type metaInterval: int
     :param username: The name of the executing user
@@ -739,9 +739,9 @@ def device_log(start: int = 0,
     :type end: int, optional
     :param excludeInfo: Filter Info log level messages
     :type excludeInfo: bool, optional
-    :param excludeWarning:Filter Warning log level messages
+    :param excludeWarning: Filter Warning log level messages
     :type excludeWarning: bool, optional
-    :param excludeCritical:Filter Critical log level messages
+    :param excludeCritical: Filter Critical log level messages
     :type excludeCritical: bool, optional
     :param excludeError: Filter Error log level messages
     :type excludeError: bool, optional

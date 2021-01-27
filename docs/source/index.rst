@@ -26,8 +26,6 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 08_License.rst
 
-.. include:: backend.rst
-
 Indices and tables
 ==================
 
