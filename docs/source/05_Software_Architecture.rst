@@ -33,6 +33,29 @@ device discovery are defined in the `SiLA Part (B) - Mapping Specification <http
 The SiLA2 Device Manager uses the `python-zeroconf <https://github.com/jstasiak/python-zeroconf>`_ implementation to
 discover registered services.
 
+The backend code used for the discovery feature is located in the folder *source.device_manager.sila_auto_discovery*.
+
+.. automodule:: source.device_manager.sila_auto_discovery.sila_auto_discovery
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+**Discovery Example**
+
+The discovery functionality can easily be explored by running the *find()* function from the root directory of this project:
+
+.. code-block:: python
+
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath('.'))
+    from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
+
+
+    servers = find()
+    print(servers)
+
 Dynamic client
 ---------------
 The dynamic client is capable of connecting to a server without any prior knowledge of the servers functionality. In SiLA2

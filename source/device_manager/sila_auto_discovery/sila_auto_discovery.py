@@ -44,9 +44,9 @@ class Listener(ServiceListener):
 
 def find() -> List[SilaServerInfo]:
     """
-    Return a list of SilaServerInfo where each entry represents the information about a server discovered on the network
+    Return a list of SilaServerInfo objects of which each entry represents the information about a server discovered on the network.
 
-    :return: list of SilaServerInfo
+    :return: List of SiLa server information
     :rtype: List[SiLaServerInfo]
     """
 
