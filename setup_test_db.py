@@ -13,28 +13,28 @@ from hashlib import sha256
 devices = [{
     'uuid': uuid4(),
     'server_uuid': uuid4(),
-    'name': "Device 1",
+    'name': "Dummy Device 1",
     'type': DeviceType.SILA,
     'address': "192.168.0.20",
-    'port': 80,
+    'port': 50001,
     'available': True,
     'user': None
 }, {
     'uuid': uuid4(),
     'server_uuid': uuid4(),
-    'name': "Device 2",
+    'name': "Dummy Device 2",
     'type': DeviceType.CUSTOM,
     'address': "192.168.0.25",
-    'port': 80,
+    'port': 55001,
     'available': False,
     'user': 1
 }, {
     'uuid': uuid4(),
     'server_uuid': uuid4(),
-    'name': "Device 3",
+    'name': "Dummy Device 3",
     'type': DeviceType.SILA,
     'address': "192.168.0.40",
-    'port': 80,
+    'port': 50002,
     'available': True,
     'user': None
 }]
