@@ -22,11 +22,9 @@ Welcome to SiLA2_device_manager's documentation!
 
 .. include:: 06_FAQ.rst
 
-.. include:: 07_Todo.rst
+.. include:: 07_Contact.rst
 
-.. include:: 08_Contact.rst
-
-.. include:: 09_License.rst
+.. include:: 08_License.rst
 
 Indices and tables
 ==================
