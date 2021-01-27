@@ -49,7 +49,6 @@ python-hosts==1.0.1
 python-multipart==0.0.5
 python-slugify==4.0.1
 pytz==2020.5
-pywin32==227
 redis==3.5.3
 requests==2.25.1
 sila2lib==0.2.5
