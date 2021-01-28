@@ -480,8 +480,8 @@ scripts = [
                 '\t\t print("This did not work...")\n\n'
                 '\t# This is an example query.\n'
                 '\tresults = influx_client.query(\n'
-                '\t\tSELECT test_number FROM "device_manager"."autogen"."testMeasurement" WHERE experiment_name = \'influxDB_test\' GROUP BY position \n'
-                '\t\tORDER BY DESC LIMIT 1\')\n'
+                '\t\t\'SELECT test_number FROM "device_manager"."autogen"."testMeasurement" WHERE experiment_name = \\\'influxDB_test\\\' GROUP BY position \n\''
+                '\t\t\'ORDER BY DESC LIMIT 1\')\n'
                 '\tprint(results)\n\n'
                 '\ttime.sleep(10)\n\n'
     }
