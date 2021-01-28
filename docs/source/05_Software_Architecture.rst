@@ -68,6 +68,34 @@ host machine the device machine is running on. The client files are deleted if t
 When a device is added to application, a UUID is assigned for internal reference. This UUID is displayed in the expandable device detail information
 on the frontend main page and is used. This UUID is also used as storage name for the device client files.
 
+**Dynamic client Example**
+
+.. automodule:: source.device_manager.device_layer.dynamic_client
+    :members: DynamicSiLA2Client
+    :undoc-members:
+    :show-inheritance:
+
+The dynamic client is located at *source.device_manager.device_layer*. The dynamic client can be executed freely without
+the application. If invoked directly, the respective code snippet at the bottom of the file can be un-commented. The basic
+connection and code generation functionality can be achieved with the code snippet below. Further examples can be found
+in the file itself.
+
+.. code-block:: python
+
+    if __name__ == "__main__":
+         # Add source to path to enable imports
+         import os
+         import sys
+         sys.path.insert(0, os.path.abspath('.'))
+
+         # or use logging.INFO (=20) or logging.ERROR (=30) for less output
+         # logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging.INFO)
+         client = DynamicSiLA2Client(name="DynamicClient", server_ip='127.0.0.1', server_port=50051)
+
+         # create the client files
+         client.generate_files()
+         # start the client, which will load all data from the server
+         client.run()
 
 Execution of Experiments
 -------------------------
