@@ -2,12 +2,12 @@ FAQ
 =====
 
 Error 500: Internal Server Error
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 **Error**:
 
 .. code-block:: console
 
-        $ Error 500: Internal Server Error
+        Error 500: Internal Server Error
 
 The device manager frontend issues a token to a user upon login. The token has an expiration date and is only valid for
 X min. If the user is inactive for a longer period of time, the token is not refreshed and access is denied. A token may
@@ -19,14 +19,14 @@ invalidate for other reasons as well. Access from multiple browsers by the same 
 
 
 Protobuf: A file with this name is already in the pool
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------------
 **Error**:
 
 .. code-block:: console
 
-        $ TypeError: Couldn't build proto file into descriptor pool!
-        $ Invalid proto descriptor for file "messages.proto":
-        $  messages.proto: A file with this name is already in the pool.
+        TypeError: Couldn't build proto file into descriptor pool!
+        Invalid proto descriptor for file "messages.proto":
+          messages.proto: A file with this name is already in the pool.
 
 This error will show in the backend console and it's logs. It is a known error on windows machines and related to the
 protobuf package. The standard wheel installation of protobuf doesn't allow the use of multiple files with the same name
@@ -38,8 +38,11 @@ script uninstalls the standard protobuf installation and replaces it with the bi
 --no-binary flag, thus pip is used. Protobuf is added to the pipfile afterwards for completeness sake.
 
 
+
+
 To-do:
-=======
+-------
 - Incorporate SiLA client meta-data in python repository
 - Incorporate observable commands in device manager
 - Implement lock/authorization feature
+- Edit experiment and update bookings and experiments in backend properly

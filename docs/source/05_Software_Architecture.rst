@@ -15,6 +15,22 @@ python implementation evolves, the Device manager updates will incorporate new c
 Include C4 diagrams of software architecture
 Maybe include UML diagrams here as well.
 
+// .. image:: Still missing.png
+//    :width: 800
+//    :alt: General architecture on a high level of abstraction
+
+
+// .. image:: Still missing.png
+//    :width: 800
+//    :alt: Architecture on a more detailed level
+
+Clarify:
+- General interaction between modules.
+- Interaction with redis DB and postgreSQL
+- Interaction with scheduler.py
+- Interaction with data-handler.py
+
+
 Backend
 ========
 include a pictogram of the backend that is more detailed than the general one. Include redis, postgreSQL, device layer,
@@ -117,6 +133,10 @@ available in the `fastapi repository <https://github.com/tiangolo/fastapi>`_.
 
 Frontend
 =========
-Angular, material design, long term support, industry standard,  written in TypeScript (JavaScript compatible),
 
-Create documentation of frontend API automatically using sphinx.
+To-Do:
+- Which framework is used and what technology is it based on?
+- Used interface design guidelines and why? mat design
+- used programming languages
+- Include: Angular, material design, long term support, industry standard,  written in TypeScript (JavaScript compatible),
+
