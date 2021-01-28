@@ -121,7 +121,7 @@ Scripting environment - Scripts
 --------------------------------
 
 This page allows the user to upload, create and edit scripts. The main view shows a list of all saved scripts.
-Clicking on the script name or the **<>**-icon opens the script editor. TThe code editor is based on the
+Clicking on the script name or the **<>**-icon opens the script editor. The code editor is based on the
 `Monaco Editor <https://www.npmjs.com/package/ngx-monaco-editor>`_ and includes syntax highlighting. Auto-completion is
 not supported. Registered scripts can be assigned to experiments in the experiment section. A script assigned to an
 experiment is executed in a docker container. The docker image is created based on the provided dockerfile which is
@@ -281,5 +281,5 @@ the same time.
 
 .. image:: /figures/calendar.png
     :width: 800
-    :alt: A view of device bookings. TThe calendar.
+    :alt: A view of device bookings. The calendar.
 
