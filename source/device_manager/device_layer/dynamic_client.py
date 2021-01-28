@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from typing import Optional
 from typing import Dict, List, Any
@@ -182,6 +183,9 @@ class DynamicSiLA2Client(SiLA2Client):
                     # generate the dynamic handler
                     self._features[feature_id] = DynamicFeature(
                         fdl_file=fdl_filename, channel=self.channel)
+                    del sys.modules[feature_id.rstrip('\n') + '_pb2']
+                    del sys.modules[feature_id.rstrip('\n') + '_pb2_grpc']
+                    sys.path.remove(os.path.dirname(fdl_filename))
 
     def stop(self, force: bool = False):
         # nothing to do I guess
