@@ -45,7 +45,7 @@ investigate which (observable) commands and (observable) properties are implemen
 commands and properties shows the user useful information on functionality and usage. Required parameters and responses
 are displayed with the attributed SiLA-datatype.
 
-.. image:: _static/figures/devices.png
+.. image:: /docs/source/_static/figures/devices.png
     :width: 800
     :alt: A view of the main page, the devices list, including general device details
 
@@ -59,13 +59,13 @@ basic information it was registered with by the server. This information is used
 dynamic client. The client files are stored in the local temporary folder named after the devices server-UUID:
 Relative path to the directory: *[...]temp/device-manager/SiLA/<device-UUID>/*
 
-.. image:: _static/figures/discovery.png
+.. image:: docs/source/_static/figures/discovery.png
     :width: 800
     :alt: A view of the discovery feature for adding new devices to the manager
 
 SiLA Explorer - The device tree
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Each device is that is added to the device manager is assigned an internal UUID. This way devices with the same server
+Each device that is added to the device manager is assigned an internal UUID. This way devices with the same server
 name can be uniquely identified. The device tree enables the user to run commands and request properties interactively
 from within the browser. On the lowest level of the device tree, the command/property level, a run button can be clicked
 to execute the function. For functions that require user input, the parameters can be entered in the corresponding text

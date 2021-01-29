@@ -448,7 +448,7 @@ scripts = [
                 '# To call the property "StartYear" of the HelloSiLA example device use:\n'
                 'StartYear = yourObject.call_property("GreetingProvider","StartYear")\n\n'
                 '# To run the "SayHello" command use:\n'
-                'response = yourObject.call_command("GreetingProvider","SayHello",parameters: { "Name": })\n\n'
+                'response = yourObject.call_command("GreetingProvider","SayHello",parameters={"Name": \'some name\'})\n\n'
                 '# Note: you need to replace the "yourObject" part of the command with the client object of that device!'
     },
     {
@@ -458,12 +458,13 @@ scripts = [
         'data': 'from influxdb import InfluxDBClient\n'
                 'from datetime import datetime\n'
                 'import numpy as np\n\n\n'
+                'import time'
                 '# Instantiate the database client.\n'
                 'influx_client = InfluxDBClient(host=\'localhost\', port=8086, username=\'root\', password=\'root\', database=\'device_manager\')\n\n'
                 '# Check connection\n'
                 'print(f\'Checking connectivity. DB server version: {influx_client.ping()}\')\n\n'
                 'for i in range(0, 100, 1):\n'
-                '# This is an example write operation\n'
+                '\t# This is an example write operation\n'
                 '\tdata_point = {\n'
                 '\t\t"measurement": "testMeasurement",\n'
                 '\t\t"tags": {\n'
