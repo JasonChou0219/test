@@ -15,12 +15,12 @@ python implementation evolves, the Device manager updates will incorporate new c
 Include C4 diagrams of software architecture
 Maybe include UML diagrams here as well.
 
-// .. image:: Still missing.png
+// .. image:: _static/figures/Still missing.png
 //    :width: 800
 //    :alt: General architecture on a high level of abstraction
 
 
-// .. image:: Still missing.png
+// .. image:: _static/figures/Still missing.png
 //    :width: 800
 //    :alt: Architecture on a more detailed level
 
