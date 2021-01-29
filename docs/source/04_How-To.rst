@@ -45,7 +45,7 @@ investigate which (observable) commands and (observable) properties are implemen
 commands and properties shows the user useful information on functionality and usage. Required parameters and responses
 are displayed with the attributed SiLA-datatype.
 
-.. image:: /images/devices.png
+.. image:: _static/figures/devices.png
     :width: 800
     :alt: A view of the main page, the devices list, including general device details
 
@@ -128,7 +128,7 @@ experiment is executed in a docker container. The docker image is created based 
 stored in the folder *user_script_env*. If non-standard python packages are required for the script execution, they must
 be specified in the *requirements.txt*.
 
-.. image:: /images/scripts.png
+.. image:: _static/figures/scripts.png
     :width: 800
     :alt: A view of the scripting environment
 
@@ -258,7 +258,7 @@ The experiment status may be one of the following:
 It is possible to start experiments before their scheduled starting time by pressing the 'play'-icon. A running
 experiment can be aborted prematurely by pressing the 'stop'-button.
 
-.. image:: /images/experiments.png
+.. image:: _static/figures/experiments.png
     :width: 800
     :alt: A view of the experiment view
 
@@ -279,7 +279,7 @@ It is possible to delete bookings manually. Even automatically created bookings 
 circumvent the in-built security mechanism and may lead to devices being accessed by multiple experimental scripts at
 the same time.
 
-.. image:: /images/calendar.png
+.. image:: _static/figures/calendar.png
     :width: 800
     :alt: A view of device bookings. The calendar.
 
