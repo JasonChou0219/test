@@ -27,7 +27,7 @@ If accessed from the host machine, the url of the login-page is `<localhost:4200
 **admin** and the default password is **1234**. It is strongly recommended to change the default password of the admin
 account.
 
-.. image:: images/login.png
+.. image:: _static/figures/login.png
     :width: 800
     :alt: A view of the login page with entered admin credentials
 
@@ -59,7 +59,7 @@ basic information it was registered with by the server. This information is used
 dynamic client. The client files are stored in the local temporary folder named after the devices server-UUID:
 Relative path to the directory: *[...]temp/device-manager/SiLA/<device-UUID>/*
 
-.. image:: images/discovery.png
+.. image:: _static/figures/discovery.png
     :width: 800
     :alt: A view of the discovery feature for adding new devices to the manager
 
@@ -71,7 +71,7 @@ from within the browser. On the lowest level of the device tree, the command/pro
 to execute the function. For functions that require user input, the parameters can be entered in the corresponding text
 box. The syntax by which the call can be incorporated into python scripts in the scripting environment is shown.
 
-.. image:: images/device-tree.png
+.. image:: _static/figures/device-tree.png
     :width: 800
     :alt: A view of the discovery feature for adding new devices to the manager
 
@@ -99,7 +99,7 @@ each command using the meta-checkbox. Depending on the selection, a default valu
 (1h for meta-data, 60s for measurement data). Obviously, different users have different needs regarding polling
 intervals, thus the defaults can be overwritten to transfer data according to a custom polling interval.
 
-.. image:: images/data-handler.png
+.. image:: _static/figures/data-handler.png
     :width: 800
     :alt: A view of the data handler feature
 
@@ -113,7 +113,7 @@ from the user script used in the experiment has several advantages:
     3. Data-acquisition is out-sourced to a separate process. This way data-acquisition is guaranteed to continue in case an experiment crashes.
     4. The data can be easily accessed from within the user script. An example script is provided in the scripts-section of the application.
 
-.. image:: images/data-handler-tree.png
+.. image:: _static/figures/data-handler-tree.png
     :width: 800
     :alt: A view of the data handler feature
 
