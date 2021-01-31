@@ -806,6 +806,10 @@ class DeviceManager:
             with conn.cursor() as cursor:
                 cursor.execute('delete from databases where id=%s',
                                [id])
+                # Unlink database for devices that have this database
+                cursor.execute('update devices set databaseID = %s where databaseID=%s',
+                               [None, id])
+
 
     def link_database(self, device_uuid: UUID, database_id: int):
         """Link a device to a database
