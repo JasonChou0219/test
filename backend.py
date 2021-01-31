@@ -622,7 +622,7 @@ def set_device_attributes_for_data_handler(uuid: str,
     return
 
 
-@app.put('/api/devices/{uuid}/features/{id}/dataHandler')
+@app.put('/api/devices/{uuid}/features/{feature_id}/dataHandler')
 def set_feature_attributes_for_data_handler(uuid: str,
                                             feature_id: str,
                                             active: bool = Body(...),
