@@ -190,6 +190,7 @@ class DeviceManager:
         """
         dev_info = self.get_device_info(uuid)
         source.device_manager.device.delete_device(dev_info.uuid, dev_info.server_uuid)
+        self.delete_features(uuid)
 
     def get_status(self, uuid: UUID) -> DeviceStatus:
         """Get the current status of the specified device
@@ -387,6 +388,103 @@ class DeviceManager:
                                     defined_execution_error, "property",
                                     property_id
                                 ])
+
+    def delete_features(self, uuid: UUID):
+        """Delete the features of the device (specified by uuid) from the database
+        Args:
+            uuid: The uuid of the device for which to delete the features from the database
+        """
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'delete from features_for_data_handler where device = %s returning id',
+                    [uuid])
+                feature_ids = [feature_tuple[0] for feature_tuple in cursor.fetchall()]
+        self.delete_commands(feature_ids)
+        self.delete_properties(feature_ids)
+
+    def delete_commands(self, feature_ids: List[int]):
+        """Delete the commands of the specified features from the database
+        Args:
+            feature_ids: The list of feature ids for which to delete the commands
+        """
+        # Check if any feature ids have been passed
+        if len(feature_ids) == 0:
+            return
+        # Convert to string of comma separated ids
+        feature_ids = ','.join(str(feature_id) for feature_id in feature_ids)
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'delete from commands_for_data_handler where feature in ({feature_ids}) returning id'.format(
+                        feature_ids=feature_ids))
+                command_ids = [command_tuple[0] for command_tuple in cursor.fetchall()]
+        self.delete_command_subelements(command_ids)
+
+    def delete_command_subelements(self, command_ids: List[int]):
+        """Delete the parameters, responses, intermediates and defined execution errors of the specified commands from
+        the database
+        Args:
+            command_ids: The list of command ids for which to delete the subelements
+        """
+        # Check if any command ids have been passed
+        if len(command_ids) == 0:
+            return
+        # Convert to string of comma separated ids
+        command_ids = ','.join(str(command_id) for command_id in command_ids)
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                # Delete parameters, responses and intermediates
+                cursor.execute(
+                    'delete from parameters_for_data_handler where parent in ({command_ids}) and parent_type = %s'
+                    .format(command_ids=command_ids),
+                    ['command'])
+                # Delete defined execution errors
+                cursor.execute(
+                    'delete from defined_execution_errors where parent in ({command_ids}) and parent_type = %s'
+                    .format(command_ids=command_ids),
+                    ['command'])
+
+    def delete_properties(self, feature_ids: List[int]):
+        """Delete the properties of the specified features from the database
+        Args:
+            feature_ids: The list of feature ids for which to delete the properties
+        """
+        # Check if any feature ids have been passed
+        if len(feature_ids) == 0:
+            return
+        # Convert to string of comma separated ids
+        feature_ids = ','.join(str(feature_id) for feature_id in feature_ids)
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    'delete from properties_for_data_handler where feature in ({feature_ids}) returning id'.format(
+                        feature_ids=feature_ids))
+                property_ids = [property_tuple[0] for property_tuple in cursor.fetchall()]
+        self.delete_property_subelements(property_ids)
+
+    def delete_property_subelements(self, property_ids: List[int]):
+        """Delete the response and defined execution errors of the specified properties from the database
+        Args:
+            property_ids: The list of property ids for which to delete the subelements
+        """
+        # Check if any property ids have been passed
+        if len(property_ids) == 0:
+            return
+        # Convert to string of comma separated ids
+        property_ids = ','.join(str(property_id) for property_id in property_ids)
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                # Delete responses
+                cursor.execute(
+                    'delete from parameters_for_data_handler where parent in ({property_ids}) and parent_type = %s'
+                    .format(property_ids=property_ids),
+                    ['property'])
+                # Delete defined execution errors
+                cursor.execute(
+                    'delete from defined_execution_errors where parent in ({property_ids}) and parent_type = %s'
+                    .format(property_ids=property_ids),
+                    ['property'])
 
     def get_features_for_data_handler(
             self, uuid: UUID) -> List[DeviceFeatureForDataHandler]:
