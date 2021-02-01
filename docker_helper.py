@@ -3,7 +3,7 @@ import tarfile
 import uuid
 import os
 from source.device_manager.data_directories import TEMP_DIRECTORY
-
+from docker.types import LogConfig, DriverConfig
 
 def _delete_file(file_name: str):
     if os.path.exists(file_name):
@@ -42,11 +42,20 @@ def _create_temporary_tar(script_data: str, devices_data: str):
 
 
 def create_script_container(docker_client, container_name: str, script_data: str, devices_data: str):
+    dc = DriverConfig(name='local', options={
+        'max-size': '10m'
+    })
+    lc = LogConfig(type='json-file', config={
+        'max-size': '1m',
+        'max-file': 3
+    })
+
     container = docker_client.containers.create(
         'user_script',
         'python main.py',
         name=container_name,
-        detach=False
+        detach=False,
+        log_config=dc
     )
     tar = _create_temporary_tar(script_data, devices_data)
     with open(tar, "rb") as tar_file:

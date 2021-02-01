@@ -121,15 +121,18 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
 
 def print_container_output(container):
     # container_output = container.attach(logs=False, stream=True)
-    container_output = container.logs(stdout=True, stderr=True)
-    for msg in container_output:
-        print(msg.decode())
+    container_output = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
+    print('Output thread started!')
+    with open("myContainerLog", "w") as file:
+        for line in container_output:
+            print(line.decode())
+            file.write(line.decode())
 
 
 def wait_until_container_stops(container, experiment_id: int,
                                status_queue: queue.SimpleQueue):
     status = container.wait()
-    print(container.logs())
+    # print(container.logs())
     print(f'container stopped with StatusCode {status["StatusCode"]}')
     if status['StatusCode'] == 0:
         status_queue.put(
@@ -147,25 +150,20 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
     devices = [
         asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
     ]
-
     start_data_handling_for_experiment(exp)
-
     client = docker.from_env()
     container = docker_helper.create_script_container(client, exp.name,
                                                       script.data,
                                                       f'devices={devices}')
     print(f'Created docker container for experiment {experiment_id}: \"{container.name}\"')
 
-    # output_thread = Thread(target=print_container_output, args=(container, ))
+    output_thread = Thread(target=print_container_output, args=(container, ), daemon=True)
 
     wait_thread = Thread(target=wait_until_container_stops,
                          args=(container, experiment_id, status_queue))
-
-    print(f'Container name is {container}')
+    # Starting threads
     container.start()
-
-    # output_thread.start()
-
+    output_thread.start()
     wait_thread.start()
 
     status_queue.put(
