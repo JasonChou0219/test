@@ -1,4 +1,7 @@
 import sys
+from typing import List
+
+from apscheduler.job import Job
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 
@@ -112,18 +115,22 @@ def save_properties(properties_to_call):
             print("Device " + device_info.name + " with UUID " + device_uuid + " does not have a database assigned")
 
 
-def create_jobs(commands_to_call, properties_to_call):
+def create_jobs(commands_to_call, properties_to_call) -> List[Job]:
+    jobs = []
     for key in commands_to_call.keys():
-        scheduler.add_job(save_commands,
-                          'interval',
-                          seconds=key[0],
-                          start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
-                          end_date=datetime.fromtimestamp(key[1]),
-                          args=[commands_to_call[key]])
+        job = scheduler.add_job(save_commands,
+                                'interval',
+                                seconds=key[0],
+                                start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
+                                end_date=datetime.fromtimestamp(key[1]),
+                                args=[commands_to_call[key]])
+        jobs.append(job)
     for key in properties_to_call.keys():
-        scheduler.add_job(save_properties,
-                          'interval',
-                          seconds=key[0],
-                          start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
-                          end_date=datetime.fromtimestamp(key[1]),
-                          args=[properties_to_call[key]])
+        job = scheduler.add_job(save_properties,
+                                'interval',
+                                seconds=key[0],
+                                start_date=datetime.fromtimestamp(datetime.timestamp(datetime.now()) + 1),
+                                end_date=datetime.fromtimestamp(key[1]),
+                                args=[properties_to_call[key]])
+        jobs.append(job)
+    return jobs
