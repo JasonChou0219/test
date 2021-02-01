@@ -3,7 +3,7 @@ import { AddExperimentComponent } from '../add-experiment/add-experiment.compone
 import { EditExperimentComponent} from '../edit-experiment/edit-experiment.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
-import { Experiment, DeviceService } from '../device.service';
+import {Experiment, DeviceService, Device, DeviceStatus} from '../device.service';
 import { format, parse, isValid } from 'date-fns';
 import { tap } from 'rxjs/operators';
 
@@ -13,15 +13,36 @@ import {
     ExperimentStatusMessage,
 } from '../experiment.service';
 import { Observable } from 'rxjs';
+import {
+    animate,
+    state,
+    style,
+    transition,
+    trigger
+} from '@angular/animations';
 
+interface RowData {
+    experiment: Experiment;
+    detailsLoaded: boolean;
+}
 
 @Component({
     selector: 'app-jobs',
     templateUrl: './experiments.component.html',
     styleUrls: ['./experiments.component.scss'],
+    animations: [
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition(
+                'expanded <=> collapsed',
+                animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+            ),
+        ]),
+    ],
 })
 export class ExperimentsComponent implements OnInit {
-    dataSource: Experiment[];
+    dataSource: RowData[] = [];
     tableColumns = [
         'name',
         'user',
@@ -32,6 +53,7 @@ export class ExperimentsComponent implements OnInit {
         'running',
         'edit',
     ];
+    selected: number | null = null;
     // @ViewChild('table')
     // table;
     @ViewChild(MatTable) table: MatTable<any>;
@@ -106,8 +128,16 @@ export class ExperimentsComponent implements OnInit {
         await this.getExperiments();
     }
     async getExperiments() {
-        this.dataSource = await this.deviceService.getExperiments();
-        // this.table.renderRows();
+        const data: RowData[] = [];
+        const experimentList = await this.deviceService.getExperiments();
+        for (const exp of experimentList) {
+            data.push({
+                experiment: exp,
+                detailsLoaded: false,
+            });
+        }
+        this.dataSource = data;
+        this.table.renderRows();
     }
     refresh() {
         this.getExperiments();
@@ -115,7 +145,7 @@ export class ExperimentsComponent implements OnInit {
     }
     async edit(i: number) {
         const dialogRef = this.dialog.open(EditExperimentComponent, {
-            data: this.dataSource[i],
+            data: this.dataSource[i].experiment,
         });
         const result = await dialogRef.afterClosed().toPromise();
         const start = this.parseFrom(result.start);
@@ -133,18 +163,23 @@ export class ExperimentsComponent implements OnInit {
         await this.getExperiments();
     }
     async startExperiment(i: number) {
-        await this.deviceService.startExperiment(this.dataSource[i].id);
+        console.log(i);
+        await this.deviceService.startExperiment(this.dataSource[i].experiment.id);
     }
     async stopExperiment(i: number) {
-        await this.deviceService.stopExperiment(this.dataSource[i].id);
+        await this.deviceService.stopExperiment(this.dataSource[i].experiment.id);
     }
     async getExperimentStatus(i: number) {
         // await this.deviceService.getExperimentStatus();
         // Todo: Add implementation
     }
     async delete(i: number) {
-        await this.deviceService.deleteExperiment(this.dataSource[i].id);
+        await this.deviceService.deleteExperiment(this.dataSource[i].experiment.id);
         await this.getExperiments();
+    }
+    expand(i: number) {
+        this.selected = this.selected === i ? null : i;
+        this.dataSource[i].detailsLoaded = true;
     }
 
     ngOnInit(): void {

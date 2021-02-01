@@ -25,45 +25,50 @@
         </div>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table
+        mat-table
+        [dataSource]="dataSource"
+        multiTemplateDataRows
+        class="mat-elevation-z8"
+    >
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let element">
-                {{ element.name }}
+            <td mat-cell *matCellDef="let element; let i = dataIndex" (click)="expand(i)">
+                {{ element.experiment.name }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="user">
             <th mat-header-cell *matHeaderCellDef>User</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.user }}
+                {{ element.experiment.user }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="start">
             <th mat-header-cell *matHeaderCellDef>Start</th>
             <td mat-cell *matCellDef="let element">
-                {{ formatTimeStamp(element.start) }}
+                {{ formatTimeStamp(element.experiment.start) }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="end">
             <th mat-header-cell *matHeaderCellDef>End</th>
             <td mat-cell *matCellDef="let element">
-                {{ formatTimeStamp(element.end) }}
+                {{ formatTimeStamp(element.experiment.end) }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="devices">
             <th mat-header-cell *matHeaderCellDef>Devices</th>
             <td mat-cell *matCellDef="let element">
-                <ng-container *ngIf="element.deviceBookings.length > 1">
-                    <p *ngFor="let device of element.deviceBookings">
+                <ng-container *ngIf="element.experiment.deviceBookings.length > 1">
+                    <p *ngFor="let device of element.experiment.deviceBookings">
                         {{ device.deviceName }}
                     </p>
                 </ng-container>
-                <ng-container *ngIf="element.deviceBookings.length == 1">
-                    {{ element.deviceBookings[0].deviceName }}
+                <ng-container *ngIf="element.experiment.deviceBookings.length == 1">
+                    {{ element.experiment.deviceBookings[0].deviceName }}
                 </ng-container>
             </td>
         </ng-container>
@@ -71,20 +76,13 @@
         <ng-container matColumnDef="script">
             <th mat-header-cell *matHeaderCellDef>Script</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.scriptName }}
+                {{ element.experiment.scriptName }}
             </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-        <tr
-            mat-row
-            class="row"
-            *matRowDef="let row; columns: tableColumns; let i = index"
-        ></tr>
-
         <ng-container matColumnDef="edit">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element; let i = index">
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
                 <div class="edit">
                     <button mat-icon-button
                             (click)="startExperiment(i)"
@@ -111,7 +109,7 @@
         </ng-container>
         <ng-container matColumnDef="running">
             <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let element; let i = index">
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
                 <!--div
                     *ngIf="let status=experimentStatus$|async;status.experimentId==i"
                 -->
@@ -119,7 +117,7 @@
                     *ngIf="experimentStatus$ | async as status; else unknown"
                 >
                     <div
-                        *ngIf="status.experimentId == element.id; else unknown"
+                        *ngIf="status.experimentId == element.experiment.id; else unknown"
                     >
                         {{ statusMap[status.status] }}
                     </div>
@@ -129,5 +127,49 @@
                 </ng-template>
             </td>
         </ng-container>
+
+        <!-- Expanded Row -->
+        <ng-container matColumnDef="expandedDetail">
+            <td
+                mat-cell
+                *matCellDef="let element; let i = dataIndex"
+                [attr.colspan]="tableColumns.length"
+            >
+                <div
+                    class="expanded-element"
+                    [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
+                >
+                    <p>Docker terminal output: </p>
+                    <div class="terminal">
+                        <pre>$ Test</pre>
+                        <pre>$ Test1</pre>
+                        <pre>$ Test2</pre>
+                        <pre>$ Test3</pre>
+                        <pre>$ Test4</pre>
+                        <pre>$ Test5</pre>
+                        <pre>$ Test6</pre>
+                        <pre>$ Test</pre>
+                        <pre>$ Test1</pre>
+                        <pre>$ Test2</pre>
+                        <pre>$ Test3</pre>
+                        <pre>$ Test4</pre>
+                        <pre>$ Test5</pre>
+                        <pre>$ Test6</pre>
+                    </div>
+                </div>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr
+            mat-row
+            class="row"
+            *matRowDef="let row; columns: tableColumns; let i = dataIndex"
+        ></tr>
+
+        <tr
+            mat-row
+            class="expanded-row"
+            *matRowDef="let row2; columns: ['expandedDetail']"
+        ></tr>
     </table>
 </div>

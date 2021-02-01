@@ -3,15 +3,28 @@
         <div class="mat-card-header-entry"><h1>Devices</h1></div>
         <div class="mat-card-header-entry">
             <div class="actions">
-                <button class="header" mat-icon-button color="primary" (click)="add()" matTooltip="Add a new device using auto-discovery">
+                <button
+                    class="header"
+                    mat-icon-button
+                    color="primary"
+                    (click)="add()"
+                    matTooltip="Add a new device using auto-discovery"
+                >
                     <mat-icon>add</mat-icon>
                 </button>
-                <button class="header" mat-icon-button color="primary" (click)="refresh()" matTooltip="Refresh list of devices">
+                <button
+                    class="header"
+                    mat-icon-button
+                    color="primary"
+                    (click)="refresh()"
+                    matTooltip="Refresh list of devices"
+                >
                     <mat-icon>refresh</mat-icon>
                 </button>
             </div>
         </div>
     </div>
+
     <table
         mat-table
         [dataSource]="dataSource"
@@ -103,6 +116,7 @@
                 </div>
             </td>
         </ng-container>
+
         <!-- Expanded Row-->
         <ng-container matColumnDef="expandedDetail">
             <td

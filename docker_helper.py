@@ -46,6 +46,7 @@ def create_script_container(docker_client, container_name: str, script_data: str
         'user_script',
         'python main.py',
         name=container_name,
+        detach=False
     )
     tar = _create_temporary_tar(script_data, devices_data)
     with open(tar, "rb") as tar_file:
@@ -53,3 +54,4 @@ def create_script_container(docker_client, container_name: str, script_data: str
         container.put_archive('/usr/src/app', buff)
     _delete_file(tar)
     return container
+

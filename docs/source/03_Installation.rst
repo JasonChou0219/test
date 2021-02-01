@@ -124,6 +124,15 @@ You can download docker on the `docker website <https://www.docker.com/products/
    docker start postgres
    docker start redis
 
+4. Experiments are run in docker containers. The container can be customized. To create the container, run the *create_container_image* script* in the *user_script_env* folder:
+
+.. code-block:: console
+
+   cd user_script_env
+   create_container_image.sh
+
+You can modify the container image by editing the Dockerfile or by adding new python packages to the requirements.txt.
+
 Setup of a development server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The development servers scan the code base and will restart if changes to the source code of the frontend or backend are detected.

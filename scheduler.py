@@ -115,7 +115,8 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
 
 
 def print_container_output(container):
-    container_output = container.attach(logs=False, stream=True)
+    # container_output = container.attach(logs=False, stream=True)
+    container_output = container.logs(stdout=True, stderr=True)
     for msg in container_output:
         print(msg.decode())
 
@@ -136,7 +137,6 @@ def wait_until_container_stops(container, experiment_id: int,
 
 
 def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
-
     exp = experiment.get_experiment(experiment_id)
     script = get_user_script(exp.scriptID)
     devices = [
@@ -149,13 +149,18 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
     container = docker_helper.create_script_container(client, exp.name,
                                                       script.data,
                                                       f'devices={devices}')
+    print(f'Created docker container for experiment {experiment_id}: \"{container.name}\"')
 
     # output_thread = Thread(target=print_container_output, args=(container, ))
+
     wait_thread = Thread(target=wait_until_container_stops,
                          args=(container, experiment_id, status_queue))
+
+    print(f'Container name is {container}')
     container.start()
 
     # output_thread.start()
+
     wait_thread.start()
 
     status_queue.put(
@@ -172,7 +177,7 @@ def handle_process_status_events(event: ProcessStatusEvent):
     elif event.event_type == ProcessStatusEventType.FINISHED_SUCCESSFUL:
         change_experiment_status(event.experiment_id,
                                  ExperimentStatus.FINISHED_SUCCESSFUL)
-        print(f'{experiments[event.experiment_id].name} finished successfull')
+        print(f'{experiments[event.experiment_id].name} finished successful')
     elif event.event_type == ProcessStatusEventType.ERROR:
         change_experiment_status(event.experiment_id,
                                  ExperimentStatus.FINISHED_ERROR)

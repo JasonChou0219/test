@@ -13,11 +13,12 @@ def create_device_instance(ip: str, port: int, uuid: UUID, name: str,
     else:
         return DummyDevice(ip, port, uuid, name, type)
 
+
 def main():
 
     devs = [
         create_device_instance(info['address'], info['port'], info['uuid'],
-                                info['name'], info['type'])
+                               info['name'], info['type'])
         for info in devices.devices
     ]
     return script.run(devs)
