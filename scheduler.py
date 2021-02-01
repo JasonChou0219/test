@@ -53,6 +53,7 @@ process_status_queue = queue.SimpleQueue()
 
 experiments = {}
 job_to_experiment = {}
+experiment_id_to_data_handler_jobs = {}
 
 scheduler = BackgroundScheduler()
 redis_connection = redis.Redis(host='localhost')
@@ -111,7 +112,11 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
                     else:
                         properties_to_call[(interval_to_use,
                                             device_booking.end)] = {device_uuid: [(property, feature)]}
-    data_handler.create_jobs(commands_to_call, properties_to_call)
+    jobs = data_handler.create_jobs(commands_to_call, properties_to_call)
+    if exp.id in experiment_id_to_data_handler_jobs:
+        experiment_id_to_data_handler_jobs[exp.id] = experiment_id_to_data_handler_jobs[exp.id] + jobs
+    else:
+        experiment_id_to_data_handler_jobs[exp.id] = jobs
 
 
 def print_container_output(container):
@@ -258,6 +263,11 @@ def schedule_experiment_now(exp: experiment.SchedulingInfo):
 
 
 def stop_experiment(experiment_id):
+    # Stop data handling jobs for the experiment
+    if experiment_id in experiment_id_to_data_handler_jobs:
+        for job in experiment_id_to_data_handler_jobs[experiment_id]:
+            job.remove()
+        del experiment_id_to_data_handler_jobs[experiment_id]
     if experiment_id in experiments:
         experiment_entry = experiments[experiment_id]
         if experiment_entry.status == ExperimentStatus.WAITING_FOR_EXECUTION:
