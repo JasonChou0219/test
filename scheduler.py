@@ -258,12 +258,12 @@ def schedule_experiment_now(exp: experiment.SchedulingInfo):
 
 
 def stop_experiment(experiment_id):
+    # Stop data handling jobs for the experiment
+    if experiment_id in experiment_id_to_data_handler_jobs:
+        for job in experiment_id_to_data_handler_jobs[experiment_id]:
+            job.remove()
+        del experiment_id_to_data_handler_jobs[experiment_id]
     if experiment_id in experiments:
-        # Stop data handling jobs for the experiment
-        if experiment_id in experiment_id_to_data_handler_jobs:
-            for job in experiment_id_to_data_handler_jobs[experiment_id]:
-                job.remove()
-            del experiment_id_to_data_handler_jobs[experiment_id]
         experiment_entry = experiments[experiment_id]
         if experiment_entry.status == ExperimentStatus.WAITING_FOR_EXECUTION:
             scheduler.remove_job(experiment_entry.job_id)
