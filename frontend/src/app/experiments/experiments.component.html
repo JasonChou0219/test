@@ -140,22 +140,20 @@
                     [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
                 >
                     <p>Docker terminal output: </p>
-                    <ng-container *ngIf="(experimentLogs$ | async).experimentId == element.experiment.id;">
-                        <div class="terminal" *ngIf="experimentLogs$ | async as experiment_logs">
+                    <ng-container
+                        *ngIf="(experimentLogs$ | async) as experiment_logs; else no_logs">
+                        <div
+                            class="terminal"
+                            *ngIf="checkId(i, experiment_logs.experimentId, element.experiment.id, experiment_logs.logList); else no_logs"
+                        >
                             <pre>{{experiment_logs.logList}}</pre>
                         </div>
                     </ng-container>
-                    <ng-template #new_logs>
-                            <div class="terminal" *ngIf="experimentLogs$ | async as experiment_logs">
-                                 <pre>{{experiment_logs.logList}}</pre>
-                            </div>
-                    </ng-template>
                     <ng-template #no_logs>
                             <div class="terminal" >
-                                <pre>$ No logs available</pre>
+                                <pre>{{element.experimentLogs.logList}}</pre>
                             </div>
                     </ng-template>
-
                 </div>
             </td>
         </ng-container>

@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
 import {Experiment, DeviceService, Device, DeviceStatus} from '../device.service';
 import { format, parse, isValid } from 'date-fns';
-import { tap } from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 import {
     ExperimentService,
@@ -24,6 +24,7 @@ import {
 
 interface RowData {
     experiment: Experiment;
+    experimentLogs: ExperimentLogs;
     detailsLoaded: boolean;
 }
 
@@ -130,11 +131,16 @@ export class ExperimentsComponent implements OnInit {
         await this.getExperiments();
     }
     async getExperiments() {
-        const data: RowData[] = [];
+        let data: RowData[] = [];
         const experimentList = await this.deviceService.getExperiments();
         for (const exp of experimentList) {
+            let logs: ExperimentLogs = {
+                experimentId: exp.id,
+                logList: ['No log entries'],
+            };
             data.push({
                 experiment: exp,
+                experimentLogs: logs,
                 detailsLoaded: false,
             });
         }
@@ -183,7 +189,16 @@ export class ExperimentsComponent implements OnInit {
         this.selected = this.selected === i ? null : i;
         this.dataSource[i].detailsLoaded = true;
     }
-
+    checkId(i: number, logExperimentId: number, experimentId: number, logs: ExperimentLogs['logList']) {
+        if (logExperimentId === experimentId) {
+            // console.log(this.dataSource);
+            this.dataSource[i].experimentLogs.logList = logs;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     ngOnInit(): void {
         this.experimentStatus$ = this.experimentService
             .getExperimentStatusStream()
@@ -191,7 +206,18 @@ export class ExperimentsComponent implements OnInit {
 
         this.experimentLogs$ = this.experimentService
             .getExperimentsLogsStream()
-            .pipe(tap((msg) => console.log(msg)));
+            .pipe(
+                tap(
+                    (msg) => (this.dataSource[
+                        this.dataSource.findIndex(
+                            (Element) => Element.experiment.id === msg.experimentId
+                        )
+                        ].experimentLogs))
+            );
+        // console.log(msg);
+        // map((msg) => this.dataSource[msg.logList.findIndex((Element) => Element.experimentId ==
+        // this.dataSource[this.dataSource.findIndex((Element) => Element.experiment.id)].experiment.id)]));
+        // tap((msg) => console.log(msg)),
         this.getExperiments();
     }
 }
