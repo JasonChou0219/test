@@ -139,25 +139,23 @@
                     class="expanded-element"
                     [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
                 >
-                    <ng-container
-                    *ngIf="experimentLogs$ | async as experiment_logs; else unknown2"
-                    >
-                        <p>Docker terminal output: </p>
-                        <div class="terminal" >
-                            <pre>$ Test</pre>
-                            <pre
-                                *ngIf="experiment_logs.experimentId == element.experiment.id; else unknown2"
-                            >
-                                {{experiment_logs.logList}}
-                            </pre>
+                    <p>Docker terminal output: </p>
+                    <ng-container *ngIf="(experimentLogs$ | async).experimentId == element.experiment.id;">
+                        <div class="terminal" *ngIf="experimentLogs$ | async as experiment_logs">
+                            <pre>{{experiment_logs.logList}}</pre>
                         </div>
                     </ng-container>
-                <ng-template #unknown2>
-                    <p>Docker terminal output: </p>
-                        <div class="terminal" >
-                            <pre>$ Experiment not running</pre>
-                        </div>
-                </ng-template>
+                    <ng-template #new_logs>
+                            <div class="terminal" *ngIf="experimentLogs$ | async as experiment_logs">
+                                 <pre>{{experiment_logs.logList}}</pre>
+                            </div>
+                    </ng-template>
+                    <ng-template #no_logs>
+                            <div class="terminal" >
+                                <pre>$ No logs available</pre>
+                            </div>
+                    </ng-template>
+
                 </div>
             </td>
         </ng-container>
@@ -175,3 +173,6 @@
         ></tr>
     </table>
 </div>
+
+
+<!-- <ng-container *ngIf="experimentLogs$ | async as experiment_logs; else no_logs"> -->

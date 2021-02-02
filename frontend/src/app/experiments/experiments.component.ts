@@ -188,6 +188,7 @@ export class ExperimentsComponent implements OnInit {
         this.experimentStatus$ = this.experimentService
             .getExperimentStatusStream()
             .pipe(tap((msg) => console.log(msg)));
+
         this.experimentLogs$ = this.experimentService
             .getExperimentsLogsStream()
             .pipe(tap((msg) => console.log(msg)));
