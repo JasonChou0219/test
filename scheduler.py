@@ -22,7 +22,7 @@ import docker_helper
 from threading import Thread
 import json
 
-EXPERIMENT_LOG_BUFFER_LENGTH: int = 100
+EXPERIMENT_LOG_BUFFER_LENGTH: int = 50
 
 
 @dataclass
