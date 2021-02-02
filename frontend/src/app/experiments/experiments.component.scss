@@ -65,10 +65,13 @@ div.mat-card-header-entry:last-child {
     padding-bottom: 20px;
     margin-top: 8px;
     margin-bottom: 8px;
-    overflow: scroll;
+    overflow: auto;
+    display:flex;
+    flex-direction:column-reverse;
     background-color: rgb(15, 15, 16);
   }
 
+/*
 .terminal::before {
     content: "\2022 \2022 \2022";
     position: absolute;
@@ -83,11 +86,15 @@ div.mat-card-header-entry:last-child {
     padding: 14px 0;
     text-indent: 4px;
 }
+ */
 
 .terminal pre {
     font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
     color: white;
+    // padding: 0 0 0;
     padding: 0 0.5rem .5rem;
+    // line-break: auto;
+    // line-height: 5px;
     margin: 0;
 }
 
