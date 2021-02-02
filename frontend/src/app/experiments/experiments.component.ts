@@ -11,6 +11,7 @@ import {
     ExperimentService,
     ExperimentStatus,
     ExperimentStatusMessage,
+    ExperimentLogs,
 } from '../experiment.service';
 import { Observable } from 'rxjs';
 import {
@@ -58,14 +59,15 @@ export class ExperimentsComponent implements OnInit {
     // table;
     @ViewChild(MatTable) table: MatTable<any>;
     experimentStatus$: Observable<ExperimentStatusMessage>;
+    experimentLogs$: Observable<ExperimentLogs>;
 
     statusMap = [
         'waiting for execution',
-        'submited for execution',
+        'submitted for execution',
         'running',
-        'successfull',
+        'successful',
         'error',
-        'stoped manually',
+        'stopped manually',
         'unkown',
     ];
     constructor(
@@ -185,6 +187,9 @@ export class ExperimentsComponent implements OnInit {
     ngOnInit(): void {
         this.experimentStatus$ = this.experimentService
             .getExperimentStatusStream()
+            .pipe(tap((msg) => console.log(msg)));
+        this.experimentLogs$ = this.experimentService
+            .getExperimentsLogsStream()
             .pipe(tap((msg) => console.log(msg)));
         this.getExperiments();
     }

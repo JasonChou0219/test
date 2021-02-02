@@ -139,23 +139,25 @@
                     class="expanded-element"
                     [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
                 >
+                    <ng-container
+                    *ngIf="experimentLogs$ | async as experiment_logs; else unknown2"
+                    >
+                        <p>Docker terminal output: </p>
+                        <div class="terminal" >
+                            <pre>$ Test</pre>
+                            <pre
+                                *ngIf="experiment_logs.experimentId == element.experiment.id; else unknown2"
+                            >
+                                {{experiment_logs.logList}}
+                            </pre>
+                        </div>
+                    </ng-container>
+                <ng-template #unknown2>
                     <p>Docker terminal output: </p>
-                    <div class="terminal">
-                        <pre>$ Test</pre>
-                        <pre>$ Test1</pre>
-                        <pre>$ Test2</pre>
-                        <pre>$ Test3</pre>
-                        <pre>$ Test4</pre>
-                        <pre>$ Test5</pre>
-                        <pre>$ Test6</pre>
-                        <pre>$ Test</pre>
-                        <pre>$ Test1</pre>
-                        <pre>$ Test2</pre>
-                        <pre>$ Test3</pre>
-                        <pre>$ Test4</pre>
-                        <pre>$ Test5</pre>
-                        <pre>$ Test6</pre>
-                    </div>
+                        <div class="terminal" >
+                            <pre>$ Experiment not running</pre>
+                        </div>
+                </ng-template>
                 </div>
             </td>
         </ng-container>

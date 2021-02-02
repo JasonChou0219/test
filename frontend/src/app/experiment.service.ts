@@ -18,18 +18,30 @@ export interface ExperimentStatusMessage {
     status: ExperimentStatus;
 }
 
-const WEBSOCKET_URL = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments`;
+const WEBSOCKET_URL_STATUS = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments_status`;
+
+export interface ExperimentLogs {
+    experimentId: number;
+    logList: string[];
+}
+const WEBSOCKET_URL_LOGS = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments_logs`;
+
 
 @Injectable({
     providedIn: 'root',
 })
 export class ExperimentService {
-    socket$: WebSocketSubject<ExperimentStatusMessage>;
+    statusSocket$: WebSocketSubject<ExperimentStatusMessage>;
+    logsSocket$: WebSocketSubject<ExperimentLogs>;
     constructor() {
-        this.socket$ = webSocket(WEBSOCKET_URL);
+        this.statusSocket$ = webSocket(WEBSOCKET_URL_STATUS);
+        this.logsSocket$ = webSocket(WEBSOCKET_URL_LOGS);
     }
 
     getExperimentStatusStream(): Observable<ExperimentStatusMessage> {
-        return this.socket$.asObservable();
+        return this.statusSocket$.asObservable();
+    }
+    getExperimentsLogsStream(): Observable<ExperimentLogs> {
+        return this.logsSocket$.asObservable();
     }
 }
