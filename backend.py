@@ -1139,10 +1139,10 @@ async def control_experiment(status: Status,
     return
 
 
-#Todo allow authentification !
-@app.websocket("/ws/experiments")
+# Todo allow authentication !
+@app.websocket("/ws/experiments_status")
 async def experiment_status_websocket(
-        websocket: WebSocket):  #, username:str = Depends(decode_token)):
+        websocket: WebSocket):  # , username:str = Depends(decode_token)):
     """
     Asynchronous function that forwards the experiment status via websocket
 
@@ -1153,11 +1153,35 @@ async def experiment_status_websocket(
     pool = await get_redis_pool()
     channels = await pool.subscribe('experiment_status')
     await websocket.accept()
-    print("Websocket connect")
+    print("Websocket status connect")
     try:
         while await channels[0].wait_message():
             message = msgpack.unpackb(await channels[0].get(), raw=False)
             await websocket.send_json(data=message)
         await websocket.close(code=1000)
     except WebSocketDisconnect:
-        print("Websocket disconnect")
+        print("Websocket status disconnect")
+
+
+# Todo allow authentication !
+@app.websocket("/ws/experiments_logs")
+async def experiment_logs_websocket(
+        websocket: WebSocket):  # , username:str = Depends(decode_token)):
+    """
+    Asynchronous function that forwards the experiment logs of the docker container via websocket
+
+    :param websocket: The websocket the information is transferred by
+    :type websocket: Websocket
+    :return: None
+    """
+    pool = await get_redis_pool()
+    channels = await pool.subscribe('experiment_logs')
+    await websocket.accept()
+    print("Websocket logs connect")
+    try:
+        while await channels[0].wait_message():
+            message = msgpack.unpackb(await channels[0].get(), raw=False)
+            await websocket.send_json(data=message)
+        await websocket.close(code=1000)
+    except WebSocketDisconnect:
+        print("Websocket logs disconnect")

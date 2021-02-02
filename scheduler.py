@@ -1,5 +1,4 @@
 #!/bin/env python3
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.job import Job
 from apscheduler import events
@@ -16,11 +15,14 @@ import msgpack
 from dataclasses import dataclass,asdict
 from enum import IntEnum
 import queue
+from collections import deque
 from typing import Optional
 import docker
 import docker_helper
 from threading import Thread
 import json
+
+EXPERIMENT_LOG_BUFFER_LENGTH: int = 100
 
 
 @dataclass
@@ -32,6 +34,7 @@ class ExperimentState:
     start_time: int
     end_time: int
     status: ExperimentStatus
+    logs: deque
 
 
 class ProcessStatusEventType(IntEnum):
@@ -67,6 +70,35 @@ def change_experiment_status(experiment_id: int, status: ExperimentStatus):
         msgpack.packb({
             'experimentId': experiment_id,
             'status': status
+        }))
+
+
+def forward_experiment_log(experiment_id: int, logging_message: str):
+    """
+    The logging messages from the experiment docker container are put into a queue buffer which is forwarded
+    to the frontend by a websocket
+
+    :param experiment_id: The internally assigned id of the experiment
+    :type experiment_id: int
+    :param logging_message: The latest logging message of the most recent flush of the docker stderr
+    :type logging_message: str
+    """
+    # Todo:  Parse the docker python string into a dict and transfer dict with levelname, timestamp,leg message ...
+    # experiments[experiment_id].logs.append(logging_message)
+    if len(experiments[experiment_id].logs) < EXPERIMENT_LOG_BUFFER_LENGTH:
+        experiments[experiment_id].logs.append(logging_message)
+    elif len(experiments[experiment_id].logs) >= EXPERIMENT_LOG_BUFFER_LENGTH:
+        experiments[experiment_id].logs.popleft()
+        experiments[experiment_id].logs.append(logging_message)
+    else:
+        for _ in range(int(EXPERIMENT_LOG_BUFFER_LENGTH/2)):
+            experiments[experiment_id].logs.popleft()
+    # print(f'Printing log list {experiments[experiment_id].logs}')
+    redis_connection.publish(
+        'experiment_logs',
+        msgpack.packb({
+            'experimentId': experiment_id,
+            'logList': list(experiments[experiment_id].logs)
         }))
 
 
@@ -119,7 +151,7 @@ def start_data_handling_for_experiment(exp: experiment.Experiment):
         experiment_id_to_data_handler_jobs[exp.id] = jobs
 
 
-def print_container_output(container):
+def print_container_output(container, experiment_id):
     # container_output = container.attach(logs=False, stream=True)
     container_output = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
     print('Output thread started!')
@@ -127,6 +159,8 @@ def print_container_output(container):
         for line in container_output:
             print(line.decode())
             file.write(line.decode())
+            # json.dump(line.decode(), file)
+            forward_experiment_log(experiment_id=experiment_id, logging_message=line.decode())
 
 
 def wait_until_container_stops(container, experiment_id: int,
@@ -157,8 +191,7 @@ def start_experiment(experiment_id: int, status_queue: queue.SimpleQueue):
                                                       f'devices={devices}')
     print(f'Created docker container for experiment {experiment_id}: \"{container.name}\"')
 
-    output_thread = Thread(target=print_container_output, args=(container, ), daemon=True)
-
+    output_thread = Thread(target=print_container_output, args=(container,experiment_id, ), daemon=True)
     wait_thread = Thread(target=wait_until_container_stops,
                          args=(container, experiment_id, status_queue))
     # Starting threads
@@ -236,7 +269,8 @@ def schedule_experiment(exp: experiment.SchedulingInfo):
                                 run_date=datetime.fromtimestamp(exp.start))
         experiments[exp.id] = ExperimentState(
             exp.id, exp.name, job.id, '0', exp.start, exp.end,
-            ExperimentStatus.WAITING_FOR_EXECUTION)
+            ExperimentStatus.WAITING_FOR_EXECUTION, deque(['Starting experiment..\n', 'Connection established.\n'],
+                                                          maxlen=EXPERIMENT_LOG_BUFFER_LENGTH))
         job_to_experiment[job.id] = exp.id
         change_experiment_status(exp.id,
                                  ExperimentStatus.WAITING_FOR_EXECUTION)
@@ -255,7 +289,8 @@ def schedule_experiment_now(exp: experiment.SchedulingInfo):
                             name=f'experiment:{exp.name}')
     experiments[exp.id] = ExperimentState(
         exp.id, exp.name, job.id, '0', exp.start, exp.end,
-        ExperimentStatus.WAITING_FOR_EXECUTION)
+        ExperimentStatus.WAITING_FOR_EXECUTION, deque(['Starting experiment now!\n', 'Connection established.\n'],
+                                                      maxlen=EXPERIMENT_LOG_BUFFER_LENGTH))
     job_to_experiment[job.id] = exp.id
     change_experiment_status(exp.id, ExperimentStatus.WAITING_FOR_EXECUTION)
 
