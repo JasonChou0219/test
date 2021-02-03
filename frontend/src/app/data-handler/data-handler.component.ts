@@ -126,14 +126,14 @@ export class DataHandlerComponent implements OnInit {
             console.log('Ive got friends:', this.dataSource.length);
         }
 
-        let db: Database = {
-            name: '-',
-            address: '-',
-            port: 0,
-            username: '-',
-            password: '-',
-      };
         for (const dev of deviceList) {
+            let db: Database = {
+                name: '-',
+                address: '-',
+                port: 0,
+                username: '-',
+                password: '-',
+            };
             // If available, get the info of the linked database
             if (dev.databaseId !== null && dev.databaseId !== undefined) {
                 db = await this.databaseService.getDatabase(dev.databaseId);
