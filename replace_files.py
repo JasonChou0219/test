@@ -15,16 +15,16 @@ hugo_repository_path = os.path.dirname(os.path.abspath(__file__))
 
 # Copy the files
 # sila_server.py
-copyfile(hugo_repository_path + '/source/device_manager/sila_server.py', sila2lib_path + '/sila_server.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/sila_server.py', sila2lib_path + '/sila_server.py')
 # sila_service_detection.py
-copyfile(hugo_repository_path + '/source/device_manager/sila_service_detection.py', sila2lib_path + '/sila_service_detection.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/sila_service_detection.py', sila2lib_path + '/sila_service_detection.py')
 # SiLAService_pb2_grpc.py
-copyfile(hugo_repository_path + '/source/device_manager/SiLAService_pb2_grpc.py', sila2lib_path + '/framework/std_features/SiLAService_pb2_grpc.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/SiLAService_pb2_grpc.py', sila2lib_path + '/framework/std_features/SiLAService_pb2_grpc.py')
 # SiLAService_pb2.py
-copyfile(hugo_repository_path + '/source/device_manager/SiLAService_pb2.py', sila2lib_path + '/framework/std_features/SiLAService_pb2.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/SiLAService_pb2.py', sila2lib_path + '/framework/std_features/SiLAService_pb2.py')
 # SiLAService.py
-copyfile(hugo_repository_path + '/source/device_manager/SiLAService.py', sila2lib_path + '/framework/std_features/SiLAService.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/SiLAService.py', sila2lib_path + '/framework/std_features/SiLAService.py')
 # data_basic.py
-copyfile(hugo_repository_path + '/source/device_manager/data_basic.py', sila2lib_path + '/proto_builder/data/data_basic.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/data_basic.py', sila2lib_path + '/proto_builder/data/data_basic.py')
 # _dynamic_command.py
-copyfile(hugo_repository_path + '/source/device_manager/_dynamic_command.py', sila2lib_path + '/proto_builder/_dynamic_command.py')
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/_dynamic_command.py', sila2lib_path + '/proto_builder/_dynamic_command.py')
