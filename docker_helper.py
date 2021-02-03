@@ -4,7 +4,7 @@ import uuid
 import os
 from source.device_manager.data_directories import TEMP_DIRECTORY
 from docker.types import LogConfig, DriverConfig
-from docker import utils
+import re
 
 
 def _delete_file(file_name: str):
@@ -59,16 +59,20 @@ def create_script_container(docker_client, container_name: str, script_data: str
         # detach=False,
         log_config=dc,
         # publish_all_ports=True,
-        # network_mode='host',
-        ports={#'50003/tcp': 50003,
+        network_mode='host',
+        # ports={'50003/tcp': 50003,
                #'50003/udp': 50003,
                #'8080/tcp': 8080,
                #'80/tcp': 80,
                #'9090/tcp': 9090,
-               '55001/tcp': 55001,
+               #'55001/tcp': 55001,
                # '5000/tcp': ('127.0.0.1', 5000),
-               }
+        #       }
     )
+    devices_data = re.sub(r"'localhost'", "'host.docker.internal'", devices_data)
+    devices_data = re.sub(r"'127.0.0.1'", "'host.docker.internal'", devices_data)
+    devices_data = re.sub(r"'0.0.0.0'", "'host.docker.internal'", devices_data)
+
     tar = _create_temporary_tar(script_data, devices_data)
     with open(tar, "rb") as tar_file:
         buff = tar_file.read()
