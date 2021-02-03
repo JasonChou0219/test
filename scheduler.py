@@ -12,7 +12,7 @@ from source.device_manager.script import Script, get_user_script
 from source.device_manager.device import get_device_info
 import redis
 import msgpack
-from dataclasses import dataclass,asdict
+from dataclasses import dataclass, asdict
 from enum import IntEnum
 import queue
 from collections import deque

@@ -4,6 +4,8 @@ import uuid
 import os
 from source.device_manager.data_directories import TEMP_DIRECTORY
 from docker.types import LogConfig, DriverConfig
+from docker import utils
+
 
 def _delete_file(file_name: str):
     if os.path.exists(file_name):
@@ -49,13 +51,23 @@ def create_script_container(docker_client, container_name: str, script_data: str
         'max-size': '1m',
         'max-file': 3
     })
-
+    # publish_all_ports
     container = docker_client.containers.create(
         'user_script',
         'python main.py',
         name=container_name,
-        detach=False,
-        log_config=dc
+        # detach=False,
+        log_config=dc,
+        # publish_all_ports=True,
+        # network_mode='host',
+        ports={#'50003/tcp': 50003,
+               #'50003/udp': 50003,
+               #'8080/tcp': 8080,
+               #'80/tcp': 80,
+               #'9090/tcp': 9090,
+               '55001/tcp': 55001,
+               # '5000/tcp': ('127.0.0.1', 5000),
+               }
     )
     tar = _create_temporary_tar(script_data, devices_data)
     with open(tar, "rb") as tar_file:
