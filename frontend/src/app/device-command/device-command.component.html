@@ -93,7 +93,7 @@
                         class="python-function"
                         >call_command</span
                     >(<span class="python-string"
-                        >"{{ featureIdentifier }}"</span
+                        >"{{ featureIdentifier }}\n"</span
                     >,<span class="python-string"
                         >"{{ command.identifier }}"</span
                     >,parameters: {{ '{' }}
@@ -105,7 +105,7 @@
                         "
                     >
                         <span class="python-string"
-                            >"{{ param.identifier }}"</span
+                            >"{{ param.identifier.toLowerCase() }}/{{ param.type }}"</span
                         >:
                         <ng-container
                             *ngIf="param.type === 'String'; else noString"
