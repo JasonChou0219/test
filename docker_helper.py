@@ -47,11 +47,8 @@ def create_script_container(docker_client, container_name: str, script_data: str
     dc = DriverConfig(name='local', options={
         'max-size': '10m'
     })
-    lc = LogConfig(type='json-file', config={
-        'max-size': '1m',
-        'max-file': 3
-    })
     # publish_all_ports
+    extra_hosts = {'host.docker.internal': 'host-gateway'}
     container = docker_client.containers.create(
         'user_script',
         'python main.py',
@@ -60,14 +57,7 @@ def create_script_container(docker_client, container_name: str, script_data: str
         log_config=dc,
         # publish_all_ports=True,
         network_mode='host',
-        # ports={'50003/tcp': 50003,
-               #'50003/udp': 50003,
-               #'8080/tcp': 8080,
-               #'80/tcp': 80,
-               #'9090/tcp': 9090,
-               #'55001/tcp': 55001,
-               # '5000/tcp': ('127.0.0.1', 5000),
-        #       }
+        extra_hosts=extra_hosts,
     )
     devices_data = re.sub(r"'localhost'", "'host.docker.internal'", devices_data)
     devices_data = re.sub(r"'127.0.0.1'", "'host.docker.internal'", devices_data)
