@@ -9,6 +9,8 @@ COPY ./main.py .
 
 COPY ./SiLA_replacements/ ./SiLA_replacements
 
+COPY ./data/ ./data
+
 COPY ./replace_files.py .
 
 ADD device_layer.tar  .
