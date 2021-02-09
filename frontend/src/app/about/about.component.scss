@@ -1,5 +1,7 @@
 div.logos {
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 div.description{
     display: block;
