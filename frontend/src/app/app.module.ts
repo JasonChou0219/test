@@ -66,6 +66,7 @@ import { DataHandlerDeviceFeatureComponent } from './data-handler-device-feature
 import { DataHandlerDevicePropertyComponent } from './data-handler-device-property/data-handler-device-property.component';
 import { DatabaseLinkComponent } from './database-link/database-link.component';
 import { AddDatabaseComponent } from './add-database/add-database.component';
+import { FooterBarComponent } from './footer-bar/footer-bar.component';
 
 @NgModule({
     declarations: [
@@ -101,6 +102,7 @@ import { AddDatabaseComponent } from './add-database/add-database.component';
         DataHandlerDevicePropertyComponent,
         DatabaseLinkComponent,
         AddDatabaseComponent,
+        FooterBarComponent,
     ],
     imports: [
         BrowserModule,
