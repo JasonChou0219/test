@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { SERVER_ADDRESS, SERVER_PORT } from './device.service';
+import { environment } from '../environments/environment';
 
 export enum ExperimentStatus {
     WAITING_FOR_EXECUTION = 0,
@@ -18,14 +18,13 @@ export interface ExperimentStatusMessage {
     status: ExperimentStatus;
 }
 
-const WEBSOCKET_URL_STATUS = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments_status`;
+const WEBSOCKET_URL_STATUS = `${environment.backendWebsocketsUrl}/ws/experiments_status`;
 
 export interface ExperimentLogs {
     experimentId: number;
     logList: string[];
 }
-const WEBSOCKET_URL_LOGS = `ws://${SERVER_ADDRESS}:${SERVER_PORT}/ws/experiments_logs`;
-
+const WEBSOCKET_URL_LOGS = `${environment.backendWebsocketsUrl}/ws/experiments_logs`;
 
 @Injectable({
     providedIn: 'root',

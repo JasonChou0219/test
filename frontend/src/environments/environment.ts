@@ -4,8 +4,9 @@
 
 export const environment = {
     production: false,
-    backendUrl: 'http://localhost:5000'
-}
+    backendHttpUrl: 'http://localhost:5000',
+    backendWebsocketsUrl: 'ws://localhost:5000',
+};
 
 /*
  * For easier debugging in development mode, you can import the following file

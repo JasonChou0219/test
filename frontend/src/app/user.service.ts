@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { SERVER_URL } from './device.service';
 import { HttpClient } from '@angular/common/http';
 import { SHA256 } from 'crypto-js';
+import { environment } from '../environments/environment';
 
 export interface User {
     id?: number;
@@ -16,6 +16,7 @@ export function preHashPassword(password: string): string {
     return SHA256(password).toString();
 }
 
+const SERVER_URL = environment.backendHttpUrl;
 @Injectable({
     providedIn: 'root',
 })

@@ -1,7 +1,7 @@
 import { Injectable, ɵLocaleDataIndex } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { SERVER_URL } from './device.service';
 import { preHashPassword } from './user.service';
+import { environment } from '../environments/environment';
 
 export interface LoginCredentials {
     username: string;
@@ -19,7 +19,7 @@ interface AuthToken {
     providedIn: 'root',
 })
 export class LoginService {
-    url = SERVER_URL;
+    url = environment;
     constructor(private http: HttpClient) {}
 
     async login_old(credentials: LoginCredentials) {

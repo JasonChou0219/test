@@ -1,17 +1,47 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {element} from 'protractor';
-import {Device, DeviceCommand, DeviceProperty, FeatureCommandParam, SERVER_URL} from './device.service';
-import {map} from 'rxjs/operators';
+import { FeatureCommandParam } from './device.service';
+import { map } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
-const TestDatabaseList: DatabaseList = {data: [
-        {id: 1234567, name: 'deviceManagerDB', address: '127.0.0.1', port: 8888, username: 'root', password: 'root'},
-        {id: 44444, name: 'TestDB', address: '10.152.248.1', port: 8888, username: 'root', password: 'root'},
-        {id: 77666, name: 'schedulerDB', address: 'localhost', port: 8060, username: 'root', password: 'root'}]
+const TestDatabaseList: DatabaseList = {
+    data: [
+        {
+            id: 1234567,
+            name: 'deviceManagerDB',
+            address: '127.0.0.1',
+            port: 8888,
+            username: 'root',
+            password: 'root',
+        },
+        {
+            id: 44444,
+            name: 'TestDB',
+            address: '10.152.248.1',
+            port: 8888,
+            username: 'root',
+            password: 'root',
+        },
+        {
+            id: 77666,
+            name: 'schedulerDB',
+            address: 'localhost',
+            port: 8060,
+            username: 'root',
+            password: 'root',
+        },
+    ],
 };
 
 // For test purposes:
-export const TestDatabase: Database = {id: 1111, name: 'schedulerDB', address: 'localhost', port: 8888, username: 'root', password: 'root'};
+export const TestDatabase: Database = {
+    id: 1111,
+    name: 'schedulerDB',
+    address: 'localhost',
+    port: 8888,
+    username: 'root',
+    password: 'root',
+};
 
 export interface Database {
     id?: number;
@@ -38,18 +68,15 @@ export interface CheckboxParam {
     value_meta: boolean;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
-
 export class DatabaseService {
     // databases = [{name: 'testDB', ip: '127.0.0.1', port: 8889, online: true, status: 'connected' },
     //             {name: 'schedulerDB', ip: 'localhost', port: 8888, online: true, status: 'connected' }];
     databases = TestDatabaseList.data;
-    serverUrl = SERVER_URL;
-    constructor(private http: HttpClient) {
-    }
+    serverUrl = environment.backendHttpUrl;
+    constructor(private http: HttpClient) {}
     async getDatabases(): Promise<Database[]> {
         console.log('GetDatabases is executing......');
         return this.http
@@ -99,27 +126,75 @@ export class DatabaseService {
 
     async setCheckboxDeviceLevel(uuid: string, active: boolean) {
         return this.http
-            .put(this.serverUrl + '/api/devices/' + uuid + '/dataHandler', active)
+            .put(
+                this.serverUrl + '/api/devices/' + uuid + '/dataHandler',
+                active
+            )
             .toPromise();
     }
-    async setCheckboxFeatureLevel(uuid: string, featureId: number, active: boolean, meta: boolean) {
+    async setCheckboxFeatureLevel(
+        uuid: string,
+        featureId: number,
+        active: boolean,
+        meta: boolean
+    ) {
         return this.http
-            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/dataHandler', {active, meta})
+            .put(
+                this.serverUrl +
+                    '/api/devices/' +
+                    uuid +
+                    '/features/' +
+                    featureId +
+                    '/dataHandler',
+                { active, meta }
+            )
             .toPromise();
     }
-    async setCheckboxCommandLevel(uuid: string, featureId: number, commandId: number, meta: boolean, active: boolean,
-                                  metaInterval: number, nonMetaInterval: number, parameters: FeatureCommandParam[]) {
+    async setCheckboxCommandLevel(
+        uuid: string,
+        featureId: number,
+        commandId: number,
+        meta: boolean,
+        active: boolean,
+        metaInterval: number,
+        nonMetaInterval: number,
+        parameters: FeatureCommandParam[]
+    ) {
         return this.http
-            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/commands/' + commandId +
-                '/dataHandler', {parameters, active, meta, nonMetaInterval, metaInterval})
+            .put(
+                this.serverUrl +
+                    '/api/devices/' +
+                    uuid +
+                    '/features/' +
+                    featureId +
+                    '/commands/' +
+                    commandId +
+                    '/dataHandler',
+                { parameters, active, meta, nonMetaInterval, metaInterval }
+            )
             .toPromise();
     }
-    async setCheckboxPropertyLevel(uuid: string, featureId: number, propertyId: number, meta: boolean, active: boolean,
-                                   metaInterval: number, nonMetaInterval: number) {
+    async setCheckboxPropertyLevel(
+        uuid: string,
+        featureId: number,
+        propertyId: number,
+        meta: boolean,
+        active: boolean,
+        metaInterval: number,
+        nonMetaInterval: number
+    ) {
         return this.http
-            .put(this.serverUrl + '/api/devices/' + uuid + '/features/' + featureId + '/properties/' + propertyId +
-                '/dataHandler', {active, meta, nonMetaInterval, metaInterval})
+            .put(
+                this.serverUrl +
+                    '/api/devices/' +
+                    uuid +
+                    '/features/' +
+                    featureId +
+                    '/properties/' +
+                    propertyId +
+                    '/dataHandler',
+                { active, meta, nonMetaInterval, metaInterval }
+            )
             .toPromise();
     }
-
 }

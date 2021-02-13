@@ -4,8 +4,9 @@
 
 export const environment = {
     production: true,
-    backendUrl:'http://devicemanager.biovt.mw.tum.de'
-}
+    backendHttpUrl: 'http://devicemanager.biovt.mw.tum.de',
+    backendWebsocketsUrl: 'http://devicemanager.biovt.mw.tum.de',
+};
 
 /*
  * For easier debugging in development mode, you can import the following file

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { DatabaseService, Database } from './database.service';
+import { environment } from '../environments/environment';
 
 export enum DeviceType {
     SILA = 0,
@@ -218,16 +217,11 @@ export interface FeatureCommandResult {
     value: any;
 }
 
-export const SERVER_ADDRESS = 'localhost';
-// export const SERVER_ADDRESS = '10.152.248.14';
-export const SERVER_PORT = '5000';
-export const SERVER_URL = `http://${SERVER_ADDRESS}:${SERVER_PORT}`;
-
 @Injectable({
     providedIn: 'root',
 })
 export class DeviceService {
-    serverUrl = SERVER_URL;
+    serverUrl = environment.backendHttpUrl;
     deviceTypeMap: Map<DeviceType, string>;
     constructor(private http: HttpClient) {
         this.deviceTypeMap = new Map<DeviceType, string>([
@@ -431,9 +425,15 @@ export class DeviceService {
             .post(this.serverUrl + '/api/experiments', experiment)
             .toPromise();
     }
-    async editExperiment(experimentID: number, experiment: ExperimentBookingInfo) {
+    async editExperiment(
+        experimentID: number,
+        experiment: ExperimentBookingInfo
+    ) {
         return this.http
-            .put(this.serverUrl + '/api/experiments/edit/' + experimentID, experiment)
+            .put(
+                this.serverUrl + '/api/experiments/edit/' + experimentID,
+                experiment
+            )
             .toPromise();
     }
     async getExperiments(): Promise<Experiment[]> {
