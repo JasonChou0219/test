@@ -18,5 +18,4 @@ cp -r ./source ${INSTALL_DIR}
 cp -r ./user_script_env ${INSTALL_DIR}
 python3 generate_config.py
 python3 setup_test_db.py
-docker build -t user_script ./user_script_env/
 
