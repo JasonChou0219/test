@@ -516,8 +516,7 @@ scripts = [
 
 
 def add_user(c):
-    c.execute('drop table if exists users')
-    c.execute('create table users '\
+    c.execute('create table if not exists users '\
             '(id serial primary key, '\
             'name varchar(256), '\
             'fullName varchar(256), '\
@@ -531,8 +530,7 @@ def add_user(c):
 
 
 def add_devices(c):
-    c.execute('drop table if exists devices')
-    c.execute('create table devices '\
+    c.execute('create table if not exists devices '\
             '(id serial primary key, '\
             'uuid UUID, '\
             'server_uuid UUID, '\
@@ -554,8 +552,7 @@ def add_devices(c):
 
 
 def add_features_for_data_handler(c):
-    c.execute('drop table if exists features_for_data_handler')
-    c.execute('create table features_for_data_handler ' \
+    c.execute('create table if not exists features_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
               'name varchar(256), ' \
@@ -569,8 +566,7 @@ def add_features_for_data_handler(c):
 
 
 def add_commands_for_data_handler(c):
-    c.execute('drop table if exists commands_for_data_handler')
-    c.execute('create table commands_for_data_handler ' \
+    c.execute('create table if not exists commands_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
               'name varchar(256), ' \
@@ -584,8 +580,7 @@ def add_commands_for_data_handler(c):
 
 
 def add_properties_for_data_handler(c):
-    c.execute('drop table if exists properties_for_data_handler')
-    c.execute('create table properties_for_data_handler ' \
+    c.execute('create table if not exists properties_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
               'name varchar(256), ' \
@@ -599,8 +594,7 @@ def add_properties_for_data_handler(c):
 
 
 def add_parameters_for_data_handler(c):
-    c.execute('drop table if exists parameters_for_data_handler')
-    c.execute('create table parameters_for_data_handler ' \
+    c.execute('create table if not exists parameters_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
               'name varchar(256), ' \
@@ -617,8 +611,7 @@ def add_parameters_for_data_handler(c):
 
 
 def add_defined_execution_errors(c):
-    c.execute('drop table if exists defined_execution_errors')
-    c.execute('create table defined_execution_errors ' \
+    c.execute('create table if not exists defined_execution_errors ' \
               '(id serial primary key, ' \
               'defined_execution_error text, ' \
               # Should be 'command' if it belongs to a command or 'property' if it belongs to a property
@@ -628,8 +621,7 @@ def add_defined_execution_errors(c):
 
 
 def add_databases(c):
-    c.execute('drop table if exists databases')
-    c.execute('create table databases ' \
+    c.execute('create table if not exists databases ' \
               '(id serial primary key, ' \
               'name varchar(256), ' \
               'address varchar(256), ' \
@@ -639,8 +631,7 @@ def add_databases(c):
 
 
 def add_logs(c):
-    c.execute('drop table if exists log')
-    c.execute('create table log'\
+    c.execute('create table if not exists log'\
             '(id serial primary key, '\
             'type integer, '\
             'device varchar(256), '\
@@ -653,8 +644,7 @@ def add_logs(c):
 
 
 def add_booking_info(c):
-    c.execute('drop table if exists bookings')
-    c.execute('create table bookings'\
+    c.execute('create table if not exists bookings'\
             '(id serial primary key, '\
             'name varchar(256), '\
             'startTime integer,'\
@@ -674,8 +664,7 @@ def add_booking_info(c):
 
 
 def add_experiments(c):
-    c.execute('drop table if exists experiments')
-    c.execute('create table experiments'\
+    c.execute('create table if not exists experiments'\
             '(id serial primary key, '\
             'name varchar(256), '\
             'startTime integer,'\
@@ -690,8 +679,7 @@ def add_experiments(c):
 
 
 def add_scripts(c):
-    c.execute('drop table if exists scripts')
-    c.execute('create table scripts'\
+    c.execute('create table if not exists scripts'\
             '(id serial primary key, '\
             'name varchar(256), '\
             'fileName varchar(256), '\
