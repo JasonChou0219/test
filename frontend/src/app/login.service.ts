@@ -19,7 +19,7 @@ interface AuthToken {
     providedIn: 'root',
 })
 export class LoginService {
-    url = environment;
+    url = environment.backendHttpUrl;
     constructor(private http: HttpClient) {}
 
     async login_old(credentials: LoginCredentials) {
