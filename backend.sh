@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 export DEVICE_MANAGER_ENV_PRODUCTION=1
-pipenv run python3 replace_files.py
-pipenv run gunicorn -k uvicorn.workers.UvicornWorker backend:app
+source .venv/bin/activate
+gunicorn --workers=1 --error-logfile /var/log/device-manager/device-manager.log -k uvicorn.workers.UvicornWorker backend:app
+#uvicorn --host=127.0.0.1 --port=8000 backend:app

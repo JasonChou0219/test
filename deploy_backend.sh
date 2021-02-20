@@ -23,6 +23,8 @@ cp backend.sh ${INSTALL_DIR}
 cp scheduler.py ${INSTALL_DIR}
 cp scheduler.sh ${INSTALL_DIR}
 cp replace_files.py ${INSTALL_DIR}
+cp data_handler.py ${INSTALL_DIR}
+cp docker_helper.py ${INSTALL_DIR}
 
 cp -r source ${INSTALL_DIR}
 cp -r user_script_env ${INSTALL_DIR}
