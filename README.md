@@ -65,16 +65,23 @@ Run `./run_backend_server.sh` from inside your pipenv environment.
 #### Windows
 Run `./run_backend_server.bat` from inside your pipenv environment.
 
-## Server Deployment 
+## Server Deployment on Ubuntu 12.04
 
 1. Install nginx
 On ubuntu this can be installed with apt 
 `sudo apt install nginx`
-On windows this can be downloaded, extracted and installed:
-Visit: `http://nginx.org/en/download.html`
 
 2. Install PostgreSQL
-`sudo apt install postgresql`
+`sudo apt install postgresql-12`
+
+3. Install Docker
+Use the [official instructions](https://docs.docker.com/engine/install/ubuntu/) 
+
+4. Create the device-manager user
+`sudo adduser --system --no-create-home --ingroup docker device-manager`
+
+5. Install pipenv
+
 
 # License
 This code is licensed under the [GNU General Public License (GNU GPL)](https://en.wikipedia.org/wiki/GNU_General_Public_License)
