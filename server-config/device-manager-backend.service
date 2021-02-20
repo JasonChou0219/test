@@ -1,0 +1,12 @@
+[Unit]
+Description=Sila2 Device Manager Backend
+After=network.target
+
+[Service]
+User=device-manager
+WorkingDirectory=/usr/device-manager
+ExecStart=/usr/device-manager/backend.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
