@@ -403,11 +403,11 @@ def device_features(uuid: str, username: str = Depends(decode_token)):
     :return: List of SiLA feature objects that include all associated information
     """
     device_manager_service = DeviceManagerService()
-    return {'data': device_manager_service.get_features_for_data_handler(uuid)}
+    return {'data': device_manager_service.get_features(uuid)}
 
 
 @app.get('/api/deviceFeaturesDataHandler/{uuid}')
-def device_features(uuid: str, username: str = Depends(decode_token)):
+def device_features_for_datahandler(uuid: str, username: str = Depends(decode_token)):
     """
     Get all features and associated information of the requested device.
 
