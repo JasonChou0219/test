@@ -200,7 +200,7 @@ class DeviceManager:
         device_info = self.get_device_info(uuid)
         parent_conn, child_conn = Pipe()
         process = Process(target=_get_device_status_from_subprocess,
-                          args=(device_info, child_conn))
+                          args=(device_info, child_conn),daemon=True)
         device_status = None
         try:
             process.start()
@@ -220,7 +220,8 @@ class DeviceManager:
         device_info = self.get_device_info(uuid)
         parent_conn, child_conn = Pipe()
         process = Process(target=_get_device_instance_from_subprocess,
-                          args=(device_info, child_conn))
+                          args=(device_info, child_conn),
+                          daemon=True)
         try:
             process.start()
             sila_device = parent_conn.recv()
@@ -237,7 +238,7 @@ class DeviceManager:
         device_info = self.get_device_info(uuid)
         parent_conn, child_conn = Pipe()
         process = Process(target=_get_device_features_from_subprocess,
-                          args=(device_info, child_conn))
+                          args=(device_info, child_conn),daemon=True)
         device_features = None
         try:
             process.start()
@@ -254,7 +255,7 @@ class DeviceManager:
         parent_conn, child_conn = Pipe()
         process = Process(target=_call_feature_command_from_subprocess,
                           args=(device_info, feature, command, params,
-                                child_conn))
+                                child_conn),daemon=True)
         result = None
         try:
             process.start()
@@ -269,7 +270,7 @@ class DeviceManager:
         device_info = self.get_device_info(device)
         parent_conn, child_conn = Pipe()
         process = Process(target=_get_feature_property_from_subprocess,
-                          args=(device_info, feature, prop, child_conn))
+                          args=(device_info, feature, prop, child_conn),daemon=True)
         result = None
         try:
             process.start()

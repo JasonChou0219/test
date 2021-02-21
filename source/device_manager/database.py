@@ -5,7 +5,6 @@ import configparser
 
 from .data_directories import DATA_DIRECTORY
 from .thread_local_storage import get_storage
-from .global_storage import get_global_storage
 
 
 async def get_redis_pool():
