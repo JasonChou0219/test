@@ -53,7 +53,6 @@ def get_device_bookings_for_experiment_inside_transaction(
                                  row[5], row[6], row[7], row[8], row[9])
             for row in cursor
         ]
-    release_database_connection(conn)
     return bookings
 
 
