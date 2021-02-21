@@ -34,6 +34,7 @@ def get_database_connection():
     return storage['pool'].getconn()
 
 def release_database_connection(connection):
+    storage = get_storage()
     pool=storage.get('pool')
     if pool is not None:
         pool.putconn(connection)
