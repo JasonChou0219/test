@@ -5,7 +5,7 @@ from enum import IntEnum
 from uuid import UUID
 import msgpack
 import aioredis
-from source.device_manager.database import get_database_connection, get_redis_pool
+from source.device_manager.database import get_database_connection, get_redis_pool, release_database_connection
 from source.device_manager.scheduler import BookingInfo, BookingInfoWithNames, get_device_bookings_for_experiment_inside_transaction, book_inside_transaction
 
 
@@ -41,21 +41,26 @@ class Experiment:
 
 
 def get_experiment_name(id: int) -> str:
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select name from experiments where id=%s', [id])
             return cursor.fetchone()
-
+    release_database_connection(conn)
 
 def get_experiment_user(id: int) -> int:
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select userID from experiments where id=%s', [id])
             return cursor.fetchone()
+    release_database_connection(conn)
 
 
 def get_experiment(id: int) -> Experiment:
-    with get_database_connection() as conn:
+    experiment=None
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select experiments.id, experiments.name,experiments.startTime,'\
                            'experiments.endTime,users.name,experiments.script,scripts.name '\
@@ -68,11 +73,14 @@ def get_experiment(id: int) -> Experiment:
 
             experiment.deviceBookings = get_device_bookings_for_experiment_inside_transaction(
                 conn, experiment.id)
-            return experiment
+    release_database_connection(conn)
+    return experiment
 
 
 def get_all_experiments() -> List[Experiment]:
-    with get_database_connection() as conn:
+    experiments=[]
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select experiments.id, experiments.name,experiments.startTime,'\
                            'experiments.endTime,users.name,experiments.script,scripts.name '\
@@ -86,11 +94,14 @@ def get_all_experiments() -> List[Experiment]:
             for experiment in experiments:
                 experiment.deviceBookings = get_device_bookings_for_experiment_inside_transaction(
                     conn, experiment.id)
-            return experiments
+    release_database_connection(conn)
+    return experiments
 
 
 def get_user_experiments(user: int) -> List[Experiment]:
-    with get_database_connection() as conn:
+    experiments=[]
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select experiments.id, experiments.name,experiments.startTime,'\
                            'experiments.endTime,experiments.userID,experiments.script,scripts.name '\
@@ -103,28 +114,37 @@ def get_user_experiments(user: int) -> List[Experiment]:
             for experiment in experiments:
                 experiment.deviceBookings = get_device_bookings_for_experiment_inside_transaction(
                     conn, experiment.id)
-            return experiments
+    release_database_connection(conn)
+    return experiments
 
 
 def get_scheduling_info() -> List[SchedulingInfo]:
     now = int(datetime.timestamp(datetime.now()))
-    with get_database_connection() as conn:
+    info = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'select id, name, startTime, endTime, script '
                 'from experiments '
                 'where experiments.startTime>=%s '
                 'order by experiments.startTime', [now])
-            return [
+            info = [
                 SchedulingInfo(row[0], row[1], row[2], row[3], row[4])
                 for row in cursor
             ]
+    release_database_connection(conn)
+    return info
+    
+
 
 
 def create_experiment(name: str, start: int, end: int, user: int,
                       devices: List[UUID], script: int) -> int:
     print(name, start, end, user, devices, script)
-    with get_database_connection() as conn:
+    experiment_id = -1
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'insert into experiments values (default,%s,%s,%s,%s,%s) returning id',
@@ -136,36 +156,43 @@ def create_experiment(name: str, start: int, end: int, user: int,
                         BookingInfo(-1, name, start, end, user, device,
                                     experiment_id)) < 0:
                     conn.rollback()
-                    return -1
-            return experiment_id
+                    experiment_id = -1
+                    break
+    release_database_connection(conn)
+    return experiment_id
 
 
 def edit_experiment(experiment_id: int, name: str, start: int, end: int, user: int,
                     devices: List[UUID], script: int) -> int:
     print(experiment_id, name, start, end, user, devices, script)
-    with get_database_connection() as conn:
+    experiment_id = -1
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'update experiments set name=%s, start=%s, end=%s, user=%s, script=%s where id=%s',
                 [name, start, end, user, script, experiment_id])
             # Todo: Implement the function to change the experiment in the database. Fix old bookings
             #  and add new ones!
-            for device in devices:
+            #for device in devices:
                 #
                 #
                 #
                 #
-                return -1
+    release_database_connection(conn)
     return experiment_id
 
 
 def delete_experiment(experiment_id: int):
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('delete from experiments where id=%s',
                            [experiment_id])
             cursor.execute('delete from bookings where experiment=%s',
                            [experiment_id])
+
+    release_database_connection(conn)
 
 
 async def _publish_command(command: str, params: list):

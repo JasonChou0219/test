@@ -3,7 +3,7 @@ from typing import List
 from enum import IntEnum
 import psycopg2
 from datetime import datetime
-from source.device_manager.database import get_database_connection
+from source.device_manager.database import get_database_connection, release_database_connection
 import logging
 
 
@@ -31,6 +31,7 @@ def log(type: LogLevel, device: str, message: str, time: int = now()):
     conn.cursor().execute(f'insert into log values (default,%s,%s,%s,%s)',
                           [type, device, time, message])
     conn.commit()
+    release_database_connection(conn)
 
 
 def info(device: str, message: str, time: int = now()):

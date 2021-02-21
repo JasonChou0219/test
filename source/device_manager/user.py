@@ -2,7 +2,7 @@ import hashlib
 import os
 import base64
 from dataclasses import dataclass
-from source.device_manager.database import get_database_connection
+from source.device_manager.database import get_database_connection, release_database_connection
 from typing import List
 import logging
 import sys
@@ -30,49 +30,63 @@ class User:
 
 
 def get_user(id: int) -> User:
-    with get_database_connection() as conn:
+    user = None
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute(
                 'select id,name,fullName,passwordHash,role from users where id=%s',
                 [id])
             result = c.fetchone()
-            return User(id=result[0],
+            user = User(id=result[0],
                         name=result[1],
                         fullName=result[2],
                         passwordHash=result[3],
                         role=result[4])
+    release_database_connection(conn)
+    return user
 
 
 def get_user_by_name(username: str) -> User:
-    with get_database_connection() as conn:
+    user = None
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute(
                 'select id,name,fullName,passwordHash,role from users where name=%s',
                 [username])
             result = c.fetchall()[0]
-            return User(id=result[0],
+            user = User(id=result[0],
                         name=result[1],
                         fullName=result[2],
                         passwordHash=result[3],
                         role=result[4])
+    release_database_connection(conn)
+    return user
 
 
 def get_users() -> List[User]:
-    with get_database_connection() as conn:
+    users = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute('select id,name,fullName,passwordHash,role from users')
             result = c.fetchall()
-            return [
+            users = [
                 User(id=row[0],
                      name=row[1],
                      fullName=row[2],
                      passwordHash=row[3],
                      role=row[4]) for row in result
             ]
+    release_database_connection(conn)
+    return users
 
 
 def add_user(name: str, fullName: str, password: str, role: str) -> int:
-    with get_database_connection() as conn:
+    id = -1
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute('select count(id) from users where name=%s', [name])
             if c.fetchone()[0] != 0:
@@ -80,18 +94,23 @@ def add_user(name: str, fullName: str, password: str, role: str) -> int:
             c.execute(
                 'insert into users values (default,%s,%s,%s,%s) returning id',
                 [name, fullName, hash_password(password), role])
-            return c.fetchone()[0]
+            id = c.fetchone()[0]
+    release_database_connection(conn)
+    return id
 
 
 def set_password(userid: int, password: str):
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute('update users set passwordHash=%s where id=%s',
                       [hash_password(password), userid])
+    release_database_connection(conn)
 
 
 def update_user(id: int, name: str, fullName: str, password: str, role: str):
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             if password is None:
                 c.execute(
@@ -102,12 +121,15 @@ def update_user(id: int, name: str, fullName: str, password: str, role: str):
                     'update users set name=%s,fullName=%s,passwordHash=%s,role=%s where id=%s',
                     [name, fullName,
                      hash_password(password), role, id])
+    release_database_connection(conn)
 
 
 def delete_user(id: int):
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as c:
             c.execute('delete from users where id=%s', [id])
+    release_database_connection(conn)
 
 
 def hash_password(password: str) -> str:

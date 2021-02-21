@@ -14,7 +14,7 @@ from source.device_manager.device_layer.device_feature import DeviceFeature, Dev
     DeviceCommandForDataHandler, DeviceParameterForDataHandler, DevicePropertyForDataHandler
 from source.device_manager.device_layer.sila_feature import serialize_feature
 from source.device_manager.device_log import DeviceManagerLogHandler, LogLevel
-from source.device_manager.database import get_database_connection
+from source.device_manager.database import get_database_connection, release_database_connection
 from source.device_manager.scheduler import BookingInfo, get_booking_entry, get_device_booking_info, get_booking_info, book, id_is_valid, delete_booking_entry
 from source.device_manager.scheduler import BookingInfoWithNames, get_device_booking_info_with_names, get_booking_info_with_names
 from source.device_manager.device_layer.dynamic_client import delete_dynamic_client
@@ -147,11 +147,7 @@ def _get_database_status_from_subprocess(info: DatabaseInfo, connection):
 class DeviceManager:
     """ Device Manager Implementation"""
     def __init__(self):
-        """ Device Manager Implementation
-        Args:
-            conn (sqlite3.Connection): The connection to the database
-        """
-        self.conn = get_database_connection()
+        pass
 
     def get_device_info_list(self) -> List[DeviceInfo]:
         """Returns a list of devices information from the database"""
@@ -290,7 +286,8 @@ class DeviceManager:
 
         sila_device.connect()
         features = self.get_features(uuid)
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 for feature in features:
                     dynamic_feature = sila_device.getClient()._features[
@@ -389,18 +386,21 @@ class DeviceManager:
                                     defined_execution_error, "property",
                                     property_id
                                 ])
+        release_database_connection(conn)
 
     def delete_features(self, uuid: UUID):
         """Delete the features of the device (specified by uuid) from the database
         Args:
             uuid: The uuid of the device for which to delete the features from the database
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'delete from features_for_data_handler where device = %s returning id',
                     [uuid])
                 feature_ids = [feature_tuple[0] for feature_tuple in cursor.fetchall()]
+        release_database_connection(conn)
         self.delete_commands(feature_ids)
         self.delete_properties(feature_ids)
 
@@ -414,12 +414,14 @@ class DeviceManager:
             return
         # Convert to string of comma separated ids
         feature_ids = ','.join(str(feature_id) for feature_id in feature_ids)
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'delete from commands_for_data_handler where feature in ({feature_ids}) returning id'.format(
                         feature_ids=feature_ids))
                 command_ids = [command_tuple[0] for command_tuple in cursor.fetchall()]
+        release_database_connection(conn)
         self.delete_command_subelements(command_ids)
 
     def delete_command_subelements(self, command_ids: List[int]):
@@ -433,7 +435,8 @@ class DeviceManager:
             return
         # Convert to string of comma separated ids
         command_ids = ','.join(str(command_id) for command_id in command_ids)
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Delete parameters, responses and intermediates
                 cursor.execute(
@@ -445,6 +448,7 @@ class DeviceManager:
                     'delete from defined_execution_errors where parent in ({command_ids}) and parent_type = %s'
                     .format(command_ids=command_ids),
                     ['command'])
+        release_database_connection(conn)
 
     def delete_properties(self, feature_ids: List[int]):
         """Delete the properties of the specified features from the database
@@ -456,12 +460,14 @@ class DeviceManager:
             return
         # Convert to string of comma separated ids
         feature_ids = ','.join(str(feature_id) for feature_id in feature_ids)
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'delete from properties_for_data_handler where feature in ({feature_ids}) returning id'.format(
                         feature_ids=feature_ids))
                 property_ids = [property_tuple[0] for property_tuple in cursor.fetchall()]
+        release_database_connection(conn)
         self.delete_property_subelements(property_ids)
 
     def delete_property_subelements(self, property_ids: List[int]):
@@ -474,7 +480,8 @@ class DeviceManager:
             return
         # Convert to string of comma separated ids
         property_ids = ','.join(str(property_id) for property_id in property_ids)
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Delete responses
                 cursor.execute(
@@ -486,6 +493,7 @@ class DeviceManager:
                     'delete from defined_execution_errors where parent in ({property_ids}) and parent_type = %s'
                     .format(property_ids=property_ids),
                     ['property'])
+        release_database_connection(conn)
 
     def get_features_for_data_handler(
             self, uuid: UUID) -> List[DeviceFeatureForDataHandler]:
@@ -493,7 +501,9 @@ class DeviceManager:
         Args:
             uuid: The uuid of the device for which to get the features from the database
         """
-        with self.conn as conn:
+        features=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,identifier,name,description,feature_version,feature_version_minor,feature_version_major,activated,meta from features_for_data_handler where device=%s',
@@ -513,12 +523,13 @@ class DeviceManager:
                                                 meta=row[8])
                     for row in result
                 ]
-                for feature in features:
-                    feature.commands = self.get_commands_for_feature_for_data_handler(
-                        feature.id)
-                    feature.properties = self.get_properties_for_feature_for_data_handler(
-                        feature.id)
-                return features
+        release_database_connection(conn)
+        for feature in features:
+            feature.commands = self.get_commands_for_feature_for_data_handler(
+                feature.id)
+            feature.properties = self.get_properties_for_feature_for_data_handler(
+                feature.id)
+        return features
 
     def get_commands_for_feature_for_data_handler(
             self, feature_id) -> List[DeviceCommandForDataHandler]:
@@ -526,7 +537,9 @@ class DeviceManager:
         Args:
             feature_id: The id of the feature for which to get the commands from the database
         """
-        with self.conn as conn:
+        commands=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select identifier,name,description,observable,id,polling_interval_non_meta,polling_interval_meta,activated,meta from commands_for_data_handler where feature=%s',
@@ -547,16 +560,17 @@ class DeviceManager:
                                                 active=row[7],
                                                 meta=row[8]) for row in result
                 ]
-                for command in commands:
-                    command.parameters = self.get_parameters_for_command_for_data_handler(
-                        command.id)
-                    command.responses = self.get_responses_for_command_for_data_handler(
-                        command.id)
-                    command.intermediates = self.get_intermediates_for_command_for_data_handler(
-                        command.id)
-                    command.defined_execution_errors = \
-                        self.get_defined_execution_errors_for_command_for_data_handler(command.id)
-                return commands
+        release_database_connection(conn)
+        for command in commands:
+            command.parameters = self.get_parameters_for_command_for_data_handler(
+                command.id)
+            command.responses = self.get_responses_for_command_for_data_handler(
+                command.id)
+            command.intermediates = self.get_intermediates_for_command_for_data_handler(
+                command.id)
+            command.defined_execution_errors = \
+                self.get_defined_execution_errors_for_command_for_data_handler(command.id)
+        return commands
 
     def get_parameters_for_command_for_data_handler(
             self, command_id) -> List[DeviceParameterForDataHandler]:
@@ -564,7 +578,9 @@ class DeviceManager:
         Args:
             command_id: The id of the command for which to get the parameters from the database
         """
-        with self.conn as conn:
+        parameters=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
@@ -580,7 +596,8 @@ class DeviceManager:
                                                   value=row[5])
                     for row in result
                 ]
-                return parameters
+        release_database_connection(conn)
+        return parameters
 
     def get_responses_for_command_for_data_handler(
             self, command_id) -> List[DeviceParameterForDataHandler]:
@@ -588,7 +605,9 @@ class DeviceManager:
         Args:
             command_id: The id of the command for which to get the responses from the database
         """
-        with self.conn as conn:
+        responses=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
@@ -604,7 +623,8 @@ class DeviceManager:
                                                   value=row[5])
                     for row in result
                 ]
-                return responses
+        release_database_connection(conn)
+        return responses
 
     def get_intermediates_for_command_for_data_handler(
             self, command_id) -> List[DeviceParameterForDataHandler]:
@@ -612,7 +632,9 @@ class DeviceManager:
         Args:
             command_id: The id of the command for which to get the intermediates from the database
         """
-        with self.conn as conn:
+        intermediates=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
@@ -628,7 +650,8 @@ class DeviceManager:
                                                   value=row[5])
                     for row in result
                 ]
-                return intermediates
+        release_database_connection(conn)
+        return intermediates
 
     def get_defined_execution_errors_for_command_for_data_handler(
             self, command_id) -> List[str]:
@@ -636,14 +659,17 @@ class DeviceManager:
         Args:
             command_id: The id of the command for which to get the defined execution errors from the database
         """
-        with self.conn as conn:
+        defined_execution_errors=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select defined_execution_error from defined_execution_errors where parent_type=%s and parent=%s',
                     ['command', str(command_id)])
                 result = cursor.fetchall()
                 defined_execution_errors = [row[0] for row in result]
-                return defined_execution_errors
+        release_database_connection(conn)
+        return defined_execution_errors
 
     def get_properties_for_feature_for_data_handler(
             self, feature_id) -> List[DevicePropertyForDataHandler]:
@@ -651,7 +677,9 @@ class DeviceManager:
         Args:
             feature_id: The id of the feature for which to get the properties from the database
         """
-        with self.conn as conn:
+        properties=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,identifier,name,description,observable,polling_interval_non_meta,polling_interval_meta,activated,meta from properties_for_data_handler where feature=%s',
@@ -675,7 +703,9 @@ class DeviceManager:
                         property.id)
                     property.defined_execution_errors = \
                         self.get_defined_execution_errors_for_property_for_data_handler(property.id)
-                return properties
+
+        release_database_connection(conn)
+        return properties
 
     def get_response_for_property_for_data_handler(
             self, property_id) -> DeviceParameterForDataHandler:
@@ -683,7 +713,9 @@ class DeviceManager:
         Args:
             property_id: The id of the property for which to get the response from the database
         """
-        with self.conn as conn:
+        response=None
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select type,identifier,name,description,id,value from parameters_for_data_handler where used_as=%s and parent_type=%s and parent=%s',
@@ -696,7 +728,8 @@ class DeviceManager:
                                                          description=row[3],
                                                          id=row[4],
                                                          value=row[5])
-                return response
+        release_database_connection(conn)
+        return response
 
     def get_defined_execution_errors_for_property_for_data_handler(
             self, property_id) -> List[str]:
@@ -704,26 +737,33 @@ class DeviceManager:
         Args:
             property_id: The id of the property for which to get the defined execution errors from the database
         """
-        with self.conn as conn:
+        defined_execution_errors=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select defined_execution_error from defined_execution_errors where parent_type=%s and parent=%s',
                     ['property', str(property_id)])
                 result = cursor.fetchall()
                 defined_execution_errors = [row[0] for row in result]
-                return defined_execution_errors
+        release_database_connection(conn)
+        return defined_execution_errors
 
     def get_database_info_list(self) -> List[DatabaseInfo]:
         """Returns a list of database information from the database"""
-        with self.conn as conn:
+        info_list=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,name,address,port, username, password from databases'
                 )
                 result = cursor.fetchall()
-                return [
+                info_list=[
                     DatabaseInfo(row[0], row[1], row[2], row[3], row[4], row[5]) for row in result
                 ]
+        release_database_connection(conn)
+        return info_list
 
     def get_database_info(self, id: int) -> DatabaseInfo:
         """Returns the specified database info
@@ -732,14 +772,18 @@ class DeviceManager:
         Returns:
             DatabaseInfo: An instance of Database info
         """
-        with self.conn as conn:
+        info=None
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'select id,name,address,port, username, password from databases ' \
                     'where id=%s',
                     [str(id)])
                 database = cursor.fetchone()
-                return DatabaseInfo(database[0], database[1], database[2], database[3], database[4], database[5])
+                info = DatabaseInfo(database[0], database[1], database[2], database[3], database[4], database[5])
+        release_database_connection(conn)
+        return info
 
 
     def get_database_status(self, id: int) -> DatabaseStatus:
@@ -773,11 +817,13 @@ class DeviceManager:
             username: The username that is needed as login credential for the new database
             password: The password for the new database login
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'insert into databases values (default,%s,%s,%s,%s,%s)',
                     [name, address, port, username, password])
+        release_database_connection(conn)
 
     def set_database(self, id: int, name: str, address: str, port: int, username: str, password: str):
         """Updates a database in the database
@@ -789,7 +835,8 @@ class DeviceManager:
             username: The username to set to the new database
             password: The password to set to the new database
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'update databases set name=%s, address=%s, port=%s, username=%s, password=%s ' \
@@ -797,19 +844,22 @@ class DeviceManager:
                     [
                         name, address, port, username, password, id
                     ])
+        release_database_connection(conn)
 
     def delete_database(self, id: int):
         """Delete a database from the database
         Args:
             id: The id of the database
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute('delete from databases where id=%s',
                                [id])
                 # Unlink database for devices that have this database
                 cursor.execute('update devices set databaseID = %s where databaseID=%s',
                                [None, id])
+        release_database_connection(conn)
 
 
     def link_database(self, device_uuid: UUID, database_id: int):
@@ -818,22 +868,26 @@ class DeviceManager:
             device_uuid: The UUID of the device to link
             database_id: The id of the database to link
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'update devices set databaseID = %s where uuid = %s',
                     [database_id, device_uuid])
+        release_database_connection(conn)
 
     def unlink_database(self, device_uuid: UUID):
         """Removes the database link of the specified device
         Args:
             device_uuid: The UUID of the device for which to remove the database link
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     'update devices set databaseID = %s where uuid = %s',
                     [None, device_uuid])
+        release_database_connection(conn)
 
     def set_device_attributes_for_data_handler(self, device_uuid: UUID, active: bool):
         """Set the 'active' attribute of the specified device and its features, commands and properties
@@ -842,7 +896,8 @@ class DeviceManager:
             device_uuid: The UUID of the device
             active: The new value of the 'active' attribute
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Update the device
                 cursor.execute(
@@ -864,6 +919,7 @@ class DeviceManager:
                     'update properties_for_data_handler set activated = %s where feature in ({feature_ids})'.format(
                         feature_ids=feature_ids),
                     [active])
+        release_database_connection(conn)
 
     def set_feature_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, active: bool, meta: bool):
         """Set the 'active' and 'meta' attributes of the specified feature and its commands and properties
@@ -874,7 +930,8 @@ class DeviceManager:
             active: The new value of the 'active' attribute
             meta: The new value of the 'meta' attribute
         """
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Update the feature
                 cursor.execute(
@@ -901,6 +958,7 @@ class DeviceManager:
                 cursor.execute(
                     'update devices set activated = %s where uuid = %s',
                     [device_active, device_uuid])
+        release_database_connection(conn)
 
     def set_command_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, command_id: str, active: bool,
                                                 meta: bool, polling_interval_non_meta: int, polling_interval_meta: int,
@@ -921,7 +979,8 @@ class DeviceManager:
             polling_interval_non_meta = INTERVAL
         if polling_interval_meta is None:
             polling_interval_meta = META_INTERVAL
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Update parameter values
                 for parameter in parameters:
@@ -971,6 +1030,7 @@ class DeviceManager:
                 cursor.execute(
                     'update devices set activated = %s where uuid = %s',
                     [device_active, device_uuid])
+        release_database_connection(conn)
 
     def set_property_attributes_for_data_handler(self, device_uuid: UUID, feature_id: str, property_id: str,
                                                  active: bool, meta: bool, polling_interval_non_meta: int,
@@ -990,7 +1050,8 @@ class DeviceManager:
             polling_interval_non_meta = INTERVAL
         if polling_interval_meta is None:
             polling_interval_meta = META_INTERVAL
-        with self.conn as conn:
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 # Update the property
                 cursor.execute(
@@ -1035,6 +1096,7 @@ class DeviceManager:
                 cursor.execute(
                     'update devices set activated = %s where uuid = %s',
                     [device_active, device_uuid])
+        release_database_connection(conn)
 
     def discover_sila_devices(self):
         """Triggers the sila autodiscovery
@@ -1077,19 +1139,23 @@ class DeviceManager:
                 'warning'] or exclude['critical'] or exclude['error'] else ''
             print(exclude_string)
 
-        with self.conn as conn:
+        log=[]
+        conn = get_database_connection()
+        with conn:
             with conn.cursor() as cursor:
                 cursor.execute(f'select type,device,time,message from log '\
                 f'where '\
                 f'{exclude_string} '\
                 f'time>=%s and time<=%s order by time desc',
                 [from_date, to_date])
-                return [{
+                log = [{
                     'type': row[0],
                     'device': row[1],
                     'time': row[2],
                     'message': row[3]
                 } for row in cursor]
+        release_database_connection(conn)
+        return log
 
     def get_booking_entry(self, id: int):
         return get_booking_entry(id)

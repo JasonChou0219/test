@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 from datetime import datetime
 from uuid import UUID
-from source.device_manager.database import get_database_connection
+from source.device_manager.database import get_database_connection, release_database_connection
 import psycopg2
 
 
@@ -33,6 +33,7 @@ class BookingInfoWithNames:
 
 def get_device_bookings_for_experiment_inside_transaction(
         conn, experiment: int) -> List[BookingInfoWithNames]:
+    bookings = []
     with conn.cursor() as cursor:
         cursor.execute(
             """
@@ -47,27 +48,37 @@ def get_device_bookings_for_experiment_inside_transaction(
            on bookings.device=devices.uuid
            where bookings.experiment=%s 
            """, [experiment])
-        return [
+        bookings = [
             BookingInfoWithNames(row[0], row[1], row[2], row[3], row[4],
                                  row[5], row[6], row[7], row[8], row[9])
             for row in cursor
         ]
+    release_database_connection(conn)
+    return bookings
 
 
 def get_booking_entry(id: int) -> BookingInfo:
-    with get_database_connection() as conn:
+    booking_info = None
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'select id,name,startTime,endTime,userID,device,experiment from bookings where id=%s',
                 [id])
             result = cursor.fetchone()
-            return BookingInfo(result[0], result[1], result[2], result[3],
+            booking_info = BookingInfo(result[0], result[1], result[2], result[3],
                                result[4], result[5], result[6])
+    release_database_connection(conn)
+    return booking_info 
+
+
 
 
 def get_device_booking_info(device: UUID, start: int,
                             end: int) -> List[BookingInfo]:
-    with get_database_connection() as conn:
+    booking_info = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 f'select id,name,startTime,endTime,userID,device,experiment from bookings where device=%s' \
@@ -76,15 +87,20 @@ def get_device_booking_info(device: UUID, start: int,
                 f'or (startTime<={start} and endTime>={start}) '\
                 f'or (startTime<={end} and endTime>={end}))',
                 [str(device)])
-            return [
+            booking_info = [
                 BookingInfo(row[0], row[1], row[2], row[3], row[4], row[5],
                             row[6]) for row in cursor
             ]
+    release_database_connection(conn)
+    return booking_info 
+
 
 
 def get_device_booking_info_with_names(device: UUID, start: int,
                                        end: int) -> List[BookingInfoWithNames]:
-    with get_database_connection() as conn:
+    booking_info = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 f'select bookings.id,bookings.name,bookings.startTime, '\
@@ -100,30 +116,39 @@ def get_device_booking_info_with_names(device: UUID, start: int,
                 f'or (bookings.startTime<={start} and bookings.endTime>={start}) '\
                 f'or (bookings.startTime<={end} and bookings.endTime>={end}))',
                 [str(device)])
-            return [
+            booking_info = [
                 BookingInfoWithNames(row[0], row[1], row[2], row[3], row[4],
                                      row[5], row[6], row[7], row[8], row[9])
                 for row in cursor
             ]
+    release_database_connection(conn)
+    return booking_info
 
 
 def get_booking_info(start: int, end: int) -> List[BookingInfo]:
-    with get_database_connection() as conn:
+    booking_info = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(f'select id,name,start,end,user,device,experiment from bookings '\
                 f'where (start>={start} and end<={end})'\
                 f'or ({start}>=start and {end}<=end) '\
                 f'or (start<={start} and end>={start}) '\
                 f'or (start<={end} and end>={end})')
-            return [
+            booking_info = [
                 BookingInfo(row[0], row[1], row[2], row[3], row[4], row[5],
                             row[6]) for row in cursor
             ]
+    release_database_connection(conn)
+    return booking_info
+
 
 
 def get_booking_info_with_names(start: int,
                                 end: int) -> List[BookingInfoWithNames]:
-    with get_database_connection() as conn:
+    booking_info = []
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 f'select bookings.id,bookings.name,bookings.startTime, '\
@@ -136,11 +161,13 @@ def get_booking_info_with_names(start: int,
                 f'or ({start}>=bookings.startTime and {end}<=bookings.endTime) '\
                 f'or (bookings.startTime<={start} and bookings.endTime>={start}) '\
                 f'or (bookings.startTime<={end} and bookings.endTime>={end}))')
-            return [
+            booking_info = [
                 BookingInfoWithNames(row[0], row[1], row[2], row[3], row[4],
                                      row[5], row[6], row[7], row[8], row[9])
                 for row in cursor
             ]
+    release_database_connection(conn)
+    return booking_info
 
 
 def is_now_free_inside_transaction(conn, device: UUID) -> bool:
@@ -155,8 +182,12 @@ def is_now_free_inside_transaction(conn, device: UUID) -> bool:
 
 
 def is_now_free(device: UUID) -> bool:
-    with get_database_connection() as conn:
-        return is_now_free_inside_transaction(conn, device)
+    is_free = False
+    conn = get_database_connection() 
+    with conn:
+        is_free = is_now_free_inside_transaction(conn, device)
+    release_database_connection(conn)
+    return is_free
 
 
 def is_time_range_free_inside_transaction(conn, device: UUID, start: int,
@@ -174,7 +205,9 @@ def is_time_range_free_inside_transaction(conn, device: UUID, start: int,
 
 
 def is_time_range_free(device: UUID, start: int, end: int) -> bool:
-    with get_database_connection() as conn:
+    is_free = False
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(f'select count(id) from bookings '\
                 f'where device=%s and ((startTime>={start} and endTime<={end}) '\
@@ -183,8 +216,11 @@ def is_time_range_free(device: UUID, start: int, end: int) -> bool:
                 f'or (startTime<={end} and endTime>={end}))',[str(device)])
             result = cursor.fetchone()
             if result is None:
-                return True
-            return result[0] == 0
+                is_free = True
+            else:
+                is_free = result[0] == 0
+    release_database_connection(conn)
+    return is_free
 
 
 def book_inside_transaction(conn, info: BookingInfo) -> int:
@@ -204,18 +240,28 @@ def book_inside_transaction(conn, info: BookingInfo) -> int:
 
 
 def book(info: BookingInfo) -> int:
-    with get_database_connection() as conn:
-        return book_inside_transaction(conn, info)
+    id = -1
+    conn = get_database_connection() 
+    with conn:
+        id = book_inside_transaction(conn, info)
+    release_database_connection(conn)
+    return id
 
 
 def id_is_valid(id: int) -> bool:
-    with get_database_connection() as conn:
+    is_valid = False
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('select * from bookings where id=%s', [id])
-            return len(cursor.fetchall()) > 0
+            is_valid = len(cursor.fetchall()) > 0
+    release_database_connection(conn)
+    return is_valid
 
 
 def delete_booking_entry(id: int):
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('delete from bookings where id=%s', [id])
+    release_database_connection(conn)

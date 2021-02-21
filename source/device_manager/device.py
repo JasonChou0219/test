@@ -29,7 +29,8 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
     Returns:
         DeviceInterface: A instantiated Device
     """
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices '\
@@ -39,13 +40,16 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
             return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
                               dev[5], dev[6], dev[7], dev[8], dev[9])
 
+    release_database_connection(conn)
+
 
 def set_device(device: DeviceInfo):
     """Updates a device in the database
     Args:
         device: The device that should replace the one in the database
     """
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'update devices set name=%s, type=%s,address=%s,port=%s '\
@@ -55,6 +59,8 @@ def set_device(device: DeviceInfo):
                     str(device.uuid)
                 ])
 
+    release_database_connection(conn)
+
 
 def add_device(uuid: UUID, name: str, type: DeviceType, address: str, port: int) -> UUID:
     """Add a new device to the database
@@ -63,11 +69,14 @@ def add_device(uuid: UUID, name: str, type: DeviceType, address: str, port: int)
     """
     server_uuid = uuid
     uuid = uuid4()
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'insert into devices values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                 [str(uuid), str(server_uuid), name, type, address, port, True, None, None, True])
+
+    release_database_connection(conn)
     return uuid
 
 
@@ -80,6 +89,9 @@ def delete_device(uuid: UUID, server_uuid: UUID):
     device = get_device_info(uuid)
     if device.type == DeviceType.SILA:
         delete_dynamic_client(server_uuid)
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute('delete from devices where uuid=%s', [str(uuid)])
+
+    release_database_connection(conn)
