@@ -5,7 +5,7 @@
 export const environment = {
     production: true,
     backendHttpUrl: 'http://devicemanager.biovt.mw.tum.de',
-    backendWebsocketsUrl: 'http://devicemanager.biovt.mw.tum.de',
+    backendWebsocketsUrl: 'ws://devicemanager.biovt.mw.tum.de',
 };
 
 /*
