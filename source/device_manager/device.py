@@ -3,12 +3,13 @@ from typing import List
 from source.device_manager.device_layer.device_info import DeviceInfo, DeviceStatus
 from source.device_manager.device_layer.device_interface import DeviceType
 from source.device_manager.device_layer.dynamic_client import delete_dynamic_client
-from source.device_manager.database import get_database_connection
+from source.device_manager.database import get_database_connection, release_database_connection
 
 
 def get_device_info_list() -> List[DeviceInfo]:
     """Returns a list of devices information from the database"""
-    with get_database_connection() as conn:
+    conn = get_database_connection() 
+    with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices'
@@ -18,6 +19,7 @@ def get_device_info_list() -> List[DeviceInfo]:
                 DeviceInfo(row[0], row[1], row[2], row[3], row[4],
                            row[5], row[6], row[7], row[8], row[9]) for row in result
             ]
+    release_database_connection(conn)
 
 
 def get_device_info(uuid: UUID) -> DeviceInfo:
