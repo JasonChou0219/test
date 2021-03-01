@@ -170,7 +170,7 @@ def edit_experiment(experiment_id: int, name: str, start: int, end: int, user: i
     with conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                'update experiments set name=%s, start=%s, end=%s, user=%s, script=%s where id=%s',
+                'update experiments set name=%s, startTime=%s, endTime=%s, userID=%s, script=%s where id=%s',
                 [name, start, end, user, script, experiment_id])
             # Todo: Implement the function to change the experiment in the database. Fix old bookings
             #  and add new ones!
