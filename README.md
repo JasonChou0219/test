@@ -89,6 +89,7 @@ Use the [official instructions](https://docs.docker.com/engine/install/ubuntu/)
 `sudo apt install supervisor`
 
 5. Install Redis
+`sudo apt install redis-server`
 
 6. Install and rund pipenv
 `sudo apt install pipenv`
@@ -130,21 +131,27 @@ enter the password
 `sudo systemctl enable docker.service`
 `sudo systemctl start docker.service`
 
-15. Create the user-script docker image
+15. Enable and configure Redis
+edit /etc/redis/redis.conf and change 
+`supervised no` to `supervised systemd`
+`sudo systemctl enable redis.service`
+`sudo systemctl start redis.service`
+
+16. Create the user-script docker image
 `cd user_script_env`
 `sudo docker build -t user_script .`
 
-16. Deploy Backend
+17. Deploy Backend
 `sudo pipenv run ./deploy_backend.sh`
 
-17. Edit Device-Manager Configuration File
+18. Edit Device-Manager Configuration File
 
-18. Build and Install Frontend
+19. Build and Install Frontend
 `cd frontend`
 `make`
 `make install`
 
-19. Start and Enable Nginx
+20. Start and Enable Nginx
 `sudo systemctl enable nginx.service`
 `sudo systemctl start nginx.service`
 
@@ -154,7 +161,7 @@ enter the password
 
 
 ### Deploying New Versions
-To deploy a new version its often enough to repeate step 16 and 18.
+To deploy a new version its often enough to repeate step 17 and 19.
 Then restart nginx and supervisor by using `sudo systemctl restart nginx.service` and
 `sudo systemctl restart supervisor.service`
 
