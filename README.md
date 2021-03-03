@@ -88,73 +88,78 @@ Use the [official instructions](https://docs.docker.com/engine/install/ubuntu/)
 4. Install Supervisor
 `sudo apt install supervisor`
 
-5. Install and rund pipenv
+5. Install Redis
+
+6. Install and rund pipenv
 `sudo apt install pipenv`
 `mkdir .venv`
 `pipenv sync`
 
-6. Install and Enable Nginx Config
+7. Install and Enable Nginx Config
 `sudo cp server-config/device-manager.conf /etc/nginx/sites-available/`
 `sudo ln -s /etc/nginx/sites-available/device-manager.conf /etc/nginx/sites-enabled/device-manager.conf`
 
-7. Install Supervisor Config
+8. Install Supervisor Config
 `sudo cp server-config/device-manager-backend.supervisor.conf /etc/supervisor/conf.d`
 `sudo cp server-config/device-manager-scheduler.supervisor.conf /etc/supervisor/conf.d`
 
-8. Create the device-manager user and group and add youself
+9. Create the device-manager user and group and add youself
 `sudo adduser --system --no-create-home --group --ingroup docker device-manager`
 `sudo gpasswd -a your-user-name device-manager`
 
-9. Create www directory
+10. Create www directory
 `sudo mkdir /var/www/html/device-manager-frontend`
 `chmod -R device-manager /var/www/html/device-manager-frontend`
 `chgrp -R device-manager /var/www/html/device-manager-frontend`
 `chmod -R 775 /var/www/html/device-manager-frontend`
 
-10. Create Backend Config Directory
+11. Create Backend Config Directory
 `sudo mkdir /etc/device-manager/`
 
-11. Start and Enable PostgreSQL
+12. Start and Enable PostgreSQL
 `sudo systemctl enable postgresql.service`
 `sudo systemctl start postgresql.service`
 
-12. Set Postgres password
+13. Set Postgres password
 `sudo -u postgres psql postgres`
 `\password postgres`
 enter the password
 `\q`
 
-13. Start and Enable Docker
+14. Start and Enable Docker
 `sudo systemctl enable docker.service`
 `sudo systemctl start docker.service`
 
-14. Create the user-script docker image
+15. Create the user-script docker image
 `cd user_script_env`
 `sudo docker build -t user_script .`
 
-15. Deploy Backend
+16. Deploy Backend
 `sudo pipenv run ./deploy_backend.sh`
 
-16. Build and Install Frontend
+17. Edit Device-Manager Configuration File
+
+18. Build and Install Frontend
 `cd frontend`
 `make`
 `make install`
 
-17. Start and Enable Nginx
+19. Start and Enable Nginx
 `sudo systemctl enable nginx.service`
 `sudo systemctl start nginx.service`
 
-18. Start and Enable Supervisor
+21. Start and Enable Supervisor
 `sudo systemctl enable supervisor.service`
 `sudo systemctl start supervisor.service`
 
+
 ### Deploying New Versions
-To deploy a new version its often enough to repeate step 15 and 16.
+To deploy a new version its often enough to repeate step 16 and 18.
 Then restart nginx and supervisor by using `sudo systemctl restart nginx.service` and
 `sudo systemctl restart supervisor.service`
 
 You can use `supervisorctl` to manage the backend and scheduler processes seperately.
-The logs can be viewed by opening /var/log/device-manager.
+The logs can be viewed under /var/log/device-manager.
 
 # License
 This code is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License)
