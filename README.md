@@ -157,4 +157,4 @@ You can use `supervisorctl` to manage the backend and scheduler processes sepera
 The logs can be viewed by opening /var/log/device-manager.
 
 # License
-This code is licensed under the [GNU General Public License (GNU GPL)](https://en.wikipedia.org/wiki/GNU_General_Public_License)
+This code is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License)
