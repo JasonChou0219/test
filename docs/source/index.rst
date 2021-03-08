@@ -1,9 +1,9 @@
-.. SiLA2_device_manager documentation master file, created by
+.. SiLA2_Manager documentation master file, created by
    sphinx-quickstart on Mon Jan 18 13:23:24 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SiLA2_device_manager's documentation!
+Welcome to SiLA2_Manager's documentation!
 =================================================
 
 .. toctree::
