@@ -60,7 +60,7 @@
         </ng-container>
 
         <ng-container matColumnDef="devices">
-            <th mat-header-cell *matHeaderCellDef>Devices</th>
+            <th mat-header-cell *matHeaderCellDef>Services</th>
             <td mat-cell *matCellDef="let element">
                 <ng-container *ngIf="element.experiment.deviceBookings.length > 1">
                     <p *ngFor="let device of element.experiment.deviceBookings">
