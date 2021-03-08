@@ -1,6 +1,6 @@
-Maintainer
-Lukas Bromig
+Maintainer  
+Lukas Bromig  
 
-Developers
-David Leiter
-Alexandru-Virgil Mardale
+Developers  
+David Leiter  
+Alexandru-Virgil Mardale  
