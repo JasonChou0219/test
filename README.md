@@ -5,7 +5,7 @@ It provides the user with a device management system for SiLA devices, a schedul
 planning utility.
 
 # Installation
-Read the [docs](https://sila2-device-manager.readthedocs.io/en/latest/) for more detailed information.
+Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.
 
 ## Development Environment
 
