@@ -16,11 +16,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 sys.setrecursionlimit(1500)
 version = open("../../VERSION", "rt").read()
 # import pkg_resources
-# version = pkg_resources.get_distribution('sila2_device_manager').version
+# version = pkg_resources.get_distribution('sila2_manager').version
 
 # -- Project information -----------------------------------------------------
 
-project = 'SiLA2 device manager'
+project = 'SiLA2 Manager'
 copyright = '2021, Lukas Bromig, David Leiter, Alexandru-Virgil Mardale'
 author = 'Lukas Bromig, David Leiter, Alexandru-Virgil Mardale'
 
@@ -65,22 +65,22 @@ html_theme = 'sphinx_material'
 html_theme_options = {
 
     # Set the name of the project to appear in the navigation.
-    'nav_title': 'SiLA2 Device Manager',
+    'nav_title': 'SiLA2 Manager',
 
     # Set you GA account ID to enable tracking
     'google_analytics_account': 'G-DV1NFGEFK4',
 
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
-    'base_url': 'https://gitlab.com/lukas.bromig/sila2_device_manager',
+    'base_url': 'https://gitlab.com/lukas.bromig/sila2_manager',
 
     # Set the color and the accent color
     'color_primary': 'blue',
     'color_accent': 'light-blue',
 
     # Set the repo location to get a badge with stats
-    'repo_url': 'https://gitlab.com/lukas.bromig/sila2_device_manager',
-    'repo_name': 'device_manager',
+    'repo_url': 'https://gitlab.com/lukas.bromig/sila2_manager',
+    'repo_name': 'SiLA2_Manager',
 
     # Visible levels of the global TOC; -1 means unlimited
     'globaltoc_depth': 3,
