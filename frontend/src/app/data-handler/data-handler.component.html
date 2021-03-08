@@ -92,13 +92,13 @@
     <div class="mat-card-header">
         <div class="mat-card-header-entry">
             <mat-card-header>
-                <mat-card-title matTooltip="Device that can be configured for the data handler">Devices</mat-card-title>
+                <mat-card-title matTooltip="Service that can be configured for the data handler">Services</mat-card-title>
             </mat-card-header>
         </div>
         <div class="mat-card-header-entry">
             <mat-card-actions>
                 <button mat-icon-button color="primary" (click)="refreshDevices()">
-                    <mat-icon matTooltip="Refresh the device list">refresh</mat-icon>
+                    <mat-icon matTooltip="Refresh the service list">refresh</mat-icon>
                 </button>
             </mat-card-actions>
         </div>
@@ -110,7 +110,7 @@
         class="mat-elevation-z8"
     >
         <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Device name</th>
+            <th mat-header-cell *matHeaderCellDef>Service name</th>
             <td mat-cell style="width: 25%" [ngStyle]="{'background': element.status.online ?  '#EAFAEA' : '#white' }"
                 *matCellDef="let element; let i = dataIndex" (click)="showDetails(i)">
                 {{ element.device.name }}
@@ -185,7 +185,7 @@
             <td mat-cell style="width: 10%" [ngStyle]="{'background': element.status.online ?  '#EAFAEA' : '#white' }"
                 *matCellDef="let element; let i = dataIndex">
                 <button mat-icon-button (click)="showDetails(i)">
-                    <mat-icon matTooltip="Expand to view device detail">info</mat-icon>
+                    <mat-icon matTooltip="Expand to view service detail">info</mat-icon>
                 </button>
                 <button mat-icon-button (click)="link(i)" >
                     <mat-icon matTooltip="Link a database to this device">link</mat-icon>
