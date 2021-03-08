@@ -1,6 +1,6 @@
-Maintainer  
+**Maintainer**  
 Lukas Bromig  
 
-Developers  
+**Developer**   
 David Leiter  
 Alexandru-Virgil Mardale  
