@@ -1,8 +1,8 @@
-# SiLA2_Device_manager
+# SiLA_2_Manager
 
-Lamas/SiLA2_Device_Manager is an open-source framework for laboratory automation with a modern IoT interface. 
-It provides the user with a device management system for SiLA devices, a scheduler and a scripting and experiment 
-planning utility.
+The SiLA_2_Manager is an open-source framework for laboratory automation with a modern IoT interface. 
+It provides the user with a SiLA service management system, a scheduler, a scripting environment, a experiment 
+planning utility, and a data handler to link service data to a database.
 
 # Installation
 Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.
