@@ -1,8 +1,8 @@
 How-To
-=======
+=========
 
 Connecting to the SiLA 2 Manager
----------------------------------
+-----------------------------------
 
 If your device manager server is running on your local machine or on a computer within your network, you can
 connect to the frontend from any internet capable device with a modern browser. Simply connect using one of the
@@ -17,7 +17,7 @@ If the server is running on another computer within your network:
     <host-server-ip\>:4200
 
 Login page
------------
+-------------
 
 The log-in view is a security feature, that ensures that only registered users have access to the services in your
 network. The Open Authorization protocol 2 (OAuth2) is used to secure communication between the backend and frontend.
@@ -73,7 +73,7 @@ Relative path to the directory: *[...]temp/device-manager/SiLA/<device-UUID>/*
     :alt: A view of the discovery feature for adding new services to the manager
 
 SiLA Explorer - The service tree
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Each service that is added to the SiLA 2 Manager is assigned an internal UUID. This way services with the same server
 name can be uniquely identified. The service tree enables the user to run commands and request properties interactively
 from within the browser. On the lowest level of the service tree, the command/property level, a run button can be clicked
@@ -127,7 +127,7 @@ from the user script used in the experiment has several advantages:
     :alt: A view of the data handler feature
 
 Scripting environment - Scripts
---------------------------------
+----------------------------------
 
 This page allows the user to upload, create and edit scripts. The main view shows a list of all saved scripts.
 Clicking on the script name or the **<>**-icon opens the script editor. The code editor is based on the
@@ -145,7 +145,7 @@ be specified in the *requirements.txt*.
     Scripts are not checked for programming errors. Check your code in an IDE before scheduling any experiments!
 
 Hello world!
-^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 The *Hello device!* example is one of three pre-installed example scripts. You can find this example among the others
 in the \'Scripts\'-tab. Assign this script to a new experiment and schedule it for execution. The output should be
@@ -161,7 +161,7 @@ printed to the experiment console view.
 
 
 Service/Device integration
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All registered services can be accessed in the scripting environment. However, used services should be selected in the
 experiment setup phase. A dictionary with all service clients can be imported. Instantiating the client enables the user
 to execute all functions the service offers. Further information on the python syntax for the service object access can be
@@ -196,7 +196,7 @@ the service for exclusive use for that script.
     You need to replace the "yourObject" part of the displayed call with the client object of that service!
 
 Database integration
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 This example shows you how to include read and write operations to and from databases into your script. The client
 package of the database must be included in the docker requirements.txt, so you can access the client object in the
@@ -301,7 +301,7 @@ experiment can be aborted prematurely by pressing the 'stop'-button.
 
 
 Service calendar
-------------------
+---------------------
 If a service is assigned to a specific experiment, a booking is automatically created for the entire timeframe of the experiment.
 A service can only be assigned to an experiment if it is available throughout the experiments start and end time. The
 calendar page visualizes these bookings and provides the user with additional information on the booking, such as the respective
