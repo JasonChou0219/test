@@ -269,6 +269,7 @@ In this project *redis v.6.0.9* is used.
 7. Install and enable nginx config
 
 .. code-block:: console
+
     sudo cp server-config/device-manager.conf /etc/nginx/sites-available/
     sudo ln -s /etc/nginx/sites-available/device-manager.conf
     /etc/nginx/sites-enabled/device-manager.conf
@@ -276,6 +277,7 @@ In this project *redis v.6.0.9* is used.
 8. Install supervisor config
 
 .. code-block:: console
+
     sudo cp server-config/device-manager-backend.supervisor.conf
     /etc/supervisor/conf.d
     sudo cp server-config/device-manager-scheduler.supervisor.conf
@@ -284,12 +286,14 @@ In this project *redis v.6.0.9* is used.
 9. Create the device-manager user and group and add yourself
 
 .. code-block:: console
+
     sudo adduser --system --no-create-home --group --ingroup docker device-manager
     sudo gpasswd -a your-user-name device-manager
 
 10. Create www directory
 
 .. code-block:: console
+
     sudo mkdir /var/www/html/device-manager-frontend
     chmod -R device-manager /var/www/html/device-manager-frontend
     chgrp -R device-manager /var/www/html/device-manager-frontend
@@ -298,17 +302,20 @@ In this project *redis v.6.0.9* is used.
 11. Create backend config directory
 
 .. code-block:: console
+
     sudo mkdir /etc/device-manager/
 
 12. Start and enable PostgreSQL
 
 .. code-block:: console
+
     sudo systemctl enable postgresql.service
     sudo systemctl start postgresql.service
 
 13. Set PostgreSQL password
 
 .. code-block:: console
+
     sudo -u postgres psql postgres
     \password postgres
     <enter password>
@@ -317,23 +324,27 @@ In this project *redis v.6.0.9* is used.
 14. Start and enable Docker
 
 .. code-block:: console
+
     sudo systemctl enable docker.service
     sudo systemctl start docker.service
 
 15. Create the user-script docker image
 
 .. code-block:: console
+
     cd user_script_env
     sudo docker build -t user_script .
 
 16. Deploy backend service
 
 .. code-block:: console
+
     sudo pipenv run ./deploy_backend.sh
 
 17. Build and install frontend
 
 .. code-block:: console
+
     cd frontend
     make
     make install
@@ -341,12 +352,14 @@ In this project *redis v.6.0.9* is used.
 18. Start and enable Nginx
 
 .. code-block:: console
+
     sudo systemctl enable nginx.service
     sudo systemctl start nginxx.service
 
 19. Start and enable Supervisor
 
 .. code-block:: console
+
     sudo systemctl enable supervisor.service
     sudo systemctl start supervisor.service
 
@@ -355,6 +368,7 @@ To deploy a new version its often enough to repeat step 16 and 17. Then restart 
 and supervisor by using:
 
 .. code-block:: console
+
     sudo systemctl restart nginx.service
     sudo systemctl restart supervisor.service
 

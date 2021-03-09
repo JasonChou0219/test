@@ -192,8 +192,8 @@ the service for exclusive use for that script.
 
 
 .. note::
-        The syntax of the command call is shown in the service tree on the lowest level of each function call.
-        You need to replace the "yourObject" part of the displayed call with the client object of that service!
+    The syntax of the command call is shown in the service tree on the lowest level of each function call.
+    You need to replace the "yourObject" part of the displayed call with the client object of that service!
 
 Database integration
 ^^^^^^^^^^^^^^^^^^^^
@@ -255,8 +255,8 @@ using `chronograf <https://www.influxdata.com/time-series-platform/chronograf/>`
 for the influxDB database. All data collected by the data handler can be visualized using the chronograf IoT frontend.
 
 .. note::
-        [WIP] Interaction with running docker containers is currently not possible. This feature is planned for a future
-        release. Feel free to help us out!
+    [WIP] Interaction with running docker containers is currently not possible. This feature is planned for a future
+    release. Feel free to help us out!
 
 Experiments
 -----------------

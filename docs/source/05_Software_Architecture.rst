@@ -18,6 +18,7 @@ The software system level shows the interaction between the SiLA 2 Manager and o
    :width: 800
    :alt: General architecture on a high level of abstraction. The software system level shows the interaction between the SiLA 2 Manager and other connected software systems.
 
+The container view shows the internal structure of the SiLA 2 Manager.
 
 .. image:: _static/figures/sila2_manager.png
    :width: 800
