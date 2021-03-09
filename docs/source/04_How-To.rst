@@ -1,7 +1,7 @@
 How-To
 =======
 
-Connecting to the device manager
+Connecting to the SiLA 2 Manager
 ---------------------------------
 
 If your device manager server is running on your local machine or on a computer within your network, you can
@@ -19,7 +19,7 @@ If the server is running on another computer within your network:
 Login page
 -----------
 
-The log-in view is a security feature, that ensures that only registered users have access to the devices in your
+The log-in view is a security feature, that ensures that only registered users have access to the services in your
 network. The Open Authorization protocol 2 (OAuth2) is used to secure communication between the backend and frontend.
 Once logged-in, you can add new users, delete users and reset passwords. The device manager frontend uses the Angular
 Authentication tool (AuthInterceptor) which relies on a HttpInterceptor interface to grant access to permitted users.
@@ -32,62 +32,71 @@ account.
     :alt: A view of the login page with entered admin credentials
 
 
-Main page - Devices
+Main page - Services
 ---------------------
-The devices page is the device managers main view. Registered devices are listed here and some useful detail is provided
-on first sight. This includes the devices server name, address, port. Furthermore, the connection status is indicated. In a future version other devices types than SiLA, such as offline devices, custom device or OPC-UA types shall be supported.
-Several buttons allow the user to expand the visible detail of the device, change its current name, or
-remove the device from the manager.
+The devices page is the SiLA 2 Managers main view. Registered services are listed here and some useful detail is provided
+on first sight. This includes the services server name, address, port. Furthermore, the connection status is indicated.
+In a future version other devices types than SiLA 2, such as offline devices, custom device or OPC-UA types could be supported.
+The software structure allows for such adaptations.
+Several buttons allow the user to expand the visible detail of the service, change its current name, or
+remove the service from the SiLA 2 Manager.
 
-Clicking on the device name or the information icon expands the view of the selected
-device, showing the implemented features and the respective descriptions. Each feature can be expanded even further to
+Clicking on the service name or the information icon expands the view of the selected
+service, showing the implemented features and the respective descriptions. Each feature can be expanded even further to
 investigate which (observable) commands and (observable) properties are implemented by the feature. Exploring individual
 commands and properties shows the user useful information on functionality and usage. Required parameters and responses
 are displayed with the attributed SiLA-datatype.
 
-.. image:: _static/figures/devices.png
+.. image:: _static/figures/services.png
     :width: 800
-    :alt: A view of the main page, the devices list, including general device details
+    :alt: A view of the main page, the service list, including general service details
 
-Device discovery
+.. note::
+    In this documentation and the code base the word SiLA Device and SiLA Service are often used unanimously. However,
+    a SiLA Device is just a special case of a SiLA Service. Both are always special implementations of a SiLA Server.
+    A SiLA Server can implement a broad variety of soft- and hardware, such as laboratory device, virtaul machines,
+    software solution or API wrappers.
+
+
+Service discovery
 ^^^^^^^^^^^^^^^^^^
-The device manager uses the SiLA2 auto-discovery functionality which relies on multicast DNS service discovery
+The SiLA 2 Manager uses the SiLA 2 auto-discovery functionality which relies on multicast DNS service discovery
 (`zeroconf <https://pypi.org/project/zeroconf/>`_) to register its services in
-the network. New devices can be added by clicking the "plus"-button on the top right of the device table. Device
-discovery is started from within a new pop-up window. The discovery mode scans for SiLA devices in the network and displays the
+the network. New services can be added by clicking the "plus"-button on the top right of the service table. Service
+discovery is started from within a new pop-up window. The discovery mode scans for SiLA 2 services in the network and displays the
 basic information it was registered with by the server. This information is used to connect to the server using a
-dynamic client. The client files are stored in the local temporary folder named after the devices server-UUID:
+dynamic SiLA 2 python client. The client files are stored in the local temporary folder named after the services server-UUID:
 Relative path to the directory: *[...]temp/device-manager/SiLA/<device-UUID>/*
 
 .. image:: _static/figures/discovery.png
     :width: 800
-    :alt: A view of the discovery feature for adding new devices to the manager
+    :alt: A view of the discovery feature for adding new services to the manager
 
-SiLA Explorer - The device tree
+SiLA Explorer - The service tree
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Each device that is added to the device manager is assigned an internal UUID. This way devices with the same server
-name can be uniquely identified. The device tree enables the user to run commands and request properties interactively
-from within the browser. On the lowest level of the device tree, the command/property level, a run button can be clicked
+Each service that is added to the SiLA 2 Manager is assigned an internal UUID. This way services with the same server
+name can be uniquely identified. The service tree enables the user to run commands and request properties interactively
+from within the browser. On the lowest level of the service tree, the command/property level, a run button can be clicked
 to execute the function. For functions that require user input, the parameters can be entered in the corresponding text
 box. The syntax by which the call can be incorporated into python scripts in the scripting environment is shown.
 
-.. image:: _static/figures/device-tree.png
+.. image:: _static/figures/service-tree.png
     :width: 800
-    :alt: A view of the discovery feature for adding new devices to the manager
+    :alt: A view of the discovery feature for adding new services to the SiLA 2 Manager
 
 The data handler
 ------------------
-`InfluxDB <https://portal.influxdata.com/downloads/>`_ databases can be registered and linked to devices. InfluxDB is a time-series
+`InfluxDB <https://portal.influxdata.com/downloads/>`_ databases can be registered and linked to a service. InfluxDB is a time-series
 database that is well suited for experimental data. To be able to use this feature, an InfluxDB server must be running
-within your network. Providing the connection details to the device manager is sufficient. A username and password can
-be added optionally for additional security. A registered database can be linked to a device to setup automatic data
-transfer. Data transfer is started as soon as the booking of a device commences, i.e. the experiment the device is
-used in is started. The database-device link can be deleted by selecting the empty database in the dropdown menu.
+within your network. Providing the connection details to the SiLA 2 Manager is sufficient. A username and password can
+be added optionally for additional security. A registered database can be linked to a service to setup automatic data
+transfer. Data transfer is started as soon as the booking of a service commences, i.e. the experiment the service is
+used in is started. The database-service link can be deleted by selecting the empty database in the dropdown menu.
 
 The data handler will execute the configured calls in the user-specified polling intervals and
-store the responses in the linked database with experiment name, device name, and user name as tags. To activate the data
-acquisition for a selected device, the "active"-checkbox must be ticked. If responses of certain functions, or features
-all together, should not be stored, further checkboxes can be found on the lower levels of the device tree to deactivate
+store the responses in the linked database with experiment name, service name, and user name as tags. To activate the data
+acquisition for a selected service, the "active"-checkbox must be ticked. If responses of certain functions, or features
+all together, should not be stored, further checkboxes can be found on the lower levels of the service tree to deactivate
 data transfer. This is crucial to disable the execution of set commands for example.
 
 Most types of data can be classified as either meta-data or measurement data. Typically, meta-data doesn't need to be
@@ -96,7 +105,7 @@ beginning of an experiment is sufficient. Measurement data (Temperature, pressur
 queried on a more frequent basis. The data handler distinguishes between the two data types. Since there is no way to
 distinguish the type of data queried by a call automatically in a reliable fashion, the user can specify the type for
 each command using the meta-checkbox. Depending on the selection, a default value is implemented
-(1h for meta-data, 60s for measurement data). Obviously, different users have different needs regarding polling
+(1h for meta-data, 30s for measurement data). Obviously, different users have different needs regarding polling
 intervals, thus the defaults can be overwritten to transfer data according to a custom polling interval.
 
 .. image:: _static/figures/data-handler.png
@@ -151,19 +160,40 @@ printed to the experiment console view.
         print("Hello World!")
 
 
-Device integration
+Service/Device integration
 ^^^^^^^^^^^^^^^^^^^^
-All registered devices can be accessed in the scripting environment. However, used devices should be selected in the
-experiment setup phase. A dictionary with all device clients can be imported. Instantiating the client enables the user
-to execute all functions the device offers. Further information on the python syntax for the device object access can be
-found in the *'Device example'* in the scripting environment. It is recommended to select all used devices during the
-experiment setup phase to avoid multi-access and interference with other experiments. Selecting a device will reserve
-the device for exclusive use for that script.
+All registered services can be accessed in the scripting environment. However, used services should be selected in the
+experiment setup phase. A dictionary with all service clients can be imported. Instantiating the client enables the user
+to execute all functions the service offers. Further information on the python syntax for the service object access can be
+found in the *'service example'* in the scripting environment. It is recommended to select all used services during the
+experiment setup phase to avoid multi-access and interference with other experiments. Selecting a service will reserve
+the service for exclusive use for that script.
 
 .. code-block:: python
 
-        This is example python code that will show how the device clients can be imported, instantiated, and used.
-        The exact implementation is still WIP
+        # This example will show you how to import a service client
+        import time
+
+
+        def run(services):
+            """ Instantiates selected services/devices for this experiment """
+
+            # Check which services are available
+            print(f'{time.time()}: Imported services: {[service.name for service in services]}', flush=True)
+
+            # Assign device
+            client = services[0]
+            print(f'Client is: {client} and of type {type(client)}', flush=True)
+
+            # Make a property call
+            response = client.call_property("SiLAService", "ServerName")
+            print(f'Response is: {response}', flush=True)
+
+
+
+.. note::
+        The syntax of the command call is shown in the service tree on the lowest level of each function call.
+        You need to replace the "yourObject" part of the displayed call with the client object of that service!
 
 Database integration
 ^^^^^^^^^^^^^^^^^^^^
@@ -217,28 +247,32 @@ chronograf interface.
             time.sleep(10)
 
 
-[WIP] Process monitoring
+Process monitoring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Scripts are executed in a docker container. Interaction with a running docker container is limited. The *stdout* of the
-docker container is transferred to the frontend by websockets. For real-time visualization of process data we recommend
+docker container is transferred to the frontend by WebSockets. For real-time visualization of process data we recommend
 using `chronograf <https://www.influxdata.com/time-series-platform/chronograf/>`_. Chronograf offers a complete interface
 for the influxDB database. All data collected by the data handler can be visualized using the chronograf IoT frontend.
 
+.. note::
+        [WIP] Interaction with running docker containers is currently not possible. This feature is planned for a future
+        release. Feel free to help us out!
+
 Experiments
 -----------------
-Automated experiments (or processes) require access to devices via a well-specified interface, a script that
-orchestrates device operation and a database to store relevant information. The experiments view enables the user to
+Automated experiments (or processes) require access to services via a well-specified interface, a script that
+orchestrates service operation and a database to store relevant information. The experiments view enables the user to
 setup such workflows and schedule their execution. On the experiments page new experiments can be created by pressing
-the the 'plus'-symbol. The experiment execution time, the script to be executed, as well as the devices required for
-execution can be defined in a pop-up form. Creation of experiments that require the booking of devices unavailable
-during the desired time-frame is not possible. If two experiments must access the same device simultaneously, a booking
+the the 'plus'-symbol. The experiment execution time, the script to be executed, as well as the services required for
+execution can be defined in a pop-up form. Creation of experiments that require the booking of services unavailable
+during the desired time-frame is not possible. If two experiments must access the same service simultaneously, a booking
 should be avoided. The device is still accessible to the script.
 
 .. warning::
-    This is a safety measure to avoid potentially detrimental consequences caused by multiple access to state-sensitive devices.
+    This is a safety measure to avoid potentially detrimental consequences caused by multiple access to state-sensitive laboratory devices.
 
 The main view of the experiments tab shows a list of scheduled experiments, accompanied by the most important
-information such as the start and end time of the experiment, booked devices, the user script and the current status of
+information such as the start and end time of the experiment, booked services, the user script and the current status of
 the experiment. Scheduled experiments automatically create a booking entry in the calendar view.
 The experiment status may be one of the following:
 
@@ -266,20 +300,20 @@ experiment can be aborted prematurely by pressing the 'stop'-button.
     In development mode the scheduler.py script must be running for experiments to be executed.
 
 
-Device calendar
+Service calendar
 ------------------
-If a device is assigned to a specific experiment, a booking is automatically created for the entire timeframe of the experiment.
-A device can only be assigned to an experiment if it is available throughout the experiments start and end time. The
+If a service is assigned to a specific experiment, a booking is automatically created for the entire timeframe of the experiment.
+A service can only be assigned to an experiment if it is available throughout the experiments start and end time. The
 calendar page visualizes these bookings and provides the user with additional information on the booking, such as the respective
 experiment, script and the user who created it. Furthermore, it is possible to create bookings manually. This allows the
-reservation of devices. In a future release, non-SiLA devices and "offline"-devices will be available as well. The
-calendar could be used as a laboratory-wide booking system for other legacy devices such as autoclaves or other resources.
+reservation of services. In a future release, non-SiLA services and "offline"-services will be available as well. The
+calendar could be used as a laboratory-wide booking system for other legacy services such as autoclaves or other resources.
 
 It is possible to delete bookings manually. Even automatically created bookings can be deleted. However, this would
-circumvent the in-built security mechanism and may lead to devices being accessed by multiple experimental scripts at
+circumvent the in-built security mechanism and may lead to services being accessed by multiple experimental scripts at
 the same time.
 
 .. image:: _static/figures/calendar.png
     :width: 800
-    :alt: A view of device bookings. The calendar.
+    :alt: A view of service bookings. The calendar.
 

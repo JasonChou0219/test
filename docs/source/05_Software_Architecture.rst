@@ -3,51 +3,40 @@ Software Architecture
 
 General architecture
 ---------------------
-Include a pictogram that includes all parts of the device manager on a high level of abstraction (Database-Backend-Frontend-level)
-Based solely on freely available, open-source code. Used packages were selected with long-term support and respective
-low maintenance considerations.
+The SiLA 2 Manager is based solely on freely available, open-source code. Used packages were selected with long-term
+support and respective low maintenance considerations.
 
-Current Implementation is based on the SiLA-Python repository. The SiLA-python repository currently doesn't support the
-full standard yet.  The standards implementations are still being actively  developed. We work closely together with the
-SiLA-Python working group and some of our members are actively contributing too both repositories. As the standards
-python implementation evolves, the Device manager updates will incorporate new changes.
+The current implementation is mainly focused on the SiLA_python repository but is interoperable with most other implementations
+as well (like C++). The SiLA-python repository, and all other repositories for that matter, currently don't implement the
+full standard yet. The SiLA 2 implementations are still being actively developed. We work closely together with the
+SiLA Working group and some of our members are actively contributing to the programming language specific repositories.
+As the SiLA implementation evolve, the SiLA 2 Manager will be updated to incorporate the new changes.
 
-Include C4 diagrams of software architecture
-Maybe include UML diagrams here as well.
+The software system level shows the interaction between the SiLA 2 Manager and other connected software systems.
 
-// .. image:: _static/figures/Still missing.png
-//    :width: 800
-//    :alt: General architecture on a high level of abstraction
-
-
-// .. image:: _static/figures/Still missing.png
-//    :width: 800
-//    :alt: Architecture on a more detailed level
-
-Clarify:
-- General interaction between modules.
-- Interaction with redis DB and postgreSQL
-- Interaction with scheduler.py
-- Interaction with data-handler.py
+.. image:: _static/figures/software_system.png
+   :width: 800
+   :alt: General architecture on a high level of abstraction. The software system level shows the interaction between the SiLA 2 Manager and other connected software systems.
 
 
-Backend
-========
-include a pictogram of the backend that is more detailed than the general one. Include redis, postgreSQL, device layer,
-dynamic client, sila_device, data-handler, influxDB, FatsAPI, scheduler, experiment environment and how they interact
-Written in python.
-
-Create documentation of backend API automatically using sphinx.
+.. image:: _static/figures/sila2_manager.png
+   :width: 800
+   :alt: Architecture of the SiLA 2 Manager on a more detailed level. The container diagram.
 
 Discovery of SiLA devices
 -------------------------------
-Explain the zeroconf concept and explain what information is broadcasted via the network. Explain, that it is necessary/
-better to name the server.
-
 All SiLA servers implement Multicast DNS (mDNS) and DNS-based Service Discovery (DNS-SD). The SiLA2 specifications for
-device discovery are defined in the `SiLA Part (B) - Mapping Specification <https://docs.google.com/document/d/1-shgqdYW4sgYIb5vWZ8xTwCUO_bqE13oBEX8rYY_SJA/edit#heading=h.w2jcp32bd1a5>`_.
-The SiLA2 Device Manager uses the `python-zeroconf <https://github.com/jstasiak/python-zeroconf>`_ implementation to
+service discovery are defined in the `SiLA Part (B) - Mapping Specification <https://docs.google.com/document/d/1-shgqdYW4sgYIb5vWZ8xTwCUO_bqE13oBEX8rYY_SJA/edit#heading=h.w2jcp32bd1a5>`_.
+The SiLA 2 Manager uses the `python-zeroconf <https://github.com/jstasiak/python-zeroconf>`_ implementation to
 discover registered services.
+
+.. note::
+        The service description multicasted by mDNS is not the same for all SiLA implementations. At the moment, only the
+        services implemented with SiLA 2 python will show the correct  name of the service. However, a change to the SiLA
+        standard has been made to obtain the description details from all implementations. This change will be included
+        in future releases (09.03.2021). For implementations other than SiLA 2 python, the discovery will display the
+        service with the default "unnamed" service name. The displayed name for SiLA python servers is equal to the
+        SiLA Server Name.
 
 The backend code used for the discovery feature is located in the folder *source.device_manager.sila_auto_discovery*.
 
@@ -113,13 +102,6 @@ in the file itself.
          # start the client, which will load all data from the server
          client.run()
 
-Execution of Experiments
--------------------------
-postgreSQL -> script as tar -> container (docker_helper.py -> put archive) -> extract -> use
-
-The data handler
------------------
-
 
 Backend API
 ------------
@@ -129,14 +111,3 @@ available in the `fastapi repository <https://github.com/tiangolo/fastapi>`_.
 
 .. automodule:: backend
     :members:
-
-
-Frontend
-=========
-
-To-Do:
-- Which framework is used and what technology is it based on?
-- Used interface design guidelines and why? mat design
-- used programming languages
-- Include: Angular, material design, long term support, industry standard,  written in TypeScript (JavaScript compatible),
-

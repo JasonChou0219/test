@@ -25,5 +25,5 @@ List of authors
 +------------------------+---------------------+---------------------------+
 | Alexandru Mardale      | Developer           | alexandru.mardale@tum.de  |
 +------------------------+---------------------+---------------------------+
-| Nikolas von den Eichen | Developer           | nikolas.eichen@tum.de     |
+| Nikolas von den Eichen | Observer            | nikolas.eichen@tum.de     |
 +------------------------+---------------------+---------------------------+

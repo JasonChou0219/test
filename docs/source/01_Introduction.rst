@@ -11,15 +11,15 @@ custom solutions.
 The main reason for the lack of this functionality is more obvious than one might think. It all boils down to a lack of
 standardization. Devices in a laboratory environment cannot be integrated easily into a control software making it near
 impossible to conduct experiments that require many devices at once. Experiments that rely on inter-device communication
-in real-time , experiments that need to be flexible, adjustable to new findings, require a framework for easy integration,
+in real-time, experiments that need to be flexible, adjustable to new findings, require a framework for easy integration,
 management, data access and workflow design.
 
-This software is building on top of the SiLA2 standard. SiLA2 is a mission to establish international standards in
+This software is building on top of the SiLA 2 standard. SiLA 2 is a mission to establish international standards in
 laboratory automation and to enable open connectivity and thus rapid integration capability.
 Goals are interoperability, flexibility, resource optimization for laboratory instrument integration and software
-services based on standardized communication protocols and content specifications. SiLA2 is an open standard and is
+services based on standardized communication protocols and content specifications. SiLA 2 is an open standard and is
 maintained by the not-for-profit SiLA consortium.
-The SiLA standard is based on well established communication protocols (Http2, gRPC). SiLA is based on an inherent
+The SiLA 2 standard is based on well established communication protocols (Http2, gRPC). SiLA 2 is based on an inherent
 server-client architecture. Connection is established over a TCP/IP network. For more information visit the
 `SiLA website <https://sila-standard.com/>`_ or check
 out the `SiLA_Base <https://gitlab.com/SiLA2/sila_base>`_ repository on GitLab.

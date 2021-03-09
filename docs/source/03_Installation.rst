@@ -250,7 +250,6 @@ In this project *postgreSQL* v.13 is used.
 
     sudo apt install redis-server
 
-To install the redis server on windows, follow this `guide-for-redis-on-windows <https://redislabs.com/ebook/appendix-a/a-3-installing-on-windows/a-3-2-installing-redis-on-window/>`_.
 In this project *redis v.6.0.9* is used.
 
 5. Install supervisor

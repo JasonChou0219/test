@@ -37,9 +37,6 @@ installation is different to the wheel and allows just that.
 script uninstalls the standard protobuf installation and replaces it with the binary build. Pipenv doesn't implement the
 --no-binary flag, thus pip is used. Protobuf is added to the pipfile afterwards for completeness sake.
 
-
-
-
 To-do:
 -------
 - Incorporate SiLA client meta-data in python repository
