@@ -266,6 +266,7 @@ In this project *redis v.6.0.9* is used.
     mkdir .venv
     pipenv sync
 
+
 7. Install and enable nginx config
 
 .. code-block:: console
@@ -273,6 +274,7 @@ In this project *redis v.6.0.9* is used.
     sudo cp server-config/device-manager.conf /etc/nginx/sites-available/
     sudo ln -s /etc/nginx/sites-available/device-manager.conf
     /etc/nginx/sites-enabled/device-manager.conf
+
 
 8. Install supervisor config
 

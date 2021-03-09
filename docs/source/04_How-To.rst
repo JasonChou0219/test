@@ -142,6 +142,7 @@ be specified in the *requirements.txt*.
     :alt: A view of the scripting environment
 
 .. warning::
+
     Scripts are not checked for programming errors. Check your code in an IDE before scheduling any experiments!
 
 Hello world!
@@ -192,6 +193,7 @@ the service for exclusive use for that script.
 
 
 .. note::
+
     The syntax of the command call is shown in the service tree on the lowest level of each function call.
     You need to replace the "yourObject" part of the displayed call with the client object of that service!
 
@@ -255,6 +257,7 @@ using `chronograf <https://www.influxdata.com/time-series-platform/chronograf/>`
 for the influxDB database. All data collected by the data handler can be visualized using the chronograf IoT frontend.
 
 .. note::
+
     [WIP] Interaction with running docker containers is currently not possible. This feature is planned for a future
     release. Feel free to help us out!
 
@@ -269,6 +272,7 @@ during the desired time-frame is not possible. If two experiments must access th
 should be avoided. The device is still accessible to the script.
 
 .. warning::
+
     This is a safety measure to avoid potentially detrimental consequences caused by multiple access to state-sensitive laboratory devices.
 
 The main view of the experiments tab shows a list of scheduled experiments, accompanied by the most important
@@ -297,6 +301,7 @@ experiment can be aborted prematurely by pressing the 'stop'-button.
     :alt: A view of the experiment view
 
 .. note::
+
     In development mode the scheduler.py script must be running for experiments to be executed.
 
 
