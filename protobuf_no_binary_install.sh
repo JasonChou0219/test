@@ -9,9 +9,9 @@
 pipenv uninstall protobuf
 pip uninstall protobuf
 pip cache purge
-set PIP_NO_CACHE_DIR=false
-set PIP_NO_BINARY=":all:"
-:: set  PIP_NO_BINARY=protobuf
+export PIP_NO_CACHE_DIR=false
+export PIP_NO_BINARY=":all:"
+:: export  PIP_NO_BINARY=protobuf
 pip install --no-binary=:all: protobuf
 pipenv install protobuf
 set PIP_NO_CACHE_DIR=true
