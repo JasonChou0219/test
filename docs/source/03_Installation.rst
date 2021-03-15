@@ -266,8 +266,23 @@ In this project *redis v.6.0.9* is used.
     mkdir .venv
     pipenv sync
 
+7. Fix protobuf installation
+Uninstall protobuf and reinstall it using the --no-binary flag.
+.. code-block:: console
 
-7. Install and enable nginx config
+    pipenv shell
+    sudo pip3 uninstall protobuf
+
+Check that protobuf has been uninstalled:
+.. code-block:: console
+
+    pip3 list
+    sudo pip3 install --no-binary=:all: -t $/home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0
+
+Check that protobuf has been reinstalled.
+
+
+8. Install and enable nginx config
 
 .. code-block:: console
 
@@ -276,7 +291,7 @@ In this project *redis v.6.0.9* is used.
     /etc/nginx/sites-enabled/device-manager.conf
 
 
-8. Install supervisor config
+9. Install supervisor config
 
 .. code-block:: console
 
@@ -285,14 +300,14 @@ In this project *redis v.6.0.9* is used.
     sudo cp server-config/device-manager-scheduler.supervisor.conf
     /etc/supervisor/conf.d
 
-9. Create the device-manager user and group and add yourself
+10. Create the device-manager user and group and add yourself
 
 .. code-block:: console
 
     sudo adduser --system --no-create-home --group --ingroup docker device-manager
     sudo gpasswd -a your-user-name device-manager
 
-10. Create www directory
+11. Create www directory
 
 .. code-block:: console
 
@@ -301,20 +316,20 @@ In this project *redis v.6.0.9* is used.
     chgrp -R device-manager /var/www/html/device-manager-frontend
     chmod -R 775 /var/www/html/device-manager-frontend
 
-11. Create backend config directory
+12. Create backend config directory
 
 .. code-block:: console
 
     sudo mkdir /etc/device-manager/
 
-12. Start and enable PostgreSQL
+13. Start and enable PostgreSQL
 
 .. code-block:: console
 
     sudo systemctl enable postgresql.service
     sudo systemctl start postgresql.service
 
-13. Set PostgreSQL password
+14. Set PostgreSQL password
 
 .. code-block:: console
 
@@ -323,27 +338,37 @@ In this project *redis v.6.0.9* is used.
     <enter password>
     \q
 
-14. Start and enable Docker
+15. Start and enable Docker
 
 .. code-block:: console
 
     sudo systemctl enable docker.service
     sudo systemctl start docker.service
 
-15. Create the user-script docker image
+16. Enable and configure Redis
+edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
+
+.. code-block:: console
+
+    sudo systemctl enable redis.service
+    sudo systemctl start redis.service
+
+17. Create the user-script docker image
 
 .. code-block:: console
 
     cd user_script_env
     sudo docker build -t user_script .
 
-16. Deploy backend service
+18. Deploy backend service
 
 .. code-block:: console
 
     sudo pipenv run ./deploy_backend.sh
 
-17. Build and install frontend
+19. Edit Device-Manager Configuration File
+
+20. Build and install frontend
 
 .. code-block:: console
 
@@ -351,14 +376,14 @@ In this project *redis v.6.0.9* is used.
     make
     make install
 
-18. Start and enable Nginx
+21. Start and enable Nginx
 
 .. code-block:: console
 
     sudo systemctl enable nginx.service
     sudo systemctl start nginxx.service
 
-19. Start and enable Supervisor
+22. Start and enable Supervisor
 
 .. code-block:: console
 
@@ -374,5 +399,17 @@ and supervisor by using:
     sudo systemctl restart nginx.service
     sudo systemctl restart supervisor.service
 
+**Server management**
 You can use *supervisorctl* to manage the backend and scheduler processes separately.
-The logs can be viewed by opening */var/log/device-manager*.
+The logs can be viewed under */var/log/device-manager*.
+To restart the backend or the scheduler service, use *supervisorctl*. Enter *supervisorctl*:
+
+.. code-block:: console
+
+    sudo supervisorctl
+
+and run the restart command for the respective service:
+
+.. code-block:: console
+
+    restart backend:device-manager-backend-0

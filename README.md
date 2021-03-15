@@ -75,98 +75,115 @@ Run `./run_backend_server.bat` from inside your pipenv environment.
 ### First Install
 
 1. Install nginx
-On ubuntu this can be installed with apt 
-`sudo apt install nginx`
+On ubuntu this can be installed with apt  
+`sudo apt install nginx`  
 
-2. Install PostgreSQL
-`sudo apt install postgresql-12`
-`sudo apt install postgresql-client-12`
+2. Install PostgreSQL  
+`sudo apt install postgresql-12`  
+`sudo apt install postgresql-client-12`  
 
-3. Install Docker
+3. Install Docker  
 Use the [official instructions](https://docs.docker.com/engine/install/ubuntu/) 
 
-4. Install Supervisor
-`sudo apt install supervisor`
+4. Install Supervisor  
+`sudo apt install supervisor`  
 
 5. Install Redis
 `sudo apt install redis-server`
 
-6. Install and rund pipenv
-`sudo apt install pipenv`
-`mkdir .venv`
-`pipenv sync`
+6. Install and run pipenv  
+`sudo apt install pipenv`  
+`mkdir .venv`  
+`pipenv sync`  
 
-7. Install and Enable Nginx Config
-`sudo cp server-config/device-manager.conf /etc/nginx/sites-available/`
-`sudo ln -s /etc/nginx/sites-available/device-manager.conf /etc/nginx/sites-enabled/device-manager.conf`
+7. Fix protobuf installation  
+Uninstall protobuf and reinstall it using the --no-binary flag.    
+`pipenv shell`  
+`sudo pip3 uninstall protobuf`  
+Check that protobuf has been uninstalled:  
+`pip3 list`  
+`sudo pip3 install --no-binary=:all: -t $/home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0`    
+Check that protobuf has been reinstalled.  
 
-8. Install Supervisor Config
-`sudo cp server-config/device-manager-backend.supervisor.conf /etc/supervisor/conf.d`
-`sudo cp server-config/device-manager-scheduler.supervisor.conf /etc/supervisor/conf.d`
+8. Install and Enable Nginx Config  
+`sudo cp server-config/device-manager.conf /etc/nginx/sites-available/`  
+`sudo ln -s /etc/nginx/sites-available/device-manager.conf /etc/nginx/sites-enabled/device-manager.conf`  
 
-9. Create the device-manager user and group and add youself
-`sudo adduser --system --no-create-home --group --ingroup docker device-manager`
-`sudo gpasswd -a your-user-name device-manager`
+9. Install Supervisor Config  
+`sudo cp server-config/device-manager-backend.supervisor.conf /etc/supervisor/conf.d`  
+`sudo cp server-config/device-manager-scheduler.supervisor.conf /etc/supervisor/conf.d`  
 
-10. Create www directory
-`sudo mkdir /var/www/html/device-manager-frontend`
-`chmod -R device-manager /var/www/html/device-manager-frontend`
-`chgrp -R device-manager /var/www/html/device-manager-frontend`
-`chmod -R 775 /var/www/html/device-manager-frontend`
+10. Create the device-manager user and group and add yourself  
+`sudo adduser --system --no-create-home --group --ingroup docker device-manager`  
+`sudo gpasswd -a your-user-name device-manager`  
 
-11. Create Backend Config Directory
-`sudo mkdir /etc/device-manager/`
+11. Create www directory  
+`sudo mkdir /var/www/html/device-manager-frontend`  
+`chmod -R device-manager /var/www/html/device-manager-frontend`  
+`chgrp -R device-manager /var/www/html/device-manager-frontend`  
+`chmod -R 775 /var/www/html/device-manager-frontend`  
 
-12. Start and Enable PostgreSQL
-`sudo systemctl enable postgresql.service`
-`sudo systemctl start postgresql.service`
+12. Create Backend Config Directory  
+`sudo mkdir /etc/device-manager/`  
 
-13. Set Postgres password
-`sudo -u postgres psql postgres`
-`\password postgres`
-enter the password
-`\q`
+13. Start and Enable PostgreSQL  
+`sudo systemctl enable postgresql.service`  
+`sudo systemctl start postgresql.service`  
 
-14. Start and Enable Docker
-`sudo systemctl enable docker.service`
-`sudo systemctl start docker.service`
+14. Set Postgres password  
+`sudo -u postgres psql postgres`  
+`\password postgres`  
+enter the password  
+`\q`  
 
-15. Enable and configure Redis
-edit /etc/redis/redis.conf and change 
-`supervised no` to `supervised systemd`
-`sudo systemctl enable redis.service`
-`sudo systemctl start redis.service`
+15. Start and Enable Docker  
+`sudo systemctl enable docker.service`  
+`sudo systemctl start docker.service`  
 
-16. Create the user-script docker image
-`cd user_script_env`
-`sudo docker build -t user_script .`
+16. Enable and configure Redis  
+edit /etc/redis/redis.conf and change   
+`supervised no` to `supervised systemd`  
+`sudo systemctl enable redis.service`  
+`sudo systemctl start redis.service`  
 
-17. Deploy Backend
-`sudo pipenv run ./deploy_backend.sh`
+17. Create the user-script docker image  
+`cd user_script_env`  
+`sudo docker build -t user_script .`  
 
-18. Edit Device-Manager Configuration File
+18. Deploy Backend  
+`sudo pipenv run ./deploy_backend.sh`  
 
-19. Build and Install Frontend
-`cd frontend`
-`make`
-`make install`
+19. Edit Device-Manager Configuration File  
 
-20. Start and Enable Nginx
-`sudo systemctl enable nginx.service`
-`sudo systemctl start nginx.service`
+20. Build and Install Frontend  
+`cd frontend`  
+`sudo make`  
+`sudo make install`  
 
-21. Start and Enable Supervisor
-`sudo systemctl enable supervisor.service`
-`sudo systemctl start supervisor.service`
+21. Start and Enable Nginx  
+`sudo systemctl enable nginx.service`  
+`sudo systemctl start nginx.service`  
+
+22. Start and Enable Supervisor  
+`sudo systemctl enable supervisor.service`  
+`sudo systemctl start supervisor.service`  
 
 
 ### Deploying New Versions
 To deploy a new version its often enough to repeate step 17 and 19.
-Then restart nginx and supervisor by using `sudo systemctl restart nginx.service` and
-`sudo systemctl restart supervisor.service`
+Then restart nginx and supervisor by using  
+`sudo systemctl restart nginx.service`  
+and  
+`sudo systemctl restart supervisor.service`  
 
-You can use `supervisorctl` to manage the backend and scheduler processes seperately.
-The logs can be viewed under /var/log/device-manager.
+### Server management
+You can use `supervisorctl` to manage the backend and scheduler processes separately.
+The logs can be viewed under /var/log/device-manager.  
+To restart the backend or the scheduler service, use supervisorctl. Enter supervisorctl:  
+`sudo supervisorctl`   
+and run the restart command for the respective service:  
+`restart backend:device-manager-backend-0`  
+
 
 # License
 This code is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License)
