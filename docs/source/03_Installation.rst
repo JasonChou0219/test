@@ -373,15 +373,15 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
 .. code-block:: console
 
     cd frontend
-    make
-    make install
+    sudo make
+    sudo make install
 
 21. Start and enable Nginx
 
 .. code-block:: console
 
     sudo systemctl enable nginx.service
-    sudo systemctl start nginxx.service
+    sudo systemctl start nginx.service
 
 22. Start and enable Supervisor
 
