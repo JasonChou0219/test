@@ -4,6 +4,7 @@ from apscheduler.job import Job
 from apscheduler import events
 import time
 from datetime import datetime
+import os
 import data_handler
 import source.device_manager.experiment as experiment
 from source.device_manager.experiment import ExperimentStatus
@@ -156,7 +157,7 @@ def print_container_output(container, experiment_id):
     # container_output = container.attach(logs=False, stream=True)
     container_output = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
     print('Output thread started!')
-    log_path = f'{TEMP_DIRECTORY}\\container\\{datetime.now().strftime("%d_%m_%Y-%H:%M:%S")}_{str(experiment_id)}.log'
+    log_path = os.path.join(TEMP_DIRECTORY, 'container', f'{datetime.now().strftime("%d_%m_%Y-%H:%M:%S")}_{str(experiment_id)}.log')
     with open(log_path, "w") as file:
         for line in container_output:
             print(line.decode())

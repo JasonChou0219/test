@@ -8,7 +8,6 @@ from .data_directories import DATA_DIRECTORY
 from .thread_local_storage import get_storage
 
 
-
 async def get_redis_pool():
     storage = get_storage()
     if storage.get('redis') is None:
@@ -32,6 +31,7 @@ def get_database_connection():
                                            user=dbconf['user'],
                                            password=dbconf['password'])
     return storage['pool'].getconn()
+
 
 def release_database_connection(connection):
     storage = get_storage()

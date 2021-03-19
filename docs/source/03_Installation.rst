@@ -283,8 +283,13 @@ Check that protobuf has been uninstalled:
 
 Check that protobuf has been reinstalled.
 
+8. Replace some file in the sila2lib of the virtual environment:
 
-8. Install and enable nginx config
+.. code-block:: console
+
+    sudo pipenv run python3.8 replace_files.py
+
+9. Install and enable nginx config
 
 .. code-block:: console
 
@@ -293,7 +298,7 @@ Check that protobuf has been reinstalled.
     /etc/nginx/sites-enabled/device-manager.conf
 
 
-9. Install supervisor config
+10. Install supervisor config
 
 .. code-block:: console
 
@@ -302,14 +307,14 @@ Check that protobuf has been reinstalled.
     sudo cp server-config/device-manager-scheduler.supervisor.conf
     /etc/supervisor/conf.d
 
-10. Create the device-manager user and group and add yourself
+11. Create the device-manager user and group and add yourself
 
 .. code-block:: console
 
     sudo adduser --system --no-create-home --group --ingroup docker device-manager
     sudo gpasswd -a your-user-name device-manager
 
-11. Create www directory
+12. Create www directory
 
 .. code-block:: console
 
@@ -318,20 +323,20 @@ Check that protobuf has been reinstalled.
     chgrp -R device-manager /var/www/html/device-manager-frontend
     chmod -R 775 /var/www/html/device-manager-frontend
 
-12. Create backend config directory
+13. Create backend config directory
 
 .. code-block:: console
 
     sudo mkdir /etc/device-manager/
 
-13. Start and enable PostgreSQL
+14. Start and enable PostgreSQL
 
 .. code-block:: console
 
     sudo systemctl enable postgresql.service
     sudo systemctl start postgresql.service
 
-14. Set PostgreSQL password
+15. Set PostgreSQL password
 
 .. code-block:: console
 
@@ -340,14 +345,14 @@ Check that protobuf has been reinstalled.
     <enter password>
     \q
 
-15. Start and enable Docker
+16. Start and enable Docker
 
 .. code-block:: console
 
     sudo systemctl enable docker.service
     sudo systemctl start docker.service
 
-16. Enable and configure Redis
+17. Enable and configure Redis
 edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
 
 .. code-block:: console
@@ -355,22 +360,22 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
     sudo systemctl enable redis.service
     sudo systemctl start redis.service
 
-17. Create the user-script docker image
+18. Create the user-script docker image
 
 .. code-block:: console
 
     cd user_script_env
     sudo docker build -t user_script .
 
-18. Deploy backend service
+19. Deploy backend service
 
 .. code-block:: console
 
     sudo pipenv run ./deploy_backend.sh
 
-19. Edit Device-Manager Configuration File
+20. Edit Device-Manager Configuration File
 
-20. Build and install frontend
+21. Build and install frontend
 
 .. code-block:: console
 
@@ -378,14 +383,14 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
     sudo make
     sudo make install
 
-21. Start and enable Nginx
+22. Start and enable Nginx
 
 .. code-block:: console
 
     sudo systemctl enable nginx.service
     sudo systemctl start nginx.service
 
-22. Start and enable Supervisor
+23. Start and enable Supervisor
 
 .. code-block:: console
 
@@ -393,7 +398,7 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
     sudo systemctl start supervisor.service
 
 **Deploying new versions**
-To deploy a new version its often enough to repeat step 16 and 17. Then restart nginx
+To deploy a new version its often enough to repeat step 19 and 21. Then restart nginx
 and supervisor by using:
 
 .. code-block:: console
@@ -403,7 +408,8 @@ and supervisor by using:
 
 **Server management**
 You can use *supervisorctl* to manage the backend and scheduler processes separately.
-The logs can be viewed under */var/log/device-manager*.
+The logs of the backend and the scheduler can be viewed under: */var/log/device-manager*.
+The logs of the docker containers are located here: */$TEMPDIR/device-manager/container*
 To restart the backend or the scheduler service, use *supervisorctl*. Enter *supervisorctl*:
 
 .. code-block:: console
@@ -415,3 +421,4 @@ and run the restart command for the respective service:
 .. code-block:: console
 
     restart backend:device-manager-backend-0
+    restart scheduler:device-manager-scheduler-0

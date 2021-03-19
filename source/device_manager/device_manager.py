@@ -207,7 +207,6 @@ class DeviceManager:
             print('get_status process finished')
         return device_status
 
-
     def get_device_instance(self, uuid: UUID):
         """Get a device instance for the specified device
         Args:
@@ -785,7 +784,6 @@ class DeviceManager:
         release_database_connection(conn)
         return info
 
-
     def get_database_status(self, id: int) -> DatabaseStatus:
         """Get the current status of the specified database
         Args:
@@ -806,7 +804,6 @@ class DeviceManager:
             process.close()
             print('get_status process finished')
         return database_status
-
 
     def add_database(self, name: str, address: str, port: int, username: str, password: str):
         """Add a new database to the database

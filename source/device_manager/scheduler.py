@@ -142,7 +142,6 @@ def get_booking_info(start: int, end: int) -> List[BookingInfo]:
     return booking_info
 
 
-
 def get_booking_info_with_names(start: int,
                                 end: int) -> List[BookingInfoWithNames]:
     booking_info = []
