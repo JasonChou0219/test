@@ -10,6 +10,7 @@ from source.device_manager.experiment import ExperimentStatus
 from source.device_manager.device_manager import DeviceManager
 from source.device_manager.script import Script, get_user_script
 from source.device_manager.device import get_device_info
+from source.device_manager.data_directories import TEMP_DIRECTORY
 import redis
 import msgpack
 from dataclasses import dataclass, asdict
@@ -155,7 +156,8 @@ def print_container_output(container, experiment_id):
     # container_output = container.attach(logs=False, stream=True)
     container_output = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
     print('Output thread started!')
-    with open("myContainerLog", "w") as file:
+    log_path = f'{TEMP_DIRECTORY}\\container\\{str(experiment_id)}.log'
+    with open(log_path, "w") as file:
         for line in container_output:
             print(line.decode())
             file.write(line.decode())
