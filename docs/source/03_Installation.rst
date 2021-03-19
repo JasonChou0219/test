@@ -268,16 +268,18 @@ In this project *redis v.6.0.9* is used.
 
 7. Fix protobuf installation
 Uninstall protobuf and reinstall it using the --no-binary flag.
+
 .. code-block:: console
 
     pipenv shell
     sudo pip3 uninstall protobuf
 
 Check that protobuf has been uninstalled:
+
 .. code-block:: console
 
     pip3 list
-    sudo pip3 install --no-binary=:all: -t $/home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0
+    sudo pip3 install --no-binary=:all: -t /home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0
 
 Check that protobuf has been reinstalled.
 
