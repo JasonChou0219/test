@@ -41,21 +41,29 @@ class Experiment:
 
 
 def get_experiment_name(id: int) -> str:
-    conn = get_database_connection() 
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute('select name from experiments where id=%s', [id])
-            return cursor.fetchone()
-    release_database_connection(conn)
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('select name from experiments where id=%s', [id])
+        return cursor.fetchone()
+    except:
+        raise
+    finally:
+        cursor.close()
+        release_database_connection(conn)
 
 
 def get_experiment_user(id: int) -> int:
-    conn = get_database_connection() 
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute('select userID from experiments where id=%s', [id])
-            return cursor.fetchone()
-    release_database_connection(conn)
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('select userID from experiments where id=%s', [id])
+        return cursor.fetchone()
+    except:
+        raise
+    finally:
+        cursor.close()
+        release_database_connection(conn)
 
 
 def get_experiment(id: int) -> Experiment:

@@ -9,17 +9,23 @@ from source.device_manager.database import get_database_connection, release_data
 def get_device_info_list() -> List[DeviceInfo]:
     """Returns a list of devices information from the database"""
     conn = get_database_connection()
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices'
-            )
-            result = cursor.fetchall()
-            return [
-                DeviceInfo(row[0], row[1], row[2], row[3], row[4],
-                           row[5], row[6], row[7], row[8], row[9]) for row in result
-            ]
-    release_database_connection(conn)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices'
+        )
+        result = cursor.fetchall()
+        return [
+            DeviceInfo(row[0], row[1], row[2], row[3], row[4],
+                       row[5], row[6], row[7], row[8], row[9]) for row in result
+        ]
+    except:
+        raise
+    finally:
+        print('a', conn)
+        cursor.close()
+        release_database_connection(conn)
+        print('b', conn)
 
 
 def get_device_info(uuid: UUID) -> DeviceInfo:
@@ -30,17 +36,22 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
         DeviceInterface: A instantiated Device
     """
     conn = get_database_connection()
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices '\
-                'where uuid=%s',
-                [str(uuid)])
-            dev = cursor.fetchone()
-            return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
-                              dev[5], dev[6], dev[7], dev[8], dev[9])
-
-    release_database_connection(conn)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            'select uuid,server_uuid,name,type,address,port,available,userID,databaseID,activated from devices '\
+            'where uuid=%s',
+            [str(uuid)])
+        dev = cursor.fetchone()
+        return DeviceInfo(dev[0], dev[1], dev[2], dev[3], dev[4],
+                          dev[5], dev[6], dev[7], dev[8], dev[9])
+    except:
+        raise
+    finally:
+        print('c', conn)
+        cursor.close()
+        release_database_connection(conn)
+        print('d', conn)
 
 
 def set_device(device: DeviceInfo):

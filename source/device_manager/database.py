@@ -23,12 +23,16 @@ def get_database_connection():
             config.read(f'{DATA_DIRECTORY}/device-manager.conf')
             storage['dbconf'] = config['Database']
         dbconf = storage['dbconf']
-        storage['pool'] = psycopg2.pool.SimpleConnectionPool(minconn=1,
-                                                             maxconn=2000,
-                                                             host=dbconf['host'],
-                                                             port=dbconf['port'],
-                                                             user=dbconf['user'],
-                                                             password=dbconf['password'])
+
+        storage['pool'] = psycopg2.pool.ThreadedConnectionPool(minconn=1,
+                                                               maxconn=2000,
+                                                               host=dbconf['host'],
+                                                               port=dbconf['port'],
+                                                               user=dbconf['user'],
+                                                               password=dbconf['password']
+                                                               )
+
+    # print('Pool size is:', len(storage['pool']))
     return storage['pool'].getconn()
 
 
