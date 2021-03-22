@@ -202,13 +202,6 @@ To start the device manager in the development mode, the respective modules must
 
         python scheduler.py
 
-4. Start the data-handler application
-    If the data-handler is used, this application must be started. The data-handler application records the data of
-    devices that are used in active experiments. In a new process run:
-
-    .. code-block:: console
-
-        python data_handler.py
 
 Setup of a deployment server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -283,7 +276,7 @@ Check that protobuf has been uninstalled:
 
 Check that protobuf has been reinstalled.
 
-8. Replace some file in the sila2lib of the virtual environment:
+8. Replace some files in the sila2lib of the virtual environment:
 
 .. code-block:: console
 
@@ -344,6 +337,13 @@ Check that protobuf has been reinstalled.
     \password postgres
     <enter password>
     \q
+
+Fill the database with some initial values and example/ test information:
+
+.. code-block:: console
+
+    python setup_db.py
+
 
 16. Start and enable Docker
 
