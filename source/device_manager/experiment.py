@@ -48,6 +48,7 @@ def get_experiment_name(id: int) -> str:
             return cursor.fetchone()
     release_database_connection(conn)
 
+
 def get_experiment_user(id: int) -> int:
     conn = get_database_connection() 
     with conn:
@@ -136,8 +137,6 @@ def get_scheduling_info() -> List[SchedulingInfo]:
     release_database_connection(conn)
     return info
     
-
-
 
 def create_experiment(name: str, start: int, end: int, user: int,
                       devices: List[UUID], script: int) -> int:

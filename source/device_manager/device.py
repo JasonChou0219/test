@@ -8,7 +8,7 @@ from source.device_manager.database import get_database_connection, release_data
 
 def get_device_info_list() -> List[DeviceInfo]:
     """Returns a list of devices information from the database"""
-    conn = get_database_connection() 
+    conn = get_database_connection()
     with conn:
         with conn.cursor() as cursor:
             cursor.execute(
@@ -29,7 +29,7 @@ def get_device_info(uuid: UUID) -> DeviceInfo:
     Returns:
         DeviceInterface: A instantiated Device
     """
-    conn = get_database_connection() 
+    conn = get_database_connection()
     with conn:
         with conn.cursor() as cursor:
             cursor.execute(

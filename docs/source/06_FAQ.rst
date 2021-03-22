@@ -37,6 +37,35 @@ installation is different to the wheel and allows just that.
 script uninstalls the standard protobuf installation and replaces it with the binary build. Pipenv doesn't implement the
 --no-binary flag, thus pip is used. Protobuf is added to the pipfile afterwards for completeness sake.
 
+Psycopg2 (PostgreSQL client): Connection Pool Exhausted
+-------------------------------------------------------
+**Error**:
+
+The number of connections to the connection pool (SimpleConnectionPool) is exhausted. The error message reads:
+
+.. code-block:: console
+
+        Traceback (most recent call last):
+        File "scheduler.py", line 380, in <module>
+          main()
+        File "scheduler.py", line 374, in main
+          schedule_future_experiments_from_database()
+        File "scheduler.py", line 258, in schedule_future_experiments_from_database
+          for exp in experiment.get_scheduling_info():
+        File "/usr/device-manager/source/device_manager/experiment.py", line 125, in get_scheduling_info
+          conn = get_database_connection()
+        File "/usr/device-manager/source/device_manager/database.py", line 34, in get_database_connection
+          return storage['pool'].getconn()
+        File "/usr/device-manager/.venv/lib/python3.8/site-packages/psycopg2/pool.py", line 92, in _getconn
+           raise PoolError("connection pool exhausted")
+        psycopg2.pool.PoolError: connection pool exhausted
+
+Generally, a connection is returned and closed after use. A maximum number of connections is allowed. This number is
+specified in the file */source/device_manager/database.py* in the function *get_database_connection*. Each user
+requires several connections. If multiple users access the device manager, the total number of connections may get
+exhausted. Increasing the number of *maxconn* of the SimpleConnectionPool will solve this problem.
+
+
 To-do:
 -------
 - Incorporate SiLA client meta-data in python repository

@@ -71,8 +71,6 @@ def get_booking_entry(id: int) -> BookingInfo:
     return booking_info 
 
 
-
-
 def get_device_booking_info(device: UUID, start: int,
                             end: int) -> List[BookingInfo]:
     booking_info = []

@@ -1,7 +1,6 @@
 import psycopg2
 from psycopg2 import pool
 import aioredis
-from os import path
 import configparser
 
 from .data_directories import DATA_DIRECTORY
@@ -24,17 +23,23 @@ def get_database_connection():
             config.read(f'{DATA_DIRECTORY}/device-manager.conf')
             storage['dbconf'] = config['Database']
         dbconf = storage['dbconf']
-        storage['pool'] = psycopg2.pool.SimpleConnectionPool(1, 
-                                           20,
-                                           host=dbconf['host'],
-                                           port=dbconf['port'],
-                                           user=dbconf['user'],
-                                           password=dbconf['password'])
+        storage['pool'] = psycopg2.pool.SimpleConnectionPool(minconn=1,
+                                                             maxconn=2000,
+                                                             host=dbconf['host'],
+                                                             port=dbconf['port'],
+                                                             user=dbconf['user'],
+                                                             password=dbconf['password'])
     return storage['pool'].getconn()
 
 
 def release_database_connection(connection):
     storage = get_storage()
-    pool=storage.get('pool')
+    pool = storage.get('pool')
+    print('Pool is:', pool)
+    print('Pool used connections:', pool._used)
+
     if pool is not None:
-        pool.putconn(connection)
+        # Use close=False (default) to increase speed. However, this option will not close but only suspend the
+        # connection, indirectly restricting the number of total connections, i.e. devices and users to access.
+        # putconn(conn, key=None, close=False)
+        pool.putconn(connection, close=True)
