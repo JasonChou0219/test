@@ -10,10 +10,11 @@ def run(services):
 
     # Assign device
     client = services[0]
+    client.connect()
     print(f'Client is: {client} and of type {type(client)}', flush=True)
 
     # Make a property call
-    response = client.call_property("SiLAService", "ServerName")
+    response = client.call_property("SiLAService\n", "ServerName")
     print(f'Response is: {response}', flush=True)
 
 # ...
