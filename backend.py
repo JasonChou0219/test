@@ -38,7 +38,7 @@ from source.backend.device_manager_service import DeviceManagerService, DeviceIn
     ExperimentBookingModel, ScriptInfoModel, ScriptModel, DeviceCommandParameters, \
     NewDatabaseModel, DatabaseInfoModel, DeviceCommandParameter
 import source.device_manager.user as user
-from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment,receive_experiment_status
+from source.device_manager.experiment import get_experiment_user, start_experiment, stop_experiment, receive_experiment_status
 
 
 class Status(BaseModel):
