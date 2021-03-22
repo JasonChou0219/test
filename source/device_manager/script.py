@@ -54,6 +54,7 @@ def get_user_scripts_info(user: int) -> List[ScriptInfo]:
     release_database_connection(conn)
     return script_infos
 
+
 def get_user_script(script_id: int) -> Script:
     script=None
     conn = get_database_connection() 

@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import pool
 import aioredis
 import configparser
+import logging
 
 from .data_directories import DATA_DIRECTORY
 from .thread_local_storage import get_storage
@@ -31,16 +32,25 @@ def get_database_connection():
                                                                user=dbconf['user'],
                                                                password=dbconf['password']
                                                                )
+    logging.debug('Pool size is:', len(storage['pool']._used))
+    for i in range(3):
+        try:
+            conn = storage['pool'].getconn()
+            break
+        except Exception as e:
+            logging.exception('Pool size is:', len(storage['pool']._used))
+            logging.exception(e)
+            storage['pool'].closeall()
+            continue
 
-    # print('Pool size is:', len(storage['pool']))
-    return storage['pool'].getconn()
+    return conn
 
 
 def release_database_connection(connection):
     storage = get_storage()
     pool = storage.get('pool')
-    print('Pool is:', pool)
-    print('Pool used connections:', pool._used)
+    logging.info('Pool is:', pool)
+    logging.info('Pool used connections:', pool._used)
 
     if pool is not None:
         # Use close=False (default) to increase speed. However, this option will not close but only suspend the
