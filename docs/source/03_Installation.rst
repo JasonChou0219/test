@@ -271,8 +271,8 @@ In this project *redis v.6.0.9* is used.
 .. code-block:: console
 
     sudo apt install pipenv
-    mkdir .venv
-    pipenv sync
+    sudo mkdir .venv
+    sudo pipenv sync
 
 7. Fix protobuf installation
 Uninstall protobuf and reinstall it using the --no-binary flag.
@@ -420,6 +420,16 @@ and supervisor by using:
 
     sudo systemctl restart nginx.service
     sudo systemctl restart supervisor.service
+
+If you made changes to the PostgreSQL database entries, you need to delete old entries and setup a new one. Don't forget
+to adjust the databse setup script according to the changes made. Run the following code from within the root directory
+of the repository/ your installation.
+
+.. code-block:: console
+        pipenv shell
+        python3.8 delete_db.py
+        python3.8 setup_db.py
+
 
 **Server management**
 You can use *supervisorctl* to manage the backend and scheduler processes separately.
