@@ -9,6 +9,17 @@ major version updates of third-party software.
 
 Guide
 ------
+Download the installation files using wget or download them directly from the `SiLA 2 manager repository website <https://gitlab.com/lukas.bromig/sila2_manager/-/tree/master>`_:
+
+.. code-block:: console
+
+    sudo wget https://gitlab.com/lukas.bromig/sila2_manager/-/archive/master/sila2_manager-master.tar.gz
+
+or clone the git repository with:
+
+.. code-block:: console
+
+    git clone https://gitlab.com/lukas.bromig/sila2_manager.git
 
 
 Setting up the python environment
