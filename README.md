@@ -7,6 +7,13 @@ planning utility, and a data handler to link service data to a database.
 # Installation
 Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.
 
+# Compatibility
+The SiLA Manager is compatible with the [SiLA2 Python](https://gitlab.com/SiLA2/sila_python) repository and all SiLA 
+servers generated with it. Follow the instructions in the SiLA2 Python repository to create your own SiLA servers or use 
+the provided examples (HelloSiLA) to test the SiLA 2 Manager. You can also install the SiLA2 python 
+[library](https://pypi.org/project/sila2lib/) and [codegenerator](https://pypi.org/project/sila2codegenerator/) from 
+pypi using  pip. The other SiLA 2 repositories (like C# and Tecan) will be supported very soon.  
+
 ## Development Environment
 
 ### Setting up the python environment
