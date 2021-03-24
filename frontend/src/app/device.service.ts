@@ -282,27 +282,33 @@ export class DeviceService {
     }
     async callFeatureCommand(
         device: string,
-        feature: string,
+        featureOriginator: string,
+        featureCategory: string,
+        featureIdentifier: string,
+        featureVersionMajor: number,
         command: string,
         params: FeatureCommandParam[]
     ): Promise<FeatureCommandResult[]> {
         return this.http
             .post<FeatureCommandResult[]>(
                 this.serverUrl +
-                    `/api/device/${device}/feature/${feature}/command/${command}`,
+                    `/api/device/${device}/qualifiedFeatureIdentifier/${featureOriginator}/${featureCategory}/${featureIdentifier}/v${String(featureVersionMajor)}/command/${command}`,
                 { params }
             )
             .toPromise();
     }
     async getFeatureProperty(
         device: string,
-        feature: string,
+        featureOriginator: string,
+        featureCategory: string,
+        featureIdentifier: string,
+        featureVersionMajor: number,
         property: string
     ): Promise<FeaturePropertyResult[]> {
         return this.http
             .get<FeaturePropertyResult[]>(
                 this.serverUrl +
-                    `/api/device/${device}/feature/${feature}/property/${property}`
+                    `/api/device/${device}/qualifiedFeatureIdentifier/${featureOriginator}/${featureCategory}/${featureIdentifier}/v${String(featureVersionMajor)}/property/${property}`
             )
             .toPromise();
     }

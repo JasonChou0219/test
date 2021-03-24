@@ -12,6 +12,12 @@ export class DevicePropertyComponent implements OnInit {
     @Input()
     featureIdentifier: string;
     @Input()
+    featureOriginator: string;
+    @Input()
+    featureCategory: string;
+    @Input()
+    featureVersionMajor: number;
+    @Input()
     deviceUUID: string;
     returnValues: FeaturePropertyResult[] = [];
     execute = '';
@@ -30,7 +36,10 @@ export class DevicePropertyComponent implements OnInit {
         console.log('testing 1',
             this.returnValues = await this.deviceService.getFeatureProperty(
                 this.deviceUUID,
+                this.featureOriginator,
+                this.featureCategory,
                 this.featureIdentifier,
+                this.featureVersionMajor,
                 name
             )
         );

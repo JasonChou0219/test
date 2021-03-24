@@ -22,6 +22,12 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
     @Input()
     featureIdentifier: string;
     @Input()
+    featureOriginator: string;
+    @Input()
+    featureCategory: string;
+    @Input()
+    featureVersionMajor: number;
+    @Input()
     deviceUUID: string;
     paramValues: FeatureCommandParam[] = [];
     returnValues: FeatureCommandResult[] = [];
@@ -55,7 +61,10 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
         console.log(
             this.returnValues = await this.deviceService.callFeatureCommand(
                 this.deviceUUID,
+                this.featureOriginator,
+                this.featureCategory,
                 this.featureIdentifier,
+                this.featureVersionMajor,
                 name,
                 this.paramValues
             )

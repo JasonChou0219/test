@@ -146,13 +146,13 @@ class DeviceManagerService:
         } for name, value in self.device_manager.call_feature_command(
             device, feature, command_id, param_dict).items()]
 
-    def get_feature_property(self, device: UUID, feature: str,
+    def get_feature_property(self, device: UUID, qualified_feature_identifier: str,
                              property_id: str):
         return [{
             'name': name.split('/')[0],
             'value': value
         } for name, value in self.device_manager.get_feature_property(
-            device, feature, property_id).items()]
+            device, qualified_feature_identifier, property_id).items()]
 
     def get_databases(self):
         return [

@@ -129,7 +129,27 @@
                     [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
                 >
                     <h2>Details</h2>
-                    <p>UUID: {{ element.device.uuid }}</p>
+                    <div class="details">
+                        <div class="column">
+                            <div class="row">
+                                <div class="title">Internal UUID:</div>
+                            </div>
+                            <div class="row">
+                                <div class="title">Server UUID:</div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="row">
+                                <div class="data">{{ element.device.uuid }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="data">{{ element.device.server_uuid }}</div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
                     <h2>Features</h2>
                     <app-device-detail
                         *ngIf="element.detailsLoaded"

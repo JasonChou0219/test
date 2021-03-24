@@ -420,10 +420,12 @@ def device_features_for_datahandler(uuid: str, username: str = Depends(decode_to
     device_manager_service = DeviceManagerService()
     return {'data': device_manager_service.get_features_for_data_handler(uuid)}
 
-
-@app.post('/api/device/{uuid}/feature/{feature}/command/{command_id}')
+@app.post('/api/device/{uuid}/qualifiedFeatureIdentifier/{feature_originator}/{feature_category}/{feature_identifier}/v{feature_version_major}/command/{command_id}')
 def call_feature_command(uuid: str,
-                         feature: str,
+                         feature_originator: str,
+                         feature_category: str,
+                         feature_identifier: str,
+                         feature_version_major: str,
                          command_id: str,
                          parameterList: DeviceCommandParameters,
                          username: str = Depends(decode_token)):
@@ -432,8 +434,14 @@ def call_feature_command(uuid: str,
 
     :param uuid: Internally assigned device uuid
     :type uuid: str
-    :param feature: The name of the feature the command belongs to
-    :type feature: str
+    :param feature_originator: The SiLA 2 Originator of the feature the command belongs to
+    :type feature_originator: str
+    :param feature_category: The SiLA 2 Category of the feature the command belongs to
+    :type feature_category: str
+    :param feature_identifier: The SiLA 2 Feature Identifier of the feature the command belongs to
+    :type feature_identifier: str
+    :param feature_version_major: The SiLA 2 Major Feature Version of the feature the command belongs to
+    :type feature_version_major: str
     :param command_id: the id of the command to be called
     :type command_id: str
     :param parameterList: A list of parameters required by the command
@@ -442,15 +450,20 @@ def call_feature_command(uuid: str,
     :type username: str
     :return: The response of the call
     """
+    qualified_feature_identifier = feature_originator + '/' + feature_category + '/' + feature_identifier + '/v' + \
+                                   feature_version_major
     device_manager_service = DeviceManagerService()
-    return device_manager_service.call_feature_command(uuid, feature,
+    return device_manager_service.call_feature_command(uuid, qualified_feature_identifier,
                                                        command_id,
                                                        parameterList.params)
 
-
-@app.get('/api/device/{uuid}/feature/{feature}/property/{property_id}')
+@app.get('/api/device/{uuid}/qualifiedFeatureIdentifier/{feature_originator}/{feature_category}/{feature_identifier}/v'
+         '{feature_version_major}/property/{property_id}')
 def get_feature_property(uuid: str,
-                         feature: str,
+                         feature_originator: str,
+                         feature_category: str,
+                         feature_identifier: str,
+                         feature_version_major: str,
                          property_id: str,
                          username: str = Depends(decode_token)):
     """
@@ -458,16 +471,24 @@ def get_feature_property(uuid: str,
 
     :param uuid: Internally assigned device uuid
     :type uuid: str
-    :param feature: The name of the feature the property belongs to
-    :type feature: str
+    :param feature_originator: The SiLA 2 Originator of the feature the property belongs to
+    :type feature_originator: str
+    :param feature_category: The SiLA 2 Category of the feature the property belongs to
+    :type feature_category: str
+    :param feature_identifier: The SiLA 2 Feature Identifier of the feature the property belongs to
+    :type feature_identifier: str
+    :param feature_version_major: The SiLA 2 Major Feature Version of the feature the property belongs to
+    :type feature_version_major: str
     :param property_id: The id of the property
     :type property_id: str
     :param username: The name of the executing user
     :type username: str
     :return: The response of the call
     """
+    qualified_feature_identifier = feature_originator + '/' + feature_category + '/' + feature_identifier + '/v' + \
+                                   feature_version_major
     device_manager_service = DeviceManagerService()
-    return device_manager_service.get_feature_property(uuid, feature,
+    return device_manager_service.get_feature_property(uuid, qualified_feature_identifier,
                                                        property_id)
 
 

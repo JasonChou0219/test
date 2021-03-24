@@ -21,6 +21,12 @@ export class DataHandlerDeviceCommandComponent implements OnInit, OnChanges {
     @Input()
     featureIdentifier: string;
     @Input()
+    featureOriginator: string;
+    @Input()
+    featureCategory: string;
+    @Input()
+    featureVersionMajor: number;
+    @Input()
     featureId: number;
     @Input()
     uuid: string;

@@ -50,3 +50,25 @@ div.mat-card-header-entry:first-child {
 div.mat-card-header-entry:last-child {
     margin-right: 1%;
 }
+
+div.details {
+    display: flex;
+    align-items: stretch;
+}
+div.row {
+    flex-direction: row;
+}
+div.column {
+    flex-direction: column;
+    margin-right: 1.7em;
+}
+div.title {
+    font-size: 1em;
+    font-weight: 500;
+    padding-bottom: 0.5em;
+}
+div.data {
+    font-size: 1em;
+    padding-bottom: 0.5em;
+    color: rgba(0, 0, 0, 0.54);
+}

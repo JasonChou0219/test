@@ -92,7 +92,6 @@ class DynamicSiLA2Client(SiLA2Client):
                  server_port: int = 50051):
         super().__init__(name, description, server_name, client_uuid, version,
                          vendor_url, server_hostname, server_ip, server_port)
-
         # get the servers UUID
         response = self.SiLAService_stub.Get_ServerUUID(
             SiLAService_pb2.Get_ServerUUID_Parameters())
@@ -127,8 +126,8 @@ class DynamicSiLA2Client(SiLA2Client):
 
             with open(feature_list_path, 'w',
                       encoding='utf-8') as feature_list_file:
-                for feature_id_response in response.ImplementedFeatures:
-                    feature_id = feature_id_response.value
+                for feature_response in response.ImplementedFeatures:
+                    qualified_feature_identifier = feature_response.value
                     # if we find a feature for which is already implemented ignore it
                     # in the case of the device manager, we actually want the standard features to be displayed as well,
                     # so we deactivate this if-clause!
@@ -141,27 +140,74 @@ class DynamicSiLA2Client(SiLA2Client):
 
                     # read the feature definition
                     logging.info('Found implemented feature {feature}'.format(
-                        feature=feature_id))
+                        feature=qualified_feature_identifier))
                     try:
                         response = self.SiLAService_stub.GetFeatureDefinition(
                             SiLAService_pb2.GetFeatureDefinition_Parameters(
                                 QualifiedFeatureIdentifier=silaFW_pb2.String(
-                                    value=str.encode(feature_id))))
+                                    value=str.encode(qualified_feature_identifier))))
                         fdl_string = response.FeatureDefinition.value
                     except grpc.RpcError:
                         logging.error(
                             'Could not load feature definition of {feature}'.
-                            format(feature=feature_id))
+                            format(feature=qualified_feature_identifier))
                         continue
 
-                    feature_list_file.write(f'{feature_id}\n')
+                    feature_list_file.write(f'{qualified_feature_identifier}\n')
 
                     # write the corresponding fdl file locally
-                    fdl_filename = os.path.join(
-                        self.data_storage,
-                        '{feature}.sila.xml'.format(feature=feature_id))
-                    with open(fdl_filename, 'w', encoding='utf-8') as fdl_file:
-                        fdl_file.write(fdl_string)
+                    if '/' in qualified_feature_identifier:
+                        # For qualified features
+
+                        originator = qualified_feature_identifier.split('/')[0].strip()  # e.g. org.silastandard
+                        remainder = qualified_feature_identifier.split(originator)[1].strip()
+                        fdl_filepath = os.path.join(self.data_storage, originator)
+                        os.makedirs(fdl_filepath, exist_ok=True)
+                        if '/' in remainder:
+                            category = qualified_feature_identifier.split('/')[1].strip()  # e.g core
+                            remainder = qualified_feature_identifier.split(category)[1].strip()
+                            fdl_filepath = os.path.join(fdl_filepath, category)
+                            os.makedirs(fdl_filepath, exist_ok=True)
+                            if '/' in remainder:
+                                feature_identifier = qualified_feature_identifier.split('/')[2].strip()  # e.g core
+                                major_feature_version = qualified_feature_identifier.split(
+                                    feature_identifier + '/')[1].strip()
+                                os.makedirs(os.path.join(fdl_filepath, feature_identifier), exist_ok=True)
+                                fdl_filepath = os.path.join(fdl_filepath, feature_identifier, major_feature_version)
+                                os.makedirs(fdl_filepath, exist_ok=True)
+
+                            else:
+                                feature_identifier = qualified_feature_identifier.split('/')[2].strip()  # e.g core
+                                os.makedirs(os.path.join(self.data_storage,
+                                                         originator,
+                                                         category,
+                                                         feature_identifier,
+                                                         major_feature_version
+                                                         ),
+                                            exist_ok=True
+                                            )
+                                fdl_filepath = os.path.join(fdl_filepath, feature_identifier)
+
+                        fdl_filename = os.path.join(
+                            fdl_filepath,
+                            f'{feature_identifier}.sila.xml'
+                        )
+                        with open(fdl_filename, 'w', encoding='utf-8') as fdl_file:
+                            fdl_file.write(fdl_string)
+                    else:
+                        # For non-qualified features
+                        feature_identifier = qualified_feature_identifier
+                        fdl_filename = os.path.join(
+                            self.data_storage,
+                            f'{feature_identifier}.sila.xml')
+                        with open(fdl_filename, 'w', encoding='utf-8') as fdl_file:
+                            fdl_file.write(fdl_string)
+
+                    # fdl_filename = os.path.join(
+                    #    self.data_storage,
+                    #    '{feature}.sila.xml'.format(feature=feature_id))
+                    # with open(fdl_filename, 'w', encoding='utf-8') as fdl_file:
+                    #    fdl_file.write(fdl_string)
 
         except Exception:
             logging.error("Error during dynamic client file creation")
@@ -177,14 +223,37 @@ class DynamicSiLA2Client(SiLA2Client):
 
             feature_list_path = os.path.join(self.data_storage, 'features.txt')
             with open(feature_list_path, 'r') as feature_list_file:
-                for feature_id in feature_list_file.readlines():
-                    fdl_filename = os.path.join(
-                        self.data_storage, f'{feature_id.strip()}.sila.xml')
+                for qualified_feature_identifier in feature_list_file.readlines():
+                    print('###########################     :     ', qualified_feature_identifier)
                     # generate the dynamic handler
-                    self._features[feature_id] = DynamicFeature(
-                        fdl_file=fdl_filename, channel=self.channel)
-                    del sys.modules[feature_id.rstrip('\n') + '_pb2']
-                    del sys.modules[feature_id.rstrip('\n') + '_pb2_grpc']
+                    if '/' in qualified_feature_identifier:
+                        # For qualified features:
+                        originator, category, feature_identifier, major_feature_version = \
+                            qualified_feature_identifier.split('/')
+                        fdl_filename = os.path.join(self.data_storage,
+                                                    originator.strip(),
+                                                    category.strip(),
+                                                    feature_identifier.strip(),
+                                                    major_feature_version.strip(),
+                                                    f'{feature_identifier.strip()}.sila.xml')
+                        self._features[qualified_feature_identifier.strip('\n')] = \
+                            DynamicFeature(fdl_file=fdl_filename, channel=self.channel)
+                        del sys.modules[feature_identifier.strip() + '_pb2' ]
+                        del sys.modules[feature_identifier.strip() + '_pb2_grpc']
+                    else:
+                        # For unqualified features:
+                        fdl_filename = os.path.join(
+                            self.data_storage,
+                            f'{qualified_feature_identifier.strip()}.sila.xml'
+                        )
+                        self._features[qualified_feature_identifier.strip('\n')] = \
+                            DynamicFeature(fdl_file=fdl_filename, channel=self.channel)
+
+                        del sys.modules[qualified_feature_identifier.rstrip('\n') + '_pb2']
+                        del sys.modules[qualified_feature_identifier.rstrip('\n') + '_pb2_grpc']
+
+                    # del sys.modules[feature_id.rstrip('\n') + '_pb2']
+                    # del sys.modules[feature_id.rstrip('\n') + '_pb2_grpc']
                     sys.path.remove(os.path.dirname(fdl_filename))
 
     def stop(self, force: bool = False):
@@ -257,7 +326,12 @@ class DynamicSiLA2Client(SiLA2Client):
 
     def call_command(self, feature_id: str, command_id: str,
                      parameters: Dict[str, Any]) -> Dict[str, Any]:
-        command_object = self._features[feature_id].commands[command_id]
+        try:
+            command_object = self._features[feature_id].commands[command_id]
+        except KeyError:
+            print(f'Feature {feature_id} does not use a qualified identifier!')
+            unqualified_feature_id = feature_id.split('/')[-2]
+            command_object = self._features[unqualified_feature_id].commands[command_id]
 
         # set the parameters
         for parameter_path in parameters:
@@ -279,7 +353,13 @@ class DynamicSiLA2Client(SiLA2Client):
 
     def call_property(self, feature_id: str,
                       property_id: str) -> Dict[str, Any]:
-        _property = self._features[feature_id].properties[property_id]
+        print('self.features is: ', self._features)
+        try:
+            _property = self._features[feature_id].properties[property_id]
+        except KeyError:
+            print(f'Feature {feature_id} does not use a qualified identifier!')
+            unqualified_feature_id = feature_id.split('/')[-2]
+            _property = self._features[unqualified_feature_id].properties[property_id]
 
         if _property.observable:
             for response in _property():

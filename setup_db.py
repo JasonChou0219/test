@@ -439,28 +439,28 @@ scripts = [
                 '    """ Required to import and instantiate devices """\n'
                 '    return\n\n'
                 '# Print statements do not get flushed, so they will not be forwarded to the frontend terminal straight away. This is a docker limitation\n'
-                'print(\\\'I will get printed with the following print statement. Check my timestamp!\\\')\n'
+                "print(\'I will get printed with the following print statement. Check my timestamp!\')\n"
                 '# This problem can be circumvented by setting the flush attribute to true\n'
                 'time.sleep(3)\n'
-                'print(\\\'Yay me, i got flushed!\\\', flush=True)\n'
+                "print(\'Yay me, i got flushed!\', flush=True)\n"
                 'time.sleep(3)\n\n'
-                '# If direct calls to stdout and stderr are made, they won\\\'t get flushed either. Output has to be flushed explicitly.\n'
+                '# If direct calls to stdout and stderr are made, they won\'t get flushed either. Output has to be flushed explicitly.\n'
                 'import sys\n'
-                'sys.stderr.write(\\\'Error\\\n\\\')\n'
+                "sys.stderr.write(\'Error\\n\')\n"
                 'sys.stderr.flush()\n'
                 'time.sleep(1)\n'
-                'sys.stdout.write(\\\'All Good\\\n\\\')\n'
+                "sys.stdout.write(\'All Good\\n\')\n"
                 'sys.stdout.flush()\n'
-                'time.sleep(3)\n\n\n'
-                '# If logging is used, this problem doesn\\\'t arise. Logging statements are transferred via stderr and are flushed by default by the logging function.\n'
+                'time.sleep(3)\n\n'
+                '# If logging is used, this problem doesn\'t arise. Logging statements are transferred via stderr and are flushed by default by the logging function.\n'
                 'import logging\n'
-                'logging.basicConfig(format=\\\'\\\%(levelname)-8s| \\\%(module)s.\\\%(funcName)s: \\\%(message)s\\\', level=logging.DEBUG)\n'
+                "logging.basicConfig(format=\'%(levelname)-8s| %(module)s.%(funcName)s: %(message)s\', level=logging.DEBUG)\n"
                 'logger = logging.getLogger(name=__name__)\n'
-                'logger.debug(\\\'A debug statement\\\')\n'
-                'logger.info(\\\'An info statement\\\')\n'
-                'logger.warning(\\\'A warning statement\\\')\n'
-                'logger.critical(\\\'A critical warning statement\\\')\n'
-                'logger.error(\\\'An error statement\\\')\n\n'
+                "logger.debug('A debug statement')\n"
+                "logger.info('An info statement')\n"
+                "logger.warning('A warning statement')\n"
+                "logger.critical('A critical warning statement')\n"
+                "logger.error('An error statement')\n"
     },
     {
         'name': 'Device example',
@@ -510,7 +510,7 @@ scripts = [
                 '\t\t\'SELECT test_number FROM "device_manager"."autogen"."testMeasurement" WHERE experiment_name = \\\'influxDB_test\\\' GROUP BY position \n\''
                 '\t\t\'ORDER BY DESC LIMIT 1\')\n'
                 '\tprint(results)\n\n'
-                '\ttime.sleep(10)\n\n'
+                '\ttime.sleep(10)\n'
     }
 ]
 
@@ -557,6 +557,11 @@ def add_features_for_data_handler(c):
               'identifier varchar(256), ' \
               'name varchar(256), ' \
               'description text, ' \
+              'sila2_version varchar(256), ' \
+              'originator varchar(256), ' \
+              'category varchar(256), ' \
+              'maturity_level varchar(256), ' \
+              'locale varchar(256), ' \
               'feature_version varchar(256), ' \
               'feature_version_major integer, ' \
               'feature_version_minor integer, ' \

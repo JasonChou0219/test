@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import { DeviceProperty } from '../device.service';
-import {CheckboxParam, DatabaseService} from "../database.service";
+import {CheckboxParam, DatabaseService} from '../database.service';
 // import {CustomPollingInterval} from '../data-handler-device-feature/data-handler-device-feature.component';
 
 export interface CustomPollingInterval {
@@ -19,6 +19,12 @@ export class DataHandlerDevicePropertyComponent implements OnInit {
     featureId: number;
     @Input()
     featureIdentifier: string;
+    @Input()
+    featureOriginator: string;
+    @Input()
+    featureCategory: string;
+    @Input()
+    featureVersionMajor: number;
     @Input()
     uuid: string;
     execute = '';

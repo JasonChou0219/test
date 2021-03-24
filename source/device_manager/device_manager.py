@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 from datetime import datetime
 import requests
 import timeit
+import os
 
 from source.device_manager.device_layer.database_info import DatabaseInfo, DatabaseStatus
 from source.device_manager.sila_auto_discovery.sila_auto_discovery import find
@@ -39,27 +40,38 @@ ACTIVE = True
 META = False
 
 
-def _call_feature_command_from_subprocess(info: DeviceInfo, feature: str,
-                                          command: str, parameters: Dict[str,
+def _call_feature_command_from_subprocess(info: DeviceInfo, qualified_feature_identifier: str,
+                                          command_id: str, parameters: Dict[str,
                                                                          any],
                                           connection):
     try:
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
         device.connect()
-        result = device.call_command(feature+'\n', command, parameters)
+        # print(qualified_feature_identifier)
+        # print(parameters)
+        try:
+            result = device.call_command(qualified_feature_identifier, command_id, parameters)
+        except:
+            print('+++++++++++++++++++++++++++++++++++++++++++++++++', qualified_feature_identifier.split('/')[-2])
+            result = device.call_command(qualified_feature_identifier.split('/')[-2], command_id, parameters)
+
         connection.send(result)
     finally:
         connection.close()
 
 
-def _get_feature_property_from_subprocess(info: DeviceInfo, feature: str,
-                                          prop: str, connection):
+def _get_feature_property_from_subprocess(info: DeviceInfo, qualified_feature_identifier: str,
+                                          property_id: str, connection):
     try:
         device = _create_device_instance(info.address, info.port, info.uuid,
                                          info.name, info.type)
         device.connect()
-        result = device.call_property(feature+'\n', prop)
+        # result = device.call_property(feature+'\n', prop)
+        try:
+            result = device.call_property(qualified_feature_identifier, property_id)
+        except:
+            result = device.call_property(qualified_feature_identifier.split('/')[-2], property_id)
         connection.send(result)
     finally:
         connection.close()
@@ -104,8 +116,19 @@ def _get_device_features_from_subprocess(info: DeviceInfo, connection):
         features = []
         if device.is_online() and device.type == DeviceType.SILA:
             for name in device.get_feature_names():
-                feature_file = device.get_feature_path(name)
+                if '/' in name:
+                    originator, category, feature_identifier, major_feature_version = name.split('/')
+                    fdl_filename = os.path.join(originator.strip(),
+                                                category.strip(),
+                                                feature_identifier.strip(),
+                                                major_feature_version.strip(),
+                                                f'{feature_identifier.strip()}')
+                    feature_file = device.get_feature_path(fdl_filename)
+                else:
+                    feature_file = device.get_feature_path(name)
                 parser = FDLParser(feature_file)
+                feature = serialize_feature(parser)
+                print(feature)
                 features.append(serialize_feature(parser))
         connection.send(features)
     finally:
@@ -261,11 +284,11 @@ class DeviceManager:
             print('call_feature_command process finished')
         return result
 
-    def get_feature_property(self, device: UUID, feature: str, prop: str):
+    def get_feature_property(self, device: UUID, qualified_feature_identifier: str, prop: str):
         device_info = self.get_device_info(device)
         parent_conn, child_conn = Pipe()
         process = Process(target=_get_feature_property_from_subprocess,
-                          args=(device_info, feature, prop, child_conn),daemon=True)
+                          args=(device_info, qualified_feature_identifier, prop, child_conn),daemon=True)
         result = None
         try:
             process.start()
@@ -288,14 +311,24 @@ class DeviceManager:
         conn = get_database_connection()
         with conn:
             with conn.cursor() as cursor:
-                for feature in features:
-                    dynamic_feature = sila_device.getClient()._features[
-                        feature.identifier + '\n']
+                for i, feature in enumerate(features):
+                    print(f'id_name: #{i}:', feature.identifier, feature.name)
+                    try:
+                        dynamic_feature = sila_device.getClient()._features[
+                            feature.identifier]
+                    except:
+                        print('Major_version:',  feature.feature_version_major)
+                        dynamic_feature = sila_device.getClient()._features[
+                            feature.originator + '/' + feature.category + '/' + feature.identifier + '/v' +
+                            str(feature.feature_version_major)]
                     cursor.execute(
-                        'insert into features_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s) returning id',
+                        'insert into features_for_data_handler values (default,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) returning id',
                         [
                             feature.identifier, feature.name,
-                            feature.description, feature.feature_version,
+                            feature.description, feature.sila2_version,
+                            feature.originator,  feature.category,
+                            feature.maturity_level, feature.locale,
+                            feature.feature_version,
                             feature.feature_version_major,
                             feature.feature_version_minor,
                             str(uuid),
@@ -505,7 +538,7 @@ class DeviceManager:
         with conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    'select id,identifier,name,description,feature_version,feature_version_minor,feature_version_major,activated,meta from features_for_data_handler where device=%s',
+                    'select id,identifier,name,description,sila2_version,originator,category,maturity_level,locale,feature_version,feature_version_minor,feature_version_major,activated,meta from features_for_data_handler where device=%s',
                     [str(uuid)])
                 result = cursor.fetchall()
                 features = [
@@ -513,13 +546,18 @@ class DeviceManager:
                                                 identifier=row[1],
                                                 name=row[2],
                                                 description=row[3],
-                                                feature_version=row[4],
-                                                feature_version_minor=row[5],
-                                                feature_version_major=row[6],
+                                                sila2_version=row[4],
+                                                originator=row[5],
+                                                category=row[6],
+                                                maturity_level=row[7],
+                                                locale=row[8],
+                                                feature_version=row[9],
+                                                feature_version_minor=row[10],
+                                                feature_version_major=row[11],
                                                 commands=[],
                                                 properties=[],
-                                                active=row[7],
-                                                meta=row[8])
+                                                active=row[12],
+                                                meta=row[13])
                     for row in result
                 ]
         release_database_connection(conn)

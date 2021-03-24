@@ -65,11 +65,11 @@ class DeviceFeature:
     identifier: str
     name: str
     description: str
-    #sila2_version: str
-    #category: str
-    #maturity_level: str
-    #locale: str
-    #originator: str
+    sila2_version: str
+    originator: str
+    category: str
+    maturity_level: str
+    locale: str
     feature_version: str
     feature_version_minor: int
     feature_version_major: int

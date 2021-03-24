@@ -15,7 +15,32 @@
             <div class="feature-description">{{ feature.description }}</div>
         </div>
         <ng-container *ngIf="expand">
-            <p>Version {{ feature.feature_version }}</p>
+            <table>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">Originator:</div></td>
+                <td class="feature_info_text"><div class="feature-description"> {{ feature.originator }}</div></td>
+              </tr>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">Category:</div></td>
+                <td class="feature_info_text"><div class="feature-description"> {{ feature.category }}</div></td>
+              </tr>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">Version:</div></td>
+                <td class="feature_info_text"><div class="feature-description"> {{ feature.feature_version }}</div></td>
+              </tr>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">Maturity Level:</div></td>
+                <td class="feature_info_text"><div class="feature-description"> {{ feature.maturity_level }}</div></td>
+              </tr>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">Locale:</div></td>
+                <td class="feature_info_text">{{ feature.locale }}</td>
+              </tr>
+              <tr>
+                <td class="feature_info_title"><div class="section-title">SiLA 2 Version:</div></td>
+                <td class="feature_info_text"><div> {{ feature.sila2_version }}</div></td>
+              </tr>
+            </table>
             <div class="section-title">Commands</div>
             <div class="section-content">
                 <div
@@ -25,6 +50,9 @@
                     <app-device-command
                         [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
+                        [featureOriginator]="feature.originator"
+                        [featureCategory]="feature.category"
+                        [featureVersionMajor]=feature.feature_version_major
                         [command]="command"
                     ></app-device-command>
                 </div>
@@ -38,6 +66,9 @@
                     <app-device-property
                         [deviceUUID]="deviceUUID"
                         [featureIdentifier]="feature.identifier"
+                        [featureOriginator]="feature.originator"
+                        [featureCategory]="feature.category"
+                        [featureVersionMajor]=feature.feature_version_major
                         [property]="property"
                     ></app-device-property>
                 </div>
