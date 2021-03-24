@@ -9,6 +9,8 @@ major version updates of third-party software.
 
 Guide
 ------
+Download
+^^^^^^^^^^
 Download the installation files using wget or download them directly from the `SiLA 2 manager repository website <https://gitlab.com/lukas.bromig/sila2_manager/-/tree/master>`_:
 
 .. code-block:: console
