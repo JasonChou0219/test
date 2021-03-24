@@ -172,20 +172,26 @@ def create_experiment(name: str, start: int, end: int, user: int,
 def edit_experiment(experiment_id: int, name: str, start: int, end: int, user: int,
                     devices: List[UUID], script: int) -> int:
     print(experiment_id, name, start, end, user, devices, script)
-    experiment_id = -1
-    conn = get_database_connection() 
+    conn = get_database_connection()
     with conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 'update experiments set name=%s, startTime=%s, endTime=%s, userID=%s, script=%s where id=%s',
                 [name, start, end, user, script, experiment_id])
-            # Todo: Implement the function to change the experiment in the database. Fix old bookings
-            #  and add new ones!
-            #for device in devices:
-                #
-                #
-                #
-                #
+            # Delete existing bookings for experiment
+            cursor.execute(
+                'delete from bookings where experiment=%s',
+                [experiment_id])
+            # Create new bookings
+            for device in devices:
+                if book_inside_transaction(
+                        conn,
+                        BookingInfo(-1, name, start, end, user, device,
+                                    experiment_id)) < 0:
+                    # If a device cannot be booked in the new time frame, rollback all changes
+                    conn.rollback()
+                    experiment_id = -1
+                    break
     release_database_connection(conn)
     return experiment_id
 
