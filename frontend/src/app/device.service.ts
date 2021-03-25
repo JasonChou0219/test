@@ -61,9 +61,9 @@ export interface DeviceParameter {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
     id?: number; // May not be in the correct order yet
-    type: string;
+    data_type: string;
     identifier: string;
-    name: string;
+    display_name: string;
     description: string;
     // Todo: Which datatype is suited best for value?
     value: string; // May not be in the correct order yet

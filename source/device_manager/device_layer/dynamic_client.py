@@ -326,12 +326,29 @@ class DynamicSiLA2Client(SiLA2Client):
 
     def call_command(self, feature_id: str, command_id: str,
                      parameters: Dict[str, Any]) -> Dict[str, Any]:
+        print('self.features is: ', self._features)
+        # for key in self._features.keys():
+        #    if feature_id in key:
+        #        print('key', key)
+        #        break
         try:
+            #    print(self._features[key].commands.keys())
+            #    print(command_id)
+            #    for command_key in self._features[key].commands.keys():
+            #        if command_id in command_key:
+            #            print('truesssss')
+            #            break
             command_object = self._features[feature_id].commands[command_id]
         except KeyError:
-            print(f'Feature {feature_id} does not use a qualified identifier!')
-            unqualified_feature_id = feature_id.split('/')[-2]
-            command_object = self._features[unqualified_feature_id].commands[command_id]
+            for key in self._features.keys():
+                if feature_id in key:
+                    #            print('featureid/key', feature_id, key)
+                    feature_id = key
+                    break
+            #    print(f'Feature {feature_id} does not use a qualified identifier!')
+            #    print(feature_id.split('/')[-2])
+            #    unqualified_feature_id = feature_id.split('/')[-2]
+            command_object = self._features[feature_id].commands[command_id]
 
         # set the parameters
         for parameter_path in parameters:
@@ -353,13 +370,7 @@ class DynamicSiLA2Client(SiLA2Client):
 
     def call_property(self, feature_id: str,
                       property_id: str) -> Dict[str, Any]:
-        print('self.features is: ', self._features)
-        try:
-            _property = self._features[feature_id].properties[property_id]
-        except KeyError:
-            print(f'Feature {feature_id} does not use a qualified identifier!')
-            unqualified_feature_id = feature_id.split('/')[-2]
-            _property = self._features[unqualified_feature_id].properties[property_id]
+        _property = self._features[feature_id].properties[property_id]
 
         if _property.observable:
             for response in _property():

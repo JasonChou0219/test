@@ -555,7 +555,7 @@ def add_features_for_data_handler(c):
     c.execute('create table if not exists features_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
-              'name varchar(256), ' \
+              'display_name varchar(256), ' \
               'description text, ' \
               'sila2_version varchar(256), ' \
               'originator varchar(256), ' \
@@ -574,7 +574,7 @@ def add_commands_for_data_handler(c):
     c.execute('create table if not exists commands_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
-              'name varchar(256), ' \
+              'display_name varchar(256), ' \
               'description text, ' \
               'observable boolean, ' \
               'polling_interval_non_meta integer, ' \
@@ -588,7 +588,7 @@ def add_properties_for_data_handler(c):
     c.execute('create table if not exists properties_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
-              'name varchar(256), ' \
+              'display_name varchar(256), ' \
               'description text, ' \
               'observable boolean, ' \
               'polling_interval_non_meta integer, ' \
@@ -602,9 +602,43 @@ def add_parameters_for_data_handler(c):
     c.execute('create table if not exists parameters_for_data_handler ' \
               '(id serial primary key, ' \
               'identifier varchar(256), ' \
-              'name varchar(256), ' \
+              'display_name varchar(256), ' \
               'description text, ' \
-              'type varchar(256), ' \
+              'data_type varchar(256), ' \
+              'value varchar(256), ' \
+              # Should be 'parameter' if it is a parameter, 'response' if it is a response
+              # or 'intermediate' if it is an intermediate
+              'used_as varchar(256), ' \
+              # Should be 'command' if it belongs to a command or 'property' if it belongs to a property
+              'parent_type varchar(256), ' \
+              # The id of the parent command or feature
+              'parent integer)')
+
+
+def add_responses_for_data_handler(c):
+    c.execute('create table if not exists responses_for_data_handler ' \
+              '(id serial primary key, ' \
+              'identifier varchar(256), ' \
+              'display_name varchar(256), ' \
+              'description text, ' \
+              'data_type varchar(256), ' \
+              'value varchar(256), ' \
+              # Should be 'parameter' if it is a parameter, 'response' if it is a response
+              # or 'intermediate' if it is an intermediate
+              'used_as varchar(256), ' \
+              # Should be 'command' if it belongs to a command or 'property' if it belongs to a property
+              'parent_type varchar(256), ' \
+              # The id of the parent command or feature
+              'parent integer)')
+
+
+def add_intermediate_responses_for_data_handler(c):
+    c.execute('create table if not exists intermediate_responses_for_data_handler ' \
+              '(id serial primary key, ' \
+              'identifier varchar(256), ' \
+              'display_name varchar(256), ' \
+              'description text, ' \
+              'data_type varchar(256), ' \
               'value varchar(256), ' \
               # Should be 'parameter' if it is a parameter, 'response' if it is a response
               # or 'intermediate' if it is an intermediate
@@ -708,6 +742,8 @@ def main():
     add_commands_for_data_handler(c)
     add_properties_for_data_handler(c)
     add_parameters_for_data_handler(c)
+    add_responses_for_data_handler(c)
+    add_intermediate_responses_for_data_handler(c)
     add_defined_execution_errors(c)
     add_databases(c)
     add_logs(c)

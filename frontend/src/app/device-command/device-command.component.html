@@ -31,7 +31,7 @@
                                 <span class="param-name">{{
                                     param.identifier
                                 }}</span>
-                                <span class="param-type">{{ param.type }}</span>
+                                <span class="param-type">{{ param.data_type }}</span>
                             </div>
                             <div class="param-desc">
                                 {{ param.description }}
@@ -63,7 +63,7 @@
                                     response.identifier
                                 }}</span>
                                 <span class="param-type">{{
-                                    response.type
+                                    response.data_type
                                 }}</span>
                             </div>
                             <div class="param-desc">
@@ -93,7 +93,7 @@
                         class="python-function"
                         >call_command</span
                     >(<span class="python-string"
-                        >"{{ featureIdentifier }}\n"</span
+                        >"{{ featureIdentifier }}"</span
                     >,<span class="python-string"
                         >"{{ command.identifier }}"</span
                     >,parameters: {{ '{' }}
@@ -105,10 +105,10 @@
                         "
                     >
                         <span class="python-string"
-                            >"{{ param.identifier.toLowerCase() }}/{{ param.type }}"</span
+                            >"{{ param.identifier }}/{{ param.data_type }}"</span
                         >:
                         <ng-container
-                            *ngIf="param.type === 'String'; else noString"
+                            *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
                         >
                             <span class="python-string">
                                 "{{ paramValues[i].value }}"

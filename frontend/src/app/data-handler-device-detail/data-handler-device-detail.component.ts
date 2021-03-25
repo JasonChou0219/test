@@ -20,7 +20,7 @@ function buildParameterTree(parameter: DeviceParameter): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: parameter.identifier });
     nodes.push({ name: 'Description', value: parameter.description });
-    nodes.push({ name: 'Type', value: parameter.type });
+    nodes.push({ name: 'Type', value: parameter.data_type });
     return nodes;
 }
 
@@ -30,7 +30,7 @@ function buildPropertyTree(property: DeviceProperty): TreeNode[] {
     nodes.push({ name: 'Description', value: property.description });
     const responseChilds: TreeNode[] = [];
     responseChilds.push({
-            name: property.response.name,
+            name: property.response.display_name,
             children: buildParameterTree(property.response),
         });
     nodes.push({ name: 'Responses', children: responseChilds });
@@ -45,7 +45,7 @@ function buildCommandTree(command: DeviceCommand): TreeNode[] {
     for (const parameter of command.parameters) {
         if (parameter.identifier !== 'EmptyParameter') {
             parameterChilds.push({
-                name: parameter.name,
+                name: parameter.display_name,
                 children: buildParameterTree(parameter),
             });
         }
@@ -58,7 +58,7 @@ function buildCommandTree(command: DeviceCommand): TreeNode[] {
     const responseChilds: TreeNode[] = [];
     for (const response of command.responses) {
         responseChilds.push({
-            name: response.name,
+            name: response.display_name,
             children: buildParameterTree(response),
         });
     }

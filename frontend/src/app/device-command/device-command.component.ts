@@ -40,8 +40,10 @@ export class DeviceCommandComponent implements OnInit, OnChanges {
             this.paramValues.push('');
         }
         */
+
         this.paramValues = this.command.parameters.map((param) => {
-            return { name: param.identifier.toLowerCase() + '/' + param.type.toLowerCase(), value: '' };
+            // return { name: param.identifier.toLowerCase() + '/' + param.type.toLowerCase(), value: '' };
+            return { name: param.identifier + '/' + param.data_type, value: '' };
         });
         console.log(this.paramValues);
     }

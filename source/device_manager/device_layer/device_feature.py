@@ -1,19 +1,37 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 
 
 @dataclass
-class DeviceParameter:
-    type: str
+class CommandParameter:
     identifier: str
-    name: str
+    display_name: str
     description: str
+    data_type: str
 
 
 @dataclass
-class DeviceParameterForDataHandler(DeviceParameter):
-    id: int
-    value: str
+class CommandResponse:
+    identifier: str
+    display_name: str
+    description: str
+    data_type: str
+
+
+@dataclass
+class IntermediateCommandResponse:
+    identifier: str
+    display_name: str
+    description: str
+    data_type: str
+
+
+@dataclass
+class PropertyResponse:
+    identifier: str
+    display_name: str
+    description: str
+    data_type: str
 
 
 @dataclass
@@ -25,46 +43,72 @@ class DataHandlerConfig:
 
 
 @dataclass
-class DeviceProperty:
+class Property:
     identifier: str
-    name: str
+    display_name: str
     description: str
     observable: bool
-    response: DeviceParameter
+    response: PropertyResponse
     defined_execution_errors: List[str]
 
 
 @dataclass
-class DevicePropertyForDataHandler(DeviceProperty, DataHandlerConfig):
+class PropertyResponseForDataHandler(PropertyResponse):
     id: int
-    response: DeviceParameterForDataHandler
+    value: str
 
 
 @dataclass
-class DeviceCommand:
+class PropertyForDataHandler(Property, DataHandlerConfig):
+    id: int
+    response: PropertyResponseForDataHandler
+
+
+@dataclass
+class Command:
     identifier: str
-    name: str
+    display_name: str
     description: str
     observable: bool
-    parameters: List[DeviceParameter]
-    responses: List[DeviceParameter]
-    intermediates: List[DeviceParameter]
+    parameters: List[CommandParameter]
+    responses: List[CommandResponse]
+    intermediates: Dict[str, IntermediateCommandResponse]
     defined_execution_errors: List[str]
 
 
 @dataclass
-class DeviceCommandForDataHandler(DeviceCommand, DataHandlerConfig):
+class CommandParameterForDataHandler(CommandParameter):
     id: int
-    parameters: List[DeviceParameterForDataHandler]
-    responses: List[DeviceParameterForDataHandler]
-    intermediates: List[DeviceParameterForDataHandler]
+    value: str
 
 
 @dataclass
-class DeviceFeature:
+class CommandResponseForDataHandler(CommandParameter):
+    id: int
+    value: str
+
+
+@dataclass
+class IntermediateCommandResponseForDataHandler(CommandParameter):
+    id: int
+    value: str
+
+
+@dataclass
+class CommandForDataHandler(Command, DataHandlerConfig):
+    id: int
+    parameters: List[CommandParameterForDataHandler]
+    responses: List[CommandResponseForDataHandler]
+    intermediates: List[IntermediateCommandResponseForDataHandler]
+
+
+@dataclass
+class Feature:
     identifier: str
-    name: str
+    display_name: str
     description: str
+    commands: List[Command]
+    properties: List[Property]
     sila2_version: str
     originator: str
     category: str
@@ -73,14 +117,13 @@ class DeviceFeature:
     feature_version: str
     feature_version_minor: int
     feature_version_major: int
-    commands: List[DeviceCommand]
-    properties: List[DeviceProperty]
+
 
 
 @dataclass
-class DeviceFeatureForDataHandler(DeviceFeature):
+class FeatureForDataHandler(Feature):
     id: int
-    commands: List[DeviceCommandForDataHandler]
-    properties: List[DevicePropertyForDataHandler]
+    commands: List[CommandForDataHandler]
+    properties: List[PropertyForDataHandler]
     active: bool
     meta: bool
