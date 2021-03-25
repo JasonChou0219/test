@@ -280,14 +280,15 @@ Uninstall protobuf and reinstall it using the --no-binary flag.
 .. code-block:: console
 
     pipenv shell
-    sudo pip3 uninstall protobuf
+    sudo pipenv uninstall protobuf
 
-Check that protobuf has been uninstalled:
+Check that protobuf has been uninstalled (Replace <usr> with your username!):
 
 .. code-block:: console
 
     pip3 list
     sudo pip3 install --no-binary=:all: -t /home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0
+    [sudo pip3 install --no-binary=:all: protobuf==3.15.0]
 
 Check that protobuf has been reinstalled.
 
@@ -422,10 +423,11 @@ and supervisor by using:
     sudo systemctl restart supervisor.service
 
 If you made changes to the PostgreSQL database entries, you need to delete old entries and setup a new one. Don't forget
-to adjust the databse setup script according to the changes made. Run the following code from within the root directory
+to adjust the database setup script according to the changes made. Run the following code from within the root directory
 of the repository/ your installation.
 
 .. code-block:: console
+
         pipenv shell
         python3.8 delete_db.py
         python3.8 setup_db.py
