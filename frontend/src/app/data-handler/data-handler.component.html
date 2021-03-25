@@ -111,7 +111,7 @@
     >
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Service name</th>
-            <td mat-cell style="width: 25%" [ngStyle]="{'background': element.status.online ?  '#EAFAEA' : '#white' }"
+            <td mat-cell style="width: 25%; cursor: pointer" [ngStyle]="{'background': element.status.online ?  '#EAFAEA' : '#white' }"
                 *matCellDef="let element; let i = dataIndex" (click)="showDetails(i)">
                 {{ element.device.name }}
             </td>
