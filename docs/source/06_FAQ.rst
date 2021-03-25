@@ -60,11 +60,44 @@ The number of connections to the connection pool (SimpleConnectionPool) is exhau
            raise PoolError("connection pool exhausted")
         psycopg2.pool.PoolError: connection pool exhausted
 
+**Solution:**
 Generally, a connection is returned and closed after use. A maximum number of connections is allowed. This number is
 specified in the file */source/device_manager/database.py* in the function *get_database_connection*. Each user
 requires several connections. If multiple users access the device manager, the total number of connections may get
 exhausted. Increasing the number of *maxconn* of the SimpleConnectionPool will solve this problem.
 
+SiLA 2 Python (sila2lib) Error: KeyError 'HOME'
+-------------------------------------------------------
+**Error**:
+
+The SiLA 2 Manager is run as a service. This service doesn't have access to the environmental variables of the user. The
+SiLA 2 library is trying to get the path of the home directory. The command *os.environ* returns a dictionary of the
+environmental variables. The key ['HOME'] is not contained and hence the operation raises a KeyError:
+
+.. code-block:: console
+
+        Traceback (most recent call last):
+        File "./source/device_manager/device_layer/sila_device.py", line 14, in create_and_init_dynamic_client
+          client = DynamicSiLA2Client(name=f'{name}-client',
+        File "./source/device_manager/device_layer/dynamic_client.py", line 93, in __init__
+          super().__init__(name, description, server_name, client_uuid, version,
+        File "/home/david/sila2_device_manager/.venv/lib/python3.8/site-packages/sila2lib/sila_client.py", line 117, in __init__
+          self.sila2_config = read_config_file('client', name)
+        File "/home/david/sila2_device_manager/.venv/lib/python3.8/site-packages/sila2lib/_internal/config.py", line 22, in read_config_file
+          config_dir = get_config_dir(subdir=name)
+        File "/home/david/sila2_device_manager/.venv/lib/python3.8/site-packages/sila2lib/_internal/config.py", line 12, in get_config_dir
+          path = os.path.join(os.environ['HOME'], '.config', 'sila2')
+        File "/usr/lib/python3.8/os.py", line 675, in __getitem__
+            raise KeyError(key) from None
+        KeyError: 'HOME'
+        None
+
+**Solution:**
+Replace the following line in file: sila2_device-manager/.venv/lib/python3.8/site-packages/sila2lib/_internal/config.py
+Line 13:
+path = os.path.join(os.environ['HOME'], '.config', 'sila2')
+with the explicit path of your home directory or the home directory that you created for the SiLA 2 Manager:
+path = os.path.join('/home/device-manager', '.config', 'sila2')
 
 To-do:
 -------
