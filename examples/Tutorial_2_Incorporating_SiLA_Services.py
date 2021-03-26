@@ -13,12 +13,6 @@ To run this example follow these steps:
 2.4. Hit the run button or wait for the scheduled execution time (You can click on the experiment
     name to get the docker container stdout, i.e the output of your script)
 
-Hint 1: The def run() method is compulsory. The services are passed to it in the same order,
-    that you select them in during experiment setup, i.e the order they are displayed in in
-    the experiment list entry of you experiment
-
-Hint 2: Use the flush argument when using print statements.
-
 Hint 3: The command/property call syntax is displayed in the "Services" tab. It is shown under
     "Usage" on the lowest level of the device tree for every command and property.
 """
@@ -32,24 +26,21 @@ def run(services):
     client.connect()
     # A GET command. A call to the SiLAService feature. Request the server name.
     response = client.call_property("SiLAService\n", "ServerName")
+    ServerName = response
     print(response, flush=True)
-    # A SET command. A call to the DriveController of the pump. Set speed and start the first channel.
-    # client.call_command(feature_id="PumpController\n",
-    #                  command_id="SetFlowrate",
-    #                  parameters = { "channel/constrained/integer": 1,"flowrate/constrained/real": 20.5}
-    #                  )
-    # pump.call_command(feature_id="PumpController\n",
-    #                  command_id="StartPump",
-    #                  parameters = { "channel/constrained/integer": 1}
-    #                  )
-
-    #reactor_client.call_command(feature_id="PumpController\n",
-    #                    command_id="SetDirectionClockwise",
-    #                    parameters = { "channel/constrained/integer": 1}
-    #                    )
 
 
-    for i in range(50):
+
+    for i in range(10):
         response = client.call_property("SiLAService\n", "ServerName")
-        print(response, flush=True)
-        time.sleep(1)
+        print(f'{i}. call:', response, flush=True)
+        time.sleep(1.5)
+
+    # A SET command. A call to the DriveController of the pump. Set speed and start the first channel.
+    client.call_command("SiLAService\n","SetServerName",parameters = { "ServerName/constrained/String": "MyNewName" })
+    response = client.call_property("SiLAService\n", "ServerName")
+    print('Changed name to: ', response, flush=True)
+    # Change the ServerName back to the original one
+    client.call_command("SiLAService\n","SetServerName",parameters = { "ServerName/constrained/String": ServerName })
+    response = client.call_property("SiLAService\n", "ServerName")
+    print('Changed name back to:', response, flush=True)
