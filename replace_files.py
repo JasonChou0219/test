@@ -29,6 +29,8 @@ copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/data_basic.p
 # _dynamic_command.py
 copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/_dynamic_command.py', sila2lib_path + '/proto_builder/_dynamic_command.py')
 
+# fdl_parser.py
+copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/fdl_parser.py', sila2lib_path + '/fdl_parser/fdl_parser.py')
 # command.py
 copyfile(hugo_repository_path + '/user_script_env/SiLA_replacements/command.py', sila2lib_path + '/fdl_parser/command.py')
 # data_base.py
