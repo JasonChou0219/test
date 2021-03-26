@@ -311,10 +311,8 @@ Check that protobuf has been reinstalled.
 
 .. code-block:: console
 
-    sudo cp server-config/device-manager-backend.supervisor.conf
-    /etc/supervisor/conf.d
-    sudo cp server-config/device-manager-scheduler.supervisor.conf
-    /etc/supervisor/conf.d
+    sudo cp server-config/device-manager-backend.supervisor.conf /etc/supervisor/conf.d
+    sudo cp server-config/device-manager-scheduler.supervisor.conf /etc/supervisor/conf.d
 
 11. Create the device-manager user and group and add yourself
 
@@ -382,6 +380,7 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
 
     cd user_script_env
     sudo docker build -t user_script .
+    cd ..
 
 19. Deploy backend service
 
@@ -398,6 +397,7 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
     cd frontend
     sudo make
     sudo make install
+    cd ..
 
 22. Start and enable Nginx
 
