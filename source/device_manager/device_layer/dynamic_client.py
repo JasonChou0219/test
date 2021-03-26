@@ -224,7 +224,6 @@ class DynamicSiLA2Client(SiLA2Client):
             feature_list_path = os.path.join(self.data_storage, 'features.txt')
             with open(feature_list_path, 'r') as feature_list_file:
                 for qualified_feature_identifier in feature_list_file.readlines():
-                    print('###########################     :     ', qualified_feature_identifier)
                     # generate the dynamic handler
                     if '/' in qualified_feature_identifier:
                         # For qualified features:

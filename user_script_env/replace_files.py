@@ -27,3 +27,18 @@ copyfile(hugo_repository_path + '/SiLA_replacements/SiLAService.py', sila2lib_pa
 copyfile(hugo_repository_path + '/SiLA_replacements/data_basic.py', sila2lib_path + '/proto_builder/data/data_basic.py')
 # _dynamic_command.py
 copyfile(hugo_repository_path + '/SiLA_replacements/_dynamic_command.py', sila2lib_path + '/proto_builder/_dynamic_command.py')
+
+# command.py
+copyfile(hugo_repository_path + '/SiLA_replacements/command.py', sila2lib_path + '/fdl_parser/command.py')
+# data_base.py
+copyfile(hugo_repository_path + '/SiLA_replacements/data_base.py', sila2lib_path + '/proto_builder/data/data_base.py')
+# data_structure.py
+copyfile(hugo_repository_path + '/SiLA_replacements/data_structure.py', sila2lib_path + '/proto_builder/data/data_structure.py')
+# data_type_definition.py
+copyfile(hugo_repository_path + '/SiLA_replacements/data_type_definition.py', sila2lib_path + '/fdl_parser/data_type_definition.py')
+# data_type_parameter.py
+copyfile(hugo_repository_path + '/SiLA_replacements/data_type_parameter.py', sila2lib_path + '/fdl_parser/data_type_parameter.py')
+# type_base.py
+copyfile(hugo_repository_path + '/SiLA_replacements/type_base.py', sila2lib_path + '/fdl_parser/type_base.py')
+# type_basic.py
+copyfile(hugo_repository_path + '/SiLA_replacements/type_basic.py', sila2lib_path + '/fdl_parser/type_basic.py')

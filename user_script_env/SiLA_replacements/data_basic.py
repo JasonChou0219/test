@@ -127,11 +127,12 @@ class DataBasic(DataBase):
             'date': ['%Y-%m-%d%z', '%Y-%m-%d'],         # Year, month, day; optionally a timezone
             'time': ['%H:%M:%S%z', '%H:%M:%S',          # Hour, minute and second, optionally a timezone
                      '%H:%M%z', '%H:%M'],               # Only hour and minute, second = 0, optionally a timezone
-            'timestamp': ['%Y-%m-%dT%H:%M:%S%z', '%Y-%m-%dT%H:%M:%S']  # iso format, optionally a timezone
+            'timestamp': ['%Y-%m-%dT%H:%M:%S%z', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%S+0000', '%Y-%m-%dT%H:%M:%S+%z']  # iso format, optionally a timezone
         }
 
         if (isinstance(value, datetime.date) and (target == 'date')) or \
                 (isinstance(value, datetime.time) and (target == 'time')) or \
+                (isinstance(value, datetime.time) and (target == 'timestamp')) or \
                 isinstance(value, datetime.datetime):
             # can be: datetime.datetime, datetime.date
             #   we can store them directly
@@ -152,6 +153,13 @@ class DataBasic(DataBase):
                                           hour=get_message_attr('hour', 0),
                                           minute=get_message_attr('minute', 0),
                                           second=get_message_attr('second', 0))
+            elif target == 'timestamp':
+                _date = datetime.datetime(year=get_message_attr('year', 1900),
+                                          month=get_message_attr('month', 1),
+                                          day=get_message_attr('day', 1),
+                                          hour=get_message_attr('hour', 0),
+                                          minute=get_message_attr('minute', 0),
+                                          second=get_message_attr('second', 0))
             else:
                 # Either target == 'timestamp' or simple fail-safe default
                 _date = datetime.datetime(year=get_message_attr('year', 1900),
@@ -165,14 +173,16 @@ class DataBasic(DataBase):
             for date_format in date_strings[target]:
                 try:
                     _date = datetime.datetime.strptime(value, date_format)
-                except ValueError:
-                    # this parsing failed, just try another option
-                    pass
-                else:
                     success = True
                     break
+                except ValueError:
+                    
+                    # this parsing failed, just try another option
+                    pass
+                    
             if not success:
                 # re-raise the value error that the input could not be parsed
+
                 raise ValueError
         else:
             raise TypeError
