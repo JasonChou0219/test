@@ -428,39 +428,101 @@ experiments = [{
 
 scripts = [
     {
-        'name': 'Hello device!',
-        'fileName': 'Hello_device.py',
+        'name': 'Tutorial 1 Hello SiLA 2 Manager!',
+        'fileName': 'Tutorial_1_Hello_SiLA_2_Manager.py',
         'user': 1,
-        'data': '# You can use this code editor like a regular scripting environment. \n'
-                '# If you require specific python packages for your script, you can import them here. \n'
-                '# Note: Packages you want to import must be specified in the dockerfiles requirements.txt! \n\n'
-                'import time\n\n'
-                'def run(devices):\n'
-                '    """ Required to import and instantiate devices """\n'
-                '    return\n\n'
-                '# Print statements do not get flushed, so they will not be forwarded to the frontend terminal straight away. This is a docker limitation\n'
-                "print(\'I will get printed with the following print statement. Check my timestamp!\')\n"
-                '# This problem can be circumvented by setting the flush attribute to true\n'
-                'time.sleep(3)\n'
-                "print(\'Yay me, i got flushed!\', flush=True)\n"
-                'time.sleep(3)\n\n'
-                '# If direct calls to stdout and stderr are made, they won\'t get flushed either. Output has to be flushed explicitly.\n'
-                'import sys\n'
-                "sys.stderr.write(\'Error\\n\')\n"
-                'sys.stderr.flush()\n'
-                'time.sleep(1)\n'
-                "sys.stdout.write(\'All Good\\n\')\n"
-                'sys.stdout.flush()\n'
-                'time.sleep(3)\n\n'
-                '# If logging is used, this problem doesn\'t arise. Logging statements are transferred via stderr and are flushed by default by the logging function.\n'
-                'import logging\n'
-                "logging.basicConfig(format=\'%(levelname)-8s| %(module)s.%(funcName)s: %(message)s\', level=logging.DEBUG)\n"
-                'logger = logging.getLogger(name=__name__)\n'
-                "logger.debug('A debug statement')\n"
-                "logger.info('An info statement')\n"
-                "logger.warning('A warning statement')\n"
-                "logger.critical('A critical warning statement')\n"
-                "logger.error('An error statement')\n"
+        'data': '""" \n'
+                'TUTORIAL 1: Hello_SiLA_2_Manager \n'
+                '--------------------------------------------- \n'
+                '1.1 You can use this code editor like a regular scripting environment.  \n'
+                '\t If you require specific python packages for your script, you can import them here. \n'
+                ' \n'
+                'Hint 1: Packages you want to import must be specified in the dockerfiles requirements.txt! \n'
+                '\t The file is located in your SiLA 2 Manager Installation directory. The default location \n'
+                '\t on Linux is /home/<your_username>/sila2_device_manager/user_script_env/requirements.txt. \n'
+                '\t If you change the requirements, you need to rerun the create_container.sh to update the  \n'
+                '\t docker container image. \n'
+                '""" \n'
+                ' \n'
+                'import sys \n'
+                'import time \n'
+                'import numpy as np \n'
+                ' \n'
+                '""" \n'
+                '1.2 You can use the python logging package and configure the output format here. Logging statements  \n'
+                '\t are transferred via the stderr of the docker container and are flushed by default by the logging  \n'
+                '\t function. All output is forwarded to the SiLA 2 Manager frontend. You can display the logs in the  \n'
+                '\t "experiments"-tab by clicking on an experiment. \n'
+                '\t When an script crashes straight-away, the logs may fail to arrive at the frontend so you have to  \n'
+                '\t open the files directly. \n'
+                '\t The log files are stored locally on your computer: \n'
+                '\t Linux:   /tmp/device_manager/container \n'
+                '\t Windows: C:/Users<your_username>/AppData/Local/Temp/device-manager/container \n'
+                '""" \n'
+                ' \n'
+                'import logging \n'
+                "logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging.DEBUG) \n"
+                'logger = logging.getLogger(name=__name__) \n'
+                ' \n'
+                '""" \n'
+                '1.3 When the experiment is started, the function run() is called. Therefore, every script must  \n'
+                '\t contain a run() function. The run function requires one argument: services. This argument  \n'            
+                '\t is used to pass the SiLA Server clients information into the script. You have to supply this \n'
+                '\t argument, even if you don\'t use it! \n'      
+                ' \n'
+                'Hint 2: Use the flush argument when using print statements or add a newline character (\\n) to the  \n'
+                '\t end of your string. Logging statements are flushed automatically. \n'
+                '""" \n'            
+                ' \n'
+                ' \n'
+                'def run(services): \n'   
+                '\t """ Required to import and instantiate devices """ \n'
+                '\t \n'
+                "\t print('Hello SiLA2 Manager') \n"
+                '\t # The above print statement will not be shown in the experiment terminal before the statement below is executed and flushed.\n'            
+                '\t time.sleep(5)  \n'
+                "\t print('Yay me, i got flushed!', flush=True) \n"   
+                "\t print(f'A random number: {np.random.rand()}', flush=True) \n"
+                '\t \n'
+                '\t write_logging_statement() \n'
+                '\t write_to_output() \n'   
+                ' \n'
+                '""" \n'
+                '1.4 You can call other functions from within thr run() function. The function "write_logging_statement" \n'   
+                '\t writes logging statements of all available log_levels. \n'
+                '""" \n'   
+                ' \n'
+                ' \n'
+                'def write_logging_statement(): \n'   
+                '\t """Writes logging statements""" \n'
+                '\t time.sleep(1) \n'
+                "\t logger.debug('A debug statement') \n"
+                '\t time.sleep(1) \n'   
+                "\t logger.info('An info statement') \n"
+                '\t time.sleep(1) \n'   
+                "\t logger.warning('A warning statement') \n"
+                '\t time.sleep(1) \n'   
+                "\t logger.critical('A critical warning statement') \n"
+                '\t time.sleep(1) \n'   
+                "\t logger.error('An error statement\n') \n"
+                '\t time.sleep(3) \n'   
+                ' \n'
+                '""" \n'   
+                '1.5 If direct calls to stdout and stderr are made, they won\'t get flushed either. Output has to be flushed explicitly. \n'
+                ' \n'   
+                'Hint 2: Use the flush argument when using print statements and the sys.stderr.flush and sys.stdout.flush function for  \n'
+                '\t write operations with sys. \n'
+                '""" \n'
+                ' \n'   
+                ' \n'
+                'def write_to_output(): \n'   
+                '\t """Writes message to stderr""" \n'
+                "\t sys.stderr.write('Error\n') \n"   
+                '\t sys.stderr.flush() \n'
+                '\t time.sleep(1) \n'   
+                "\t sys.stdout.write('All Good\n') \n"   
+                '\t sys.stdout.flush() \n'
+                ' \n'
     },
     {
         'name': 'Device example',
