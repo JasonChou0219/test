@@ -504,7 +504,7 @@ scripts = [
                 '\t time.sleep(1) \n'   
                 "\t logger.critical('A critical warning statement') \n"
                 '\t time.sleep(1) \n'   
-                "\t logger.error('An error statement\n') \n"
+                "\t logger.error('An error statement\\n') \n"
                 '\t time.sleep(3) \n'   
                 ' \n'
                 '""" \n'   
@@ -517,10 +517,10 @@ scripts = [
                 ' \n'
                 'def write_to_output(): \n'   
                 '\t """Writes message to stderr""" \n'
-                "\t sys.stderr.write('Error\n') \n"   
+                "\t sys.stderr.write('Error\\n') \n"   
                 '\t sys.stderr.flush() \n'
                 '\t time.sleep(1) \n'   
-                "\t sys.stdout.write('All Good\n') \n"   
+                "\t sys.stdout.write('All Good\\n') \n"   
                 '\t sys.stdout.flush() \n'
                 ' \n'
     },
