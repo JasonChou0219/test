@@ -3,12 +3,12 @@ TUTORIAL 2: Incorporating SiLA 2 Clients
 ---------------------------------------------
 
 This example uses the SiLA Python HelloSiLA_Full example server.
-You can download it from the repositroy at https://gitlab.com/SiLA2/sila_python/-/tree/master/examples/HelloSiLA2/HelloSiLA2_Full
+You can download it from the repository at https://gitlab.com/SiLA2/sila_python/-/tree/master/examples/HelloSiLA2/HelloSiLA2_Full
 
 To run this example follow these steps:
 
 2.1. Add a SiLA Server to your Services (Ideally the HelloSiLA example from the SiLA Python or Tecan repository)
-2.2. Go to the Data Handler tab and deactivate the "Activce" checkmark for the device you want to use
+2.2. Go to the Data Handler tab and deactivate the "Active" checkmark for the device you want to use
 2.3. Set up an experiment with and select this script and the device you want to use
 2.4. Hit the run button or wait for the scheduled execution time (You can click on the experiment
     name to get the docker container stdout, i.e the output of your script)
@@ -37,10 +37,10 @@ def run(services):
         time.sleep(1.5)
 
     # A SET command. A call to the DriveController of the pump. Set speed and start the first channel.
-    client.call_command("SiLAService\n","SetServerName",parameters = { "ServerName/constrained/String": "MyNewName" })
+    client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"})
     response = client.call_property("SiLAService\n", "ServerName")
     print('Changed name to: ', response, flush=True)
     # Change the ServerName back to the original one
-    client.call_command("SiLAService\n","SetServerName",parameters = { "ServerName/constrained/String": ServerName })
+    client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": ServerName})
     response = client.call_property("SiLAService\n", "ServerName")
     print('Changed name back to:', response, flush=True)
