@@ -33,6 +33,7 @@ def run(services):
         response = client.call_property("SiLAService\n", "ServerName")
         print(f'{i}. call:', response, flush=True)
         time.sleep(1.5)
+    OldServerName = response
 
     # A Set command. A call to the SiLAService feature. Change the server name.
     client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"})
@@ -40,6 +41,6 @@ def run(services):
     print('Changed name to: ', response['servername/constrained/string'], flush=True)
     # Change the ServerName back to the original one
     client.call_command("SiLAService\n","SetServerName", parameters={
-        "ServerName/constrained/String": ServerName['servername/constrained/string']})
+        "ServerName/constrained/String": OldServerName['servername/constrained/string']})
     response = client.call_property("SiLAService\n", "ServerName")
     print('Changed name back to:', response['servername/constrained/string'], flush=True)

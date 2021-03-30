@@ -13,28 +13,10 @@ from hashlib import sha256
 devices = [{
     'uuid': uuid4(),
     'server_uuid': uuid4(),
-    'name': "Dummy Device 1",
+    'name': "SiLA_Python_Test",
     'type': DeviceType.SILA,
-    'address': "192.168.0.20",
-    'port': 50001,
-    'available': True,
-    'user': None
-}, {
-    'uuid': uuid4(),
-    'server_uuid': uuid4(),
-    'name': "Dummy Device 2",
-    'type': DeviceType.CUSTOM,
-    'address': "192.168.0.25",
-    'port': 55001,
-    'available': False,
-    'user': 1
-}, {
-    'uuid': uuid4(),
-    'server_uuid': uuid4(),
-    'name': "Dummy Device 3",
-    'type': DeviceType.SILA,
-    'address': "192.168.0.40",
-    'port': 50002,
+    'address': "127.0.0.1",
+    'port': 50051,
     'available': True,
     'user': None
 }]
@@ -392,7 +374,24 @@ logs = [
 
 booking_info = [{
     'name':
-    'experiment1',
+    'Tutorial_1',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'device': None,
+    'experiment':
+    1
+},
+{
+    'name':
+    'Tutorial_2',
     'start':
     int(
         datetime.strptime('19-09-2020 08:54:22',
@@ -406,12 +405,46 @@ booking_info = [{
     'device':
     devices[0]['uuid'],
     'experiment':
-    1
+    2
+},
+{
+    'name':
+    'Tutorial_3',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'device': None,
+    'experiment':
+    3
+},
+{
+    'name':
+    'Tutorial_4',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'device': None,
+    'experiment':
+    4
 }]
 
 experiments = [{
     'name':
-    'Experiment 1',
+    'Tutorial_1',
     'start':
     int(
         datetime.strptime('19-09-2020 08:54:22',
@@ -424,6 +457,54 @@ experiments = [{
     1,
     'script':
     1
+},
+{
+    'name':
+    'Tutorial_2',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'script':
+    2
+},
+{
+    'name':
+    'Tutorial_3',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'script':
+    3
+},
+{
+    'name':
+    'Tutorial_4',
+    'start':
+    int(
+        datetime.strptime('19-09-2020 08:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'end':
+    int(
+        datetime.strptime('20-09-2020 09:54:22',
+                          '%d-%m-%Y %H:%M:%S').timestamp()),
+    'user':
+    1,
+    'script':
+    4
 }]
 
 scripts = [
@@ -522,7 +603,6 @@ scripts = [
                 '\ttime.sleep(1) \n'   
                 "\tsys.stdout.write('All Good\\n') \n"   
                 '\tsys.stdout.flush() \n'
-                '\n'
     },
     {
         'name': 'Tutorial 2 Incorporating SiLA 2 Services',
@@ -565,17 +645,17 @@ scripts = [
                 '\t\tresponse = client.call_property("SiLAService\\n", "ServerName") \n'
                 '\t\tprint(response, flush=True) \n'
                 '\t\ttime.sleep(2)\n'
+                '\tOldServerName=response \n'
                 '\t\n'
                 '\t# A Set command. A call to the SiLAService feature. Change the server name. \n'
                 '\tclient.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"}) \n'
                 '\tresponse = client.call_property("SiLAService\\n", "ServerName") \n'
                 "\tprint('Changed name to: ', response['servername/constrained/string'], flush=True) \n"
                 '\t# Change the ServerName back to the original one \n'
-                '\tclient.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": ServerName["servername/constrained/string"]}) \n'
+                '\tclient.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": OldServerName["servername/constrained/string"]}) \n'
                 '\t# Change the ServerName back to the original one\n'
                 '\tresponse = client.call_property("SiLAService\\n", "ServerName") \n'
                 "\tprint('Changed name back to:', response['servername/constrained/string'], flush=True) \n"
-                '\n'
     },
     {
         'name': 'Tutorial 3 Using The Data Handler',
@@ -613,7 +693,6 @@ scripts = [
                 'def run(services): \n'
                 '\t""" Required to import and instantiate devices """ \n'
                 '\treturn \n'
-                '\n'
     },
     {
         'name': 'Tutorial 4 Incorporating Databases',
@@ -640,7 +719,7 @@ scripts = [
                 "\tprint(f'Checking connectivity. DB server version: {influx_client.ping()}', flush=True) \n"
                 '\n'
                 '\t""" \n'
-                '4.3 If you do not already have a database, creat a new one: \n'
+                '\t4.3 If you do not already have a database, creat a new one: \n'
                 '\t""" \n'
                 '\n'
                 "\tinflux_client.create_database(dbname='SiLA_2_Manager') \n"
@@ -659,12 +738,12 @@ scripts = [
                 '\t\t\t"tags": { \n'
                 '\t\t\t\t"experiment_name": "influxDB_test", \n'
                 '\t\t\t\t"device": "experiment_docker_container" \n'
-                '\t\t\t\t}, \n'
+                '\t\t\t}, \n'
                 '\t\t\t"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"), \n'
                 '\t\t\t"fields": { \n'
                 '\t\t\t\t"test_number": random_number \n'
-                '\t\t\t\t} \n'
                 '\t\t\t} \n'
+                '\t\t} \n'
                 '\n'
                 '\t\ttry: \n'
                 '\t\t\tinflux_client.write_points([data_point]) \n'
@@ -674,8 +753,8 @@ scripts = [
                 '\n'
                 '\t\t""" \n'
                 '\t\t4.5 Query your data using the SQL-like Influx Query Language (InfluxQL). You can find information on the syntax at: \n'
-                '\t\thttps://docs.influxdata.com/influxdb/v1.8/query_language/ . The following query will read the value that was  \n'
-                '\t\tjust written to the database. \n'
+                '\t\t\thttps://docs.influxdata.com/influxdb/v1.8/query_language/ . The following query will read the value that was  \n'
+                '\t\t\tjust written to the database. \n'
                 '\n'
                 '\t\tHint 4: Copy and paste the query below to visualize the data in chronograf. Change the LIMIT to display the \n' 
                 '\t\t\tnumber of last data points. Remove the escape character (backslash) around the influxDB_test in the query.  \n'
@@ -685,11 +764,10 @@ scripts = [
                 '\n'
                 '\t\t# This is an example query. \n'
                 '\t\tresults = influx_client.query( \n'
-                "\t\t\t'SELECT test_number FROM SiLA_2_Manager.autogen.testMeasurement WHERE experiment_name = \'influxDB_test\' GROUP BY position ORDER BY DESC LIMIT 1') \n"
+                "\t\t\t'SELECT test_number FROM SiLA_2_Manager.autogen.testMeasurement WHERE experiment_name = \\'influxDB_test\\' GROUP BY position ORDER BY DESC LIMIT 1') \n"
                 "\t\tprint('The latest random number was queried from the database: ',  flush=True) \n"
                 '\t\tprint(results, flush=True) \n'
                 '\t\ttime.sleep(5) \n'
-                '\n'
     }
 ]
 
@@ -926,9 +1004,9 @@ def main():
     add_defined_execution_errors(c)
     add_databases(c)
     add_logs(c)
-    add_booking_info(c)
-    add_experiments(c)
     add_scripts(c)
+    add_experiments(c)
+    add_booking_info(c)
     conn.commit()
     conn.close()
 
