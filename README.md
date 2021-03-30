@@ -5,7 +5,7 @@ It provides the user with a SiLA service management system, a scheduler, a scrip
 planning utility, and a data handler to link service data to a database.
 
 # Installation
-Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.
+Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.  
 
 # Compatibility
 The SiLA Manager is compatible with the [SiLA2 Python](https://gitlab.com/SiLA2/sila_python) repository and all SiLA 
