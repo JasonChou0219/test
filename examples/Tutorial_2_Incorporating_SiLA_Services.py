@@ -29,18 +29,17 @@ def run(services):
     ServerName = response
     print(response, flush=True)
 
-
-
     for i in range(10):
         response = client.call_property("SiLAService\n", "ServerName")
         print(f'{i}. call:', response, flush=True)
         time.sleep(1.5)
 
-    # A SET command. A call to the DriveController of the pump. Set speed and start the first channel.
+    # A Set command. A call to the SiLAService feature. Change the server name.
     client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"})
     response = client.call_property("SiLAService\n", "ServerName")
-    print('Changed name to: ', response, flush=True)
+    print('Changed name to: ', response['servername/constrained/string'], flush=True)
     # Change the ServerName back to the original one
-    client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": ServerName})
+    client.call_command("SiLAService\n","SetServerName", parameters={
+        "ServerName/constrained/String": ServerName['servername/constrained/string']})
     response = client.call_property("SiLAService\n", "ServerName")
-    print('Changed name back to:', response, flush=True)
+    print('Changed name back to:', response['servername/constrained/string'], flush=True)

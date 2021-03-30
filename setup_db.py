@@ -569,12 +569,12 @@ scripts = [
                 '\t # A Set command. A call to the SiLAService feature. Change the server name. \n'
                 '\t client.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"}) \n'
                 '\t response = client.call_property("SiLAService\\n", "ServerName") \n'
-                "\t print('Changed name to: ', response, flush=True) \n"
+                "\t print('Changed name to: ', response['servername/constrained/string'], flush=True) \n"
                 '\t # Change the ServerName back to the original one \n'
-                '\t client.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": ServerName}) \n'
+                '\t client.call_command("SiLAService\\n","SetServerName", parameters={"ServerName/constrained/String": ServerName["servername/constrained/string"]}) \n'
                 '\t # Change the ServerName back to the original one\n'
                 '\t response = client.call_property("SiLAService\\n", "ServerName") \n'
-                "\t print('Changed name back to:', response, flush=True) \n"
+                "\t print('Changed name back to:', response['servername/constrained/string'], flush=True) \n"
                 '\n'
     },
     {
