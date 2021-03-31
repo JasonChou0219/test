@@ -389,6 +389,13 @@ edit /etc/redis/redis.conf and change *supervised no* to *supervised systemd*
     sudo pipenv run ./deploy_backend.sh
 
 20. Edit Device-Manager Configuration File
+The configuration files are located in the main directory under:
+
+.. code-block:: console
+
+    ./server-config/device-manager.conf
+    ./server-config/device-manager-backend.supervisor.conf
+    ./server-config/device-manager-scheduler.supervisor.conf
 
 21. Build and install frontend
 
