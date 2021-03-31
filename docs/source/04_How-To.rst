@@ -54,7 +54,7 @@ are displayed with the attributed SiLA-datatype.
 .. note::
     In this documentation and the code base the word SiLA Device and SiLA Service are often used unanimously. However,
     a SiLA Device is just a special case of a SiLA Service. Both are always special implementations of a SiLA Server.
-    A SiLA Server can implement a broad variety of soft- and hardware, such as laboratory device, virtaul machines,
+    A SiLA Server can implement a broad variety of soft- and hardware, such as laboratory device, virtual machines,
     software solution or API wrappers.
 
 
@@ -145,8 +145,8 @@ be specified in the *requirements.txt*.
 
     Scripts are not checked for programming errors. Check your code in an IDE before scheduling any experiments!
 
-Hello world!
-^^^^^^^^^^^^^^
+Tutorial 1: Hello SiLA 2 Manager!
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The *Hello device!* example is one of three pre-installed example scripts. You can find this example among the others
 in the \'Scripts\'-tab. Assign this script to a new experiment and schedule it for execution. The output should be
@@ -154,15 +154,101 @@ printed to the experiment console view.
 
 .. code-block:: python
 
-        # You can use this code editor like a regular scripting environment.
-        # If you require specific python packages for your script, you can import them here.
-        # Note: Packages you want to import must be specified in the dockerfiles requirements.txt!
+        """
+        TUTORIAL 1: Hello_SiLA_2_Manager
+        ---------------------------------------------
 
-        print("Hello World!")
+        1.1 You can use this code editor like a regular scripting environment.
+            If you require specific python packages for your script, you can import them here.
+
+        Hint 1: Packages you want to import must be specified in the dockerfiles requirements.txt!
+            The file is located in your SiLA 2 Manager Installation directory. The default location
+            on Linux is /home/<your_username>/sila2_device_manager/user_script_env/requirements.txt.
+            If you change the requirements, you need to rerun the create_container.sh to update the
+            docker container image.
+        """
+        import sys
+        import time
+        import logging
+        import numpy as np
+
+        """
+        1.2 You can use the python logging package and configure the output format here. Logging statements
+            are transferred via the stderr of the docker container and are flushed by default by the logging function.
+            All output is forwarded to the SiLA 2 Manager frontend. You can display the logs in the "experiments"
+            tab by clicking on an experiment.
+            When an script crashes straight-away, the logs may fail to arrive at the frontend so you have to open
+            the files directly.
+            The log files are stored locally on your computer:
+            Linux:   /tmp/device_manager/container
+            Windows: C:\\Users\\<your_username>\\AppData\\Local\\Temp\\device-manager\\container
+        """
+
+        logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging.DEBUG)
+        logger = logging.getLogger(name=__name__)
+
+        """
+        1.3 When the experiment is started, the function run() is called. Therefore, every script must
+            contain a run() function. The run function requires one argument: services. This argument
+            is used to pass the SiLA Server clients information into the script. You have to supply this
+            argument, even if you don't use it!
+
+        Hint 2: Use the flush argument when using print statements or add a newline character (\n) to the
+            end of your string. Logging statements are flushed automatically.
+
+        """
 
 
-Service/Device integration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        def run(services):
+            """ Required to import and instantiate devices """
+
+            print('Hello SiLA2 Manager')
+            # The above print statement will not be shown in the experiment terminal before the statement below is executed and flushed.
+            time.sleep(5)
+            print('Yay me, i got flushed!', flush=True)
+            print(f'A random number: {np.random.rand()}', flush=True)
+
+            write_logging_statement()
+            write_to_output()
+        """
+        1.4 You can call other functions from within thr run() function. The function "write_logging_statement"
+            writes logging statements of all available log_levels.
+        """
+
+
+        def write_logging_statement():
+            """Writes logging statements"""
+            time.sleep(1)
+            logger.debug('A debug statement')
+            time.sleep(1)
+            logger.info('An info statement')
+            time.sleep(1)
+            logger.warning('A warning statement')
+            time.sleep(1)
+            logger.critical('A critical warning statement')
+            time.sleep(1)
+            logger.error('An error statement\n')
+            time.sleep(3)
+
+        """
+        1.5 If direct calls to stdout and stderr are made, they won't get flushed either. Output has to be flushed explicitly.
+
+        Hint 2: Use the flush argument when using print statements and the sys.stderr.flush and sys.stdout.flush function for
+            write operations with sys.
+        """
+
+
+        def write_to_output():
+            """Writes message to stderr"""
+            sys.stderr.write('Error\n')
+            sys.stderr.flush()
+            time.sleep(1)
+            sys.stdout.write('All Good\n')
+            sys.stdout.flush()
+
+
+Tutorial 2: Incorporating SiLA Services
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All registered services can be accessed in the scripting environment. However, used services should be selected in the
 experiment setup phase. A dictionary with all service clients can be imported. Instantiating the client enables the user
 to execute all functions the service offers. Further information on the python syntax for the service object access can be
@@ -172,24 +258,52 @@ the service for exclusive use for that script.
 
 .. code-block:: python
 
-        # This example will show you how to import a service client
+        """
+        TUTORIAL 2: Incorporating SiLA 2 Clients
+        ---------------------------------------------
+
+        This example uses the SiLA Python HelloSiLA_Full example server.
+        You can download it from the repository at https://gitlab.com/SiLA2/sila_python/-/tree/master/examples/HelloSiLA2/HelloSiLA2_Full
+
+        To run this example follow these steps:
+
+        2.1. Add a SiLA Server to your Services (Ideally the HelloSiLA example from the SiLA Python or Tecan repository)
+        2.2. Go to the Data Handler tab and deactivate the "Active" checkmark for the device you want to use
+        2.3. Set up an experiment with and select this script and the device you want to use
+        2.4. Hit the run button or wait for the scheduled execution time (You can click on the experiment
+            name to get the docker container stdout, i.e the output of your script)
+
+        Hint 3: The command/property call syntax is displayed in the "Services" tab. It is shown under
+            "Usage" on the lowest level of the device tree for every command and property.
+        """
         import time
 
 
         def run(services):
-            """ Instantiates selected services/devices for this experiment """
-
-            # Check which services are available
-            print(f'{time.time()}: Imported services: {[service.name for service in services]}', flush=True)
-
-            # Assign device
+            """ Instantiates selected devices for this experiment """
             client = services[0]
-            print(f'Client is: {client} and of type {type(client)}', flush=True)
+            print(f'Service instantiated: {client.name}@{client.ip}:{client.port}', flush=True)
+            client.connect()
+            # A GET command. A call to the SiLAService feature. Request the server name.
+            response = client.call_property("SiLAService\n", "ServerName")
+            ServerName = response
+            print(response, flush=True)
 
-            # Make a property call
-            response = client.call_property("SiLAService", "ServerName")
-            print(f'Response is: {response}', flush=True)
+            for i in range(10):
+                response = client.call_property("SiLAService\n", "ServerName")
+                print(f'{i}. call:', response, flush=True)
+                time.sleep(1.5)
+            OldServerName = response
 
+            # A Set command. A call to the SiLAService feature. Change the server name.
+            client.call_command("SiLAService\n","SetServerName", parameters={"ServerName/constrained/String": "MyNewName"})
+            response = client.call_property("SiLAService\n", "ServerName")
+            print('Changed name to: ', response['servername/constrained/string'], flush=True)
+            # Change the ServerName back to the original one
+            client.call_command("SiLAService\n","SetServerName", parameters={
+                "ServerName/constrained/String": OldServerName['servername/constrained/string']})
+            response = client.call_property("SiLAService\n", "ServerName")
+            print('Changed name back to:', response['servername/constrained/string'], flush=True)
 
 
 .. note::
@@ -197,8 +311,52 @@ the service for exclusive use for that script.
     The syntax of the command call is shown in the service tree on the lowest level of each function call.
     You need to replace the "yourObject" part of the displayed call with the client object of that service!
 
-Database integration
-^^^^^^^^^^^^^^^^^^^^^^
+Tutorial 3: Using the Data Handler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The data handler allows the user to link a SiLA Service to a time-series database (InfluxDB). The data handler can be
+configured for every SiLA Service to poll data in a user specified interval for selected commands and roperties. If data
+transfer is activated for a Service, the data acquisition is started automatically for as soon as the respective
+experiment is started.
+
+.. code-block:: python
+
+        """
+        TUTORIAL 3: Using the Data Handler
+        ---------------------------------------------
+        3.1 The data handler can be used without writing a script. Go to the data handler tab and setup a database. Influx
+            databases are supported. The overview will show you whether a connection has been established between the SiLA 2
+            Manager and the specified database. Depending on the security settings of your database, supplying a username or
+            password may not be necessary.
+
+        3.2 You can link a database to a specific SiLA service. Click on the link button and select the desired database. You
+            can unlink a database by selecting the empty option [] in the drop-down menu.
+
+        3.3 There are several levels of customization. Expand the Service tree and activate the SiLA Features you want the data-
+            acquisition to be active for. Selecting "Data Transfer" on the top level will automatically activate all features.
+            Start de-selecting.
+
+        3.4 The data handler distinguishes between two types of data: Meta data and process/experimental data. They differ in
+            the time interval they are queried in. Both types have a set default polling interval. However, you may customize
+            the time interval for both of them for each SiLA Command and Property on the lowest level of the tree.
+
+        3.5 If a command requires a parameter, you can set the parameter here.
+
+        3.6 The data handler is active for the full duration of the experiment and does not stop when the script is finished.
+            It will only stop at the specified time or if the experiment is stopped manually.
+
+        Hint 4: If your parameter changes over time, you should exclude the command query from the data handler and add a
+            respective function and command call to your experimental script.
+        """
+
+
+        def run(services):
+            """ Required to import and instantiate devices """
+            return
+
+
+Tutorial 3: Incorporating Databases
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This example shows you how to include read and write operations to and from databases into your script. The client
 package of the database must be included in the docker requirements.txt, so you can access the client object in the
@@ -211,42 +369,76 @@ chronograf interface.
 
 .. code-block:: python
 
+        """
+        TUTORIAL 4: Incorporating Databases
+        ---------------------------------------------
+        4.1 Import the InfluxDBClient and other packages you will need
+        """
         from influxdb import InfluxDBClient
         from datetime import datetime
         import numpy as np
+        import time
+
+        """
+        4.2 Instantiate the InfluxDBClient with the connection details of the respective database and check the connection by
+            pinging the database server. Make sure to change the default connection details below to your database details!
+        """
 
 
-        # Instantiate the database client.
-        influx_client = InfluxDBClient(host='localhost', port=8086, username='root',
-                                       password='root', database='device_manager')
+        def run(services):
+            influx_client = InfluxDBClient(host='127.0.0.1', port=8086, username='root', password='root', database='SiLA_2_Manager')
+            print(f'Checking connectivity. DB server version: {influx_client.ping()}', flush=True)
 
-        # Check connection
-        print(f'Checking connectivity. DB server version: {influx_client.ping()}')
+            """
+            4.3 If you do not already have a database, creat a new one:
+            """
 
-        for i in range(0, 100, 1):
-        # This is an example write operation
-            data_point = {
-                "measurement": "testMeasurement",
-                "tags": {
-                    "experiment_name": "influxDB_test"
-                },
-                "time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "fields": {
-                    "test_number": np.random.rand(1)
+            influx_client.create_database(dbname='SiLA_2_Manager')
+
+            """
+            4.4 Create a datapoint to write to the database. Add adequate tags so you can filter your data efficiently in
+                chronograf. If your script is running, you can check your data live in your browser, if your chronograf server
+                is running: <ip-of-the-chronograf/influxDB-server>:8888 .
+            """
+
+            for i in range(0, 25, 1):
+                # This is an example write operation
+                random_number = np.random.rand()
+                data_point = {
+                    "measurement": "testMeasurement",
+                    "tags": {
+                        "experiment_name": "influxDB_test",
+                        "device": "experiment_docker_container"
+                    },
+                    "time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "fields": {
+                        "test_number": random_number
+                    }
                 }
-            }
-             try:
-                influx_client.write_point([data_point])
-            except:
-                 print("This did not work...")
 
-            # This is an example query.
-            results = influx_client.query(
-                'SELECT test_number FROM "device_manager"."autogen"."testMeasurement" WHERE'
-                'experiment_name = \'influxDB_test\' GROUP BY position ORDER BY DESC LIMIT 1')
-            print(results)
+                try:
+                    influx_client.write_points([data_point])
+                    print(f'A random number was written to the database: {random_number}', flush=True)
+                except:
+                    print("This did not work...")
 
-            time.sleep(10)
+                """
+                4.5 Query your data using the SQL-like Influx Query Language (InfluxQL). You can find information on the syntax at:
+                    https://docs.influxdata.com/influxdb/v1.8/query_language/ . The following query will read the value that was
+                    just written to the database.
+
+                Hint 4: Copy and paste the query below to visualize the data in chronograf. Change the LIMIT to display the
+                    number of last data points. Remove the escape character (backslash) around the influxDB_test in the query.
+                    You can leave out the last part of the query, starting at ORDER BY, to display all available measurements
+                    of this type.
+                """
+
+                # This is an example query.
+                results = influx_client.query(
+                    'SELECT test_number FROM "SiLA_2_Manager"."autogen"."testMeasurement" WHERE experiment_name = \'influxDB_test\' GROUP BY position ORDER BY DESC LIMIT 1')
+                print('The latest random number was queried from the database: ',  flush=True)
+                print(results, flush=True)
+                time.sleep(5)
 
 
 Process monitoring

@@ -66,6 +66,10 @@ specified in the file */source/device_manager/database.py* in the function *get_
 requires several connections. If multiple users access the device manager, the total number of connections may get
 exhausted. Increasing the number of *maxconn* of the SimpleConnectionPool will solve this problem.
 
+**Update**
+If the maximum number of connections is exhausted, the SiLA 2 Manager will close all idle connections fully and put them
+back into the pool. The above error should not arise anymore.
+
 SiLA 2 Python (sila2lib) Error: KeyError 'HOME'
 -------------------------------------------------------
 **Error**:
@@ -105,3 +109,6 @@ To-do:
 - Incorporate observable commands in device manager
 - Implement lock/authorization feature
 - Edit experiment and update bookings and experiments in backend properly
+- Change project nomenclature to SiLA 2 nomenclature
+- Full SiLA 2 release 1.0 support
+- Out-of-scope: Support SiLA 2 release 1.1
