@@ -5,7 +5,7 @@ It provides the user with a SiLA service management system, a scheduler, a scrip
 planning utility, and a data handler to link service data to a database.
 
 # Installation
-Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.
+Read the [docs](https://sila2-manager.readthedocs.io/en/latest/) for more detailed information.  
 
 # Compatibility
 The SiLA Manager is compatible with the [SiLA2 Python](https://gitlab.com/SiLA2/sila_python) repository and all SiLA 
@@ -112,66 +112,77 @@ Check that protobuf has been uninstalled:
 `sudo pip3 install --no-binary=:all: -t $/home/<usr>/sila2_device_manager/.venv/lib/python3.8/site-packages protobuf==3.15.0`    
 Check that protobuf has been reinstalled.  
 
-8. Install and Enable Nginx Config  
+8. Replace some files in the sila2lib of the virtual environment  
+`sudo pipenv run python3.8 replace_files.py`  
+
+9. Install and Enable Nginx Config  
 `sudo cp server-config/device-manager.conf /etc/nginx/sites-available/`  
 `sudo ln -s /etc/nginx/sites-available/device-manager.conf /etc/nginx/sites-enabled/device-manager.conf`  
 
-9. Install Supervisor Config  
+10. Install Supervisor Config  
 `sudo cp server-config/device-manager-backend.supervisor.conf /etc/supervisor/conf.d`  
 `sudo cp server-config/device-manager-scheduler.supervisor.conf /etc/supervisor/conf.d`  
 
-10. Create the device-manager user and group and add yourself  
+11. Create the device-manager user and group and add yourself  
 `sudo adduser --system --no-create-home --group --ingroup docker device-manager`  
 `sudo gpasswd -a your-user-name device-manager`  
 
-11. Create www directory  
+12. Create www directory  
 `sudo mkdir /var/www/html/device-manager-frontend`  
 `chmod -R device-manager /var/www/html/device-manager-frontend`  
 `chgrp -R device-manager /var/www/html/device-manager-frontend`  
 `chmod -R 775 /var/www/html/device-manager-frontend`  
 
-12. Create Backend Config Directory  
+13. Create Backend Config Directory  
 `sudo mkdir /etc/device-manager/`  
 
-13. Start and Enable PostgreSQL  
+14. Start and Enable PostgreSQL  
 `sudo systemctl enable postgresql.service`  
 `sudo systemctl start postgresql.service`  
 
-14. Set Postgres password  
+    Fill the database with the initial values and examples  
+    `pipenv run python setup_db.py`
+
+15. Set Postgres password  
 `sudo -u postgres psql postgres`  
 `\password postgres`  
 enter the password  
 `\q`  
 
-15. Start and Enable Docker  
+16. Start and Enable Docker  
 `sudo systemctl enable docker.service`  
 `sudo systemctl start docker.service`  
 
-16. Enable and configure Redis  
+17. Enable and configure Redis  
 edit /etc/redis/redis.conf and change   
 `supervised no` to `supervised systemd`  
 `sudo systemctl enable redis.service`  
 `sudo systemctl start redis.service`  
 
-17. Create the user-script docker image  
+18. Create the user-script docker image  
 `cd user_script_env`  
 `sudo docker build -t user_script .`  
+`cd ..`
 
-18. Deploy Backend  
+19. Deploy Backend  
 `sudo pipenv run ./deploy_backend.sh`  
 
-19. Edit Device-Manager Configuration File  
-
-20. Build and Install Frontend  
+20. Edit Device-Manager Configuration File  
+The configuration files are located in the main directory under:  
+    `./server-config/device-manager.conf`  
+    `./server-config/device-manager-backend.supervisor.conf`    
+    `./server-config/device-manager-scheduler.supervisor.conf`  
+      
+21. Build and Install Frontend  
 `cd frontend`  
 `sudo make`  
 `sudo make install`  
 
-21. Start and Enable Nginx  
+22. Start and Enable Nginx  
 `sudo systemctl enable nginx.service`  
 `sudo systemctl start nginx.service`  
 
-22. Start and Enable Supervisor  
+23. Start and Enable Supervisor  
 `sudo systemctl enable supervisor.service`  
 `sudo systemctl start supervisor.service`  
 
