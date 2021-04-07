@@ -88,12 +88,23 @@ to install *node.js*. To download *node.js* visit the `node.js download website 
 
     sudo apt-get install nodejs
 
+Make sure you have a current version of node.js (v12.18.4 or greater). Run the following command to check your node.js version:
+
+.. code-block:: console
+
+    node -v
 
 The *node.js* package manager *npm* can downloaded from the `npm download website <https://nodejs.org/en/>`_ (Windows) or using *apt-get*:
 
 .. code-block:: console
 
    sudo apt-get install npm
+
+Make sure you have a current version of npm (v6.14.6 or greater). Run the following command to check your npm version:
+
+.. code-block:: console
+
+    npm -v
 
 The node.js packages can be installed by executing the following code from within the frontend directory:
 
