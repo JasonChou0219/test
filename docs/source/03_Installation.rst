@@ -129,7 +129,9 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
 1. Create the user-script docker image.
 
    You can modify the docker container that is used for experiments by changing the dockerfile in 'user_script_env'
-   to include packages that you want to use in the scripting environment.To create the container run:
+   to include packages that you want to use in the scripting environment.To create the container run. If you encounter 
+   an error, try a different docker base image such as python:3 or python:3.8.0-slim by changing the first line in the 
+   Dockerfile "FROM python:3.8.3-alpine" to your respective choice:
 
 .. code-block:: console
 
