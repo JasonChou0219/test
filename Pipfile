@@ -39,5 +39,7 @@ sphinx-material = "*"
 gunicorn = "*"
 uvloop = "*"
 httptools = "*"
+influxdb-client = "*"
+dataclasses = "*"
 
 [requires]
