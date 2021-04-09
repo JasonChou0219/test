@@ -134,7 +134,7 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
 .. code-block:: console
 
    cd user_script_env
-   docker build -t user_script
+   create_container_image.sh
 
 2. For the development version the containers for the postgrSQL and redis DB need to be downloaded:
 
@@ -150,7 +150,7 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
    docker start postgres
    docker start redis
 
-4. Experiments are run in docker containers. The container can be customized. To create the container, run the *create_container_image* script* in the *user_script_env* folder:
+4. [Optional] Experiments are run in docker containers. The container can be customized. To re-create the container, run the *create_container_image* script* in the *user_script_env* folder:
 
 .. code-block:: console
 
@@ -184,7 +184,7 @@ For Windows:
 
 .. code-block:: python
 
-   python setup_test_db.py
+   pipenv run python setup_db.py
 
 2. Create a configuration file
 
@@ -193,7 +193,7 @@ For Windows:
 
 .. code-block:: python
 
-   python generate_config.py
+   pipenv run python generate_config.py
 
 Starting the device manager in development mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
