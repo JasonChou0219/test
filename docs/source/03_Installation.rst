@@ -216,7 +216,8 @@ To start the device manager in the development mode, the respective modules must
         ./run_backend_server.sh
 
 2. Start the frontend server
-    In a separate process run:
+    If you have already set up your javascript run-time environment and run npm install in the frontend folder,
+    you can start the frontend in a separate process with:
 
     .. code-block:: console
 
