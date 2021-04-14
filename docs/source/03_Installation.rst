@@ -28,7 +28,7 @@ or clone the git repository with:
 
 Setting up the python environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This project requires python3.6 or higher. The latest python distribution can be downloaded `here <https://pypi.org/project/pipenv/>`_.
+This project requires python3.7 or higher. The latest python distribution can be downloaded `here <https://pypi.org/project/pipenv/>`_.
 
 Before running any code in this project, all required python packages must be installed.
 It is strongly recommended to set up a virtual environment. The project is shipped with a pipfile that contains
