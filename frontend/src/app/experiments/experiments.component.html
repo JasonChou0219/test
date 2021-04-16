@@ -140,6 +140,18 @@
                     [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
                 >
                     <p>Docker terminal output: </p>
+                    <button mat-icon-button
+                            [cdkCopyToClipboard]="element.experimentLogs.logList"
+                            [cdkCopyToClipboardAttempts]="5"
+                            (click)="copy_logs(i)"
+                            matTooltip="Copy to clipboard">
+                        <mat-icon>file_copy</mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            (click)="save_logs(i)"
+                            matTooltip="Save as text file">
+                        <mat-icon>save_alt</mat-icon>
+                    </button>
                     <ng-container
                         *ngIf="(experimentLogs$ | async) as experiment_logs; else no_logs">
                         <div
@@ -151,7 +163,7 @@
                     </ng-container>
                     <ng-template #no_logs>
                             <div class="terminal" >
-                                <pre>{{element.experimentLogs.logList}}</pre>
+                                <pre >{{element.experimentLogs.logList}}</pre>
                             </div>
                     </ng-template>
                 </div>

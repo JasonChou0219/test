@@ -26,6 +26,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip'
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { DxSchedulerModule } from 'devextreme-angular/ui/scheduler';
 
@@ -128,6 +129,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         MatDatepickerModule,
         MatSnackBarModule,
         MatTooltipModule,
+        ClipboardModule,
         CalendarModule.forRoot({
             provide: DateAdapter,
             useFactory: adapterFactory,
