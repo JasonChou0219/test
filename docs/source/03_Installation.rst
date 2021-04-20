@@ -55,6 +55,12 @@ feel free to use the supplied requirements.txt
 
    pipenv install
 
+    If you are installing on a unix system, you should also install uvloop:
+
+.. code-block:: console
+
+   pipenv install uvloop
+
 3. Entering the virtual environment
 
    Most IDE's support automatic detection of virtual environments and will start the console in this environment.
