@@ -132,12 +132,20 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
    You can modify the docker container that is used for experiments by changing the dockerfile in 'user_script_env'
    to include packages that you want to use in the scripting environment.To create the container run. If you encounter 
    an error, try a different docker base image such as python:3 or python:3.8.0-slim by changing the first line in the 
-   Dockerfile "FROM python:3.8.3-alpine" to your respective choice:
+   Dockerfile "FROM python:3.8.3-alpine" to your respective choice On Linux run:
 
 .. code-block:: console
 
    cd user_script_env
    create_container_image.sh
+
+    On windows run:
+
+
+.. code-block:: console
+
+   cd user_script_env
+   create_container_image.bat
 
 2. For the development version the containers for the postgrSQL and redis DB need to be downloaded:
 
@@ -158,7 +166,9 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
 .. code-block:: console
 
    cd user_script_env
-   create_container_image.sh
+   [Unix] create_container_image.sh
+   [Windows] create_container_image.bat
+
 
 You can modify the container image by editing the Dockerfile or by adding new python packages to the requirements.txt.
 
