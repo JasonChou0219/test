@@ -55,11 +55,6 @@ feel free to use the supplied requirements.txt
 
    pipenv install
 
-    If you are installing on a unix system, you should also install uvloop:
-
-.. code-block:: console
-
-   pipenv install uvloop
 
 3. Entering the virtual environment
 
