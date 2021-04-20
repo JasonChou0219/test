@@ -383,11 +383,9 @@ booking_info = [{
     int(
         datetime.strptime('20-09-2020 09:54:22',
                           '%d-%m-%Y %H:%M:%S').timestamp()),
-    'user':
-    1,
-    'device': None,
-    'experiment':
-    1
+    'user': 1,
+    'device': devices[0]["uuid"],
+    'experiment': 1
 },
 {
     'name':
@@ -400,12 +398,9 @@ booking_info = [{
     int(
         datetime.strptime('20-09-2020 09:54:22',
                           '%d-%m-%Y %H:%M:%S').timestamp()),
-    'user':
-    1,
-    'device':
-    devices[0]['uuid'],
-    'experiment':
-    2
+    'user': 1,
+    'device': devices[0]['uuid'],
+    'experiment': 2
 },
 {
     'name':
@@ -418,11 +413,9 @@ booking_info = [{
     int(
         datetime.strptime('20-09-2020 09:54:22',
                           '%d-%m-%Y %H:%M:%S').timestamp()),
-    'user':
-    1,
-    'device': None,
-    'experiment':
-    3
+    'user': 1,
+    'device': devices[0]["uuid"],
+    'experiment': 3
 },
 {
     'name':
@@ -435,11 +428,9 @@ booking_info = [{
     int(
         datetime.strptime('20-09-2020 09:54:22',
                           '%d-%m-%Y %H:%M:%S').timestamp()),
-    'user':
-    1,
-    'device': None,
-    'experiment':
-    4
+    'user': 1,
+    'device': devices[0]["uuid"],
+    'experiment': 4
 }]
 
 experiments = [{
