@@ -3,7 +3,7 @@
     <h3 *ngIf="credentialsWrong" class="error">
         Your password or username isn't correct! Please try again.
     </h3>
-    <form>
+    <form (keyup.enter)="login()">
         <mat-form-field>
             <mat-label>Username</mat-label>
             <input
