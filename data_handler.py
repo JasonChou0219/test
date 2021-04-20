@@ -36,8 +36,15 @@ def save_commands(commands_to_call):
                     parameters[parameter.identifier.lower() + '/' + parameter.type] = parameter.value
 
                 try:
-                    responses = sila_device.call_command(feature_id=feature.identifier, command_id=command.identifier,
-                                                         parameters=parameters)
+                    try:
+                        responses = sila_device.call_command(feature_id=feature.identifier, command_id=command.identifier,
+                                                             parameters=parameters)
+                    except:
+                        print(feature.originator, feature.category, feature.identifier, feature.feature_version_major)
+                        qualified_feature_id = f'{feature.originator}/{feature.category}/{feature.identifier}/v{feature.feature_version_major}'
+                        responses = sila_device.call_command(feature_id=qualified_feature_id,
+                                                             command_id=command.identifier,
+                                                             parameters=parameters)
                     # TODO experiment
                     # TODO for a device write all points at the end
                     # TODO timeout call
@@ -85,8 +92,16 @@ def save_properties(properties_to_call):
                 feature = property_info[1]
 
                 try:
-                    responses = sila_device.call_property(feature_id=feature.identifier,
-                                                          property_id=property.identifier)
+                    try:
+                        responses = sila_device.call_property(feature_id=feature.identifier,
+                                                              property_id=property.identifier)
+                    except:
+                        print(feature.originator, feature.category, feature.identifier, feature.feature_version_major)
+                        # qualified_feature_id = feature.originator + '/' + feature.category + '/' + feature.identifier + '/' + feature.feature_version_major
+                        qualified_feature_id = f'{feature.originator}/{feature.category}/{feature.identifier}/v{feature.feature_version_major}'
+
+                        responses = sila_device.call_property(feature_id=qualified_feature_id,
+                                                              property_id=property.identifier)
                     # TODO experiment
                     # TODO for a device write all points at the end
                     # TODO timeout call
@@ -95,6 +110,7 @@ def save_properties(properties_to_call):
                     # TODO report on different possible exceptions
                     # TODO check if possible to make these 2 functions into a single one
                     # TODO EmptyParameters must not be passed; simply pass {} instead
+                    print(feature.identifier, responses)
                     if responses != {}:
                         client = InfluxDBClient(database_info.address, database_info.port, 'root', 'root',
                                                 database_info.name)

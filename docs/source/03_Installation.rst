@@ -28,7 +28,7 @@ or clone the git repository with:
 
 Setting up the python environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This project requires python3.6 or higher. The latest python distribution can be downloaded `here <https://pypi.org/project/pipenv/>`_.
+This project requires python3.7 or higher. The latest python distribution can be downloaded `here <https://pypi.org/project/pipenv/>`_.
 
 Before running any code in this project, all required python packages must be installed.
 It is strongly recommended to set up a virtual environment. The project is shipped with a pipfile that contains
@@ -54,6 +54,7 @@ feel free to use the supplied requirements.txt
 .. code-block:: console
 
    pipenv install
+
 
 3. Entering the virtual environment
 
@@ -88,12 +89,23 @@ to install *node.js*. To download *node.js* visit the `node.js download website 
 
     sudo apt-get install nodejs
 
+Make sure you have a current version of node.js (v12.18.4 or greater). Run the following command to check your node.js version:
+
+.. code-block:: console
+
+    node -v
 
 The *node.js* package manager *npm* can downloaded from the `npm download website <https://nodejs.org/en/>`_ (Windows) or using *apt-get*:
 
 .. code-block:: console
 
    sudo apt-get install npm
+
+Make sure you have a current version of npm (v6.14.6 or greater). Run the following command to check your npm version:
+
+.. code-block:: console
+
+    npm -v
 
 The node.js packages can be installed by executing the following code from within the frontend directory:
 
@@ -118,12 +130,22 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
 1. Create the user-script docker image.
 
    You can modify the docker container that is used for experiments by changing the dockerfile in 'user_script_env'
-   to include packages that you want to use in the scripting environment.To create the container run:
+   to include packages that you want to use in the scripting environment.To create the container run. If you encounter 
+   an error, try a different docker base image such as python:3 or python:3.8.0-slim by changing the first line in the 
+   Dockerfile "FROM python:3.8.3-alpine" to your respective choice On Linux run:
 
 .. code-block:: console
 
    cd user_script_env
-   docker build -t user_script
+   create_container_image.sh
+
+    On windows run:
+
+
+.. code-block:: console
+
+   cd user_script_env
+   create_container_image.bat
 
 2. For the development version the containers for the postgrSQL and redis DB need to be downloaded:
 
@@ -139,12 +161,14 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
    docker start postgres
    docker start redis
 
-4. Experiments are run in docker containers. The container can be customized. To create the container, run the *create_container_image* script* in the *user_script_env* folder:
+4. [Optional] Experiments are run in docker containers. The container can be customized. To re-create the container, run the *create_container_image* script* in the *user_script_env* folder:
 
 .. code-block:: console
 
    cd user_script_env
-   create_container_image.sh
+   [Unix] create_container_image.sh
+   [Windows] create_container_image.bat
+
 
 You can modify the container image by editing the Dockerfile or by adding new python packages to the requirements.txt.
 
@@ -173,7 +197,7 @@ For Windows:
 
 .. code-block:: python
 
-   python setup_test_db.py
+   pipenv run python setup_db.py
 
 2. Create a configuration file
 
@@ -182,7 +206,7 @@ For Windows:
 
 .. code-block:: python
 
-   python generate_config.py
+   pipenv run python generate_config.py
 
 Starting the device manager in development mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -203,7 +227,8 @@ To start the device manager in the development mode, the respective modules must
         ./run_backend_server.sh
 
 2. Start the frontend server
-    In a separate process run:
+    If you have already set up your javascript run-time environment and run npm install in the frontend folder,
+    you can start the frontend in a separate process with:
 
     .. code-block:: console
 

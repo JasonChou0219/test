@@ -185,6 +185,18 @@ export class ExperimentsComponent implements OnInit {
         await this.deviceService.deleteExperiment(this.dataSource[i].experiment.id);
         await this.getExperiments();
     }
+    async save_logs(i: number) {
+        this.writeContents(this.dataSource[i].experimentLogs.logList, 'Log_file_' +
+            this.dataSource[i].experiment.name + '_' +
+            this.dataSource[i].experiment.id + '.txt', 'text/plain');
+    }
+    writeContents(content, fileName, contentType) {
+        const a = document.createElement('a');
+        const file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+      }
     expand(i: number) {
         this.selected = this.selected === i ? null : i;
         this.dataSource[i].detailsLoaded = true;

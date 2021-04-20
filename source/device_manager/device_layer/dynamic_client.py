@@ -325,7 +325,6 @@ class DynamicSiLA2Client(SiLA2Client):
 
     def call_command(self, feature_id: str, command_id: str,
                      parameters: Dict[str, Any]) -> Dict[str, Any]:
-        print('self.features is: ', self._features)
         # for key in self._features.keys():
         #    if feature_id in key:
         #        print('key', key)
