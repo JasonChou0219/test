@@ -37,6 +37,7 @@ protobuf = "*"
 sphinx = "*"
 sphinx-material = "*"
 gunicorn = "*"
+uvloop = {version = "*", sys_platform = "== 'linux'"}
 httptools = "*"
 influxdb-client = "*"
 dataclasses = "*"
