@@ -139,7 +139,7 @@ You can download docker (v2.3.0.5) on the `docker website <https://www.docker.co
    cd user_script_env
    create_container_image.sh
 
-    On windows run:
+On windows run:
 
 
 .. code-block:: console
