@@ -68,6 +68,9 @@ Run `python setup_db.py` from inside your pipenv environment.
 6. Create Config File:  
 Run `python generate_config.py` from inside your pipenv environment.
 
+7. Create the docker container for the experiment execution environment
+Run `create_container_image.sh` which is located in the folder usr_script_env.
+
 
 ### Starting the Backend development Server
 
