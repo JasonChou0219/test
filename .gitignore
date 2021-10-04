@@ -2,4 +2,5 @@
 .mypy_cache
 docker-stack.yml
 /.idea/
+*.idea
 *.pyc
