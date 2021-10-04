@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    POSTGRES_DB_BACKEND_GATEWAY: str
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+            path=f"/{values.get('POSTGRES_DB_BACKEND_GATEWAY') or ''}",
         )
 
     SMTP_TLS: bool = True
