@@ -140,8 +140,8 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-flower-https.tls.certresolver=le
         - traefik.http.services.${STACK_NAME?Variable not set}-flower.loadbalancer.server.port=5555
   
-  backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+  backend-gateway:
+    image: '${DOCKER_IMAGE_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -156,19 +156,19 @@ services:
       - SMTP_HOST=${SMTP_HOST}
     build:
       network: host
-      context: ./backend
-      dockerfile: backend.dockerfile
+      context: ./backend-gateway
+      dockerfile: backend-gateway.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     deploy:
       labels:
         - traefik.enable=true
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-        - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=80
 
-  mdnsreflector:
-    image: '${DOCKER_IMAGE_MDNSREFLECTOR?Variable not set}:${TAG-latest}'
+  mdns-reflector:
+    image: '${DOCKER_IMAGE_MDNS_REFLECTOR?Variable not set}:${TAG-latest}'
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
