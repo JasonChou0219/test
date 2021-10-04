@@ -1,6 +1,8 @@
 **Maintainer**  
-Lukas Bromig  
+M. Sc. Lukas Bromig  
 
 **Developer**   
-David Leiter  
-Alexandru-Virgil Mardale  
+B. Sc. David Leiter  
+B. Sc. Alexandru-Virgil Mardale  
+B. Sc. Robert Zechlin  
+B. Sc. Vladimir Romanenko  
