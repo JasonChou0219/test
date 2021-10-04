@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6b333ec9-513d-4649-89a8-1c3b46c9d4b3" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1xwtZiUVJELpcxQgnpZVwi6f0ou" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="E:/TADM_KI" />
+    <property name="settings.editor.selected.configurable" value="preferences.updates" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\FastAPI\service_manager\backend\app\app\schemas" />
+      <recent name="E:\FastAPI\service_manager\backend\app\app\models" />
+      <recent name="E:\FastAPI\service_manager\backend\app\app\crud" />
+      <recent name="E:\FastAPI\service_manager\backend\app\app\api\api_v1\endpoints" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6b333ec9-513d-4649-89a8-1c3b46c9d4b3" name="Default Changelist" comment="" />
+      <created>1631278035714</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1631278035714</updated>
+      <workItem from="1631278037505" duration="4675000" />
+      <workItem from="1631529283713" duration="17680000" />
+      <workItem from="1632121091031" duration="9153000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/../../frontend_angular/node_modules/karma/config.tpl.js" />
+      </list>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="551" y="172" key="#Custom_Plugin_Repositories" timestamp="1631531435219">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="551" y="172" key="#Custom_Plugin_Repositories/0.0.1536.864@0.0.1536.864" timestamp="1631531435219" />
+    <state x="637" y="287" key="FileChooserDialogImpl" timestamp="1632730405244">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="637" y="287" key="FileChooserDialogImpl/0.0.1536.864/1920.-1093.2560.1440@0.0.1536.864" timestamp="1632730405244" />
+    <state x="2981" y="479" key="FileChooserDialogImpl/0.0.1536.864/1920.0.2560.1440@1920.0.2560.1440" timestamp="1631280024350" />
+    <state x="637" y="287" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1631531517515" />
+    <state x="470" y="156" key="SettingsEditor" timestamp="1631531736878">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="2704" y="366" key="SettingsEditor/0.0.1536.864/1920.0.2560.1440@1920.0.2560.1440" timestamp="1631278075349" />
+    <state x="470" y="156" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1631531736878" />
+    <state x="477" y="260" key="com.intellij.ide.util.TipDialog" timestamp="1632121091064">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="477" y="260" key="com.intellij.ide.util.TipDialog/0.0.1536.864/1920.-1093.2560.1440@0.0.1536.864" timestamp="1632121091064" />
+  </component>
+</project>
