@@ -30,79 +30,79 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { DxSchedulerModule } from 'devextreme-angular/ui/scheduler';
 
-import { DeviceListComponent } from './device-list/device-list.component';
-import { HeaderBarComponent } from './header-bar/header-bar.component';
-import { DeviceDetailComponent } from './device-detail/device-detail.component';
-import { AddDeviceComponent } from './add-device/add-device.component';
-import { EditDeviceComponent } from './edit-device/edit-device.component';
+// import { DeviceListComponent } from './device-list/device-list.component';
+// import { HeaderBarComponent } from './header-bar/header-bar.component';
+// import { DeviceDetailComponent } from './device-detail/device-detail.component';
+// import { AddDeviceComponent } from './add-device/add-device.component';
+// import { EditDeviceComponent } from './edit-device/edit-device.component';
 import { LoginComponent } from './login/login.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
-import { LogViewComponent } from './log-view/log-view.component';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { CalendarComponent } from './calendar/calendar.component';
-import { AddBookingComponent } from './add-booking/add-booking.component';
-import { AdminAreaComponent } from './admin-area/admin-area.component';
-import { SetUserComponent } from './set-user/set-user.component';
-import { UserAreaComponent } from './user-area/user-area.component';
-import { ExperimentsComponent } from './experiments/experiments.component';
-import { AddExperimentComponent } from './add-experiment/add-experiment.component';
-import { ScriptsComponent } from './scripts/scripts.component';
-import { AddScriptComponent } from './add-script/add-script.component';
-import { AboutComponent } from './about/about.component';
-import { ScriptEditorComponent } from './script-editor/script-editor.component';
-import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
-import { DeviceCommandComponent } from './device-command/device-command.component';
-import { DeviceFeatureComponent } from './device-feature/device-feature.component';
-import { DevicePropertyComponent } from './device-property/device-property.component';
-import { EditScriptComponent } from './edit-script/edit-script.component';
-import { FileSelectorComponent } from './file-selector/file-selector.component';
-import { EditExperimentComponent } from './edit-experiment/edit-experiment.component';
-import { DataHandlerComponent } from './data-handler/data-handler.component';
-import { DataHandlerDeviceDetailComponent } from './data-handler-device-detail/data-handler-device-detail.component';
-import { DataHandlerDeviceCommandComponent } from './data-handler-device-command/data-handler-device-command.component';
-import { DataHandlerDeviceFeatureComponent } from './data-handler-device-feature/data-handler-device-feature.component';
-import { DataHandlerDevicePropertyComponent } from './data-handler-device-property/data-handler-device-property.component';
-import { DatabaseLinkComponent } from './database-link/database-link.component';
-import { AddDatabaseComponent } from './add-database/add-database.component';
+// import { LogViewComponent } from './log-view/log-view.component';
+// import { CalendarModule, DateAdapter } from 'angular-calendar';
+// import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+// import { CalendarComponent } from './calendar/calendar.component';
+// import { AddBookingComponent } from './add-booking/add-booking.component';
+// import { AdminAreaComponent } from './admin-area/admin-area.component';
+// import { SetUserComponent } from './set-user/set-user.component';
+// import { UserAreaComponent } from './user-area/user-area.component';
+// import { ExperimentsComponent } from './experiments/experiments.component';
+// import { AddExperimentComponent } from './add-experiment/add-experiment.component';
+// import { ScriptsComponent } from './scripts/scripts.component';
+// import { AddScriptComponent } from './add-script/add-script.component';
+// import { AboutComponent } from './about/about.component';
+// import { ScriptEditorComponent } from './script-editor/script-editor.component';
+// import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
+// import { DeviceCommandComponent } from './device-command/device-command.component';
+// import { DeviceFeatureComponent } from './device-feature/device-feature.component';
+// import { DevicePropertyComponent } from './device-property/device-property.component';
+// import { EditScriptComponent } from './edit-script/edit-script.component';
+// import { FileSelectorComponent } from './file-selector/file-selector.component';
+// import { EditExperimentComponent } from './edit-experiment/edit-experiment.component';
+// import { DataHandlerComponent } from './data-handler/data-handler.component';
+// import { DataHandlerDeviceDetailComponent } from './data-handler-device-detail/data-handler-device-detail.component';
+// import { DataHandlerDeviceCommandComponent } from './data-handler-device-command/data-handler-device-command.component';
+// import { DataHandlerDeviceFeatureComponent } from './data-handler-device-feature/data-handler-device-feature.component';
+// import { DataHandlerDevicePropertyComponent } from './data-handler-device-property/data-handler-device-property.component';
+// import { DatabaseLinkComponent } from './database-link/database-link.component';
+// import { AddDatabaseComponent } from './add-database/add-database.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        DeviceListComponent,
-        HeaderBarComponent,
-        DeviceDetailComponent,
-        AddDeviceComponent,
-        EditDeviceComponent,
+        // DeviceListComponent,
+        // HeaderBarComponent,
+        // DeviceDetailComponent,
+        // AddDeviceComponent,
+        // EditDeviceComponent,
         LoginComponent,
-        LogViewComponent,
-        CalendarComponent,
-        AddBookingComponent,
-        DataHandlerComponent,
-        AdminAreaComponent,
-        SetUserComponent,
-        UserAreaComponent,
-        ExperimentsComponent,
-        AddExperimentComponent,
-        ScriptsComponent,
-        AddScriptComponent,
-        AboutComponent,
-        ScriptEditorComponent,
-        DeviceCommandComponent,
-        DeviceFeatureComponent,
-        DevicePropertyComponent,
-        EditScriptComponent,
-        FileSelectorComponent,
-        EditExperimentComponent,
-        DataHandlerDeviceDetailComponent,
-        DataHandlerDeviceCommandComponent,
-        DataHandlerDeviceFeatureComponent,
-        DataHandlerDevicePropertyComponent,
-        DatabaseLinkComponent,
-        AddDatabaseComponent,
+        // LogViewComponent,
+        // CalendarComponent,
+        // AddBookingComponent,
+        // DataHandlerComponent,
+        // AdminAreaComponent,
+        // SetUserComponent,
+        // UserAreaComponent,
+        // ExperimentsComponent,
+        // AddExperimentComponent,
+        // ScriptsComponent,
+        // AddScriptComponent,
+        // AboutComponent,
+        // ScriptEditorComponent,
+        // DeviceCommandComponent,
+        // DeviceFeatureComponent,
+        // DevicePropertyComponent,
+        // EditScriptComponent,
+        // FileSelectorComponent,
+        // EditExperimentComponent,
+        // DataHandlerDeviceDetailComponent,
+        // DataHandlerDeviceCommandComponent,
+        // DataHandlerDeviceFeatureComponent,
+        // DataHandlerDevicePropertyComponent,
+        // DatabaseLinkComponent,
+        // AddDatabaseComponent,
         FooterBarComponent,
     ],
     imports: [
@@ -130,16 +130,16 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         MatSnackBarModule,
         MatTooltipModule,
         ClipboardModule,
-        CalendarModule.forRoot({
-            provide: DateAdapter,
-            useFactory: adapterFactory,
-        }),
-        DxSchedulerModule,
-        CodeEditorModule,
-        CodeEditorModule.forRoot({
-            baseUrl: './assets/monaco',
-            typingsWorkerUrl: './assets/workers/typings-worker.js',
-        }),
+        // CalendarModule.forRoot({
+        //     provide: DateAdapter,
+        //     useFactory: adapterFactory,
+        // }),
+        // DxSchedulerModule,
+        // CodeEditorModule,
+        // CodeEditorModule.forRoot({
+        //     baseUrl: './assets/monaco',
+        //     typingsWorkerUrl: './assets/workers/typings-worker.js',
+        // }),
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

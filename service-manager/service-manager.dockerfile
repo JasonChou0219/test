@@ -22,18 +22,18 @@ ARG INSTALL_JUPYTER=false
 RUN bash -c "if [ $INSTALL_JUPYTER == 'true' ] ; then pip install jupyterlab ; fi"
 
 #
-RUN apt-get update -y
-RUN apt-get install avahi-daemon -y
-RUN apt-get install avahi-utils -y
-RUN apt-get install libnss-mdns -y
-RUN apt-get install mdns-scan -y
+#RUN apt-get update -y
+#RUN apt-get install avahi-daemon -y
+#RUN apt-get install avahi-utils -y
+#RUN apt-get install libnss-mdns -y
+#RUN apt-get install mdns-scan -y
 # RUN apt-get install systemd -y
 
-RUN rm /etc/avahi/avahi-daemon.conf
-COPY avahi-daemon.conf /etc/avahi/
-RUN /etc/init.d/dbus start
-RUN service dbus start
-RUN service avahi-daemon start
+#RUN rm /etc/avahi/avahi-daemon.conf
+#COPY avahi-daemon.conf /etc/avahi/
+#RUN /etc/init.d/dbus start
+#RUN service dbus start
+#RUN service avahi-daemon start
 
 COPY ./app /app
 ENV PYTHONPATH=/app

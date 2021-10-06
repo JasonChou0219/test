@@ -68,15 +68,29 @@ services:
         # to disable www redirection remove the section: ${STACK_NAME?Variable not set}-www-redirect,
         - traefik.http.routers.${STACK_NAME?Variable not set}-proxy-http.middlewares=${STACK_NAME?Variable not set}-www-redirect,${STACK_NAME?Variable not set}-https-redirect
 
-  db:
+  db-backend-gateway:
     image: postgres:12
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata
+      - app-db-data:/var/lib/postgresql/data/pgdata/backend-gateway/
     env_file:
       - .env
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      - PGDATA=/var/lib/postgresql/data/pgdata/backend-gateway
       - POSTGRES_DB=${POSTGRES_DB_BACKEND_GATEWAY}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+  db-service-manager:
+    image: postgres:12
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata/service-manager/
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata/service-manager
+      - POSTGRES_DB=${POSTGRES_DB_SERVICE-MANAGER}
     deploy:
       placement:
         constraints:
@@ -88,7 +102,8 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     depends_on:
-      - db
+      - db-backend-gateway
+      - db-service-manager
     env_file:
       - .env
     deploy:
@@ -141,7 +156,7 @@ services:
   backend-gateway:
     image: '${DOCKER_IMAGE_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
     depends_on:
-      - db
+      - db-backend-gateway
     env_file:
       - .env
     environment:
@@ -161,28 +176,46 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=80
 
-  #service-manager:
-  #  image: '$DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
-  #   depends_on:
-  #      - db
-  #    env_file:
-  #      - .env
-   #   environment:
-  #      - SERVER_NAME=${DOMAIN?Variable not set}
-  #      - SERVER_HOST=https://${DOMAIN?Variable not set}
-  #      # Allow explicit env var override for tests
-  #      - SMTP_HOST=${SMTP_HOST}
-  #    build:
-  #      context: ./service-manager
-  #      dockerfile: service-manager.dockerfile
-  #      args:
-  #        INSTALL_DEV: ${INSTALL_DEV-false}
-  #    deploy:
-  #      labels:
-  #        - traefik.enable=true
-  #        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-  #        - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-  #        - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=80
+  celeryworker-backend-gateway:
+    image: '${DOCKER_IMAGE_CELERYWORKER_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db-backend-gateway
+      - queue
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST?Variable not set}
+    build:
+      context: ./backend-gateway
+      dockerfile: celeryworker.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+
+  service-manager:
+    image: '${DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
+    depends_on:
+       - db-service-manager
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+    build:
+      context: ./service-manager
+      dockerfile: service-manager.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=80
 
   #mdns-reflector:
   #  image: '${DOCKER_IMAGE_MDNS_REFLECTOR?Variable not set}:${TAG-latest}'
@@ -207,10 +240,10 @@ services:
    #     - traefik.enable=true
    #     - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
-  celeryworker:
-    image: '${DOCKER_IMAGE_CELERYWORKER?Variable not set}:${TAG-latest}'
+  celeryworker-service-manager:
+    image: '${DOCKER_IMAGE_CELERYWORKER_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
     depends_on:
-      - db
+      - db-service-manager
       - queue
     env_file:
       - .env
@@ -220,23 +253,23 @@ services:
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST?Variable not set}
     build:
-      context: ./backend-gateway
+      context: ./service-manager
       dockerfile: celeryworker.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
-  #frontend:
-  #  image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
-  #  build:
-  #    context: ./frontend
-  #    args:
-  #      FRONTEND_ENV: ${FRONTEND_ENV-production}
-  #  deploy:
-  #    labels:
-  #      - traefik.enable=true
-  #      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-  #      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
-  #      - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
+  frontend:
+    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    build:
+      context: ./frontend
+      args:
+        FRONTEND_ENV: ${FRONTEND_ENV-production}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
 volumes:
   app-db-data:

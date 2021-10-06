@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "app"
+name = "service-manager"
 version = "0.1.0"
 description = ""
 authors = ["Admin <admin@example.com>"]

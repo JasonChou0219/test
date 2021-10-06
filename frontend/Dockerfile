@@ -1,8 +1,9 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM tiangolo/node-frontend:10 as build-stage
+FROM node:14 as build-stage
 
 WORKDIR /app
 
+COPY ./nginx.conf /nginx.conf
 COPY package*.json /app/
 
 RUN npm install
@@ -16,7 +17,9 @@ ENV ANGULAR_APP_ENV=${FRONTEND_ENV}
 # Comment out the next line to disable tests
 # RUN npm run test:unit
 
+# RUN npm run-script build
 RUN npm run build
+# RUN npm set_env.ts
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
