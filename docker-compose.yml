@@ -271,6 +271,28 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
         - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
+  workflow-designer:
+    image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db-backend-gateway
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+    build:
+      context: ./workflow-designer
+      dockerfile: workflow-designer.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=80
+
 volumes:
   app-db-data:
 
