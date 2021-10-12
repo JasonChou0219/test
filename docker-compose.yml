@@ -77,6 +77,8 @@ services:
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata/backend-gateway
       - POSTGRES_DB=${POSTGRES_DB_BACKEND_GATEWAY}
+    ports:
+      - "5432:5432"
     deploy:
       placement:
         constraints:
@@ -281,6 +283,8 @@ services:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
+    ports:
+      - "1880:1880"
     build:
       context: ./workflow-designer
       dockerfile: workflow-designer.dockerfile
