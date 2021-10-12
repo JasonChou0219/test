@@ -22,9 +22,9 @@ def get_database_connection():
         storage['pool'] = psycopg2.pool.ThreadedConnectionPool(minconn=1,
                                                                maxconn=2000,
                                                                host='localhost',
-                                                               port=5432,
+                                                               port='5432',
                                                                user='postgres',
-                                                               password='1234'
+                                                               password='DIB-central'
                                                                )
     logging.debug('Pool size is:', len(storage['pool']._used))
     for i in range(3):
@@ -131,6 +131,30 @@ def get_flow(flow_flowID: str) -> Flow:
                 )
     release_database_connection(conn)
     return flow
+
+
+def get_flows():
+    """
+    Get the flows entry (specified by the flowID) from the database
+    :param task_uuid: The uuid of the task entry
+    :return: The information of the queried task entry according to the TaskInfo interface
+    """
+    conn = get_database_connection()
+    flows = None
+    with conn:
+        with conn.cursor() as cursor:
+            query_string = 'SELECT * FROM nodered'
+            try:
+                cursor_execute_wrapper(cursor, query_string)
+                result = cursor.fetchall()
+                flows = result[0][0]
+
+            except psycopg2.Error as e:
+                logging.exception(
+                    f'Database error: {e.pgcode}/n SQL: {query_string}\n Error message: {e.pgerror}'
+                )
+    release_database_connection(conn)
+    return flows
 
 
 def add_nodes_table():

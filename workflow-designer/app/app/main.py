@@ -3,7 +3,7 @@ import json
 from classes_proto import Flow, Node, SubFlow
 import database
 import sys
-import nodered_api as NR_api
+import nodered_api as nr_api
 import docker
 from threading import Thread, Event
 
@@ -37,40 +37,23 @@ def decompose_and_safe(rdecomp):
 
 
 def save_flows():
-    flows = NR_api.get_flows(_node_red_editor_address)
+    flows = nr_api.get_flows(_node_red_editor_address)
     for i in flows:
-        f = NR_api.get_flow(_node_red_editor_address, i['id'])
+        f = nr_api.get_flow(_node_red_editor_address, i['id'])
         database.add_update_flow(f)
-
-
-def listen_for_save(node_red_name: str, event: Event):
-
 
 
 def main():
     loop = True
     client = docker.from_env()
-    container = client.containers.get('mynodered')
+    container = client.containers.get('workflow-executor')
     for line in container.logs(stream=True):
         print(line.strip())
 
 
-    i = 0
-    while loop:
-        # get flows
-        # save flows, update existing
-        # wait for command to push flow
-        # push flow to exec if command received
-        print(i)
-        i = i + 1
-        if i > 5:
-            loop = False
-        pass
-
-
 def main_():
     save_flows()
-    NR_api.post_flow(_node_red_exec_address, flow)
+    nr_api.post_flow(_node_red_exec_address, flow)
 
 
 def main__():

@@ -17,9 +17,14 @@ def get_flow(node_red_address: str, flow_id) -> Flow:
     return flow
 
 
-def post_flow(node_red_address: str, flow: Flow):
-    data = flow.data
-    r = requests.post(f'{node_red_address}/flow', json=data)
+def post_flow(node_red_address: str, flow):
+    # data = flow.data
+    r = requests.post(f'{node_red_address}/flow', json=flow)
+    print(r.raise_for_status())
+
+
+def post_flows(node_red_address: str, flow):
+    r = requests.post(f'{node_red_address}/flows', json=flow)
     print(r.raise_for_status())
 
 
