@@ -98,22 +98,6 @@ services:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
-  db-workflow-designer:
-    image: postgres:12
-    volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata/workflow-designer/
-    env_file:
-      - .env
-    environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata/workflow-designer
-      - POSTGRES_DB=${POSTGRES_DB_WORKFLOW_DESIGNER}
-    ports:
-      - "5432:5432"
-    deploy:
-      placement:
-        constraints:
-          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
-
   pgadmin:
     image: dpage/pgadmin4
     networks:
@@ -194,19 +178,9 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=80
 
-  node-red:
-    image: nodered/node-red:latest
-    environment:
-      - TZ=Europe/Amsterdam
-    ports:
-      - "1880:1880"
-    volumes:
-      - ~/node-red/data:/data
-
   celeryworker-backend-gateway:
     image: '${DOCKER_IMAGE_CELERYWORKER_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
     depends_on:
-      - db-backend-gateway
       - queue
     env_file:
       - .env
@@ -321,6 +295,30 @@ services:
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=80
+
+  workflow-scheduler:
+    image: '${DOCKER_IMAGE_WORKFLOW_SCHEDULER}:${TAG-latest}'
+    depends_on:
+      - db-backend-gateway
+      - workflow-designer
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+    build:
+      context: ./workflow-scheduler
+      dockerfile: workflow-scheduler.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=80
 
 volumes:
   app-db-data:
