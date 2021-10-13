@@ -1,3 +1,5 @@
+import threading
+
 import requests
 import json
 from classes_proto import Flow, Node, SubFlow
@@ -6,6 +8,8 @@ import sys
 import nodered_api as nr_api
 import docker
 from threading import Thread, Event
+# import docker_helper
+import docker
 
 _node_red_editor_address = 'http://127.0.0.1:1880'
 _node_red_exec_address = 'http://127.0.0.1:1337'
@@ -48,7 +52,7 @@ def main():
     client = docker.from_env()
     container = client.containers.get('workflow-executor')
     for line in container.logs(stream=True):
-        print(line.strip())
+        print(line)
 
 
 def main_():
@@ -73,38 +77,3 @@ if __name__ == '__main__':
     # database.add_subflows_table()
 
     main()
-    sys.exit()
-
-    # run on loop
-    # Listen for changes
-    # pull flow, update in DB
-    # choose flow to push to executor
-
-
-    r = requests.get('http://127.0.0.1:1880/flows')
-    rDecomp = r.json()
-    # decompose_and_safe(rDecomp)
-    flowID = ""
-    # for t in rDecomp:
-    #     if t["type"] == "tab":
-    flow = Flow.parse_obj(rDecomp[0])
-    res = requests.get(f'http://127.0.0.1:1880/flow/{flow.id}')
-    res = res.json()
-
-    print(res)
-    jprint(res)
-    r = requests.post(f'http://127.0.0.1:1337/flow', json=res)
-    print(r.raise_for_status())
-
-    flow = Flow.parse_obj(res)
-    # flow = Flow.parse_obj.json())
-    # flow.data = json.dumps(t)
-    flow.data = json.dumps(res)
-    database.add_flow(flow)
-    flowID = flow.id
-
-    newFlow = database.get_flow(flowID)
-    print(newFlow.data)
-    msg = json.loads(newFlow.data)
-    # r = requests.post(f'http://127.0.0.1:1337/flow', data=msg)
-    print(r.raise_for_status())

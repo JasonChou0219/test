@@ -5,16 +5,9 @@ import ctypes, sys
 from time import sleep, time
 from docker.errors import DockerException
 
-from LHS_scheduler_service.source.setup.generate_config import config
-from LHS_scheduler_service.source.setup.config import settings
-
+from core.config import settings
 
 logging.getLogger(__name__)
-image_dict: dict = {
-    'Database-redis': {'name': config['Database-redis']['name'], 'version': config['Database-redis']['version'], 'image': config['Database-redis']['image']},
-    'Database-postgres': {'name': config['Database-postgres']['name'], 'version': config['Database-postgres']['version'], 'image': config['Database-postgres']['image']},
-    'Database-influxdb': {'name': config['Database-influxdb']['name'], 'version': config['Database-influxdb']['version'],'image': config['Database-influxdb']['image']},
-}
 
 
 def get_docker_client():
@@ -53,10 +46,10 @@ def start_docker():
         raise UserWarning
 
 
-def download_docker_images():
-    for container_app in image_dict.keys():
-        logging.info(f'Downloading image {container_app}')
-        get_docker_client().images.pull(repository=image_dict[container_app]['image'], tag=image_dict[container_app]['version'])
+# def download_docker_images():
+#     for container_app in image_dict.keys():
+#         logging.info(f'Downloading image {container_app}')
+#         get_docker_client().images.pull(repository=image_dict[container_app]['image'], tag=image_dict[container_app]['version'])
 
 
 def create_postgres_container():
