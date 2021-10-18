@@ -71,14 +71,13 @@ services:
   db-backend-gateway:
     image: postgres:12
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata/backend-gateway/
+      - app-db-backend-gateway-data:/var/lib/postgresql/data/pgdata/backend-gateway/
     env_file:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata/backend-gateway
+      - POSTGRES_SERVER=${POSTGRES_SERVER_BACKEND_GATEWAY}
       - POSTGRES_DB=${POSTGRES_DB_BACKEND_GATEWAY}
-    ports:
-      - "5432:5432"
     deploy:
       placement:
         constraints:
@@ -87,12 +86,43 @@ services:
   db-service-manager:
     image: postgres:12
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata/service-manager/
+      - app-db-service-manager-data:/var/lib/postgresql/data/pgdata/service-manager/
     env_file:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata/service-manager
-      - POSTGRES_DB=${POSTGRES_DB_SERVICE-MANAGER}
+      - POSTGRES_SERVER=${POSTGRES_SERVER_SERVICE_MANAGER}
+      - POSTGRES_DB=${POSTGRES_DB_SERVICE_MANAGER}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+  db-workflow-designer:
+    image: postgres:12
+    volumes:
+      - app-db-workflow-designer-data:/var/lib/postgresql/data/pgdata/workflow-designer/
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata/workflow-designer
+      - POSTGRES_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER}
+      - POSTGRES_DB=${POSTGRES_DB_WORKFLOW_DESIGNER}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+  db-workflow-scheduler:
+    image: postgres:12
+    volumes:
+      - app-db-workflow-scheduler-data:/var/lib/postgresql/data/pgdata/workflow-scheduler/
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata/workflow-scheduler
+      - POSTGRES_SERVER=${POSTGRES_SERVER_WORKFLOW_SCHEDULER}
+      - POSTGRES_DB=${POSTGRES_DB_WORKFLOW_SCHEDULER}
     deploy:
       placement:
         constraints:
@@ -275,7 +305,7 @@ services:
   workflow-designer:
     image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER?Variable not set}:${TAG-latest}'
     depends_on:
-      - db-backend-gateway
+      - db-workflow-designer
     env_file:
       - .env
     environment:
@@ -299,8 +329,7 @@ services:
   workflow-scheduler:
     image: '${DOCKER_IMAGE_WORKFLOW_SCHEDULER}:${TAG-latest}'
     depends_on:
-      - db-backend-gateway
-      - workflow-designer
+      - db-workflow-scheduler
     env_file:
       - .env
     environment:
@@ -320,8 +349,29 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=80
 
+  celeryworker-workflow-scheduler:
+    image: '${DOCKER_IMAGE_CELERYWORKER_WORKFLOW_SCHEDULER?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db-workflow-scheduler
+      - queue
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST?Variable not set}
+    build:
+      context: ./workflow-scheduler
+      dockerfile: celeryworker.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+
 volumes:
-  app-db-data:
+  app-db-backend-gateway-data:
+  app-db-service-manager-data:
+  app-db-workflow-designer-data:
+  app-db-workflow-scheduler-data:
 
 networks:
   traefik-public:

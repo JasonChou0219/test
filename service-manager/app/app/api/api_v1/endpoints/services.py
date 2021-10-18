@@ -22,7 +22,7 @@ def read_services(
     if crud.user.is_superuser(current_user):
         services = crud.service.get_multi(db, skip=skip, limit=limit)
     else:
-        services = crud.item.get_multi_by_owner(
+        services = crud.service.get_multi_by_owner(
             db=db, owner_id=current_user.id, skip=skip, limit=limit
         )
     return services

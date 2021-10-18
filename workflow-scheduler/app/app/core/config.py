@@ -34,9 +34,10 @@ class Settings(BaseSettings):
         return v
 
     POSTGRES_SERVER: str
+    POSTGRES_SERVER_WORKFLOW_SCHEDULER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    POSTGRES_DB_BACKEND_GATEWAY: str
+    POSTGRES_DB_WORKFLOW_SCHEDULER: str
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
@@ -47,8 +48,9 @@ class Settings(BaseSettings):
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB_BACKEND_GATEWAY') or ''}",
+            # host=values.get("POSTGRES_SERVER"),
+            host=values.get("POSTGRES_SERVER_WORKFLOW_SCHEDULER"),
+            path=f"/{values.get('POSTGRES_DB_WORKFLOW_SCHEDULER') or ''}",
         )
 
     SMTP_TLS: bool = True
