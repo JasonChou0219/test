@@ -12,7 +12,7 @@ const env = process.env.ANGULAR_APP_ENV;
 //let envConfigFile = '// test';
 let envConfigFile = env;
 if (env === 'production') {
-    console.log('HERE is: ');
+    console.log('Production Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
         apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_PROD}\`,
@@ -29,7 +29,7 @@ if (env === 'production') {
     // production: '${process.env.PRODUCTION}'
     // `;
 } else if (env === 'staging') {
-    console.log('HERE is 2: ');
+    console.log('Staging Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
         apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_STAG}\`,
@@ -43,7 +43,7 @@ if (env === 'production') {
     // production: '${process.env.PRODUCTION}'
     // `;
 } else {
-    console.log('HERE is 3: ');
+    console.log('Development Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
         apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_DEV}\`,

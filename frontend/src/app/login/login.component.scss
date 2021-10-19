@@ -1,3 +1,99 @@
 h3.error {
     color: red;
 }
+
+table {
+    width: 99%;
+}
+
+.circle {
+    height: 10px;
+    width: 10px;
+    background-color: grey;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+tr.row:not(.expanded):hover {
+    background-color: whitesmoke;
+}
+
+tr.row td {
+    border-bottom-width: 0;
+}
+.expanded-element {
+    overflow: hidden;
+}
+
+.expanded-row {
+    height: 0;
+}
+
+.edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+button.header {
+    margin-left: 0;
+}
+button {
+    margin-left: 8px;
+}
+div.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+div.mat-card-header-entry {
+    margin: auto;
+}
+div.mat-card-header-entry:first-child {
+    margin-left: 0;
+}
+div.mat-card-header-entry:last-child {
+    margin-right: 1%;
+}
+
+div.details {
+    display: flex;
+    align-items: stretch;
+}
+div.row {
+    flex-direction: row;
+}
+div.column {
+    flex-direction: column;
+    margin-right: 1.7em;
+}
+div.title {
+    font-size: 1em;
+    font-weight: 500;
+    padding-bottom: 0.5em;
+}
+div.data {
+    font-size: 1em;
+    padding-bottom: 0.5em;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+
+.mat-form-field + .mat-form-field {
+  margin-left: 8px;
+}
+
+.mat-form-field {
+  width: 220px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+form > * {
+  margin: 5px 0;
+}
+
+.mat-radio-button {
+  margin: 0 12px;
+}
