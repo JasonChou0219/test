@@ -58,13 +58,9 @@ export class LoginComponent implements OnInit {
 
         // reset alerts on submit
         this.alertService.clear()
-        console.log('Print this')
 
         // stop here if form is invalid
         if (this.form.invalid) {
-            console.log('Print this too')
-            console.log(this.f.username.value)
-            console.log(this.f.username.error)
             return;
         }
         this.loading = true,
