@@ -30,10 +30,10 @@ class FlowInDBBase(FlowBase):
 
 
 # Properties to return to client
-class Item(FlowInDBBase):
+class Flow(FlowInDBBase):
     pass
 
 
 # Properties properties stored in DB
-class ItemInDB(FlowInDBBase):
+class FlowInDB(FlowInDBBase):
     pass

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import json
 
 from app.db.base_class import Base
 
@@ -10,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class Flow(Base):
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
+    id = Column(String, primary_key=True, index=True)
+    flow = Column(json, index=True)
     description = Column(String, index=True)
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner = relationship("User", back_populates="items")
