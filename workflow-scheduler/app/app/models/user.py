@@ -7,6 +7,7 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:
     from .item import Item  # noqa: F401
+    from .job import Job # noqa: F401
     from .service import Service  # noqa: F401
 
 
@@ -18,4 +19,5 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
     items = relationship("Item", back_populates="owner")
+    jobs = relationship("Job", back_populates="owner")
     services = relationship("Service", back_populates="owner")

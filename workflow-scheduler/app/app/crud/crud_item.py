@@ -31,4 +31,4 @@ class CRUDItem(CRUDBase[Item, ItemCreate, ItemUpdate]):
         )
 
 
-item = CRUDItem(Flow)
+item = CRUDItem(Item)

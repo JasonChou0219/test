@@ -1,27 +1,33 @@
 from typing import Optional
+from datetime import datetime
+from uuid import uuid4, UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Json
+
 
 
 # Shared properties
-class FlowBase(BaseModel):
-    title: Optional[str] = None
+class JobBase(BaseModel):
+    flow: Optional[Json] = None
+    execute_at: Optional[datetime]
     description: Optional[str] = None
 
 
 # Properties to receive on item creation
-class FlowCreate(FlowBase):
+class JobCreate(JobBase):
     title: str
+    uuid: UUID = uuid4()
+
 
 
 # Properties to receive on item update
-class FlowUpdate(FlowBase):
+class JobUpdate(JobBase):
     pass
 
 
 # Properties shared by models stored in DB
-class FlowInDBBase(FlowBase):
-    id: int
+class JobInDBBase(JobBase):
+    uuid: UUID
     title: str
     owner_id: int
 
@@ -30,10 +36,10 @@ class FlowInDBBase(FlowBase):
 
 
 # Properties to return to client
-class Flow(FlowInDBBase):
+class Job(JobInDBBase):
     pass
 
 
 # Properties properties stored in DB
-class FlowInDB(FlowInDBBase):
+class JobInDB(JobInDBBase):
     pass
