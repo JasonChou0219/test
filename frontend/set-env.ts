@@ -9,13 +9,13 @@ require('dotenv').load();
 
 // `environment.ts` file structure
 const env = process.env.ANGULAR_APP_ENV;
-//let envConfigFile = '// test';
+// let envConfigFile = '// test';
 let envConfigFile = env;
 if (env === 'production') {
     console.log('Production Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
-        apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_PROD}\`,
+        apiUrl: \`http://${process.env.ANGULAR_APP_DOMAIN_PROD}\`,
         appName: \`${process.env.APP_NAME}\`
         };`
 
@@ -32,7 +32,7 @@ if (env === 'production') {
     console.log('Staging Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
-        apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_STAG}\`,
+        apiUrl: \`http://${process.env.ANGULAR_APP_DOMAIN_STAG}\`,
         appName: \`${process.env.APP_NAME}\`
         };`
     // apiBaseUrl: '${process.env.API_BASE_URL}',
@@ -46,7 +46,7 @@ if (env === 'production') {
     console.log('Development Mode');
     envConfigFile = `export const env = {
         environment: '${process.env.ANGULAR_APP_ENV}',
-        apiUrl: \`https://${process.env.ANGULAR_APP_DOMAIN_DEV}\`,
+        apiUrl: \`http://${process.env.ANGULAR_APP_DOMAIN_DEV}\`,
         appName: \`${process.env.APP_NAME}\`
         };`
     // apiBaseUrl: '${process.env.API_BASE_URL}',
@@ -62,7 +62,7 @@ console.log(colors.magenta('The file `environment.ts` will be written with the f
 
 console.log(colors.grey(envConfigFile));
 
-writeFile(targetPath, envConfigFile, function (err) {
+writeFile(targetPath, envConfigFile, err =>  {
     if (err) {
         throw console.error(err);
     } else {

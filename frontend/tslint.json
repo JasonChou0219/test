@@ -54,11 +54,6 @@
         "object-literal-sort-keys": false,
         "ordered-imports": false,
         "quotemark": [true, "single"],
-    "semicolon": {
-      "options": [
-        "always"
-      ]
-    },
     "space-before-function-paren": {
       "options": {
         "anonymous": "never",
