@@ -4,14 +4,16 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
-from app.models.job import Flow
-from app.schemas.job import JobCreate, JobUpdate
+from app.models.flow import Flow
+from app.schemas.flow import FlowCreate, FlowUpdate
+from app.api.deps import get_db_workflow_designer
 
 
-class CRUDJob(CRUDBase[Flow, JobCreate, JobUpdate]):
+class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
     def create_with_owner(
-        self, db: Session, *, obj_in: JobCreate, owner_id: int
+        self, db: Session, *, obj_in: FlowCreate, owner_id: int
     ) -> Flow:
+        db_designer = get_db_workflow_designer()
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
@@ -31,4 +33,4 @@ class CRUDJob(CRUDBase[Flow, JobCreate, JobUpdate]):
         )
 
 
-job = CRUDJob(Flow)
+job = CRUDFlow(Flow)

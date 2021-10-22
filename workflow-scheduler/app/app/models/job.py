@@ -7,10 +7,10 @@ from sqlalchemy.dialects.postgresql import JSON, UUID
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from .job import Job  # noqa: F401
+    from .job import Flow  # noqa: F401
 
 
-class Job(Base):
+class Flow(Base):
     uuid = Column(UUID, primary_key=True, index=True)
     flow = Column(JSON)
     description = Column(String, index=True)
