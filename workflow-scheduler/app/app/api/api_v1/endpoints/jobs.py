@@ -10,7 +10,7 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Flow])
+@router.get("/", response_model=List[schemas.Job])
 def read_jobs(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
@@ -29,14 +29,13 @@ def read_jobs(
     return jobs
 
 
-@router.post("/", response_model=schemas.Flow)
+@router.post("/", response_model=schemas.Job)
 def create_job(
     *,
     db: Session = Depends(deps.get_db),
     job_in: schemas.JobCreate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
-    print(locals())
     """
     Create new job.
     """
@@ -44,7 +43,7 @@ def create_job(
     return job
 
 
-@router.put("/{uuid}", response_model=schemas.Flow)
+@router.put("/{uuid}", response_model=schemas.Job)
 def update_job(
     *,
     db: Session = Depends(deps.get_db),
@@ -56,7 +55,7 @@ def update_job(
     Update a job.
     """
     job = crud.job.get(db=db, uuid=uuid)
-    if not flow:
+    if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     if not crud.user.is_superuser(current_user) and (job.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
@@ -64,7 +63,7 @@ def update_job(
     return job
 
 
-@router.get("/{uuid}", response_model=schemas.Flow)
+@router.get("/{uuid}", response_model=schemas.Job)
 def read_job(
     *,
     db: Session = Depends(deps.get_db),
@@ -82,7 +81,7 @@ def read_job(
     return job
 
 
-@router.delete("/{uuid}", response_model=schemas.Flow)
+@router.delete("/{uuid}", response_model=schemas.Job)
 def delete_job(
     *,
     db: Session = Depends(deps.get_db),

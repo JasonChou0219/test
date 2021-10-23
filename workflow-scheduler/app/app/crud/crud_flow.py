@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
 from app.models.flow import Flow
-from app.schemas.flow import FlowCreate, FlowUpdate
+from app.schemas.flow import FlowBase, FlowCreate, FlowUpdate
 from app.api.deps import get_db_workflow_designer
 
 
@@ -33,5 +33,8 @@ class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
             .all()
         )
 
+class Designer(CRUDBase[FlowBase, FlowCreate, FlowUpdate]):
+    pass
 
 flow = CRUDFlow(Flow)
+flow_designer = Designer(Flow)

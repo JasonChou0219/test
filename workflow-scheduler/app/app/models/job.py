@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 class Job(Base):
     uuid = Column(UUID, primary_key=True, index=True)
     flow = Column(JSON)
+    flow_id = Column(String, index=True)
     description = Column(String, index=True)
     title = Column(String, index=True)
     created_at = Column(TIMESTAMP, index=True)

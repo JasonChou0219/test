@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
-from uuid import uuid4, UUID
+from uuid import UUID
 
 from pydantic import BaseModel, Json
 
@@ -17,8 +17,7 @@ class JobBase(BaseModel):
 class JobCreate(JobBase):
     title: str
     flow_id: str
-    uuid: UUID = uuid4()
-
+    uuid: Optional[UUID]
 
 
 # Properties to receive on item update

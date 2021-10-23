@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Json
 
@@ -7,7 +7,7 @@ from pydantic import BaseModel, Json
 # Shared properties
 class FlowBase(BaseModel):
     id: str
-    flow: Optional[Json] = None
+    flow: Optional[List[Json]] = None
     description: Optional[str] = None
 
 
