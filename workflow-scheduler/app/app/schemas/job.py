@@ -16,6 +16,7 @@ class JobBase(BaseModel):
 # Properties to receive on item creation
 class JobCreate(JobBase):
     title: str
+    flow_id: str
     uuid: UUID = uuid4()
 
 

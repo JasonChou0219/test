@@ -14,6 +14,7 @@ class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
         self, db: Session, *, obj_in: FlowCreate, owner_id: int
     ) -> Flow:
         db_designer = get_db_workflow_designer()
+        obj_in.flow = flow.flow
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
@@ -33,4 +34,4 @@ class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
         )
 
 
-job = CRUDFlow(Flow)
+flow = CRUDFlow(Flow)

@@ -53,10 +53,12 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB_WORKFLOW_SCHEDULER') or ''}",
         )
 
+    POSTGRES_SERVER_WORKFLOW_DESIGNER: str
+    POSTGRES_DB_WORKFLOW_DESIGNER: str
     SQLALCHEMY_DESIGNER_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DESIGNER_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_db_connection_designer(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(

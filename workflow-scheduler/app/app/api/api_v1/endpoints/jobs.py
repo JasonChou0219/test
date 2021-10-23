@@ -10,8 +10,8 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Job])
-def read_flows(
+@router.get("/", response_model=List[schemas.Flow])
+def read_jobs(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
@@ -29,13 +29,14 @@ def read_flows(
     return jobs
 
 
-@router.post("/", response_model=schemas.Job)
+@router.post("/", response_model=schemas.Flow)
 def create_job(
     *,
     db: Session = Depends(deps.get_db),
     job_in: schemas.JobCreate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
+    print(locals())
     """
     Create new job.
     """
@@ -43,7 +44,7 @@ def create_job(
     return job
 
 
-@router.put("/{uuid}", response_model=schemas.Job)
+@router.put("/{uuid}", response_model=schemas.Flow)
 def update_job(
     *,
     db: Session = Depends(deps.get_db),
@@ -63,7 +64,7 @@ def update_job(
     return job
 
 
-@router.get("/{uuid}", response_model=schemas.Job)
+@router.get("/{uuid}", response_model=schemas.Flow)
 def read_job(
     *,
     db: Session = Depends(deps.get_db),
@@ -81,7 +82,7 @@ def read_job(
     return job
 
 
-@router.delete("/{uuid}", response_model=schemas.Job)
+@router.delete("/{uuid}", response_model=schemas.Flow)
 def delete_job(
     *,
     db: Session = Depends(deps.get_db),
