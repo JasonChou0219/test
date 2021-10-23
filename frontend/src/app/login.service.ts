@@ -35,7 +35,7 @@ export class LoginService {
             .set('username', credentials.username)
             .set('password', preHashPassword(credentials.password));
         const result = await this.http
-            .post<AuthToken>(this.url + '/api/login', form)
+            .post<AuthToken>(this.url + '/api/v1/login/access-token', form)
             .toPromise();
         localStorage.setItem('role', result.role);
         localStorage.setItem('authToken', result.access_token);

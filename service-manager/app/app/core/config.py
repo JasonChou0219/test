@@ -34,6 +34,7 @@ class Settings(BaseSettings):
         return v
 
     POSTGRES_SERVER: str
+    POSTGRES_SERVER_SERVICE_MANAGER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB_SERVICE_MANAGER: str
@@ -47,7 +48,8 @@ class Settings(BaseSettings):
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
+            # host=values.get("POSTGRES_SERVER"),
+            host=values.get("POSTGRES_SERVER_SERVICE_MANAGER"),
             path=f"/{values.get('POSTGRES_DB_SERVICE_MANAGER') or ''}",
         )
 

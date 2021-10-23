@@ -39,11 +39,10 @@
                             }
                         ],
                         "styles": [
+                            "src/styles.scss",
                             "node_modules/angular-calendar/css/angular-calendar.css",
-                            "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-                            "node_modules/devextreme/dist/css/dx.common.css",
-                            "node_modules/devextreme/dist/css/dx.light.css",
-                            "src/styles.scss"
+                            "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+
                         ],
                         "scripts": []
                     },
@@ -105,9 +104,9 @@
                         "karmaConfig": "karma.conf.js",
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
+                            "src/styles.scss",
                             "node_modules/angular-calendar/css/angular-calendar.css",
-                            "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-                            "src/styles.scss"
+                            "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
                         ],
                         "scripts": []
                     }

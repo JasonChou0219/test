@@ -17,5 +17,5 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
-    items = relationship("Item", back_populates="owner")
+    # items = relationship("Item", back_populates="owner")
     services = relationship("Service", back_populates="owner")

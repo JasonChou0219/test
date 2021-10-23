@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -27,8 +27,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ClipboardModule } from '@angular/cdk/clipboard';
-
-import { DxSchedulerModule } from 'devextreme-angular/ui/scheduler';
 
 // import { DeviceListComponent } from './device-list/device-list.component';
 // import { HeaderBarComponent } from './header-bar/header-bar.component';
@@ -107,6 +105,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
     ],
     imports: [
         BrowserModule,
+        ReactiveFormsModule,
         AppRoutingModule,
         BrowserAnimationsModule,
         MatTableModule,
@@ -134,7 +133,6 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         //     provide: DateAdapter,
         //     useFactory: adapterFactory,
         // }),
-        // DxSchedulerModule,
         // CodeEditorModule,
         // CodeEditorModule.forRoot({
         //     baseUrl: './assets/monaco',
