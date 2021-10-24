@@ -4,4 +4,4 @@ COPY settings.js /data/
 
 RUN cd /data/
 
-RUN npm install node-red-contrib-storagemodule-postgres
+RUN npm install https://gitlab.com/RZechlin/node-red-contrib-flow-manager-postgres
