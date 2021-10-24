@@ -1,5 +1,5 @@
 export const env = {
         environment: 'development',
-        apiUrl: `https://127.0.0.1`,
+        apiUrl: `http://127.0.0.1`,
         appName: `undefined`
         };
