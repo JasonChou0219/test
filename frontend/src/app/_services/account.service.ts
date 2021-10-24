@@ -45,6 +45,25 @@ export class AccountService {
             }));
     }
 
+    loggedIn(): boolean {
+        const now = Math.floor(Date.now() / 1000);
+        const user = localStorage.getItem('user');
+        console.log(user)
+        // To-do: Implement this function
+        // const expirationString = localStorage.getItem('authExpiration');
+        // if (expirationString == null) {
+        //    return false;
+        // }
+        //const expiration = parseInt(expirationString, 10);
+        // return expiration - now >= 0;
+        return true;
+    }
+
+    isAdmin(): boolean {
+        // To-do: Implement this function
+        return localStorage.getItem('role') === 'admin';
+    }
+
     logout() {
         // remove user from local storage and set current user to null
         localStorage.removeItem('user');

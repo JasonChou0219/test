@@ -2,6 +2,30 @@ h3.error {
     color: red;
 }
 
+div.flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+}
+
+div.flex-item {
+  // background: #e2e9f3; // #cbd7d7;
+  background: whitesmoke;
+  border-radius: 3px;
+  border-style: solid;
+  border-color: #999999;
+  border-width: 0.5px;
+  padding: 5px;
+  margin: 10px;
+  // color: white;
+  font-weight: bold;
+  font-size: 3em;
+  text-align: center;
+}
 table {
     width: 99%;
 }

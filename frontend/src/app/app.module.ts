@@ -34,6 +34,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 // import { AddDeviceComponent } from './add-device/add-device.component';
 // import { EditDeviceComponent } from './edit-device/edit-device.component';
 import { LoginComponent } from './login/login.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -76,6 +77,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // AddDeviceComponent,
         // EditDeviceComponent,
         LoginComponent,
+        DashboardComponent,
         // LogViewComponent,
         // CalendarComponent,
         // AddBookingComponent,

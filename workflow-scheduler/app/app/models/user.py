@@ -7,7 +7,7 @@ from app.db.base_class import Base
 
 if TYPE_CHECKING:
     from .item import Item  # noqa: F401
-    from .job import Job # noqa: F401
+    from .job import Flow # noqa: F401
     from .service import Service  # noqa: F401
 
 
