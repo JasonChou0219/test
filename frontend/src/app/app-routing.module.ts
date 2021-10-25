@@ -1,24 +1,22 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+
 import { LoginComponent } from './login/login.component';
-// import { DeviceListComponent } from './device-list/device-list.component';
-// import { LogViewComponent } from './log-view/log-view.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './auth.guard';
-// import { CalendarComponent } from './calendar/calendar.component';
-// import { DataHandlerComponent } from './data-handler/data-handler.component';
-// import { AdminAreaComponent } from './admin-area/admin-area.component';
-// import { UserAreaComponent } from './user-area/user-area.component';
-// import { ExperimentsComponent } from './experiments/experiments.component';
-// import { ScriptsComponent } from './scripts/scripts.component';
-// import { AboutComponent} from './about/about.component';
+
 
 const routes: Routes = [
-    // {
-    //     path: '',
-    //     component: DeviceListComponent,
-    //     canActivate: [AuthGuard],
-    // },
-    { path: 'login', component: LoginComponent },
+    {
+        path: '',
+        component: DashboardComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'login',
+        component: LoginComponent,
+        canActivate: [AuthGuard],
+    },
     // {
     //     path: 'calendar',
     //     component: CalendarComponent,
