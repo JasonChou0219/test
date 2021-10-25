@@ -293,8 +293,14 @@ services:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
     build:
       context: ./frontend
-      args:
-        FRONTEND_ENV: ${FRONTEND_ENV-production}
+      dockerfile: Dockerfile
+      #args:
+      #FRONTEND_ENV: ${FRONTEND_ENV-production}
+    volumes:
+      - ./frontend:/app/
+      - /app/node_modules
+    ports:
+     - "4200:4200"
     deploy:
       labels:
         - traefik.enable=true
