@@ -5,7 +5,6 @@ from uuid import UUID
 from pydantic import BaseModel, Json
 
 
-
 # Shared properties
 class JobBase(BaseModel):
     flow: Optional[Json] = None

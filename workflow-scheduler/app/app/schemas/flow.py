@@ -3,7 +3,6 @@ from typing import Optional, List
 from pydantic import BaseModel, Json
 
 
-
 # Shared properties
 class FlowBase(BaseModel):
     id: str

@@ -1,8 +1,8 @@
-"""Add flow
+"""Base
 
-Revision ID: 5d8ffb895d68
+Revision ID: afb1dc13f2af
 Revises: d4867f3a4c0a
-Create Date: 2021-10-22 09:15:59.690529
+Create Date: 2021-10-25 14:13:05.165964
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '5d8ffb895d68'
-down_revision = 'd4867f3a4c0a'
+revision = 'afb1dc13f2af'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -22,12 +22,32 @@ def upgrade():
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('flow', postgresql.JSON(astext_type=sa.Text()), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
+    sa.Column('title', sa.String(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_flow_description'), 'flow', ['description'], unique=False)
     op.create_index(op.f('ix_flow_id'), 'flow', ['id'], unique=False)
+    op.create_index(op.f('ix_flow_title'), 'flow', ['title'], unique=False)
+    op.create_table('job',
+    sa.Column('uuid', postgresql.UUID(), nullable=False),
+    sa.Column('flow', postgresql.JSON(astext_type=sa.Text()), nullable=True),
+    sa.Column('flow_id', sa.String(), nullable=True),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('title', sa.String(), nullable=True),
+    sa.Column('created_at', sa.TIMESTAMP(), nullable=True),
+    sa.Column('execute_at', sa.TIMESTAMP(), nullable=True),
+    sa.Column('owner_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('uuid')
+    )
+    op.create_index(op.f('ix_job_created_at'), 'job', ['created_at'], unique=False)
+    op.create_index(op.f('ix_job_description'), 'job', ['description'], unique=False)
+    op.create_index(op.f('ix_job_execute_at'), 'job', ['execute_at'], unique=False)
+    op.create_index(op.f('ix_job_flow_id'), 'job', ['flow_id'], unique=False)
+    op.create_index(op.f('ix_job_title'), 'job', ['title'], unique=False)
+    op.create_index(op.f('ix_job_uuid'), 'job', ['uuid'], unique=False)
     op.create_table('service',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(), nullable=True),
@@ -72,6 +92,14 @@ def downgrade():
     op.drop_index(op.f('ix_service_hostname'), table_name='service')
     op.drop_index(op.f('ix_service_description'), table_name='service')
     op.drop_table('service')
+    op.drop_index(op.f('ix_job_uuid'), table_name='job')
+    op.drop_index(op.f('ix_job_title'), table_name='job')
+    op.drop_index(op.f('ix_job_flow_id'), table_name='job')
+    op.drop_index(op.f('ix_job_execute_at'), table_name='job')
+    op.drop_index(op.f('ix_job_description'), table_name='job')
+    op.drop_index(op.f('ix_job_created_at'), table_name='job')
+    op.drop_table('job')
+    op.drop_index(op.f('ix_flow_title'), table_name='flow')
     op.drop_index(op.f('ix_flow_id'), table_name='flow')
     op.drop_index(op.f('ix_flow_description'), table_name='flow')
     op.drop_table('flow')
