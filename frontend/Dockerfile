@@ -3,7 +3,7 @@ FROM node:14 as build-stage
 
 WORKDIR /app
 
-RUN npm i -g @angular/cli && npm cache clean --force
+RUN npm i -g @angular/cli && npm cache clean --force && npm cache verify
 
 #COPY ./nginx.conf /nginx.conf
 COPY package*.json /app/
@@ -23,14 +23,13 @@ EXPOSE 4200
 # Comment out the next line to disable tests
 # RUN npm run test:unit
 
-CMD ["ng","serve","--host", "0.0.0.0"]
-
+CMD ["ng","serve","--host", "0.0.0.0", "--poll"]
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 #FROM nginx:1.15
 
 #Disabled we use angulars prod server to enable hot-reload functionality
-#TODO swap back to prod enviroment for deplyoment/add deployment tag
+#TODO swap back to prod environment for deployment/add deployment tag
 
 #COPY --from=build-stage /app/dist/frontend /usr/share/nginx/html
 
