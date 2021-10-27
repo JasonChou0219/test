@@ -27,6 +27,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 // import { DeviceListComponent } from './device-list/device-list.component';
 // import { HeaderBarComponent } from './header-bar/header-bar.component';
@@ -35,6 +36,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 // import { EditDeviceComponent } from './edit-device/edit-device.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { SidenavComponent } from './sidenav/sidenav.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -72,12 +74,12 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
     declarations: [
         AppComponent,
         // DeviceListComponent,
-        // HeaderBarComponent,
         // DeviceDetailComponent,
         // AddDeviceComponent,
         // EditDeviceComponent,
         LoginComponent,
         DashboardComponent,
+        SidenavComponent,
         // LogViewComponent,
         // CalendarComponent,
         // AddBookingComponent,
@@ -131,6 +133,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         MatSnackBarModule,
         MatTooltipModule,
         ClipboardModule,
+        MatSidenavModule,
         // CalendarModule.forRoot({
         //     provide: DateAdapter,
         //     useFactory: adapterFactory,

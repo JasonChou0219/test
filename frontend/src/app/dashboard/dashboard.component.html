@@ -1,1 +1,117 @@
-<div>Dashboard</div>
+<mat-toolbar class="example-header">
+    <mat-toolbar-row>
+        <span>{{ title }}</span>
+        <a class="headerbar-entry" mat-button [routerLink]="'/'" (click)="isExpanded = !isExpanded">
+            <mat-icon>menu</mat-icon>
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/'">
+            LaMaS
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/services'">
+            Services
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/experiments'">
+            Experiments</a
+        >
+        <a class="headerbar-entry" mat-button [routerLink]="'/scripts'">
+            Scripts</a
+        >
+        <a class="headerbar-entry" mat-button [routerLink]="'/dataHandler'">
+            Data Handler
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/log'"> Log </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/about'">
+            About
+        </a>
+        <div class="fill"></div>
+        <a
+            *ngIf="!accountService.loggedIn()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/login'"
+        >
+            Login
+        </a>
+        <a
+            *ngIf="accountService.loggedIn() && accountService.isAdmin()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/adminArea'"
+        >
+            Admin Area
+        </a>
+        <a
+            *ngIf="accountService.loggedIn() && !accountService.isAdmin()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/userArea'"
+        >
+            User Area
+        </a>
+        <a
+            *ngIf="accountService.loggedIn()"
+            class="headerbar-entry"
+            mat-button
+            (click)="accountService.logout()"
+            [routerLink]="'/login'"
+        >
+            Logout
+        </a>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<app-sidenav [isExpanded] = "isExpanded"></app-sidenav>
+<!--
+<mat-toolbar>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>LaMaS</span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>favorite</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+-->
+<!--
+<div>
+    <span class="material-icons">
+    home
+    </span>
+    <span class="material-icons">
+    home_outlined
+    </span>
+    <span class="material-icons">
+    dashboard
+    </span>
+    <span class="material-icons">
+    account_circle
+    </span>
+    <span class="material-icons">
+    manage_accounts
+    </span>
+    <span class="material-icons">
+    login
+    </span>
+    <span class="material-icons">
+    logout
+    </span>
+    <span class="material-icons">
+    launch
+    </span>
+    <span class="material-icons">
+    explore
+    </span>
+    <span class="material-icons">
+    autorenew
+    </span>
+    <span class="material-icons">
+    visibility
+    </span>
+
+
+</div>
+-->

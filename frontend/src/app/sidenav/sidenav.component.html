@@ -1,0 +1,95 @@
+<!--
+<mat-toolbar class="example-header">
+    <button mat-icon-button (click)="isExpanded = !isExpanded"><mat-icon>menu</mat-icon></button>
+	<h1 class="example-app-name">LaMaS</h1>
+</mat-toolbar>
+-->
+<mat-sidenav-container class="example-container" autosize>
+	<mat-sidenav #sidenav class="example-sidenav" mode="side" opened="true" (mouseenter)="mouseenter()" (mouseleave)="mouseleave()">
+		<mat-nav-list>
+			<mat-list-item (click)="showSubmenu = !showSubmenu" class="parent">
+				<span class="full-width" *ngIf="isExpanded || isShowing">Parent Menu</span>
+				<mat-icon mat-list-icon>home</mat-icon>
+				<mat-icon class="menu-button" [ngClass]="{'rotated' : showSubmenu}" *ngIf="isExpanded || isShowing">expand_more</mat-icon>
+			</mat-list-item>
+			<div class="submenu" [ngClass]="{'expanded' : showSubmenu}" *ngIf="isShowing || isExpanded">
+				<a mat-list-item href="...">Submenu Item 1</a>
+				<a mat-list-item href="...">Submenu Item 2</a>
+				<mat-list-item (click)="showSubSubMenu = !showSubSubMenu" class="parent">
+					<span class="full-width" *ngIf="isExpanded || isShowing">Nested Menu</span>
+					<mat-icon class="menu-button" [ngClass]="{'rotated' : showSubSubMenu}" *ngIf="isExpanded || isShowing">expand_more</mat-icon>
+				</mat-list-item>
+				<div class="submenu" [ngClass]="{'expanded' : showSubSubMenu}" *ngIf="isShowing || isExpanded">
+					<mat-list-item>SubSubmenu Item 1</mat-list-item>
+					<mat-list-item>SubSubmenu Item 2</mat-list-item>
+				</div>
+			</div>
+		</mat-nav-list>
+    <mat-nav-list>
+</mat-nav-list>
+	</mat-sidenav>
+	<div class="example-sidenav-content">
+		Main content that resizes properly
+	</div>
+</mat-sidenav-container>
+
+
+
+ <!--
+    </mat-sidenav>
+
+    <mat-sidenav-content [formGroup]="options">
+      <p><mat-checkbox formControlName="fixed">Fixed</mat-checkbox></p>
+      <p><mat-form-field appearance="fill">
+        <mat-label>Top gap</mat-label>
+        <input matInput type="number" formControlName="top">
+      </mat-form-field></p>
+      <p><mat-form-field appearance="fill">
+        <mat-label>Bottom gap</mat-label>
+        <input matInput type="number" formControlName="bottom">
+      </mat-form-field></p>
+      <p><button mat-button (click)="sidenav.toggle()">Toggle</button></p>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+<div>2</div>
+-->
+<!--
+<div>
+    <span class="material-icons">
+    home
+    </span>
+    <span class="material-icons">
+    home_outlined
+    </span>
+    <span class="material-icons">
+    dashboard
+    </span>
+    <span class="material-icons">
+    account_circle
+    </span>
+    <span class="material-icons">
+    manage_accounts
+    </span>
+    <span class="material-icons">
+    login
+    </span>
+    <span class="material-icons">
+    logout
+    </span>
+    <span class="material-icons">
+    launch
+    </span>
+    <span class="material-icons">
+    explore
+    </span>
+    <span class="material-icons">
+    autorenew
+    </span>
+    <span class="material-icons">
+    visibility
+    </span>
+
+
+</div>
+-->
