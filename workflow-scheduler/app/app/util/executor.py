@@ -1,41 +1,39 @@
-import docker
 import logging
 import requests
 import time
+
+import docker
+from docker.models.containers import Container
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Executor():
+    container = None
     def __init__(self):
         self.client = docker.from_env()
 
 
-    def run(self):
-        # run new container from image
-        # container = self.client.containers.run('zechlin/node-red-executor', detach=True, network='sila2_manager_default', ports={'1880/tcp': 2880}, hostname="test", name="test")
-        # container = self.client.containers.run('zechlin/node-red-executor', detach=True, network='sila2_manager_default', ports={1880:1880})
-        # print(container.name)
-        # print("----")
-        # r = requests.get("http://workflow-designer:1880/flows")
+    def start_container(self) -> Container:
+        container = self.client.containers.run('zechlin/node-red-executor', detach=True, network='sila2_manager_default'
+                                               , ports={1880:2880})
+        r = requests.get("http://workflow-designer:1880/flow-manager/flow-files/flow/Flow 1")
+        id = r.json()[0]['id']
+        r = requests.get(f'http://workflow-designer:1880/flow/{id}')
+        flow = r.json()
 
-        n = self.client.networks.list(names=["sila2_manager_default"], greedy=True)
-        # n[0].connect(container.id)
-        # n[0].reload()
-        for x in n[0].containers:
-            print(x.name)
-        # time.sleep(10)
-        # try:
-        # s = requests.get(f'http://{container.name}:1880/flows')
-        s = requests.get('http://172.18.0.17:1880/flows')
-        # s = requests.get('http://exciting_blackwell:1880/flows')
-        print(s.json())
-        # except:
-        #     pass
 
-        # container.remove(force=True)
-        print("END")
-
-    def __push_workflow_to_container(self, workflow, container):
-        pass
+    def __push_workflow_to_container(self, flow, container: Container):
+        container.reload()
+        ip = container.attrs['NetworkSettings']['Networks']['sila2_manager_default']['IPAddress']
+        server_started_string = "Started flows"
+        for line in container.logs(stream=True):
+            if server_started_string in line.decode():
+                break
+        try:
+            s = requests.post(f'http://{ip}:1880/flow', json=flow)
+        except Exception as e:
+            print(e)
+            container.remove(force=True)
+        return container
 
