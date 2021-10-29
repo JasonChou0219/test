@@ -126,6 +126,7 @@ services:
   workflow-scheduler:
     volumes:
       - ./workflow-scheduler/app:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:9999
       - SERVER_HOST=http://${DOMAIN?Variable not set}
