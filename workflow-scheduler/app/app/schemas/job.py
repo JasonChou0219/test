@@ -16,6 +16,7 @@ class JobBase(BaseModel):
 class JobCreate(JobBase):
     title: str
     flow_id: str
+    created_at: Optional[datetime]
     uuid: Optional[UUID]
 
 
@@ -29,6 +30,9 @@ class JobInDBBase(JobBase):
     uuid: UUID
     title: str
     owner_id: int
+    flow_id: str
+    created_at: datetime
+    uuid: UUID
 
     class Config:
         orm_mode = True

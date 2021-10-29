@@ -1,3 +1,5 @@
+import json
+from datetime import datetime
 from typing import List
 from uuid import uuid4
 
@@ -21,6 +23,7 @@ class CRUDJob(CRUDBase[Job, JobCreate, JobUpdate]):
         obj_in.uuid = uuid4()
         # flow like this is nice for db
         obj_in.flow = flow.flow
+        obj_in.created_at = datetime.now()
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
@@ -29,7 +32,6 @@ class CRUDJob(CRUDBase[Job, JobCreate, JobUpdate]):
         # change flow style again for returning
         db_obj.flow = json.dumps(flow.flow)
         return db_obj
-
 
     def get_multi_by_owner(
         self, db: Session, *, owner_id: int, skip: int = 0, limit: int = 100

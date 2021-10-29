@@ -1,12 +1,13 @@
 from app.util.executor import Executor
+from datetime import date, datetime
 
 
-
-def test() -> None:
+def bla() -> None:
     ex = Executor()
     ex.start_container()
 
+def bla2():
+    print(datetime.now())
 
 if __name__ == '__main__':
-
-    test()
+    bla()
