@@ -1,3 +1,4 @@
+import json
 import threading
 from datetime import datetime
 from typing import List
@@ -8,7 +9,7 @@ import aioredis
 import configparser
 import logging
 
-from schemas.job import Job
+from app.schemas.job import Job
 
 # from .data_directories import DATA_DIRECTORY
 # from .thread_local_storage import get_storage
@@ -27,17 +28,17 @@ def get_scheduling_info() -> List[Job]:
                 'from job '
                 'where job.execute_at <= %s '
                 'order by job.execute_at', [now])
-            print(cursor.fetchall())
+            result = cursor.fetchall()
             info = [
                 Job(uuid=row[0],
-                    flow=row[1],
+                    flow=json.dumps(row[1]),
                     flow_id=row[2],
                     description=row[3],
                     title=row[4],
                     created_at=row[5],
                     execute_at=row[6],
                     owner_id=row[7])
-                for row in cursor
+                for row in result
             ]
     release_database_connection(conn)
     return info
@@ -78,8 +79,8 @@ def get_database_connection():
 def release_database_connection(connection):
     storage = get_storage()
     pool = storage.get('pool')
-    logging.info('Pool is:', pool)
-    logging.info('Pool used connections:', pool._used)
+    logging.info(f'Pool is: {pool}')
+    logging.info(f'Pool used connections: {pool._used}')
 
     if pool is not None:
         # Use close=False (default) to increase speed. However, this option will not close but only suspend the
