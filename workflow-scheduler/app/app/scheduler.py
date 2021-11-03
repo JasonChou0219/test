@@ -6,6 +6,7 @@ from enum import IntEnum
 from threading import Thread
 from typing import Optional
 from uuid import UUID
+import logging
 
 from app.schemas import Job
 from app.util import docker_helper
@@ -78,6 +79,7 @@ def start_job(job: Job, status_queue: queue.SimpleQueue):
     #     asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
     # ]
     # start_data_handling_for_experiment(exp)
+    # print("START_JOB - 1")
     container = docker_helper.create_flow_container(job.flow)
     print(f'Created docker container for job {job.uuid}: \"{container.name}\"')
 
@@ -124,6 +126,8 @@ def wait_until_container_stops(container, job_uuid: UUID,
 
 
 def handle_process_status_events(event: ProcessStatusEvent):
+    # print("HANDLE_PROCESS_STATUS_EVENTS - 1")
+    # print(event)
     if event.event_type == ProcessStatusEventType.STARTED:
         jobs[event.job_uuid].container_id = event.message
         change_job_status(event.job_uuid, JobStatus.RUNNING)
@@ -139,6 +143,8 @@ def handle_process_status_events(event: ProcessStatusEvent):
 
 
 def handle_scheduling_jobs(event):
+    # print("HANDLE_SCHEDULING_JOBS - 1")
+    # print(event)
     if event.code == events.EVENT_JOB_SUBMITTED:
         if event.job_id in scheduled_jobs:
             job_uuid = scheduled_jobs[event.job_id]
@@ -179,39 +185,66 @@ def schedule_job(job: Job):
         scheduled_job = scheduler.add_job(start_job,
                                           'date',
                                           args=[job, process_status_queue],
-                                          name=f'job: {job.title}',
-                                          run_date=job.execute_at)
+                                          name=f'job: {job.title}')
         jobs[job.uuid] = JobState(
             job.uuid, job.title, scheduled_job.id, '0', job.created_at, JobStatus.WAITING_FOR_EXECUTION)
         scheduled_jobs[scheduled_job.id] = job.uuid
-        # change_experiment_status(job.id,
-        #                          ExperimentStatus.WAITING_FOR_EXECUTION)
+        change_job_status(job.uuid,
+                          JobStatus.WAITING_FOR_EXECUTION)
+
+
+def schedule_job_now(job: Job):
+    if (job.uuid in jobs) and (
+            jobs[job.uuid].status != JobStatus.FINISHED_ERROR or
+            jobs[job.uuid].status != JobStatus.FINISHED_SUCCESSFUL
+            or
+            jobs[job.uuid].status != JobStatus.FINISHED_MANUALLY):
+        pass
+        # print("Here")
+        # stop_experiment(job.uuid)
+    scheduled_job = scheduler.add_job(start_job,
+                                      args=[job, process_status_queue],
+                                      name=f'job: {job.title}')
+    jobs[job.uuid] = JobState(
+        job.uuid, job.title, scheduled_job.id, '0', job.execute_at,
+        JobStatus.WAITING_FOR_EXECUTION)
+    scheduled_jobs[job.uuid] = job.uuid
+    change_job_status(job.uuid, JobStatus.WAITING_FOR_EXECUTION)
 
 
 def main():
+    # logging.basicConfig(filename='D:\Code\example.log', level=logging.DEBUG)
+    # logging.getLogger('apscheduler').setLevel(logging.DEBUG)
+    # logging.debug("bla")
     scheduler.start()
     schedule_future_jobs_from_database()
     scheduler.add_listener(event_listener, events.EVENT_ALL)
-
+    job = get_scheduling_info()[0]
+    # schedule_job_now(job)
     t = time.time()
-    while True:
-        try:
-            handle_scheduling_jobs(event_queue.get_nowait())
-        except queue.Empty:
-            pass
-
-        try:
-            handle_process_status_events(process_status_queue.get_nowait())
-        except queue.Empty:
-            pass
-
-        # receive_and_execute_commands()
-        t2 = time.time()
-        if t2 - t >= 5:
-            t = t2
-            schedule_future_jobs_from_database()
-
-    scheduler.shutdown()
+    # print(jobs)
+    # print(scheduled_jobs)
+    # print(scheduler.get_jobs())
+    # print(job.flow)
+    # docker_helper.create_flow_container(job.flow)
+    # while True:
+    #     try:
+    #         handle_scheduling_jobs(event_queue.get_nowait())
+    #     except queue.Empty:
+    #         pass
+    #
+    #     try:
+    #         handle_process_status_events(process_status_queue.get_nowait())
+    #     except queue.Empty:
+    #         pass
+    #
+    #     # receive_and_execute_commands()
+    #     t2 = time.time()
+    #     if t2 - t >= 5:
+    #         t = t2
+    #         schedule_future_jobs_from_database()
+    #
+    # scheduler.shutdown()
 
 
 if __name__ == '__main__':

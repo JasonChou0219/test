@@ -12,13 +12,15 @@ logger = logging.getLogger(__name__)
 
 def create_flow_container(job_flow: Json):
     container = __start_container()
+    # time.sleep(5)
     __push_workflow_to_container(job_flow, container)
 
 
 def __start_container() -> Container:
     client = docker.from_env()
-    container = client.containers.run('zechlin/node-red-executor', detach=True, network='sila2_manager_default'
-                                           , ports={1880:2880})
+    container = client.containers.run('zechlin/node-red-executor', detach=True, network='bridge'
+                                      , ports={1880: 2880})
+    logger.info(f'Container {container.attrs["Name"]} created')
     # r = requests.get("http://workflow-designer:1880/flow-manager/flow-files/flow/Flow 1")
     # id = r.json()[0]['id']
     # r = requests.get(f'http://workflow-designer:1880/flow/{id}')
@@ -28,14 +30,20 @@ def __start_container() -> Container:
 
 def __push_workflow_to_container(flow, container: Container):
     container.reload()
-    ip = container.attrs['NetworkSettings']['Networks']['sila2_manager_default']['IPAddress']
+    # ip = container.attrs['NetworkSettings']['Networks']['sila2_manager_default']['IPAddress']
+    # Localhost only for non-docker testing
+    ip = "localhost"
     server_started_string = "Started flows"
     for line in container.logs(stream=True):
         if server_started_string in line.decode():
             break
     try:
-        s = requests.post(f'http://{ip}:1880/flow', json=flow)
+        # change port to 1880 when running in docker
+        s = requests.post(f'http://{ip}:2880/flow-manager/flow-files/flow/NewFlow', json=flow)
+        logger.debug(s.text)
+        s = requests.post(f'http://{ip}:2880/flow-manager/states', json={"action": "reloadOnly"})
+        logger.debug(s.text)
     except Exception as e:
-        print(e)
+        logger.error(e)
         container.remove(force=True)
 

@@ -1,4 +1,4 @@
-FROM nodered/node-red-docker:v10
+FROM nodered/node-red
 
 COPY settings.js /data/
 
