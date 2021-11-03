@@ -13,9 +13,18 @@ export class SidenavComponent implements OnInit {
       // isExpanded = true;
       @Input()
       isExpanded: boolean;
-      showSubmenu: boolean = false;
+
+      hideToggle: boolean = false;
+      // isExpandedHome: boolean = false;
+      showSubmenuHome: boolean = false;
+      showSubSubMenuHome: boolean = false; // showSubSubMenuHome
+
+      // isExpandedUser: boolean = false;
+      showSubmenuUser: boolean = false;
+      // isExpandedDiscover: boolean = false;
+      showSubmenuDiscover: boolean = false;
       isShowing = false;
-      showSubSubMenu: boolean = false;
+
 
     constructor(
         private route: ActivatedRoute,

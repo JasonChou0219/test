@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { AboutComponent } from './about/about.component';
 import { AuthGuard } from './auth.guard';
 
 
@@ -22,6 +23,10 @@ const routes: Routes = [
         path: 'sidenav',
         component: SidenavComponent,
         //canActivate: [AuthGuard],
+    },
+    {
+        path: 'about',
+        component: AboutComponent
     },
     // {
     //     path: 'experiments',
@@ -43,10 +48,6 @@ const routes: Routes = [
     //     component: LogViewComponent,
     //     canActivate: [AuthGuard],
     // },
-    // {
-    //     path: 'about',
-    //     component: AboutComponent},
-    // {
     //     path: 'adminArea',
     //     component: AdminAreaComponent,
     //     canActivate: [AuthGuard],

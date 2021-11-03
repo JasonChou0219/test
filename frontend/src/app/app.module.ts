@@ -52,7 +52,7 @@ import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { AddExperimentComponent } from './add-experiment/add-experiment.component';
 // import { ScriptsComponent } from './scripts/scripts.component';
 // import { AddScriptComponent } from './add-script/add-script.component';
-// import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './about/about.component';
 // import { ScriptEditorComponent } from './script-editor/script-editor.component';
 // import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
 // import { DeviceCommandComponent } from './device-command/device-command.component';
@@ -91,7 +91,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // AddExperimentComponent,
         // ScriptsComponent,
         // AddScriptComponent,
-        // AboutComponent,
+        AboutComponent,
         // ScriptEditorComponent,
         // DeviceCommandComponent,
         // DeviceFeatureComponent,
