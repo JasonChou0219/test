@@ -227,6 +227,9 @@ services:
 
   service-manager:
     image: '${DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
     depends_on:
        - db-service-manager
     env_file:
@@ -247,6 +250,14 @@ services:
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=80
+  mdns_repeater:
+      image: jdbeeler/mdns-repeater:latest
+      network_mode: "host"
+      privileged: true
+      env_file:
+        - ./service-manager/app/mdn-repeater.conf
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
 
   #mdns-reflector:
   #  image: '${DOCKER_IMAGE_MDNS_REFLECTOR?Variable not set}:${TAG-latest}'
@@ -270,6 +281,21 @@ services:
    #   labels:
    #     - traefik.enable=true
    #     - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+
+    #  avahi:
+   #    image: '${DOCKER_IMAGE_MDNS_REFLECTOR?Variable not set}:${TAG-latest}'
+   #    networks:
+   #      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+   #      - default
+   #    env_file:
+   #      - .env
+   #    build:
+   #      context: ./service-manager
+   #      dockerfile: avahi.dockerfile
+   #    deploy:
+   #      labels:
+   #        - traefik.enable=true
+   #        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
   celeryworker-service-manager:
     image: '${DOCKER_IMAGE_CELERYWORKER_SERVICE_MANAGER?Variable not set}:${TAG-latest}'

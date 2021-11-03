@@ -2,6 +2,13 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
 WORKDIR /app/
 
+RUN apt-get update && apt-get install -yq avahi-daemon avahi-utils libnss-mdns \
+  && apt-get -qq -y autoclean \
+  && apt-get -qq -y autoremove \
+  && apt-get -qq -y clean
+
+RUN update-rc.d avahi-daemon enable
+
 # Install Poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
     cd /usr/local/bin && \
@@ -21,7 +28,8 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; els
 ARG INSTALL_JUPYTER=false
 RUN bash -c "if [ $INSTALL_JUPYTER == 'true' ] ; then pip install jupyterlab ; fi"
 
-#
+RUN pip install git+https://gitlab.gwdg.de/niklas.mertsch/sila2-redo
+
 #RUN apt-get update -y
 #RUN apt-get install avahi-daemon -y
 #RUN apt-get install avahi-utils -y
