@@ -59,8 +59,8 @@ def upgrade():
     sa.Column('flow_id', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('title', sa.String(), nullable=True),
-    sa.Column('created_at', sa.TIMESTAMP(), nullable=True),
-    sa.Column('execute_at', sa.TIMESTAMP(), nullable=True),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=True),
+    sa.Column('execute_at', sa.TIMESTAMP(timezone=True), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('uuid')
