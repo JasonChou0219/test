@@ -1,0 +1,53 @@
+table {
+    width: 99%;
+}
+
+tr.row:not(.expanded):hover {
+    background-color: whitesmoke;
+}
+
+tr.row td {
+    border-bottom-width: 0;
+}
+.expanded-element {
+    overflow: hidden;
+}
+
+.edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.expanded-row {
+    height: 0;
+}
+.editor-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+button.header {
+    margin-left: 0;
+}
+button {
+    margin-left: 8px;
+}
+.editor-body {
+}
+div.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+div.mat-card-header-entry {
+    margin: auto;
+}
+div.mat-card-header-entry:first-child {
+    margin-left: 0;
+}
+div.mat-card-header-entry:last-child {
+    margin-right: 1%;
+}
