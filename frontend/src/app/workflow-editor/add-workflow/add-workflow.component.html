@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Add Workflow</h2>
+<form>
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="workflow.name" name="name" />
+    </mat-form-field>
+</form>
+<app-file-selector
+    name="Select Workflow"
+    (fileSelect)="fileSelected($event)"
+></app-file-selector>
+<p>{{ file === undefined ? 'No File Selected' : workflow.fileName }}</p>
+<mat-dialog-actions>
+    <button
+        mat-flat-button
+        color="primary"
+        (click)="add()"
+        [mat-dialog-close]="workflow"
+    >
+        Add
+    </button>
+    <button mat-button (click)="this.dialogRef.close()">Cancel</button>
+</mat-dialog-actions>
