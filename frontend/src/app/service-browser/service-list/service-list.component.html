@@ -1,0 +1,186 @@
+<!-- <div class="page"> -->
+    <div class="mat-card-header">
+        <div class="mat-card-header-entry"><h1>Services</h1></div>
+        <div class="mat-card-header-entry">
+            <div class="actions">
+                <button
+                    class="header"
+                    mat-icon-button
+                    color="primary"
+                    (click)="add_service()"
+                    matTooltip="Add a new service using auto-discovery"
+                >
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button
+                    class="header"
+                    mat-icon-button
+                    color="primary"
+                    (click)="add_edge_gateway()"
+                    matTooltip="Add a new edge gateway to enable auto-discovery of services in another network"
+                >
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button
+                    class="header"
+                    mat-icon-button
+                    color="primary"
+                    (click)="refresh()"
+                    matTooltip="Refresh list of services"
+                >
+                    <mat-icon>refresh</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <table
+        mat-table
+        [dataSource]="dataSource"
+        multiTemplateDataRows
+        class="mat-elevation-z8"
+    >
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element; let i = dataIndex" (click)="expand(i)" style="cursor: pointer">
+                    {{ element.service.name }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.service.type }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef matTooltip="Placeholder/ e.g. last executed command">Status</th>
+            <td mat-cell *matCellDef="let element">
+                {{
+                    element.status.length == 0
+                        ? 'Unknown'
+                        : element.status.status
+                }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>Address</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.service.address }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="port">
+            <th mat-header-cell *matHeaderCellDef>Port</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.service.port }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="free">
+            <th mat-header-cell *matHeaderCellDef>In use</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.service.available ? 'No' : 'Yes' }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="online">
+            <th mat-header-cell *matHeaderCellDef>Online</th>
+            <td mat-cell *matCellDef="let element">
+                <span
+                    [ngStyle]="
+                        element.status.online
+                            ? { color: 'green' }
+                            : { color: 'red' }
+                    "
+                >
+                </span>
+                <span
+                    class="circle"
+                    [ngStyle]="
+                        element.status.online
+                            ? { 'background-color': 'green' }
+                            : { 'background-color': 'red' }
+                    "
+                >
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="edit">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+                <div class="edit">
+                    <button mat-icon-button (click)="expand(i)">
+                        <mat-icon matTooltip="Expand to view service detail">info</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="edit(i)">
+                        <mat-icon matTooltip="Edit service settings">create</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="delete(i)">
+                        <mat-icon matTooltip="Delete this service">delete</mat-icon>
+                    </button>
+                </div>
+            </td>
+        </ng-container>
+
+        <!-- Expanded Row-->
+        <ng-container matColumnDef="expandedDetail">
+            <td
+                mat-cell
+                *matCellDef="let element; let i = dataIndex"
+                [attr.colspan]="tableColumns.length"
+            >
+                <div
+                    class="expanded-element"
+                    [@detailExpand]="selected === i ? 'expanded' : 'collapsed'"
+                >
+                    <h2>Details</h2>
+                    <div class="details">
+                        <div class="column">
+                            <div class="row">
+                                <div class="title">Internal UUID:</div>
+                            </div>
+                            <div class="row">
+                                <div class="title">Server UUID:</div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="row">
+                                <div class="data">{{ element.service.uuid }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="data">{{ element.service.server_uuid }}</div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <h2>Features</h2>
+                    <!-- To be included
+                    <app-service-detail
+                        *ngIf="element.detailsLoaded"
+                        [service]="element.service"
+                    ></app-service-detail>
+                    -->
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr
+            mat-row
+            class="row"
+            [class.expanded]="i === selected"
+            *matRowDef="let row; columns: tableColumns; let i = dataIndex"
+        ></tr>
+        <tr
+            mat-row
+            class="expanded-row"
+            *matRowDef="let row2; columns: ['expandedDetail']"
+        ></tr>
+    </table>
+<!-- </div> -->
