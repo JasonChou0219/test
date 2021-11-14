@@ -5,19 +5,21 @@
             <mat-icon>menu</mat-icon>
         </a>
         <a class="headerbar-entry" mat-button [routerLink]="'/'">
-            LaMaS
+            <h2>LaMaS</h2>
         </a>
         <a class="headerbar-entry" mat-button [routerLink]="'/services'">
-            Browse
+            <h2>Browse</h2>
         </a>
         <a class="headerbar-entry" mat-button href="localhost:1880"  target="_blank">
-            Design</a
+            <h2>Design</h2>
+        </a
         >
         <a class="headerbar-entry" mat-button [routerLink]="'/workflow_editor'">
-            Editor</a
+            <h2>Editor</h2>
+        </a
         >
         <a class="headerbar-entry" mat-button [routerLink]="'/dataHandler'">
-            whatever
+            <h2>whatever</h2>
         </a>
         <div class="fill"></div>
         <a
@@ -26,7 +28,7 @@
             mat-button
             [routerLink]="'/login'"
         >
-            Login
+            <h2>Login</h2>
         </a>
         <a
             *ngIf="accountService.loggedIn() && accountService.isAdmin()"
@@ -34,7 +36,7 @@
             mat-button
             [routerLink]="'/adminArea'"
         >
-            Admin Area
+            <h2>Admin Area</h2>
         </a>
         <a
             *ngIf="accountService.loggedIn() && !accountService.isAdmin()"
@@ -42,7 +44,7 @@
             mat-button
             [routerLink]="'/userArea'"
         >
-            User Area
+            <h2>User Area</h2>
         </a>
         <a
             *ngIf="accountService.loggedIn()"
@@ -51,7 +53,7 @@
             (click)="accountService.logout()"
             [routerLink]="'/login'"
         >
-            Logout
+            <h2>Logout</h2>
         </a>
     </mat-toolbar-row>
 </mat-toolbar>
