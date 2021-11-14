@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { AboutComponent } from './about/about.component';
+import { WorkflowEditorComponent } from './workflow-editor/workflow-editor.component';
 import { AuthGuard } from './auth.guard';
 
 
@@ -28,14 +29,14 @@ const routes: Routes = [
         path: 'about',
         component: AboutComponent
     },
+    {
+         path: 'workflow_editor',
+         component: WorkflowEditorComponent,
+         canActivate: [AuthGuard],
+    },
     // {
     //     path: 'experiments',
     //     component: ExperimentsComponent,
-    //     canActivate: [AuthGuard],
-    // },
-    // {
-    //     path: 'scripts',
-    //     component: ScriptsComponent,
     //     canActivate: [AuthGuard],
     // },
     // {
