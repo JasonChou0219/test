@@ -23,7 +23,7 @@ def get_db() -> Generator:
     finally:
         db.close()
 
-
+"""
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> models.User:
@@ -42,7 +42,6 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-
 def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
@@ -59,3 +58,4 @@ def get_current_active_superuser(
             status_code=400, detail="The user doesn't have enough privileges"
         )
     return current_user
+"""
