@@ -6,8 +6,7 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from .item import Item  # noqa: F401
-    from .service import Service  # noqa: F401
+    from .workflow import Workflow  # noqa: F401
 
 
 class User(Base):
@@ -17,5 +16,6 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
-    items = relationship("Item", back_populates="owner")
-    services = relationship("Service", back_populates="owner")
+    #items = relationship("Item", back_populates="owner")
+    #services = relationship("Service", back_populates="owner")
+    workflows = relationship("Workflow", back_populates="owner")

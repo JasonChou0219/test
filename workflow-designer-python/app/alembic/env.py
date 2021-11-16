@@ -33,8 +33,8 @@ target_metadata = Base.metadata
 def get_url():
     user = os.getenv("POSTGRES_USER", "postgres")
     password = os.getenv("POSTGRES_PASSWORD", "")
-    server = os.getenv("POSTGRES_SERVER_BACKEND_GATEWAY", "db-backend-gateway")
-    db = os.getenv("POSTGRES_DB_BACKEND_GATEWAY", "backend-gateway")
+    server = os.getenv("POSTGRES_SERVER_WORKFLOW_DESIGNER_PYTHON", "db-workflow-designer-python")
+    db = os.getenv("POSTGRES_DB_WORKFLOW_DESIGNER_PYTHON", "workflow-designer-python")
     return f"postgresql://{user}:{password}@{server}/{db}"
 
 
