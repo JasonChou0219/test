@@ -3,7 +3,7 @@ services:
 
   proxy:
     ports:
-      - "80:80"
+      - "80:80"  # ${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
       - "8090:8080"
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
@@ -26,7 +26,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-traefik-public-http.rule=Host(`${DOMAIN?Variable not set}`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-traefik-public.loadbalancer.server.port=80
+      - traefik.http.services.${STACK_NAME?Variable not set}-traefik-public.loadbalancer.server.port=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
 
   pgadmin:
     ports:
@@ -44,6 +44,7 @@ services:
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
       - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - PORT=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
     build:
       context: ./backend-gateway
       dockerfile: backend-gateway.dockerfile
@@ -56,7 +57,7 @@ services:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=80
+      - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
 
   celeryworker-backend-gateway:
     volumes:
@@ -80,6 +81,7 @@ services:
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8889
       - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - PORT=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
     build:
       context: ./service-manager
       dockerfile: service-manager.dockerfile
@@ -92,7 +94,7 @@ services:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=80
+      - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
 
   celeryworker-service-manager:
     volumes:
@@ -125,6 +127,7 @@ services:
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:9999
       - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - PORT=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
     build:
       context: ./workflow-scheduler
       dockerfile: workflow-scheduler.dockerfile
@@ -137,7 +140,30 @@ services:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=80
+      - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+
+  workflow-designer-python:
+    ports:
+      - "8890:8890"
+    volumes:
+      - ./workflow-designer-python/app:/app
+    environment:
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8890
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - PORT=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
+    build:
+      context: ./workflow-designer-python
+      dockerfile: workflow-designer-python.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
+    #command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: /start-reload.sh
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
 networks:
   traefik-public:
