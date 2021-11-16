@@ -10,3 +10,5 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: Optional[int] = None
+    # To-do: Add scopes: scopes: List[str] = []
+    # -> see OAuth2 scopes in FastAPI tutorial

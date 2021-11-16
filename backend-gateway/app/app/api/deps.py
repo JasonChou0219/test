@@ -1,7 +1,7 @@
 from typing import Generator
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer  # , SecurityScopes
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
@@ -12,7 +12,8 @@ from app.core.config import settings
 from app.db.session import SessionLocal
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    # To-do: scopes={"me": "Read information about the current user.", "items": "Read items."},
 )
 
 
@@ -46,6 +47,7 @@ def get_current_user(
 def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
+    print('iosehgiohilguuiohghghgghuggguhg')
     if not crud.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
