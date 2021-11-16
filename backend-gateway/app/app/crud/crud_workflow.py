@@ -1,3 +1,4 @@
+from requests import delete, get, post, put
 from typing import List
 
 from fastapi.encoders import jsonable_encoder
@@ -17,12 +18,15 @@ class CRUDWorkflow(CRUDRerouteBase[Workflow, WorkflowCreate, WorkflowUpdate]):
         print(route)
         print(obj_in)
         print(owner_id)
-        # response = get(route)
+        response = post(route, json=jsonable_encoder(obj_in))
+        print(response)
         # obj_in_data = jsonable_encoder(obj_in)
+        # db_obj = self.model(**response)
         # db_obj = self.model(**obj_in_data, owner_id=owner_id)
         # db.add(db_obj)
         # db.commit()
         # db.refresh(db_obj)
+        return response
         # return db_obj
 
     def get_multi_by_owner(

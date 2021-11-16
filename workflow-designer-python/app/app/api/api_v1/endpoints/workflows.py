@@ -1,6 +1,7 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
@@ -50,7 +51,16 @@ def create_workflow(
     """
     Create new workflow.
     """
-    workflow = crud.workflow.create_with_owner(db=db, obj_in=workflow_in, owner_id=current_user.id)
+    print(workflow_in)
+    from app.models.workflow import Workflow
+    model = Workflow
+    obj_in_data = jsonable_encoder(workflow_in)
+    # db_obj = self.model(**obj_in_data, owner_id=owner_id)
+    workflow = model(**obj_in_data)
+    db.add(workflow)
+    db.commit()
+    db.refresh(workflow)
+    # workflow = crud.workflow.create_with_owner(db=db, obj_in=workflow_in, owner_id=current_user.id)
     return workflow
 
 

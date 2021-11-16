@@ -8,6 +8,7 @@ from app.db.base_class import Base
 if TYPE_CHECKING:
     from .item import Item  # noqa: F401
     from .service import Service  # noqa: F401
+    from .workflow import Workflow
 
 
 class User(Base):
@@ -19,3 +20,4 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     items = relationship("Item", back_populates="owner")
     services = relationship("Service", back_populates="owner")
+    # Workflows = relationship("Workflow", back_populates="owner")
