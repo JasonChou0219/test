@@ -7,12 +7,15 @@ from pydantic import parse_obj_as
 
 from app import crud, models, schemas
 from app.api import deps
+from app.core.config import settings
 
 router = APIRouter()
-target_service_hostname = ''  # -> to env var
-target_service_port = 82  # -> to env var
-target_service_api_version = ''  # -> to env var
-target_service_url = "http://sila2_device_manager_workflow-designer-python_1:82/api/v1/"  # from env vars
+target_service_hostname = "http://sila2_device_manager_workflow-designer-python_1"  # -> to env var
+target_service_port = settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT  # -> to env var
+target_service_api_version = settings.API_V1_STR  # -> to env var
+target_service_url = target_service_hostname + ":" \
+                     + settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT \
+                     + settings.API_V1_STR + "/"
 
 
 @router.get("/", response_model=List[schemas.Workflow])
