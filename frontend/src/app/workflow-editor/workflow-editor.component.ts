@@ -44,7 +44,7 @@ export class WorkflowEditorComponent implements OnInit {
         private fileReaderService: FileReaderService,
         private serviceService: ServiceService,
         private workflowEditorService: WorkflowEditorService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
     ) {}
 
     async createWorkflow() {

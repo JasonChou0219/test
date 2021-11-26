@@ -5,7 +5,6 @@ import { env } from '@environments/environment';
 
 import { Workflow, WorkflowInfo, WorkflowInfoList } from '@app/_models';
 
-
 @Injectable({
     providedIn: 'root',
 })
@@ -17,36 +16,36 @@ export class WorkflowEditorService {
 
     async getUserWorkflowsInfo(): Promise<WorkflowInfo[]> {
         return this.http
-            .get<WorkflowInfoList>(this.serverUrl + '/api/workflows')
-            .pipe(map((workflow) => workflow.data))
+            .get<WorkflowInfo[]>(`${env.apiUrl}/api/v1/workflows/`)
+            .pipe(map((workflow) => workflow))
             .toPromise();
     }
     async getUserWorkflow(workflowID: number): Promise<Workflow> {
         return this.http
-            .get<Workflow>(this.serverUrl + '/api/workflows/' + workflowID)
+            .get<Workflow>(`${env.apiUrl}/api/v1/workflows/` + workflowID)
             .toPromise();
     }
     async setUserWorkflowInfo(workflowInfo: WorkflowInfo) {
         return this.http
             .put(
-                this.serverUrl + `/api/workflows/${workflowInfo.id}/info`,
+                `${env.apiUrl}/api/v1/workflows/${workflowInfo.id}/info`,
                 workflowInfo
             )
             .toPromise();
     }
     async setUserWorkflow(workflow: Workflow) {
         return this.http
-            .put(this.serverUrl + `/api/workflows/${workflow.id}/`, workflow)
+            .put(`${env.apiUrl}/api/v1/workflows/${workflow.id}/`, workflow)
             .toPromise();
     }
     async createUserWorkflow(workflow: Workflow) {
         return this.http
-            .post(this.serverUrl + '/api/workflows', workflow)
+            .post('${env.apiUrl}/api/v1/workflows', workflow)
             .toPromise();
     }
     async deleteUserWorkflow(workflowID: number) {
         return this.http
-            .delete(this.serverUrl + '/api/workflows/' + workflowID)
+            .delete('${env.apiUrl}/api/v1/workflows/' + workflowID)
             .toPromise();
     }
 }

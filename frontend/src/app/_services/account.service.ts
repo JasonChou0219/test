@@ -48,7 +48,6 @@ export class AccountService {
     loggedIn(): boolean {
         const now = Math.floor(Date.now() / 1000);
         const user = localStorage.getItem('user');
-        console.log(user)
         // To-do: Implement this function
         // const expirationString = localStorage.getItem('authExpiration');
         // if (expirationString == null) {
