@@ -13,6 +13,7 @@ router = APIRouter()
 target_service_hostname = "http://sila2_device_manager_workflow-designer-python_1"  # -> to env var
 target_service_port = settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT  # -> to env var
 target_service_api_version = settings.API_V1_STR  # -> to env var
+
 target_service_url = target_service_hostname + ":" \
                      + str(settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT) \
                      + str(settings.API_V1_STR) + "/"
@@ -23,19 +24,20 @@ def read_workflows(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_active_user),  # get_current_active_superuser
 ) -> Any:
     """
     Retrieve workflows.
     """
     target_route = f"{target_service_url}workflows/"
     if crud.user.is_superuser(current_user):
-        workflows = crud.workflow.get_multi(db, route=target_route, skip=skip, limit=limit)
+        workflows = crud.workflow.get_multi(db, route=target_route, skip=skip, limit=limit, current_user='superuser')
     else:
-         workflows = crud.workflow.get_multi_by_owner(
-             db=db, route=target_route, owner_id=current_user.id, skip=skip, limit=limit
-         )
+        workflows = crud.workflow.get_multi_by_owner(
+            db=db, route=target_route, owner_id=current_user.id, skip=skip, limit=limit
+        )
     workflows = parse_obj_as(List[schemas.WorkflowInDB], workflows.json())
+    print(workflows)
     return workflows
 
 
@@ -54,6 +56,7 @@ def create_workflow(
     workflow_in.owner_id = current_user.id
     workflow = crud.workflow.create_with_owner(db=db, route=target_route, obj_in=workflow_in, owner_id=current_user.id)
     workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
+    print(workflow)
     return workflow
 
 
@@ -66,14 +69,18 @@ def update_workflow(
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
-    Update an workflow.
+    Update a workflow.
     """
-    workflow = crud.workflow.get(db=db, id=id)
+    target_route = f"{target_service_url}workflows/{id}"
+    workflow = crud.workflow.get(db=db, route=target_route, id=id)
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
-    if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    workflow = crud.workflow.update(db=db, db_obj=workflow, obj_in=workflow_in)
+    else:
+        workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
+        if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
+            raise HTTPException(status_code=400, detail="Not enough permissions")
+    workflow = crud.workflow.update(db=db, route=target_route, db_obj=workflow, obj_in=workflow_in)
+    workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
     return workflow
 
 
@@ -89,14 +96,12 @@ def read_workflow(
     """
     target_route = f"{target_service_url}workflows/{id}"
     workflow = crud.workflow.get(db=db, route=target_route, id=id)
-    print(workflow)
-    print(workflow.text)
-    print(type(workflow))
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
-    if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    workflow = parse_obj_as(List[schemas.WorkflowInDB], workflow.json())
+    else:
+        workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
+        if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
+            raise HTTPException(status_code=400, detail="Not enough permissions")
     return workflow
 
 
@@ -105,15 +110,19 @@ def delete_workflow(
     *,
     db: Session = Depends(deps.get_db),
     id: int,
-    # current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Delete an workflow.
     """
-    workflow = crud.workflow.get(db=db, id=id)
+    target_route = f"{target_service_url}workflows/{id}"
+    workflow = crud.workflow.get(db=db, route=target_route, id=id)
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
-    # if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
-    #     raise HTTPException(status_code=400, detail="Not enough permissions")
-    workflow = crud.workflow.remove(db=db, id=id)
+    else:
+        workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
+        if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
+            raise HTTPException(status_code=400, detail="Not enough permissions")
+    workflow = crud.workflow.remove(db=db, route=target_route, id=id, current_user=current_user.id)
+    workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
     return workflow
