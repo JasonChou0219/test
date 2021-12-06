@@ -1,0 +1,80 @@
+<div class="property">
+    <div *ngIf="expand; else noExpand">
+        <button mat-icon-button (click)="expand = false">
+            <mat-icon>expand_more</mat-icon>
+        </button>
+    </div>
+    <ng-template #noExpand>
+        <button mat-icon-button (click)="expand = true">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </ng-template>
+    <div class="content">
+        <div class="header">
+            <div class="property-name" *ngIf="property.observable === false, else observable">{{ property.identifier }}</div>
+            <ng-template #observable>
+                <div class="property-name">[observable] {{ property.identifier }}</div>
+            </ng-template>
+            <div class="property-description">{{ property.description }}</div>
+        </div>
+        <div class="border" *ngIf="expand">
+            <div class="section-title">Response</div>
+            <div class="section-content">
+                <div class="param-border">
+                    <div class="params">
+                        <div>
+                            <div>
+                                <span class="param-name">{{
+                                    property.response.identifier
+                                }}</span>
+                                <span class="param-type">{{
+                                    property.response.data_type
+                                }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ property.response.description }}
+                            </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Return value</mat-label>
+                                <input
+                                    matInput
+                                    disabled
+                                    type="text"
+                                    placeholder="Return value"
+                                    value=" {{this.returnValues[0].value}}"
+                                    />
+                                <!--/ {{property.response.identifier.toLowerCase()}}"-->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">Usage</div>
+            <div class="section-content example-code">
+                <code>
+                    {{ property.identifier }} =
+                    <span class="python-object">yourObject</span>.<span
+                        class="python-function"
+                        >call_property</span
+                    >(<span class="python-string"
+                        >"{{ featureIdentifier }}"</span
+                    >,<span class="python-string"
+                        >"{{ property.identifier}}"</span
+                    >)
+                </code>
+            </div>
+            <div>
+                <button
+                    mat-flat-button
+                    color="primary"
+                    aria-label="Run"
+                    (click)="getProperty(property.identifier)"
+                >
+                    Run
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

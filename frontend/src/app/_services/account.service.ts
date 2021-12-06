@@ -48,7 +48,6 @@ export class AccountService {
     loggedIn(): boolean {
         const now = Math.floor(Date.now() / 1000);
         const user = localStorage.getItem('user');
-        console.log(user)
         // To-do: Implement this function
         // const expirationString = localStorage.getItem('authExpiration');
         // if (expirationString == null) {
@@ -68,7 +67,7 @@ export class AccountService {
         // remove user from local storage and set current user to null
         localStorage.removeItem('user');
         this.userSubject.next(null);
-        this.router.navigate(['/account/login']);
+        this.router.navigate(['/login']);
     }
 
     register(user: User) {

@@ -1,1 +1,115 @@
-<div>Dashboard</div>
+<mat-toolbar class="example-header">
+    <mat-toolbar-row>
+        <span>{{ title }}</span>
+        <a class="headerbar-entry" mat-button [routerLink]="'/'" (click)="isExpanded = !isExpanded">
+            <mat-icon>menu</mat-icon>
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/'">
+            <h2>LaMaS</h2>
+        </a>
+        <a class="headerbar-entry" mat-button [routerLink]="'/services'">
+            <h2>Browse</h2>
+        </a>
+        <a class="headerbar-entry" mat-button href="localhost:1880"  target="_blank">
+            <h2>Design</h2>
+        </a
+        >
+        <a class="headerbar-entry" mat-button [routerLink]="'/workflow_editor'">
+            <h2>Editor</h2>
+        </a
+        >
+        <a class="headerbar-entry" mat-button [routerLink]="'/dataHandler'">
+            <h2>whatever</h2>
+        </a>
+        <div class="fill"></div>
+        <a
+            *ngIf="!accountService.loggedIn()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/login'"
+        >
+            <h2>Login</h2>
+        </a>
+        <a
+            *ngIf="accountService.loggedIn() && accountService.isAdmin()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/adminArea'"
+        >
+            <h2>Admin Area</h2>
+        </a>
+        <a
+            *ngIf="accountService.loggedIn() && !accountService.isAdmin()"
+            class="headerbar-entry"
+            mat-button
+            [routerLink]="'/userArea'"
+        >
+            <h2>User Area</h2>
+        </a>
+        <a
+            *ngIf="accountService.loggedIn()"
+            class="headerbar-entry"
+            mat-button
+            (click)="accountService.logout()"
+            [routerLink]="'/login'"
+        >
+            <h2>Logout</h2>
+        </a>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<app-sidenav [isExpanded] = "isExpanded"></app-sidenav>
+<!--
+<mat-toolbar>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>LaMaS</span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>favorite</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+-->
+<!--
+<div>
+    <span class="material-icons">
+    home
+    </span>
+    <span class="material-icons">
+    home_outlined
+    </span>
+    <span class="material-icons">
+    dashboard
+    </span>
+    <span class="material-icons">
+    account_circle
+    </span>
+    <span class="material-icons">
+    manage_accounts
+    </span>
+    <span class="material-icons">
+    login
+    </span>
+    <span class="material-icons">
+    logout
+    </span>
+    <span class="material-icons">
+    launch
+    </span>
+    <span class="material-icons">
+    explore
+    </span>
+    <span class="material-icons">
+    autorenew
+    </span>
+    <span class="material-icons">
+    visibility
+    </span>
+
+
+</div>
+-->

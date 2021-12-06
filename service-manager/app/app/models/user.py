@@ -19,3 +19,4 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     # items = relationship("Item", back_populates="owner")
     services = relationship("Service", back_populates="owner")
+    workflows = relationship("Workflow", back_populates="owner")

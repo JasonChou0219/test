@@ -27,6 +27,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 // import { DeviceListComponent } from './device-list/device-list.component';
 // import { HeaderBarComponent } from './header-bar/header-bar.component';
@@ -35,6 +36,18 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 // import { EditDeviceComponent } from './edit-device/edit-device.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { SidenavComponent } from './sidenav/sidenav.component';
+
+import { ServiceListComponent } from './service-browser/service-list/service-list.component';
+import { AddServiceComponent} from './service-browser/add-service/add-service.component';
+import { EditServiceComponent} from './service-browser/edit-service/edit-service.component';
+
+import { WorkflowEditorComponent } from './workflow-editor/workflow-editor.component';
+import { EditorComponent } from './workflow-editor/editor/editor.component';
+import { AddWorkflowComponent } from './workflow-editor/add-workflow/add-workflow.component';
+import { EditWorkflowComponent } from './workflow-editor/edit-workflow/edit-workflow.component';
+import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
+import { FileSelectorComponent } from './file-selector/file-selector.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -49,15 +62,10 @@ import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { ExperimentsComponent } from './experiments/experiments.component';
 // import { AddExperimentComponent } from './add-experiment/add-experiment.component';
 // import { ScriptsComponent } from './scripts/scripts.component';
-// import { AddScriptComponent } from './add-script/add-script.component';
-// import { AboutComponent } from './about/about.component';
-// import { ScriptEditorComponent } from './script-editor/script-editor.component';
-// import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
+import { AboutComponent } from './about/about.component';
 // import { DeviceCommandComponent } from './device-command/device-command.component';
 // import { DeviceFeatureComponent } from './device-feature/device-feature.component';
 // import { DevicePropertyComponent } from './device-property/device-property.component';
-// import { EditScriptComponent } from './edit-script/edit-script.component';
-// import { FileSelectorComponent } from './file-selector/file-selector.component';
 // import { EditExperimentComponent } from './edit-experiment/edit-experiment.component';
 // import { DataHandlerComponent } from './data-handler/data-handler.component';
 // import { DataHandlerDeviceDetailComponent } from './data-handler-device-detail/data-handler-device-detail.component';
@@ -72,12 +80,15 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
     declarations: [
         AppComponent,
         // DeviceListComponent,
-        // HeaderBarComponent,
         // DeviceDetailComponent,
         // AddDeviceComponent,
         // EditDeviceComponent,
         LoginComponent,
         DashboardComponent,
+        SidenavComponent,
+        ServiceListComponent,
+        AddServiceComponent,
+        EditServiceComponent,
         // LogViewComponent,
         // CalendarComponent,
         // AddBookingComponent,
@@ -87,15 +98,15 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // UserAreaComponent,
         // ExperimentsComponent,
         // AddExperimentComponent,
-        // ScriptsComponent,
-        // AddScriptComponent,
-        // AboutComponent,
-        // ScriptEditorComponent,
+        AboutComponent,
+        WorkflowEditorComponent,
+        EditorComponent,
+        AddWorkflowComponent,
+        EditWorkflowComponent,
+        FileSelectorComponent,
         // DeviceCommandComponent,
         // DeviceFeatureComponent,
         // DevicePropertyComponent,
-        // EditScriptComponent,
-        // FileSelectorComponent,
         // EditExperimentComponent,
         // DataHandlerDeviceDetailComponent,
         // DataHandlerDeviceCommandComponent,
@@ -131,15 +142,16 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         MatSnackBarModule,
         MatTooltipModule,
         ClipboardModule,
+        MatSidenavModule,
         // CalendarModule.forRoot({
         //     provide: DateAdapter,
         //     useFactory: adapterFactory,
         // }),
-        // CodeEditorModule,
-        // CodeEditorModule.forRoot({
-        //     baseUrl: './assets/monaco',
-        //     typingsWorkerUrl: './assets/workers/typings-worker.js',
-        // }),
+        CodeEditorModule,
+        CodeEditorModule.forRoot({
+             baseUrl: './assets/monaco',
+             typingsWorkerUrl: './assets/workers/typings-worker.js',
+        }),
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
