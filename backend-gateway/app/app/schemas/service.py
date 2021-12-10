@@ -2,24 +2,16 @@ from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 
+from sila2.discovery.service_info import SilaServiceInfo
 
-# Shared properties
-class ServiceBase(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hostname: Optional[str] = None
-    ip: Optional[str] = None
-    port: Optional[int] = None
-    service_uuid: Optional[UUID] = None
+
+class ServiceBase(BaseModel, SilaServiceInfo):
+    pass
 
 
 # Properties to receive on service creation
 class ServiceCreate(ServiceBase):
-    name: str
-    hostname: str
-    ip: str
-    port: int
-    service_uuid: UUID
+    pass
 
 
 # Properties to receive on service update

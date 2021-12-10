@@ -1,5 +1,6 @@
 import logging
 
+from sila2.client import SilaClient
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.db.session import SessionLocal
