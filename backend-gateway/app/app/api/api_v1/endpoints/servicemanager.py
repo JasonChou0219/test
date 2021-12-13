@@ -3,6 +3,7 @@ from typing import Any, List
 
 from pydantic import parse_obj_as
 from requests import Session
+from sila2.discovery import SilaDiscoveryBrowser
 
 from app import schemas, crud, models
 from app.api import deps
@@ -134,15 +135,11 @@ def delete_service(
 
 @router.get("/discovery/", response_model=List[schemas.ServiceBase])
 def discover_services(
-        *,
-        skip: int = 0,
-        limit: int = 100,
-        current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Get list of services discovered on the network.
     """
-    services = service_manager.auto_discovery.find()
+    services = SilaDiscoveryBrowser().find_server(timeout=25)
     if not services:
         raise HTTPException(status_code=404, detail="No services found")
     return services

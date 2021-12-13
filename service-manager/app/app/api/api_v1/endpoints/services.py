@@ -1,6 +1,7 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
+from sila2.discovery import SilaDiscoveryBrowser
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas, service_manager
@@ -103,18 +104,3 @@ def delete_service(
     service = crud.service.remove(db=db, id=id)
     return service
 
-
-@router.get("/discovery/", response_model=List[schemas.ServiceBase])
-def discover_services(
-        *,
-        skip: int = 0,
-        limit: int = 100,
-        current_user: models.User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Get list of services discovered on the network.
-    """
-    services = service_manager.auto_discovery.find()
-    if not services:
-        raise HTTPException(status_code=404, detail="No services found")
-    return services
