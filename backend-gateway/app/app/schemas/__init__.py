@@ -1,4 +1,4 @@
-from .service import Service, ServiceCreate, ServiceInDB, ServiceUpdate
+from .service import Service, ServiceCreate, ServiceInDB, ServiceUpdate, ServiceBase
 from .item import Item, ItemCreate, ItemInDB, ItemUpdate
 from .msg import Msg
 from .token import Token, TokenPayload

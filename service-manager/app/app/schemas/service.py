@@ -1,20 +1,14 @@
-from typing import Optional, Dict, Union, List, Final
 from uuid import UUID
 from pydantic import BaseModel
 from sila2.client import SilaClient
-from sila2.discovery.service_info import SilaServiceInfo
-
-_DNS_HOST_TTL: Final = 120  # two minute for host records (A, SRV etc) as-per RFC6762, protected in zeroconfig
-_DNS_OTHER_TTL: Final = 4500  # 75 minutes for non-host records (PTR, TXT etc) as-per RFC6762, protected in zeroconfig
 
 
 # Shared properties
 class ServiceBase(BaseModel, SilaClient):
-    isEdge: bool
     pass
 
 
-# Properties to receive on service creation
+# Properties to receive on service creatio
 class ServiceCreate(ServiceBase):
     owner: str
     owner_id: str

@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from sila2.client.sila_client import SilaClient
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
-from app.service_manager import auto_discovery
+
 
 
 app = FastAPI(
@@ -22,5 +21,3 @@ if settings.SERVICE_MANAGER_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-print(auto_discovery.find())

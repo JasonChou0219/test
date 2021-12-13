@@ -1,6 +1,7 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sila2.discovery import SilaDiscoveryBrowser
 from sqlalchemy.orm import Session
 
@@ -39,10 +40,12 @@ def create_service(
     """
     Create new service.
     """
-
-    #TODO need manual refresh?
-
-    service = crud.service.create_with_owner(db=db, obj_in=service_in, owner_id=current_user.id)
+    model = models.Service
+    obj_in_data = jsonable_encoder(service_in)
+    service = model(**obj_in_data)
+    db.add(service)
+    db.commit()
+    db.refresh(service)
     return service
 
 
