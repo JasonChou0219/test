@@ -120,7 +120,7 @@ def delete_workflow(
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     else:
-        workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
+        workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json()) #Duplicate code?
         if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
             raise HTTPException(status_code=400, detail="Not enough permissions")
     workflow = crud.workflow.remove(db=db, route=target_route, id=id, current_user=current_user.id)
