@@ -8,7 +8,7 @@ class ServiceBase(BaseModel, SilaClient):
     pass
 
 
-# Properties to receive on service creatio
+# Properties to receive on service creation
 class ServiceCreate(ServiceBase):
     owner: str
     owner_id: str

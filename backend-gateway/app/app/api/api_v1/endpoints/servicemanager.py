@@ -133,7 +133,7 @@ def delete_service(
     return service
 
 
-@router.get("/discovery/", response_model=List[schemas.ServiceBase])
+@router.get("/discovery/", response_model=schemas.ServiceBase)
 def discover_services(
 ) -> Any:
     """
