@@ -9,7 +9,7 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Service])
+@router.get("/", response_model=List[schemas.ServiceBase])
 def read_services(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
@@ -19,7 +19,7 @@ def read_services(
     """
     Retrieve services.
     """
-    if crud.user.is_superuser(current_user):
+    if current_user == 'superuser':
         services = crud.service.get_multi(db, skip=skip, limit=limit)
     else:
         services = crud.service.get_multi_by_owner(
@@ -28,7 +28,7 @@ def read_services(
     return services
 
 
-@router.post("/", response_model=schemas.Service)
+@router.post("/", response_model=schemas.ServiceBase)
 def create_service(
     *,
     db: Session = Depends(deps.get_db),
@@ -38,11 +38,14 @@ def create_service(
     """
     Create new service.
     """
+
+    #TODO need manual refresh?
+
     service = crud.service.create_with_owner(db=db, obj_in=service_in, owner_id=current_user.id)
     return service
 
 
-@router.put("/{id}", response_model=schemas.Service)
+@router.put("/{id}", response_model=schemas.ServiceBase)
 def update_service(
     *,
     db: Session = Depends(deps.get_db),
@@ -53,6 +56,8 @@ def update_service(
     """
     Update a service.
     """
+
+    #TODO do we need HTTPExcdeptions here?
     service = crud.service.get(db=db, id=id)
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
@@ -62,7 +67,7 @@ def update_service(
     return service
 
 
-@router.get("/{id}", response_model=schemas.Service)
+@router.get("/{id}", response_model=schemas.ServiceBase)
 def read_service(
     *,
     db: Session = Depends(deps.get_db),
@@ -80,7 +85,7 @@ def read_service(
     return service
 
 
-@router.delete("/{id}", response_model=schemas.Service)
+@router.delete("/{id}", response_model=schemas.ServiceBase)
 def delete_service(
     *,
     db: Session = Depends(deps.get_db),
@@ -99,7 +104,7 @@ def delete_service(
     return service
 
 
-@router.get("/discovery/", response_model=List[schemas.Service])
+@router.get("/discovery/", response_model=List[schemas.ServiceBase])
 def discover_services(
         *,
         skip: int = 0,

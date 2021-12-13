@@ -9,11 +9,14 @@ _DNS_OTHER_TTL: Final = 4500  # 75 minutes for non-host records (PTR, TXT etc) a
 
 # Shared properties
 class ServiceBase(BaseModel, SilaServiceInfo):
+    isEdge: bool
     pass
 
 
 # Properties to receive on service creation
 class ServiceCreate(ServiceBase):
+    owner: str
+    owner_id: str
     name: str
     hostname: str
     ip: str
