@@ -123,6 +123,8 @@ def delete_workflow(
         workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
         if not crud.user.is_superuser(current_user) and (workflow.owner_id != current_user.id):
             raise HTTPException(status_code=400, detail="Not enough permissions")
+        elif crud.user.is_superuser(current_user):
+            current_user.id = 'superuser'
     workflow = crud.workflow.remove(db=db, route=target_route, id=id, current_user=current_user.id)
     workflow = parse_obj_as(schemas.WorkflowInDB, workflow.json())
     return workflow

@@ -202,6 +202,8 @@ services:
 
   backend-gateway:
     image: '${DOCKER_IMAGE_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
+    # ports:
+    #  - "80:80"
     depends_on:
       - db-backend-gateway
     env_file:
@@ -243,6 +245,8 @@ services:
 
   service-manager:
     image: '${DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
+    ports:
+      - "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -288,6 +292,8 @@ services:
 
   workflow-designer-python:
     image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER_PYTHON?Variable not set}:${TAG-latest}'
+    ports:
+      - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-designer-python
     env_file:
@@ -327,6 +333,8 @@ services:
 
   workflow-scheduler:
     image: '${DOCKER_IMAGE_WORKFLOW_SCHEDULER}:${TAG-latest}'
+    ports:
+      - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-scheduler
     env_file:
