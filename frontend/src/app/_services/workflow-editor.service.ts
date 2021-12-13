@@ -26,9 +26,10 @@ export class WorkflowEditorService {
             .toPromise();
     }
     async setUserWorkflowInfo(workflowInfo: WorkflowInfo) {
+        console.log('endpoint: ', workflowInfo)
         return this.http
             .put(
-                `${env.apiUrl}/api/v1/workflows/${workflowInfo.id}/info`,
+                `${env.apiUrl}/api/v1/workflows/${workflowInfo.id}`,
                 workflowInfo
             )
             .toPromise();
@@ -40,12 +41,12 @@ export class WorkflowEditorService {
     }
     async createUserWorkflow(workflow: Workflow) {
         return this.http
-            .post('${env.apiUrl}/api/v1/workflows', workflow)
+            .post('${env.apiUrl}/api/v1/workflows/', workflow)
             .toPromise();
     }
     async deleteUserWorkflow(workflowID: number) {
         return this.http
-            .delete('${env.apiUrl}/api/v1/workflows/' + workflowID)
+            .delete(`${env.apiUrl}/api/v1/workflows/${workflowID}`)
             .toPromise();
     }
 }

@@ -50,6 +50,14 @@ export class WorkflowEditorComponent implements OnInit {
     async createWorkflow() {
         const dialogRef = this.dialog.open(AddWorkflowComponent);
         const result = await dialogRef.afterClosed().toPromise();
+        console.log('Result Create: ', result)
+        const info: WorkflowInfo = {
+                name: result.name,
+                fileName: result.fileName,
+                // services?: string[];
+                data: result.data,
+        }
+        console.log('Info object: ', info)
         await this.workflowEditorService.createUserWorkflow({
             name: result.name,
             fileName: result.fileName,
@@ -90,16 +98,15 @@ export class WorkflowEditorComponent implements OnInit {
     }
     async edit(i: number) {
         const info = this.dataSource[i].info;
+        console.log('Info: ', info)
         const dialogRef = this.dialog.open(EditWorkflowComponent, {
             data: info.name,
         });
         const result = await dialogRef.afterClosed().toPromise();
+
+        info.name = result
         if (result) {
-            await this.workflowEditorService.setUserWorkflowInfo({
-                id: info.id,
-                name: result,
-                fileName: info.fileName,
-            });
+            await this.workflowEditorService.setUserWorkflowInfo(info);
         }
     }
     async fileSelected(file: File, i: number) {
@@ -114,12 +121,8 @@ export class WorkflowEditorComponent implements OnInit {
     async save(i: number) {
         const info = this.dataSource[i].info;
         const model = this.dataSource[i].model;
-        this.workflowEditorService.setUserWorkflow({
-            id: info.id,
-            name: info.name,
-            fileName: info.fileName,
-            data: model.value,
-        });
+        info.data = model.value
+        this.workflowEditorService.setUserWorkflow(info);
     }
     async delete(i: number) {
         await this.workflowEditorService.deleteUserWorkflow(this.dataSource[i].info.id);

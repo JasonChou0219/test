@@ -32,7 +32,7 @@ const routes: Routes = [
     {
          path: 'workflow_editor',
          component: WorkflowEditorComponent,
-         canActivate: [AuthGuard],
+         // canActivate: [AuthGuard],
     },
     // {
     //     path: 'experiments',
