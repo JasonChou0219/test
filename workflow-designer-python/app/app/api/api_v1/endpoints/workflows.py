@@ -36,7 +36,6 @@ def create_workflow(
     *,
     db: Session = Depends(deps.get_db),
     workflow_in: schemas.WorkflowCreate,
-    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Create new workflow.
@@ -56,7 +55,6 @@ def update_workflow(
     db: Session = Depends(deps.get_db),
     id: int,
     workflow_in: schemas.WorkflowUpdate,
-    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Update an workflow.
@@ -75,7 +73,6 @@ def read_workflow(
     *,
     db: Session = Depends(deps.get_db),
     id: int,
-    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Get workflow by ID.
@@ -94,7 +91,6 @@ def delete_workflow(
     db: Session = Depends(deps.get_db),
     id: int,
     current_user: str = '',
-    # current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Delete an workflow.
