@@ -39,9 +39,9 @@ export class WorkflowEditorService {
             .put(`${env.apiUrl}/api/v1/workflows/${workflow.id}/`, workflow)
             .toPromise();
     }
-    async createUserWorkflow(workflow: Workflow) {
+    async createUserWorkflow(workflow: WorkflowInfo) {
         return this.http
-            .post('${env.apiUrl}/api/v1/workflows/', workflow)
+            .post(`${env.apiUrl}/api/v1/workflows/`, workflow)
             .toPromise();
     }
     async deleteUserWorkflow(workflowID: number) {

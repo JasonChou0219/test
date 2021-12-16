@@ -36,7 +36,8 @@
                                 "glob": "**/*.js",
                                 "input": "./node_modules/@ngstack/code-editor/workers",
                                 "output": "./assets/workers"
-                            }
+                            },
+                            "src/assets/svg/*"
                         ],
                         "styles": [
                             "src/styles.scss",

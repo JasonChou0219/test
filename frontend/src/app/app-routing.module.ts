@@ -4,9 +4,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
-import { AboutComponent } from './about/about.component';
-import { WorkflowEditorComponent } from './workflow-editor/workflow-editor.component';
-import { ServiceListComponent } from './service-browser/service-list/service-list.component';
+import { AboutComponent } from './settings-menu/about/about.component';
+import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor/workflow-editor.component';
+import { NodeRedEditorComponent } from './workflow-design-menu/workflow-editor-node-red/node-red-editor/node-red-editor.component';
+import { ServiceListComponent } from './services-menu/service-browser/service-list/service-list.component';
 import { AuthGuard } from './auth.guard';
 
 
@@ -14,26 +15,41 @@ const routes: Routes = [
     {
         path: '',
         component: DashboardComponent,
-        canActivate: [AuthGuard],
+        // canActivate: [AuthGuard],
     },
     {
         path: 'login',
         component: LoginComponent,
-        canActivate: [AuthGuard],
+        // canActivate: [AuthGuard],
     },
     {
-        path: 'sidenav',
-        component: SidenavComponent,
+        path: 'dashboard',
+        component: DashboardComponent,
         //canActivate: [AuthGuard],
+        children: [
+            {
+                 path: 'workflow_editor',
+                 component: WorkflowEditorComponent,
+                 canActivate: [AuthGuard],
+            },
+            {
+                 path: 'workflow_editor_node_red',
+                 component: NodeRedEditorComponent,
+                 canActivate: [AuthGuard],
+            },
+            {
+                path: 'services',
+                component: ServiceListComponent
+            },
+            {
+                path: 'about',
+                component: AboutComponent
+            }
+        ]
     },
     {
         path: 'about',
         component: AboutComponent
-    },
-    {
-         path: 'workflow_editor',
-         component: WorkflowEditorComponent,
-         // canActivate: [AuthGuard],
     },
     {
          path: 'services',
@@ -45,6 +61,11 @@ const routes: Routes = [
                 component: ServiceListComponent
             }
         ]
+    },
+    {
+        path: '**',
+        redirectTo: '/dashboard',
+        // canActivate: [AuthGuard],
     },
     // {
     //     path: 'experiments',

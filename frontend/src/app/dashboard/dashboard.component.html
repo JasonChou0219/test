@@ -1,7 +1,7 @@
 <mat-toolbar class="example-header">
     <mat-toolbar-row>
         <span>{{ title }}</span>
-        <a class="headerbar-entry" mat-button matTooltip="Menu" [routerLink]="'/'" (click)="isExpanded = !isExpanded">
+        <a class="headerbar-entry" mat-button matTooltip="Menu" (click)="isExpanded = !isExpanded">
             <mat-icon aria-hidden="false" aria-label="Expand Menu">menu</mat-icon>
         </a>
         <a class="headerbar-entry" mat-button matTooltip="Dashboard" [routerLink]="'/'">
@@ -62,7 +62,6 @@
         </a>
     </mat-toolbar-row>
 </mat-toolbar>
-
 <app-sidenav [isExpanded] = "isExpanded"></app-sidenav>
 <!--
 <mat-toolbar>

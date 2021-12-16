@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { ScriptEditorComponent } from './script-editor.component';
+import { NodeRedEditorComponent } from './node-red-editor.component';
 
-describe('ScriptEditorComponent', () => {
-    let component: ScriptEditorComponent;
-    let fixture: ComponentFixture<ScriptEditorComponent>;
+describe('NodeRedEditorComponent', () => {
+    let component: NodeRedEditorComponent;
+    let fixture: ComponentFixture<NodeRedEditorComponent>;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [ScriptEditorComponent],
+            declarations: [NodeRedEditorComponent],
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ScriptEditorComponent);
+        fixture = TestBed.createComponent(NodeRedEditorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

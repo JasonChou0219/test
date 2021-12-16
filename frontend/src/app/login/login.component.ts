@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
 
     onSubmit() {
         this.submitted = true;
-
+        console.log('Submitted!')
         // reset alerts on submit
         this.alertService.clear()
 
@@ -72,13 +72,19 @@ export class LoginComponent implements OnInit {
             .subscribe({
                 next: () => {
                     // get return url from query parameters or default to home page
-                    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-                    this.router.navigateByUrl(returnUrl);
+                    console.log('Before route')
+                    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+                    console.log('route:');
+                    console.log(returnUrl);
+                    // this.router.navigateByUrl(returnUrl);
                     },
                     error: error => {
                         this.alertService.error(error);
                         this.loading = false;
                     }
                 });
+        // Todo: Fix login!
+        this.router.navigateByUrl('/dashboard');  // temporary rerouting.
+        console.log('rerouted!')
     }
 }

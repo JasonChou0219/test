@@ -1,9 +1,20 @@
-<ngs-code-editor
-    class="editor"
-    [theme]="theme"
-    [readOnly]="readOnly"
-    [codeModel]="_codeModel"
-    [options]="editorOptions"
-    (valueChanged)="onCodeChanged($event)"
->
-</ngs-code-editor>
+<iframe height="100%" width="100%" src="http://localhost:84/" target="_self"></iframe>
+
+<!--
+<iframe height="500" width="100%" src=`http://localhost:1880/` frameborder="0"></iframe>
+<iframe height="500" width="100%" [src]="url | safe" frameborder="0"></iframe>
+//   url = `https://fonts.google.com/`;
+
+// this is a dummy url. this url will be replaced by a page on my another website (owned by myself but different domain)
+For the .ts
+@Pipe({
+  name: 'safe',
+})
+export class SafePipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
+  transform(url): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+}
+-->
+

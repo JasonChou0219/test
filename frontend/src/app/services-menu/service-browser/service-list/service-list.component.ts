@@ -17,8 +17,8 @@ import { ServiceService } from '@app/_services'
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
 // import { ServiceDetailComponent } from '../service-detail/service-detail.component';  // To be included
-import { EditServiceComponent } from '@app/service-browser/edit-service/edit-service.component';
-import { AddServiceComponent } from '@app/service-browser/add-service/add-service.component';
+import { EditServiceComponent } from '../edit-service/edit-service.component';
+import { AddServiceComponent } from '../add-service/add-service.component';
 
 interface RowData {
     service: Service;

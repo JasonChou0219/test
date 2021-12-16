@@ -11,6 +11,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -34,20 +36,24 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 // import { DeviceDetailComponent } from './device-detail/device-detail.component';
 // import { AddDeviceComponent } from './add-device/add-device.component';
 // import { EditDeviceComponent } from './edit-device/edit-device.component';
+
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 
-import { ServiceListComponent } from './service-browser/service-list/service-list.component';
-import { AddServiceComponent} from './service-browser/add-service/add-service.component';
-import { EditServiceComponent} from './service-browser/edit-service/edit-service.component';
+import { ServiceListComponent } from './services-menu/service-browser/service-list/service-list.component';
+import { AddServiceComponent} from './services-menu/service-browser/add-service/add-service.component';
+import { EditServiceComponent} from './services-menu/service-browser/edit-service/edit-service.component';
 
-import { WorkflowEditorComponent } from './workflow-editor/workflow-editor.component';
-import { EditorComponent } from './workflow-editor/editor/editor.component';
-import { AddWorkflowComponent } from './workflow-editor/add-workflow/add-workflow.component';
-import { EditWorkflowComponent } from './workflow-editor/edit-workflow/edit-workflow.component';
+
+import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor/workflow-editor.component';
+import { EditorComponent } from './workflow-design-menu/workflow-editor/editor/editor.component';
+import { AddWorkflowComponent } from './workflow-design-menu/workflow-editor/add-workflow/add-workflow.component';
+import { EditWorkflowComponent } from './workflow-design-menu/workflow-editor/edit-workflow/edit-workflow.component';
 import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
 import { FileSelectorComponent } from './file-selector/file-selector.component';
+
+import { NodeRedEditorComponent } from './workflow-design-menu/workflow-editor-node-red/node-red-editor/node-red-editor.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -62,7 +68,7 @@ import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { ExperimentsComponent } from './experiments/experiments.component';
 // import { AddExperimentComponent } from './add-experiment/add-experiment.component';
 // import { ScriptsComponent } from './scripts/scripts.component';
-import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './settings-menu/about/about.component';
 // import { DeviceCommandComponent } from './device-command/device-command.component';
 // import { DeviceFeatureComponent } from './device-feature/device-feature.component';
 // import { DevicePropertyComponent } from './device-property/device-property.component';
@@ -105,6 +111,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         AddWorkflowComponent,
         EditWorkflowComponent,
         FileSelectorComponent,
+        NodeRedEditorComponent,
         // DeviceCommandComponent,
         // DeviceFeatureComponent,
         // DevicePropertyComponent,

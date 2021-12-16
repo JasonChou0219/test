@@ -11,14 +11,14 @@
 
              <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="compass-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:compass-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Services</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink='/services' *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="map-search-outline"></mat-icon>Discovery</a>
-                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="web-plus"></mat-icon>Edge Gateway</a>
+                        <a mat-list-item routerLink='/dashboard/services' *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:map-search-outline"></mat-icon>Discovery</a>
+                        <a mat-list-item routerLink='/dashboard/about' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:web-plus"></mat-icon>Edge Gateway</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -26,14 +26,14 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="application-edit-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:application-edit-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Workflow Design</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
                         <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="python"></mat-icon>Python</a>
-                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="node-red"></mat-icon>Node-RED</a>
+                        <a mat-list-item routerLink='/dashboard/workflow_editor' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:python"></mat-icon>Python</a>
+                        <a mat-list-item routerLink='/dashboard/workflow_editor_node_red' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:node-red"></mat-icon>Node-RED</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -41,14 +41,14 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="database-import-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:database-import-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Data Acquisition</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
                         <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="database-plus-outline"></mat-icon>Add database</a>
-                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="wrench"></mat-icon>Create protocol</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:database-plus-outline"></mat-icon>Add database</a>
+                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-outline"></mat-icon>Create protocol</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -57,13 +57,13 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="database-cog-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:database-cog-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Dataflow Design</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
                         <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="knime"></mat-icon>Knime</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:knime"></mat-icon>Knime</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -72,14 +72,14 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="sitemap-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:sitemap-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Jobs</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
                         <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="calendar-clock-outline"></mat-icon>Schedule job</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="wrench-clock"></mat-icon>Create job</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:calendar-clock-outline"></mat-icon>Schedule job</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-clock"></mat-icon>Create job</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -88,13 +88,13 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="account-circle-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:account-circle-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Account</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="account-cog-outline"></mat-icon>User settings</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="account-multiple-plus-outline"></mat-icon>Group management</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:account-cog-outline"></mat-icon>User settings</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:account-multiple-outline"></mat-icon>Group management</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
@@ -103,14 +103,14 @@
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
-                    <mat-icon svgIcon="cog-outline"></mat-icon>
+                    <mat-icon svgIcon="assets:cog-outline"></mat-icon>
                     <span class="full-width" *ngIf="isExpanded || isShowing">Settings</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="information-outline"></mat-icon>About</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="head-cog-outline"></mat-icon>Logs</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="toy-brick-outline"></mat-icon>Customization</a>
+                        <a mat-list-item routerLink='/dashboard/about' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:information-outline"></mat-icon>About</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:head-cog-outline"></mat-icon>Logs</a>
+                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:toy-brick-outline"></mat-icon>Customization</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>

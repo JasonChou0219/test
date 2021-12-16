@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ServiceService } from '@app/_services/service.service';
 import { WorkflowEditorService } from '@app/_services/workflow-editor.service';
 import { WorkflowInfo } from '@app/_models';
-import { AddWorkflowComponent } from './add-workflow/add-workflow.component';
+import { AddWorkflowComponent } from './/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from './edit-workflow/edit-workflow.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -12,7 +12,7 @@ import {
     transition,
     trigger,
 } from '@angular/animations';
-import { FileReaderService } from '../_services/file-reader.service';
+import { FileReaderService } from '@app/_services/file-reader.service';
 import { CodeModel } from '@ngstack/code-editor';
 
 interface RowData {
@@ -51,18 +51,21 @@ export class WorkflowEditorComponent implements OnInit {
         const dialogRef = this.dialog.open(AddWorkflowComponent);
         const result = await dialogRef.afterClosed().toPromise();
         console.log('Result Create: ', result)
+        console.log(localStorage.getItem('user'))
         const info: WorkflowInfo = {
                 name: result.name,
                 fileName: result.fileName,
+                owner: '',
                 // services?: string[];
                 data: result.data,
         }
         console.log('Info object: ', info)
-        await this.workflowEditorService.createUserWorkflow({
-            name: result.name,
-            fileName: result.fileName,
-            data: result.data,
-        });
+        await this.workflowEditorService.createUserWorkflow(info);
+        //{
+        //    name: result.name,
+        //    fileName: result.fileName,
+        //    data: result.data,
+        //});
         this.getWorkflow();
     }
     async getWorkflow() {

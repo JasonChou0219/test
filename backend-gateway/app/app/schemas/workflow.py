@@ -9,7 +9,7 @@ class WorkflowBase(BaseModel):
     fileName: Optional[str] = None
     services: Optional[List[str]] = None
     data: Optional[str] = None
-    owner: str
+    owner: Optional[str]
     owner_id: Optional[int]
     description: Optional[str] = None
 

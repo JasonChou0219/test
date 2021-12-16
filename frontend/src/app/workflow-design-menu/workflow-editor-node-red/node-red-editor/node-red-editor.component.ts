@@ -1,30 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CodeModel } from '@ngstack/code-editor';
 
 @Component({
-    selector: 'app-editor',
-    templateUrl: './editor.component.html',
-    styleUrls: ['./editor.component.scss'],
+    selector: 'app-node-red-editor',
+    templateUrl: './node-red-editor.component.html',
+    styleUrls: ['./node-red-editor.component.scss'],
 })
-export class EditorComponent implements OnInit {
-    @Input() readOnly = false;
-    @Input()
-    set codeModel(value: CodeModel) {
-        this._codeModel = value;
-    }
-
-    theme: 'vs';
-    editorOptions = {
-        contextmenu: true,
-        minimap: {
-            enabled: false,
-        },
-    };
-    _codeModel: CodeModel = {
-        language: 'python',
-        uri: '',
-        value: '',
-    };
+export class NodeRedEditorComponent implements OnInit {
     constructor() {}
 
     onCodeChanged(value) {}

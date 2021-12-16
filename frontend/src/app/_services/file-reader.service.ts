@@ -15,7 +15,12 @@ export class FileReaderService {
             fileReader.onerror = (event) => {
                 reject('Could not read File');
             };
-            fileReader.readAsText(file);
+
+            // If a file is created, file will be undefined.
+            if (typeof file !== 'undefined') {
+              fileReader.readAsText(file);
+            }
+
         });
     }
 }

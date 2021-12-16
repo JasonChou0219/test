@@ -310,7 +310,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-        - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        # - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
   celeryworker-workflow-designer-python:
@@ -389,29 +389,6 @@ services:
           - traefik.enable=true
           - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
-  #mdns-reflector:
-  #  image: '${DOCKER_IMAGE_MDNS_REFLECTOR?Variable not set}:${TAG-latest}'
-  #  networks:
-  #    - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-  #    - default
-  #  env_file:
-  #    - .env
-  #  environment:
-  #    - SERVER_NAME=${DOMAIN?Variable not set}
-  #    - SERVER_HOST=https://${DOMAIN?Variable not set}
-  #    # Allow explicit env var override for tests
-  #   - SMTP_HOST=${SMTP_HOST}
-  #    - SERVER_USE_IPV4=yes
-  #    - REFLECTOR_ENABLE_REFLECTOR=yes
-  #    - REFLECTOR_REFLECT_IPV=yes
-  #  build:
-  #    context: ./service-manager
-  #    dockerfile: avahi.dockerfile
-  #  deploy:
-  #    labels:
-  #      - traefik.enable=true
-  #      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
     build:
@@ -433,6 +410,9 @@ services:
 
   workflow-designer:
     image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER?Variable not set}:${TAG-latest}'
+    ports:
+      - "1880:1880"
+      - "${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}:${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}"
     depends_on:
       - db-workflow-designer
     env_file:
@@ -441,8 +421,7 @@ services:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
-    ports:
-      - "1880:1880"
+      - PORT=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
     build:
       context: ./workflow-designer
       dockerfile: workflow-designer.dockerfile
@@ -454,6 +433,7 @@ services:
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=1880
+        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
 
 volumes:
   app-db-backend-gateway-data:
