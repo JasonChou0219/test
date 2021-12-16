@@ -17,25 +17,28 @@ export class AppComponent {
                 private iconService: IconService
     ){
         this.matIconRegistry.addSvgIcon('compass-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/compass-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('compass-outline.svg')
+        );
+        this.matIconRegistry.addSvgIcon('compass-outline',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/icons/compass-outline.svg')
         );
         this.matIconRegistry.addSvgIcon('access-point-plus',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/access-point-plus.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/access-point-plus.svg')
     );
         this.matIconRegistry.addSvgIcon('account-circle-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/account-circle-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/account-circle-outline.svg')
     );
         this.matIconRegistry.addSvgIcon('account-cog-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/account-cog-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/account-cog-outline.svg')
     );
         this.matIconRegistry.addSvgIcon('account-multiple-plus-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/account-multiple-plus-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/account-multiple-plus-outline.svg')
     );
         this.matIconRegistry.addSvgIcon('application-edit-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/application-edit-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/application-edit-outline.svg')
     );
         this.matIconRegistry.addSvgIcon('calendar-clock-outline',
-            this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/calendar-clock-outline.svg')
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/calendar-clock-outline.svg')
     );
     //     this.matIconRegistry.addSvgIcon(
     //  'clock_outline',
