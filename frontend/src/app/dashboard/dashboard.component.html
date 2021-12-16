@@ -1,12 +1,13 @@
 <mat-toolbar class="example-header">
     <mat-toolbar-row>
         <span>{{ title }}</span>
-        <a class="headerbar-entry" mat-button [routerLink]="'/'" (click)="isExpanded = !isExpanded">
-            <mat-icon>menu</mat-icon>
+        <a class="headerbar-entry" mat-button matTooltip="Menu" [routerLink]="'/'" (click)="isExpanded = !isExpanded">
+            <mat-icon aria-hidden="false" aria-label="Expand Menu">menu</mat-icon>
         </a>
-        <a class="headerbar-entry" mat-button [routerLink]="'/'">
-            <h2>LaMaS</h2>
+        <a class="headerbar-entry" mat-button matTooltip="Dashboard" [routerLink]="'/'">
+            <mat-icon aria-hidden="false" aria-label="Dashboard">dashboard</mat-icon>
         </a>
+        <!--
         <a class="headerbar-entry" mat-button [routerLink]="'/services'">
             <h2>Browse</h2>
         </a>
@@ -21,14 +22,17 @@
         <a class="headerbar-entry" mat-button [routerLink]="'/dataHandler'">
             <h2>whatever</h2>
         </a>
+        -->
+        <div class="fill"></div>
         <div class="fill"></div>
         <a
             *ngIf="!accountService.loggedIn()"
             class="headerbar-entry"
             mat-button
+            matTooltip="Login"
             [routerLink]="'/login'"
         >
-            <h2>Login</h2>
+            <mat-icon>login</mat-icon>
         </a>
         <a
             *ngIf="accountService.loggedIn() && accountService.isAdmin()"
@@ -50,10 +54,11 @@
             *ngIf="accountService.loggedIn()"
             class="headerbar-entry"
             mat-button
+            matTooltip="Logout"
             (click)="accountService.logout()"
             [routerLink]="'/login'"
         >
-            <h2>Logout</h2>
+            <mat-icon>logout</mat-icon>
         </a>
     </mat-toolbar-row>
 </mat-toolbar>

@@ -76,6 +76,7 @@ import { AboutComponent } from './about/about.component';
 // import { AddDatabaseComponent } from './add-database/add-database.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
 
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -130,9 +131,9 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatIconModule,
         FormsModule,
         MatExpansionModule,
-        MatIconModule,
         MatTreeModule,
         MatListModule,
         MatDividerModule,

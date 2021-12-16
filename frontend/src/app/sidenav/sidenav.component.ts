@@ -2,6 +2,8 @@ import { Component, ViewChild, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material/sidenav';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {MatIconRegistry} from '@angular/material/icon';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
     selector: 'app-sidenav',
@@ -29,6 +31,8 @@ export class SidenavComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private matIconRegistry: MatIconRegistry,
+        private domSanitizer: DomSanitizer,
         fb: FormBuilder,
     ) {}
     mouseenter() {
