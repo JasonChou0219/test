@@ -77,9 +77,9 @@
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:calendar-clock-outline"></mat-icon>Schedule job</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-clock"></mat-icon>Create job</a>
+                        <a mat-list-item routerLink='/dashboard/overview' *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink='/dashboard/scheduler' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:calendar-clock-outline"></mat-icon>Schedule job</a>
+                        <a mat-list-item routerLink='/dashboard/create' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-clock"></mat-icon>Create job</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
