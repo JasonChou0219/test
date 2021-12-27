@@ -56,6 +56,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway.rule= Host(`backend-gateway.localhost`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
 
@@ -76,12 +77,14 @@ services:
   service-manager:
     ports:
       - "8889:8889"
+      # - "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
     volumes:
       - ./service-manager/app:/app
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8889
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - PORT=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
     build:
       context: ./service-manager
       dockerfile: service-manager.dockerfile
@@ -93,6 +96,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager.rule= Host(`service-manager.localhost`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
 
@@ -122,12 +126,15 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
   workflow-scheduler:
+    # ports:
+    #  - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     volumes:
       - ./workflow-scheduler/app:/app
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:9999
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - PORT=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
     build:
       context: ./workflow-scheduler
       dockerfile: workflow-scheduler.dockerfile
@@ -139,12 +146,14 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler.rule= Host(`workflow-scheduler.localhost`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
 
   workflow-designer-python:
     ports:
       - "8890:8890"
+    #  - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
     volumes:
       - ./workflow-designer-python/app:/app
     environment:
@@ -162,6 +171,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python.rule= Host(`workflow-designer-python.localhost`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
