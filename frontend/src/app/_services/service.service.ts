@@ -77,34 +77,6 @@ export interface JobList {
     data: Job[];
 }
 
-export interface FeaturePropertyResult {
-    name: string;
-    value: any;
-}
-export interface FeatureCommandParam {
-    name: string;
-    value: any;
-}
-export interface FeatureCommandResult {
-    name: string;
-    value: any;
-}
-
-const test_service_1: Service = {
-    server_uuid: 'test',
-    name: 'TestService',
-    type: 'TestType',
-    address: '127.0.0.1',
-    port: 50000,
-    available: true,
-    user: 1,
-    databaseId: 1,
-    dataHandlerActive: false,
-}
-const test_service_1_status: ServiceStatus = {
-    online: true,
-    status: 'in use',
-}
 
 @Injectable({
     providedIn: 'root',
@@ -338,25 +310,6 @@ export class ServiceService {
     async deleteJob(id: number) {
         return this.http
             .delete(this.serverUrl + '/api/jobs/' + id)
-            .toPromise();
-    }
-    async startJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: true,
-            })
-            .toPromise();
-    }
-    async stopJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: false,
-            })
-            .toPromise();
-    }
-    async getJobStatus(id: number): Promise<JobStatus> {
-        return this.http
-            .get<JobStatus>(this.serverUrl + '/api/jobStatus/' + id)
             .toPromise();
     }
 }
