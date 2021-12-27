@@ -7,12 +7,13 @@ from sqlalchemy.dialects.postgresql import JSON
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from .flow import Flow  # noqa: F401
+
+    from .user import User  # noqa: F401
 
 
-class Flow(Base):
+class Workflow(Base):
     id = Column(String, primary_key=True, index=True)
-    flow = Column(JSON)
+    workflow = Column(JSON)
     description = Column(String, index=True)
     title = Column(String, index=True)
     owner_id = Column(Integer, ForeignKey("user.id"))

@@ -4,5 +4,6 @@ from app.db.base_class import Base  # noqa
 from app.models.service import Service  #noqa
 from app.models.item import Item  # noqa
 from app.models.user import User  # noqa
-from app.models.job import Flow # noqa
+from app.models.flow import Flow # noqa
+from app.models.job import Job # noqa
 
