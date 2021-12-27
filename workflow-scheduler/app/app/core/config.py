@@ -24,7 +24,7 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    PROJECT_NAME: str
+    WORKFLOW_SCHEDULER_NAME: str
     SENTRY_DSN: Optional[HttpUrl] = None
 
     @validator("SENTRY_DSN", pre=True)
@@ -80,7 +80,7 @@ class Settings(BaseSettings):
     @validator("EMAILS_FROM_NAME")
     def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         if not v:
-            return values["PROJECT_NAME"]
+            return values["WORKFLOW_SCHEDULER_NAME"]
         return v
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
