@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from uuid import uuid4, UUID
+from enum import IntEnum
 
 from pydantic import BaseModel, Json
 
@@ -22,7 +23,7 @@ class JobBase(BaseModel):
     description: Optional[str] = None
 
     workflow: WorkflowInDB = None
-    workflow_type: Optiona[str] = None
+    workflow_type: Optional[str] = None
     workflow_execute_at: Optional[datetime]
 
     # data_acquisition_protocol: Optional[Json] = None
