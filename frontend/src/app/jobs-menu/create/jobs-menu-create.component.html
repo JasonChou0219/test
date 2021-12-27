@@ -1,1 +1,64 @@
-<a>Placeholder For Jobs Menu Create Component</a>
+<div>
+    <h2>Job Configuration</h2>
+    <form class="general">
+        <h3>General</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Name</mat-label>
+          <input matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Description</mat-label>
+          <textarea matInput></textarea>
+        </mat-form-field>
+        <h3>Workflow</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Workflow</mat-label>
+           <mat-select>
+            <mat-option value="one">First option</mat-option>
+            <mat-option value="two">Second option</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <h3>Data acquisition</h3>
+            <div class="multi-select">
+                <mat-form-field appearance="fill">
+                  <mat-label>Device</mat-label>
+                  <mat-select>
+                    <mat-option value="one">First option</mat-option>
+                    <mat-option value="two">Second option</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Select Protocol</mat-label>
+                   <mat-select disabled="isDisabled">
+                    <mat-option value="one">First option</mat-option>
+                    <mat-option value="two">Second option</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+        <h3>Dataflow</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Select</mat-label>
+          <mat-select>
+            <mat-option value="one">First option</mat-option>
+            <mat-option value="two">Second option</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+              <mat-label>Database</mat-label>
+               <mat-select>
+                <mat-option value="one">First option</mat-option>
+                <mat-option value="two">Second option</mat-option>
+              </mat-select>
+        </mat-form-field>
+        <div class="button">
+            <button mat-flat-button color="primary">
+                Create
+            </button>
+            <button mat-button >Cancel</button>
+        </div>
+        <div class="button">
+
+        </div>
+    </form>
+
+</div>
