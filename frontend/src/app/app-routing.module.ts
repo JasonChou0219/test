@@ -55,7 +55,7 @@ const routes: Routes = [
             },
             {
                 path: 'overview',
-                component: JobsMenuCreateComponent
+                component: JobsMenuOverviewComponent
             },
             {
                 path: 'scheduler',
