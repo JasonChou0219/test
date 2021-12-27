@@ -17,4 +17,4 @@ class Workflow(Base):
     description = Column(String, index=True)
     title = Column(String, index=True)
     owner_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="flows")
+    owner = relationship("User", back_populates="workflows")

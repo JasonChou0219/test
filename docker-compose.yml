@@ -214,6 +214,7 @@ services:
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
       - PORT=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
     build:
       context: ./backend-gateway
       dockerfile: backend-gateway.dockerfile
@@ -260,6 +261,7 @@ services:
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
       - PORT=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
     build:
       context: ./service-manager
       dockerfile: service-manager.dockerfile
@@ -301,6 +303,7 @@ services:
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - PORT=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
     build:
       context: ./workflow-designer-python
       dockerfile: workflow-designer-python.dockerfile
@@ -345,6 +348,7 @@ services:
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
       - PORT=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
     build:
       context: ./workflow-scheduler
       dockerfile: workflow-scheduler.dockerfile
@@ -375,19 +379,19 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
-  mdns_repeater:
-      image: jdbeeler/mdns-repeater:latest
-      # image: raetha/mdns-repeater
-      network_mode: "host"
-      privileged: true
-      env_file:
-        - ./service-manager/app/mdn-repeater.conf
-      volumes:
-        - //var/run/docker.sock:/var/run/docker.sock
-      deploy:
-        labels:
-          - traefik.enable=true
-          - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+  # mdns_repeater:
+  #    image: jdbeeler/mdns-repeater:latest
+  #    # image: raetha/mdns-repeater
+  #    network_mode: "host"
+  #    privileged: true
+  #    env_file:
+  #      - ./service-manager/mdns-repeater.conf
+  #    volumes:
+  #      - //var/run/docker.sock:/var/run/docker.sock
+  #    deploy:
+  #      labels:
+  #        - traefik.enable=true
+  #        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
@@ -422,6 +426,7 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - PORT=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
+      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
     build:
       context: ./workflow-designer
       dockerfile: workflow-designer.dockerfile
