@@ -9,6 +9,11 @@ export class JobsMenuSchedulerComponent implements OnInit {
 
   constructor() { }
 
+
+  filter() {
+    console.log('Filter function executed')
+  }
+
   ngOnInit(): void {
   }
 
