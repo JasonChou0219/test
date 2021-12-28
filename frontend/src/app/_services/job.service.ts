@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { env } from '@environments/environment';
 
-import { Job, JobInfo, JobInfoList } from '@app/_models';
+import { Job, JobInfo, JobInfoList, JobStatus } from '@app/_models';
 
 
 @Injectable({

@@ -25,6 +25,21 @@ export interface Service {
     dataHandlerActive: boolean;
 }
 
+export interface ServiceInfo {
+    // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
+    //  more rapidly/easily in the backend
+    uuid?: string;
+    server_uuid: string;
+    name: string;
+    type: string;
+    address: string;
+    port: number;
+    available?: boolean;
+    user?: number;
+    databaseId?: number;
+    dataHandlerActive: boolean;
+}
+
 export interface ServiceStatus {
     online: boolean;
     status: string;
@@ -112,3 +127,55 @@ export interface ServiceFeature {
     active: boolean;
     meta: boolean;
 }
+
+export const mock_service_info = {
+    uuid: '1111-2222-3333-4444-5555-6666',
+    server_uuid: '2222-3333-4444-5555-6666-7777',
+    name: 'Mock Service 1',
+    type: 'Mock service type',
+    address: '127.0.0.1',
+    port: 50051,
+    available: true,
+    user: 0,
+    databaseId: 0,
+    dataHandlerActive: false,
+}
+
+export const mock_service_info_list = [
+    {
+        uuid: '1111-2222-3333-4444-5555-6666',
+        server_uuid: '2222-3333-4444-5555-6666-7777',
+        name: 'Mock Service 1',
+        type: 'Mock service type',
+        address: '127.0.0.1',
+        port: 50051,
+        available: true,
+        user: 0,
+        databaseId: 0,
+        dataHandlerActive: false,
+    },
+    {
+        uuid: '2111-2222-3333-4444-5555-6666',
+        server_uuid: '2222-3333-4444-5555-6666-7777',
+        name: 'Mock Service 2',
+        type: 'Mock service type',
+        address: '127.0.0.1',
+        port: 50052,
+        available: true,
+        user: 0,
+        databaseId: 0,
+        dataHandlerActive: false,
+    },
+    {
+        uuid: '3111-2222-3333-4444-5555-6666',
+        server_uuid: '2222-3333-4444-5555-6666-7777',
+        name: 'Mock Service 3',
+        type: 'Mock service type',
+        address: '127.0.0.1',
+        port: 50053,
+        available: true,
+        user: 0,
+        databaseId: 0,
+        dataHandlerActive: false,
+    }
+]
