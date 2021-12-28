@@ -19,12 +19,14 @@ class JobStatus(IntEnum):
 
 # Shared properties
 class JobBase(BaseModel):
+    id: Optional[int] = None
     title: Optional[str] = None
     description: Optional[str] = None
-    owner: Optional[str]
-    owner_id: Optional[int]
+    owner: Optional[str] = None
+    owner_id: Optional[int] = None
 
-    workflow: WorkflowInDB = None
+    # workflow: WorkflowInDB = None
+    workflow_id: Optional[int] = None
     workflow_type: Optional[str] = None
     workflow_execute_at: Optional[datetime]
 
@@ -38,13 +40,15 @@ class JobBase(BaseModel):
 
     # service_bookings:
     execute_at: Optional[datetime]
+    created_at: Optional[datetime]
 
 
 
 # Properties to receive on item creation
 class JobCreate(JobBase):
     title: str
-    uuid: UUID = uuid4()
+    # uuid: UUID = uuid4()
+
     # workflow: WorkflowInDB
 
 
@@ -55,7 +59,8 @@ class JobUpdate(JobBase):
 
 # Properties shared by models stored in DB
 class JobInDBBase(JobBase):
-    uuid: UUID
+    # uuid: UUID
+    id: int
     title: str
     owner_id: int
 

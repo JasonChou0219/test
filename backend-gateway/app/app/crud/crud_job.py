@@ -12,15 +12,27 @@ from app.schemas.job import JobCreate, JobUpdate
 
 class CRUDJob(CRUDRerouteBase[Job, JobCreate, JobUpdate]):
     def create_with_owner(
-        self, db: Session, *, route: str, obj_in: JobCreate, owner_id: int
+            self,
+            db: Session,
+            *,
+            route: str,
+            obj_in: JobCreate,
+            user_id: int
     ) -> Job:
+        print('create with owner')
+        print(jsonable_encoder(obj_in))
         response = post(route, json=jsonable_encoder(obj_in))
         return response
 
     def get_multi_by_owner(
-        self, db: Session, *, route: str,  owner_id: int, skip: int = 0, limit: int = 100
+            self,
+            db: Session,
+            *, route: str,
+            user_id: int,
+            skip: int = 0,
+            limit: int = 100
     ) -> List[Job]:
-        response = get(route, params={'skip': skip, 'limit': limit, 'current_user': owner_id})
+        response = get(route, params={'skip': skip, 'limit': limit, 'user_id': owner_id})
         return response
 
 job = CRUDJob(Job)

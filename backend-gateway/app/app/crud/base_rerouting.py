@@ -25,26 +25,47 @@ class CRUDRerouteBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     @staticmethod
-    def get(db: Session, route: str, id: Any) -> Optional[ModelType]:
+    def get(
+            db: Session,
+            route: str,
+            id: Any
+    ) -> Optional[ModelType]:
         response = get(route)
         return response
         # return db.query(self.model).filter(self.model.id == id).first()
 
     @staticmethod
-    def get_multi(db: Session, *, route: str, skip: int = 0, limit: int = 100, current_user: str = '') -> List[ModelType]:
-        response = get(route, params={'skip':skip,'limit':limit, 'current_user': current_user})
+    def get_multi(
+            db: Session,
+            *, route: str,
+            skip: int = 0,
+            limit: int = 100,
+            user_id: int,
+    ) -> List[ModelType]:
+        response = get(route, params={'skip':skip,'limit':limit, 'user_id': user_id})
         return response
 
-    def create(self, db: Session, *, route: str, obj_in: CreateSchemaType) -> ModelType:
+    def create(self,
+               *, route: str,
+               obj_in: CreateSchemaType
+               ) -> ModelType:
         response = post(route, json=jsonable_encoder(obj_in))
         return response
 
     @staticmethod
-    def update(db: Session, *, route: str, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]) -> ModelType:
+    def update(
+            db: Session,
+            *, route: str,
+            db_obj: ModelType,
+            obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+    ) -> ModelType:
         response = put(route, json=jsonable_encoder(obj_in))
         return response
 
     @staticmethod
-    def remove(db: Session, *, route: str,  id: int, current_user: str = '') -> ModelType:
-        response = delete(route, params={'id': id, 'current_user': current_user})
+    def remove(db: Session,
+               *, route: str,
+               id: int,
+               user_id: str) -> ModelType:
+        response = delete(route, params={'id': id, 'user_id': user_id})
         return response

@@ -7,6 +7,7 @@ from pydantic import parse_obj_as
 
 from app import crud, models, schemas
 from app.api import deps
+from app.api import deps
 from app.core.config import settings
 
 router = APIRouter()
@@ -31,10 +32,10 @@ def read_jobs(
     """
     target_route = f"{target_service_url}jobs/"
     if crud.user.is_superuser(current_user):
-        jobs = crud.job.get_multi(db, route=target_route, skip=skip, limit=limit, current_user='superuser')
+        jobs = crud.job.get_multi(db, route=target_route, user_id=current_user.id, skip=skip, limit=limit)
     else:
         jobs = crud.job.get_multi_by_owner(
-            db=db, route=target_route, owner_id=current_user.id, skip=skip, limit=limit
+            db=db, route=target_route, user_id=current_user.id, skip=skip, limit=limit
         )
     jobs = parse_obj_as(List[schemas.JobInDB], jobs.json())
     print(jobs)
@@ -51,10 +52,14 @@ def create_job(
     """
     Create new job.
     """
+    print(job_in)
     target_route = f"{target_service_url}jobs/"
     job_in.owner = current_user.email
     job_in.owner_id = current_user.id
-    job = crud.job.create_with_owner(db=db, route=target_route, obj_in=job_in, owner_id=current_user.id)
+
+    job = crud.job.create_with_owner(db=db, route=target_route, obj_in=job_in, user_id=current_user.id)
+    print('Job here')
+    print(job)
     job = parse_obj_as(schemas.JobInDB, job.json())
     print(job)
     return job
@@ -74,7 +79,7 @@ def update_job(
     target_route = f"{target_service_url}jobs/{id}"
     job = crud.job.get(db=db, route=target_route, id=id)
     if not job:
-        raise HTTPException(status_code=404, detail="Workflow not found")
+        raise HTTPException(status_code=404, detail="Job not found")
     else:
         job = parse_obj_as(schemas.JobInDB, job.json())
         if not crud.user.is_superuser(current_user) and (job.owner_id != current_user.id):
@@ -97,7 +102,7 @@ def read_job(
     target_route = f"{target_service_url}jobs/{id}"
     job = crud.job.get(db=db, route=target_route, id=id)
     if not job:
-        raise HTTPException(status_code=404, detail="Workflow not found")
+        raise HTTPException(status_code=404, detail="Job not found")
     else:
         job = parse_obj_as(schemas.JobInDB, job.json())
         if not crud.user.is_superuser(current_user) and (job.owner_id != current_user.id):
@@ -118,13 +123,14 @@ def delete_job(
     target_route = f"{target_service_url}jobs/{id}"
     job = crud.job.get(db=db, route=target_route, id=id)
     if not job:
-        raise HTTPException(status_code=404, detail="Workflow not found")
+        raise HTTPException(status_code=404, detail="Job not found")
     else:
         job = parse_obj_as(schemas.JobInDB, job.json())
         if not crud.user.is_superuser(current_user) and (job.owner_id != current_user.id):
             raise HTTPException(status_code=400, detail="Not enough permissions")
         elif crud.user.is_superuser(current_user):
-            current_user.id = 'superuser'
-    job = crud.job.remove(db=db, route=target_route, id=id, current_user=current_user.id)
+            # current_user.id = 'superuser'
+            pass
+    job = crud.job.remove(db=db, route=target_route, id=id, user_id=current_user.id)
     job = parse_obj_as(schemas.JobInDB, job.json())
     return job
