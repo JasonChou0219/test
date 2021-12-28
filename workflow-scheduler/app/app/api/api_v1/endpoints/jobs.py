@@ -2,6 +2,7 @@ from typing import Any, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
@@ -12,20 +13,23 @@ router = APIRouter()
 
 @router.get("/", response_model=List[schemas.Job])
 def read_jobs(
+    user_id: int,
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: str = '',
 ) -> Any:
     """
     Retrieve jobs.
     """
     # if crud.user.is_superuser(current_user):
-    if current_user == 'superuser':
+    print('HERE')
+    print(user_id, skip, limit)
+    print('THERE')
+    if user_id == 'superuser':
         jobs = crud.job.get_multi(db, skip=skip, limit=limit)
     else:
         jobs = crud.job.get_multi_by_owner(
-            db=db, owner_id=current_user, skip=skip, limit=limit
+            db=db, owner_id=user_id, skip=skip, limit=limit
         )
     return jobs
 
@@ -39,6 +43,9 @@ def create_job(
     """
     Create new job.
     """
+    print('HERE')
+    print(job_in)
+    print('THERE')
     model = models.Job
     obj_in_data = jsonable_encoder(job_in)
     job = model(**obj_in_data)
@@ -86,6 +93,7 @@ def read_job(
 
 @router.delete("/{id}", response_model=schemas.Job)
 def delete_job(
+    user_id: int,
     *,
     db: Session = Depends(deps.get_db),
     id: int,
@@ -93,10 +101,12 @@ def delete_job(
     """
     Delete a job.
     """
-    job = crud.job.get(db=db, uuid=uuid)
+    job = crud.job.get(db=db, id=id)
+    print('Got to delete')
+    print(job)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    if current_user != 'superuser' and (job.owner_id != current_user):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
+    # if current_user != 'superuser' and (job.owner_id != current_user):
+    #     raise HTTPException(status_code=400, detail="Not enough permissions")
     job = crud.job.remove(db=db, id=id)
     return job
