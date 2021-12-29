@@ -143,6 +143,21 @@ services:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
+  db-data-acquisition:
+    image: postgres:12
+    volumes:
+      - app-db-data-acquisition-data:/var/lib/postgresql/data/pgdata/data-acquisition/
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata/data-acquisition
+      - POSTGRES_SERVER=${POSTGRES_SERVER_DATA_ACQUISITION}
+      - POSTGRES_DB=${POSTGRES_DB_DATA_ACQUISITION}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
   pgadmin:
     image: dpage/pgadmin4
     networks:
@@ -375,6 +390,50 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
+  data-acquisition:
+    image: '${DOCKER_IMAGE_DATA_ACQUISITION?Variable not set}:${TAG-latest}'
+    ports:
+      - "${DATA_ACQUISITION_UVICORN_PORT?Variable not set}:${DATA_ACQUISITION_UVICORN_PORT?Variable not set}"
+    depends_on:
+      - db-data-acquisition
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+      - PORT=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+    build:
+      context: ./data-acquisition
+      dockerfile: data-acquisition.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        # - traefik.http.routers.${STACK_NAME?Variable not set}-data-acquisition-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-data-acquisition.loadbalancer.server.port=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+
+  celeryworker-data-acquisition:
+    image: '${DOCKER_IMAGE_CELERYWORKER_DATA_ACQUISITION?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db-data-acquisition
+      - queue
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST?Variable not set}
+    build:
+      context: ./data-acquisition
+      dockerfile: celeryworker.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+
   mdns_repeater:
       image: jdbeeler/mdns-repeater:latest
       # image: raetha/mdns-repeater
@@ -441,6 +500,7 @@ volumes:
   app-db-workflow-designer-data:
   app-db-workflow-designer-python-data:
   app-db-workflow-scheduler-data:
+  app-db-data-acquisition-data:
 
 networks:
   traefik-public:
