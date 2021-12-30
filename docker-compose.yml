@@ -205,8 +205,8 @@ services:
     networks:
         - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
         - default
-    # ports:
-      # - "80:80"
+    ports:
+      - "${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-backend-gateway
     env_file:
