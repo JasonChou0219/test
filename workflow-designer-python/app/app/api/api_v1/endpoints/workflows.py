@@ -3,7 +3,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, Request
+from fastapi import Request
 
 from app import crud, models, schemas
 from app.api import deps
@@ -18,7 +18,6 @@ def read_workflows(
         db: Session = Depends(deps.get_db),
         skip: int = 0,
         limit: int = 100,
-        # current_user: str = '',
 ) -> Any:
     """
     Retrieve workflows.
@@ -51,13 +50,6 @@ def create_workflow(
     user = models.User(**dict(request.query_params.items()))
 
     workflow = crud.workflow.create(db=db, obj_in=workflow_in)
-
-    # model = models.Workflow
-    # obj_in_data = jsonable_encoder(workflow_in)
-    # workflow = model(**obj_in_data)
-    # db.add(workflow)
-    # db.commit()
-    # db.refresh(workflow)
     return workflow
 
 

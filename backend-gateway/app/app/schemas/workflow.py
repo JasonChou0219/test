@@ -33,6 +33,7 @@ class WorkflowInDBBase(WorkflowBase):
     class Config:
         orm_mode = True
 
+
 # Properties to return to client
 class Workflow(WorkflowInDBBase):
     pass
@@ -41,6 +42,7 @@ class Workflow(WorkflowInDBBase):
 # Properties properties stored in DB
 class WorkflowInDB(WorkflowInDBBase):
     pass
+
 
 # class WorkflowInDBList(BaseModel):
 #     __root__: List[WorkflowInDB]
