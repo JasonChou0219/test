@@ -2,10 +2,11 @@ from requests import delete, get, post, put
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.db.base_class import Base
+from app.models.user import User
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -28,9 +29,11 @@ class CRUDRerouteBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(
             db: Session,
             route: str,
-            id: Any
+            id: int,
+            current_user: User,
     ) -> Optional[ModelType]:
-        response = get(route)
+        user_dict = jsonable_encoder(current_user)
+        response = get(route, params=dict({'id': id}, **user_dict))
         return response
         # return db.query(self.model).filter(self.model.id == id).first()
 
@@ -40,16 +43,20 @@ class CRUDRerouteBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             *, route: str,
             skip: int = 0,
             limit: int = 100,
-            user_id: int,
+            current_user: User,
     ) -> List[ModelType]:
-        response = get(route, params={'skip':skip,'limit':limit, 'user_id': user_id})
+        user_dict = jsonable_encoder(current_user)
+        response = get(route, params=dict({'skip': skip, 'limit': limit}, **user_dict))
         return response
 
-    def create(self,
+    @staticmethod
+    def create(
                *, route: str,
-               obj_in: CreateSchemaType
+               obj_in: CreateSchemaType,
+               current_user: User,
                ) -> ModelType:
-        response = post(route, json=jsonable_encoder(obj_in))
+        user_dict = jsonable_encoder(current_user)
+        response = post(route, json=jsonable_encoder(obj_in), params=dict({}, **user_dict))
         return response
 
     @staticmethod
@@ -57,15 +64,19 @@ class CRUDRerouteBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db: Session,
             *, route: str,
             db_obj: ModelType,
-            obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+            obj_in: Union[UpdateSchemaType, Dict[str, Any]],
+            current_user: User,
     ) -> ModelType:
-        response = put(route, json=jsonable_encoder(obj_in))
+        user_dict = jsonable_encoder(current_user)
+        response = put(route, json=jsonable_encoder(obj_in), params=dict({}, **user_dict))
         return response
 
     @staticmethod
     def remove(db: Session,
                *, route: str,
                id: int,
-               user_id: str) -> ModelType:
-        response = delete(route, params={'id': id, 'user_id': user_id})
+               current_user: User,
+               ) -> ModelType:
+        user_dict = jsonable_encoder(current_user)
+        response = delete(route, params=dict({'id': id}, **user_dict))
         return response
