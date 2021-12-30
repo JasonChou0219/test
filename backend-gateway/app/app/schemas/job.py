@@ -17,9 +17,9 @@ class JobStatus(IntEnum):
     FINISHED_MANUALLY = 5
     UNKNOWN = 6
 
+
 # Shared properties
 class JobBase(BaseModel):
-    id: Optional[int] = None
     title: Optional[str] = None
     description: Optional[str] = None
     owner: Optional[str] = None
@@ -41,7 +41,6 @@ class JobBase(BaseModel):
     # service_bookings:
     execute_at: Optional[datetime]
     created_at: Optional[datetime]
-
 
 
 # Properties to receive on item creation

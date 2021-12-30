@@ -7,32 +7,35 @@ from pydantic import BaseModel, parse_obj_as
 
 from app.crud.base_rerouting import CRUDRerouteBase
 from app.models.job import Job
+from app.models.user import User
 from app.schemas.job import JobCreate, JobUpdate
 
 
 class CRUDJob(CRUDRerouteBase[Job, JobCreate, JobUpdate]):
+
+    @staticmethod
     def create_with_owner(
-            self,
             db: Session,
             *,
             route: str,
             obj_in: JobCreate,
-            user_id: int
+            current_user: User,
     ) -> Job:
-        print('create with owner')
-        print(jsonable_encoder(obj_in))
-        response = post(route, json=jsonable_encoder(obj_in))
+        user_dict = jsonable_encoder(current_user)
+        response = post(route, json=jsonable_encoder(obj_in), params=dict({}, **user_dict))
         return response
 
+    @staticmethod
     def get_multi_by_owner(
-            self,
             db: Session,
             *, route: str,
-            user_id: int,
+            current_user: User,
             skip: int = 0,
             limit: int = 100
     ) -> List[Job]:
-        response = get(route, params={'skip': skip, 'limit': limit, 'user_id': owner_id})
+        user_dict = jsonable_encoder(current_user)
+        response = get(route, params=dict({'skip': skip, 'limit': limit}, **user_dict))
         return response
+
 
 job = CRUDJob(Job)
