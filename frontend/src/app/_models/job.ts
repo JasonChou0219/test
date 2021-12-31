@@ -1,4 +1,8 @@
-﻿import { Workflow, WorkflowInfo, WorkflowInfoList } from '@app/_models';
+﻿import {
+    Workflow, WorkflowInfoList,
+    Dataflow, DataflowInfoList,
+    DataProtocol, DataProtocolInfoList,
+} from '@app/_models';
 
 
 export interface Job {
@@ -11,11 +15,9 @@ export interface Job {
     execute_at: Date;
     created_at: Date;
     running: boolean;
-    workflow: Workflow;  // Do I ever need a Job class with the full workflow class inside?
-    workflow_id?: number;
-    workflow_type: string;
-    workflow_execute_at: Date;
-    workflow_running: boolean;
+    workflows?: Workflow[];
+    dataflows?: Dataflow[];
+    data_protocols?: DataProtocol[];
 }
 
 export interface JobInfo {
@@ -28,13 +30,9 @@ export interface JobInfo {
     execute_at: Date;
     created_at: Date;
     running: boolean;
-    workflow_id: number;
-    workflow_name: string;
-    workflow_type: string;
-    workflow_execute_at: Date;
-    workflow_running: boolean;
-
-    database_name: string;
+    workflows?: WorkflowInfoList;
+    dataflows?: DataflowInfoList;
+    data_protocols?: DataProtocolInfoList;
 }
 
 export interface JobInfoList {

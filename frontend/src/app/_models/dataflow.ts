@@ -1,4 +1,6 @@
-﻿export interface Dataflow {
+﻿import {Database, DatabaseInfo} from '@app/_models'
+
+export interface Dataflow {
     id?: number;
     uuid?: string;
     title: string;
@@ -9,6 +11,7 @@
     dataflow_path?: string;  // The path to the dataflow API
     created_at?: Date;
     execute_at?: Date;
+    database?: Database;
 }
 
 export interface DataflowInfo {
@@ -21,6 +24,7 @@ export interface DataflowInfo {
     dataflow_path?: string;  // The path to the dataflow API
     created_at?: Date;
     execute_at?: Date;
+    database?: DatabaseInfo;
 }
 
 export interface DataflowInfoList {
@@ -31,24 +35,3 @@ export interface DataflowStatus {
     online: boolean;
     status: string;
 }
-
-
-
-export const mock_dataflow_info = {
-            id: 1,
-            title: 'Mock Dataflow 1',
-        }
-
-export const mock_dataflow_info_list = [{
-            id: 1,
-            title: 'Mock Dataflow 1',
-        },
-        {
-            id: 2,
-            title: 'Mock Dataflow 2'
-        },
-        {
-            id:3,
-            title: 'Mock Dataflow 3'
-        }
-        ];

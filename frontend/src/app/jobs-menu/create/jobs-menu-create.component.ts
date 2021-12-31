@@ -5,7 +5,7 @@ import {JobService } from '@app/_services';
 import { JobInfo, DatabaseInfo, WorkflowInfo, ServiceInfo, DataflowInfo } from '@app/_models';
 
 // Import mocked data
-import { mock_database_info_list, mock_workflow_info_list, mock_service_info_list, mock_dataflow_info_list } from '@app/_models';
+import { mockDatabaseInfoList, mockWorkflowInfoList, mockServiceInfoList, mockDataflowInfoList } from '@app/_models';
 
 @Component({
   selector: 'app-jobs-menu-create',
@@ -57,10 +57,10 @@ export class JobsMenuCreateComponent implements OnInit {
 
 
   async ngOnInit() {
-    this.services = mock_service_info_list
-    this.workflows = mock_workflow_info_list
-    this.dataflows = mock_dataflow_info_list
-    this.databases = mock_database_info_list
+    this.services = mockServiceInfoList
+    this.workflows = mockWorkflowInfoList
+    this.dataflows = mockDataflowInfoList
+    this.databases = mockDatabaseInfoList
   }
 
 }
