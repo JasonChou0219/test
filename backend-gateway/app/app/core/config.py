@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     SERVICE_MANAGER_UVICORN_PORT: int
     WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT: int
     WORKFLOW_SCHEDULER_UVICORN_PORT: int
+    DATA_ACQUISITION_UVICORN_PORT: int
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'

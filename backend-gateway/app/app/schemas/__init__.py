@@ -5,3 +5,4 @@ from .token import Token, TokenPayload
 from .user import User, UserCreate, UserInDB, UserUpdate
 from .workflow import Workflow, WorkflowCreate, WorkflowInDB, WorkflowUpdate
 from .job import Job, JobCreate, JobInDB, JobUpdate
+from .database import Database, DatabaseCreate, DatabaseInDB, DatabaseUpdate

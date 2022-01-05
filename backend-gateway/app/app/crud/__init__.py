@@ -3,6 +3,7 @@ from .crud_item import item
 from .crud_user import user
 from .crud_workflow import workflow
 from .crud_job import job
+from .crud_database import database
 
 # For a new basic set of CRUD operations you could just do
 
