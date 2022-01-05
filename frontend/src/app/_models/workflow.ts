@@ -1,8 +1,10 @@
-﻿export interface Workflow {
+﻿import { ServiceInfo } from '@app/_models';
+
+export interface Workflow {
     id?: number;
     name: string;
     fileName: string;
-    services?: string[];
+    services?: ServiceInfo[];
     data: string;
     owner?: string;
     owner_id?: number;
@@ -12,17 +14,11 @@ export interface WorkflowInfo {
     id?: number;
     name: string;
     fileName: string;
-    services?: string[];
+    services?: ServiceInfo[];
     data: string;
     owner?: string;
     owner_id?: number;
     description?: string;
-    //
-    //id: number;
-    //name: string;
-    //fileName: string;
-    //owner?: string;
-    //owner_id?: number;
 }
 
 export interface WorkflowInfoList {
