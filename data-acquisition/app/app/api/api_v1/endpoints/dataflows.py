@@ -1,12 +1,7 @@
-from requests import delete, get, post, put
+from requests import get
 from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
-
-from app import crud, models, schemas
-from app.api import deps
+from fastapi import APIRouter
 
 router = APIRouter()
 
