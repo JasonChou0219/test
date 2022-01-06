@@ -87,6 +87,7 @@ import { AboutComponent } from './settings-menu/about/about.component';
 // import { DatabaseLinkComponent } from './database-link/database-link.component';
 // import { AddDatabaseComponent } from './add-database/add-database.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
+import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 
 
 @NgModule({
@@ -133,6 +134,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // AddDatabaseComponent,
         FooterBarComponent,
         DataflowDesignMenuOverviewComponent,
+        KnimeComponent,
     ],
     imports: [
         BrowserModule,
