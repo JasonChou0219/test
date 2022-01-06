@@ -7,12 +7,14 @@ import { env } from '@environments/environment';
 })
 export class DataflowService {
     serverUrl = env.apiUrl;
+
     constructor(private http: HttpClient) {
     }
+
     async getServiceList(): Promise<any[]> {
-         return this.http
-             .get<any[]>(this.serverUrl + ':81/api/v1/dataflows/') // TODO port in env
-             .pipe()
-             .toPromise();
+        return this.http
+            .get<any[]>(this.serverUrl + ':81/api/v1/dataflows/') // TODO port in env
+            .pipe()
+            .toPromise();
     }
 }
