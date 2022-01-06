@@ -1,0 +1,16 @@
+table {
+    width: 99%;
+}
+
+tr.row td {
+    border-bottom-width: 0;
+}
+
+div.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+div.mat-card-header-entry {
+    margin: auto;
+}

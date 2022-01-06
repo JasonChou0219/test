@@ -11,6 +11,7 @@ import { ServiceListComponent } from './services-menu/service-browser/service-li
 import {JobsMenuCreateComponent} from './jobs-menu/create/jobs-menu-create.component';
 import {JobsMenuOverviewComponent} from './jobs-menu/overview/jobs-menu-overview.component';
 import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-scheduler.component';
+import { DataflowDesignMenuOverviewComponent } from "@app/dataflow-design-menu/overview/dataflow-design-menu-overview.component";
 
 import { AuthGuard } from './auth.guard';
 
@@ -60,6 +61,10 @@ const routes: Routes = [
             {
                 path: 'scheduler',
                 component: JobsMenuSchedulerComponent
+            },
+            {
+                path: 'dataflows',
+                component: DataflowDesignMenuOverviewComponent
             },
 
         ]

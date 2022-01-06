@@ -59,6 +59,8 @@ import {JobsMenuCreateComponent} from './jobs-menu/create/jobs-menu-create.compo
 import {JobsMenuOverviewComponent} from './jobs-menu/overview/jobs-menu-overview.component';
 import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-scheduler.component';
 
+import { DataflowDesignMenuOverviewComponent } from './dataflow-design-menu/overview/dataflow-design-menu-overview.component';
+
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { LogViewComponent } from './log-view/log-view.component';
@@ -130,6 +132,7 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // DatabaseLinkComponent,
         // AddDatabaseComponent,
         FooterBarComponent,
+        DataflowDesignMenuOverviewComponent,
     ],
     imports: [
         BrowserModule,
