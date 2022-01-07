@@ -317,6 +317,10 @@ services:
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - DB_HOST=${POSTGRES_DB_WORKFLOW_DESIGNER?Variable not set}
+      - DB_USER=${POSTGRES_USER?Variable not set}
+      - DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - DB_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER?Variable not set}
       # Allow explicit env var override for tests
     ports:
       - "1880:1880"
