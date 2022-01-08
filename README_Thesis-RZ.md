@@ -11,17 +11,37 @@ Requirements: [Docker](https://www.docker.com/) and [Docker Compose](https://doc
 
 A documentation of the API can be found at http://localhost/docs/
 
+### Database
+
 Access the database under http://localhost:5050 and use username `admin@lamas.biovt.mw.tum.de` 
 and password `1234` to log in.
 
 Add connections in pgadmin to the Workflow Designer's and Scheduler's databases.
-1) Select _Object/Create/Server..._
+1) Select _Object / Create / Server..._
 2) Input _Name_ of choice
 3) Under _Connection_, input 
    1) Host name: `db-workflow-designer` or `db-workflow-scheduler`
    2) Username: `postgres`
    3) Password: `DIB-central`
+4) Find stored flows under _Databases / workflow-designer / Schemas / public / Tables / flow_
  
+### Workflow Execution
+In order to access the Scheduler's API, authentication needs to occur first. Log in by sending a POST request to 
+``http://localhost/api/v1/login/access-token`` with username `admin@lamas.biovt.mw.tum.de` 
+and password `1234` to receive an _access_token_.
+
+To run a workflow, send a POST request to `http://localhost/api/v1/jobs/` specifying the minimum requirements in the
+request's body like so:
+```
+{
+  "execute_at": "2022-01-01T12:00:00.0Z",
+  "title": "Test Job",
+  "flow_id": "f6f2187d.f17ca8"
+}
+```
+Retrieve the _flow_id_ from Node-Red or the database and authorize the request with the received _access_token_.
+You might need to account for time zone discrepancies.
+
 ## Code Repositories
 
 * [SiLA 2 Manager](https://gitlab.com/lukas.bromig/sila2_manager/-/tree/idprz)
