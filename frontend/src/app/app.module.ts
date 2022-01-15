@@ -170,8 +170,8 @@ import { MatSortModule } from '@angular/material/sort';
         // }),
         CodeEditorModule,
         CodeEditorModule.forRoot({
-             baseUrl: './assets/monaco',
-             typingsWorkerUrl: './assets/workers/typings-worker.js',
+            baseUrl: './assets/monaco',
+            typingsWorkerUrl: './assets/workers/typings-worker.js',
         }),
         MatSortModule,
     ],
