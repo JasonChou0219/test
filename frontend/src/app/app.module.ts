@@ -88,6 +88,7 @@ import { AboutComponent } from './settings-menu/about/about.component';
 // import { AddDatabaseComponent } from './add-database/add-database.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
 import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
+import { MatSortModule } from '@angular/material/sort';
 
 
 @NgModule({
@@ -172,6 +173,7 @@ import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
              baseUrl: './assets/monaco',
              typingsWorkerUrl: './assets/workers/typings-worker.js',
         }),
+        MatSortModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

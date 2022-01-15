@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { DataflowService } from '@app/_services'
-import { MatTable } from "@angular/material/table";
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 interface RowData {
     path: string;
@@ -16,14 +17,14 @@ interface RowData {
     styleUrls: ['./dataflow-design-menu-overview.component.scss'],
 })
 export class DataflowDesignMenuOverviewComponent implements OnInit {
-    dataSource: RowData[] = [];
+    dataSource: MatTableDataSource<RowData>;
     tableColumns = [
         'path',
         'created_on',
         'last_edited_on',
     ];
 
-    @ViewChild(MatTable) table: MatTable<any>;
+    @ViewChild(MatSort) sort: MatSort;
     constructor(
         public dataflowService: DataflowService,
     ) {}
@@ -39,8 +40,8 @@ export class DataflowDesignMenuOverviewComponent implements OnInit {
                 last_edited_on: dataflow.last_edited_on,
             });
         }
-        this.dataSource = data;
-        this.table.renderRows();
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.sort = this.sort;
     }
 
     async refresh() {
