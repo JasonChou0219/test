@@ -57,6 +57,11 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = False
 
+    KNIME_SERVER_HOST: str
+    KNIME_SERVER_PORT: int
+    KNIME_SERVER_USER: str
+    KNIME_SERVER_PASSWORD: str
+
     class Config:
         case_sensitive = True
 

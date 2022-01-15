@@ -3,6 +3,8 @@ from typing import Any, List
 
 from fastapi import APIRouter
 
+from app.core.config import settings
+
 router = APIRouter()
 
 
@@ -12,8 +14,10 @@ def read_dataflows(
     """
     Retrieve dataflows.
     """
+    url = "https://" + settings.KNIME_SERVER_HOST + ":" + str(settings.KNIME_SERVER_PORT) \
+          + "/knime/rest/v4/repository/?deep=true"
     response = get(
-        "https://10.152.248.14:8443/knime/rest/v4/repository/?deep=true", auth=('knimeadmin', 'diginbio-server'),
+        url, auth=(settings.KNIME_SERVER_USER, settings.KNIME_SERVER_PASSWORD),
         verify=False
     ).json()
 
