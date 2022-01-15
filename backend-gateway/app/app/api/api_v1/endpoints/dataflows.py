@@ -26,8 +26,7 @@ def read_dataflows(
     """
     target_route = f"{target_service_url}dataflows/"
     dataflows = get(
-        target_route, auth=('knimeadmin', 'diginbio-server'),
-        verify=False
+        target_route
     ).json()
 
     return dataflows

@@ -18,6 +18,13 @@
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="owner">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="">Owner</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.owner }}
+            </td>
+        </ng-container>
+
         <ng-container matColumnDef="created_on">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="">Created on</th>
             <td mat-cell *matCellDef="let element">

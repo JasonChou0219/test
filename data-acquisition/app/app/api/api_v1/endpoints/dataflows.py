@@ -17,7 +17,7 @@ def read_dataflows(
         verify=False
     ).json()
 
-    # Workflow groups are also included in the response, so we need to extract the workflows
+    # Workflow groups are also included in the response, so we need to go through the tree and extract the workflows
     response_items = [response]
     dataflows = []
     while response_items:
@@ -30,5 +30,6 @@ def read_dataflows(
             dataflow['created_on'] = node['createdOn']
             dataflow['last_edited_on'] = node['lastEditedOn']
             dataflow['openapi_link'] = node['@controls']['self']['href'] + ':openapi?showInUI=true'
+            dataflow['owner'] = node['owner']
             dataflows.append(dataflow)
     return dataflows

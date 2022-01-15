@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 interface RowData {
     path: string;
     openapi_link: string;
+    owner: string;
     created_on: string;
     last_edited_on: string;
 }
@@ -20,6 +21,7 @@ export class DataflowDesignMenuOverviewComponent implements OnInit {
     dataSource: MatTableDataSource<RowData>;
     tableColumns = [
         'path',
+        'owner',
         'created_on',
         'last_edited_on',
     ];
@@ -36,6 +38,7 @@ export class DataflowDesignMenuOverviewComponent implements OnInit {
             data.push({
                 path: dataflow.path,
                 openapi_link: dataflow.openapi_link,
+                owner: dataflow.owner,
                 created_on: dataflow.created_on,
                 last_edited_on: dataflow.last_edited_on,
             });
