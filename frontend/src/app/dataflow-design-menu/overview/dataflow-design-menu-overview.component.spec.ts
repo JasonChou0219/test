@@ -8,7 +8,7 @@ describe('OverviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DataflowDesignMenuOverviewComponent]
+      declarations: [ DataflowDesignMenuOverviewComponent ]
     })
     .compileComponents();
   });
