@@ -32,7 +32,7 @@ export class DataflowDesignMenuOverviewComponent implements OnInit {
     ) {}
 
     async getDataflows() {
-        const dataflowList = await this.dataflowService.getServiceList();
+        const dataflowList = await this.dataflowService.getDataflowList();
         const data: RowData[] = [];
         for (const dataflow of dataflowList) {
             data.push({

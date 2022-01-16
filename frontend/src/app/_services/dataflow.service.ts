@@ -11,7 +11,7 @@ export class DataflowService {
     constructor(private http: HttpClient) {
     }
 
-    async getServiceList(): Promise<any[]> {
+    async getDataflowList(): Promise<any[]> {
         return this.http
             .get<any[]>(this.serverUrl + ':81/api/v1/dataflows/') // TODO port in env
             .pipe()
