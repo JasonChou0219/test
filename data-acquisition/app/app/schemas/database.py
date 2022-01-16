@@ -5,7 +5,8 @@ from pydantic import BaseModel
 
 # Shared properties
 class DatabaseBase(BaseModel):
-    name: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
     address: Optional[str] = None
@@ -16,7 +17,7 @@ class DatabaseBase(BaseModel):
 
 # Properties to receive on item creation
 class DatabaseCreate(DatabaseBase):
-    name: str
+    title: str
     username: str
     password: str
     address: str
@@ -31,7 +32,7 @@ class DatabaseUpdate(DatabaseBase):
 # Properties shared by models stored in DB
 class DatabaseInDBBase(DatabaseBase):
     id: int
-    name: str
+    title: str
     username: str
     password: str
     address: str
