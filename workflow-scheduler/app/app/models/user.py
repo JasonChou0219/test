@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from .job import Job # noqa: F401
     from .workflow import Workflow  # noqa: F401
     from .service import Service  # noqa: F401
+    ######### Todo: Merge relict. Replace flow with workflow
+    from .flow import Flow
 
 
 class User(Base):
@@ -22,4 +24,9 @@ class User(Base):
     items = relationship("Item", back_populates="owner")
     # jobs = relationship("Job", back_populates="owner")
     workflows = relationship("Workflow", back_populates="owner")
+
+    ####### Todo: Merge relict. Replace flow with workflow
+    # flows = relationship("Flow", back_populates="owner")
+    #######
+
     services = relationship("Service", back_populates="owner")

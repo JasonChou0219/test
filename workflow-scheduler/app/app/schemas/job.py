@@ -50,6 +50,8 @@ class JobCreate(JobBase):
     # created_at: datetime  # = datetime.now()
     # uuid: UUID = uuid4()
     # workflow: WorkflowInDB
+    created_at: Optional[datetime]
+    uuid: Optional[UUID]
 
 
 # Properties to receive on item update
@@ -59,10 +61,11 @@ class JobUpdate(JobBase):
 
 # Properties shared by models stored in DB
 class JobInDBBase(JobBase):
-    # uuid: UUID
+    uuid: UUID
     id: int
     title: str
     owner_id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True

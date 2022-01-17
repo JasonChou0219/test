@@ -1,7 +1,8 @@
-FROM nodered/node-red-docker:v10
+FROM nodered/node-red:2.1.3
 
 COPY settings.js /data/
 
 RUN cd /data/
 
-RUN npm install node-red-contrib-storagemodule-postgres
+RUN npm install https://gitlab.com/RZechlin/node-red-contrib-flow-manager-postgres
+RUN npm install https://gitlab.com/RZechlin/node-red-contrib-sila2-node

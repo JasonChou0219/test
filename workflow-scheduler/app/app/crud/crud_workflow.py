@@ -14,6 +14,11 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
         self, db: Session, *, obj_in: WorkflowCreate, owner_id: int
     ) -> Flow:
         db_designer = get_db_workflow_designer()
+
+        ############ Todo: Merge relict. Check if this is necessary!
+        obj_in.flow = flow.flow
+        ############
+
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
@@ -32,5 +37,8 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
             .all()
         )
 
+class Designer(CRUDBase[FlowBase, FlowCreate, FlowUpdate]):
+    pass
 
 job = CRUDWorkflow(Workflow)
+flow_designer = Designer(Flow)

@@ -36,6 +36,14 @@ services:
     ports:
       - "5555:5555"
 
+  db-workflow-designer:
+    ports:
+      - "5432:5432"
+
+  db-workflow-scheduler:
+    ports:
+      - "6432:5432"
+
   backend-gateway:
     ports:
       - "8888:8888"
@@ -130,6 +138,7 @@ services:
     #  - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     volumes:
       - ./workflow-scheduler/app:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:9999
       - SERVER_HOST=http://${DOMAIN?Variable not set}

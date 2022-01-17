@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DESIGNER_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DESIGNER_DATABASE_URI", pre=True)
-    def assemble_db_connection_designer(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_db_connection_designer_python(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -67,6 +67,22 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_SERVER_WORKFLOW_DESIGNER_PYTHON"),
             path=f"/{values.get('POSTGRES_DB_WORKFLOW_DESIGNER_PYTHON') or ''}",
+        )
+
+    POSTGRES_SERVER_WORKFLOW_DESIGNER_NODE_RED: str
+    POSTGRES_DB_WORKFLOW_DESIGNER_NODE_RED: str
+    SQLALCHEMY_DESIGNER_DATABASE_URI: Optional[PostgresDsn] = None
+
+    @validator("SQLALCHEMY_DESIGNER_DATABASE_URI", pre=True)
+    def assemble_db_connection_designer_node_red(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        if isinstance(v, str):
+            return v
+        return PostgresDsn.build(
+            scheme="postgresql",
+            user=values.get("POSTGRES_USER"),
+            password=values.get("POSTGRES_PASSWORD"),
+            host=values.get("POSTGRES_SERVER_WORKFLOW_DESIGNER_NODE_RED"),
+            path=f"/{values.get('POSTGRES_DB_WORKFLOW_DESIGNER_NODE_RED') or ''}",
         )
 
     SMTP_TLS: bool = True

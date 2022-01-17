@@ -335,6 +335,10 @@ services:
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - DB_HOST=${POSTGRES_DB_WORKFLOW_DESIGNER?Variable not set}
+      - DB_USER=${POSTGRES_USER?Variable not set}
+      - DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - DB_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST?Variable not set}
     build:
@@ -373,6 +377,29 @@ services:
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+
+  workflow-executor:
+    image: '${DOCKER_IMAGE_WORKFLOW_EXECUTOR?Variable not set}:${TAG-latest}'
+    profiles:
+      - "don't start"
+    depends_on:
+      - db-workflow-designer
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+    ports:
+      - "2880:1880"
+    build:
+      context: ./workflow-executor
+      dockerfile: workflow-executor.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
   celeryworker-workflow-scheduler:
     image: '${DOCKER_IMAGE_CELERYWORKER_WORKFLOW_SCHEDULER?Variable not set}:${TAG-latest}'
