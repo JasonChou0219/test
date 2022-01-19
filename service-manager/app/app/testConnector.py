@@ -45,8 +45,8 @@ def run_function(client: SilaClient,
 
 
 # TODO ObservableTest
-def parse_datatype(xml_subtree):
-    ds
+#TODO reimplement with DB
+# def parse_datatype(xml_subtree):
 
 
 def parse_xml(xml_string):
