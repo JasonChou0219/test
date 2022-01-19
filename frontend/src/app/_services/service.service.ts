@@ -7,6 +7,25 @@ import {SilaServerInfo, DiscoveredSilaServiceList, Service, ServiceStatus, Servi
 ServiceStatusList, ServiceFeatureList, ServiceParameter, ServiceProperty, ServiceCommand, ServiceFeature} from '@app/_models';
 
 
+const test_service_1: Service = {
+    uuid: '0123-2445-22222221-34535235-223423',
+    server_uuid: '1111-22222-3333-4444-5555-666',
+    name: 'Test Service',
+    type: 'Test Type',
+    address: '127.0.0.1',
+    port: 50051,
+    available: true,
+    user: 1,
+    databaseId: 1,
+    dataHandlerActive: false,
+    }
+
+
+const test_service_1_status: ServiceStatus = {
+    online: true,
+    status: 'Available',
+}
+
 export enum LogLevel {
     INFO = 0,
     WARNING = 1,
@@ -77,34 +96,6 @@ export interface JobList {
     data: Job[];
 }
 
-export interface FeaturePropertyResult {
-    name: string;
-    value: any;
-}
-export interface FeatureCommandParam {
-    name: string;
-    value: any;
-}
-export interface FeatureCommandResult {
-    name: string;
-    value: any;
-}
-
-const test_service_1: Service = {
-    server_uuid: 'test',
-    name: 'TestService',
-    type: 'TestType',
-    address: '127.0.0.1',
-    port: 50000,
-    available: true,
-    user: 1,
-    databaseId: 1,
-    dataHandlerActive: false,
-}
-const test_service_1_status: ServiceStatus = {
-    online: true,
-    status: 'in use',
-}
 
 @Injectable({
     providedIn: 'root',
@@ -144,7 +135,7 @@ export class ServiceService {
             .toPromise();
     }
     async getServiceStatus(uuid: string): Promise<ServiceStatus> {
-        // Mock implementation
+    //    // Mock implementation
         return test_service_1_status
         // Real implementation
         // return this.http
@@ -165,38 +156,6 @@ export class ServiceService {
                 this.serverUrl + '/api/serviceFeaturesDataHandler/' + uuid
             )
             .pipe(map((featureList) => featureList.data))
-            .toPromise();
-    }
-    async callFeatureCommand(
-        service: string,
-        featureOriginator: string,
-        featureCategory: string,
-        featureIdentifier: string,
-        featureVersionMajor: number,
-        command: string,
-        params: FeatureCommandParam[]
-    ): Promise<FeatureCommandResult[]> {
-        return this.http
-            .post<FeatureCommandResult[]>(
-                this.serverUrl +
-                    `/api/service/${service}/qualifiedFeatureIdentifier/${featureOriginator}/${featureCategory}/${featureIdentifier}/v${String(featureVersionMajor)}/command/${command}`,
-                { params }
-            )
-            .toPromise();
-    }
-    async getFeatureProperty(
-        service: string,
-        featureOriginator: string,
-        featureCategory: string,
-        featureIdentifier: string,
-        featureVersionMajor: number,
-        property: string
-    ): Promise<FeaturePropertyResult[]> {
-        return this.http
-            .get<FeaturePropertyResult[]>(
-                this.serverUrl +
-                    `/api/service/${service}/qualifiedFeatureIdentifier/${featureOriginator}/${featureCategory}/${featureIdentifier}/v${String(featureVersionMajor)}/property/${property}`
-            )
             .toPromise();
     }
     async discoverSilaServices(): Promise<SilaServerInfo[]> {
@@ -338,25 +297,6 @@ export class ServiceService {
     async deleteJob(id: number) {
         return this.http
             .delete(this.serverUrl + '/api/jobs/' + id)
-            .toPromise();
-    }
-    async startJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: true,
-            })
-            .toPromise();
-    }
-    async stopJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: false,
-            })
-            .toPromise();
-    }
-    async getJobStatus(id: number): Promise<JobStatus> {
-        return this.http
-            .get<JobStatus>(this.serverUrl + '/api/jobStatus/' + id)
             .toPromise();
     }
 }

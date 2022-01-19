@@ -67,6 +67,9 @@ export class AppComponent {
         this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/database-plus-outline.svg')
     );
     this.matIconRegistry.addSvgIconInNamespace('assets', 'delete-outline',
+        this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/delete-outline.svg')
+    );
+    this.matIconRegistry.addSvgIconInNamespace('assets', 'filter-outline',
         this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/filter-outline.svg')
     );
     this.matIconRegistry.addSvgIconInNamespace('assets', 'format-list-bulleted',

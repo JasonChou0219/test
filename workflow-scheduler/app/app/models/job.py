@@ -7,15 +7,24 @@ from sqlalchemy.dialects.postgresql import JSON, UUID
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from .job import Flow  # noqa: F401
+    from .workflow import Flow  # noqa: F401
+    from .user import User  # noqa: F401
 
 
-class Flow(Base):
-    uuid = Column(UUID, primary_key=True, index=True)
-    flow = Column(JSON)
-    description = Column(String, index=True)
+class Job(Base):
+    id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
+    description = Column(String, index=True)
     created_at = Column(TIMESTAMP, index=True)
     execute_at = Column(TIMESTAMP, index=True)
-    owner_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="jobs")
+    # owner_id = Column(Integer, ForeignKey("user.id"))
+    # owner = relationship("User", back_populates="jobs")
+    owner_id = Column(Integer, index=True)
+    owner = Column(String, index=True)
+
+    # workflow_id = Column(Integer, ForeignKey("workflow.id"))
+    workflow_id = Column(Integer, index=True)
+    # workflow = relationship("Workflow", back_populates="jobs")
+    # workflow_id = Column(Integer, index=True)
+    workflow_type = Column(String, index=True)
+    workflow_execute_at = Column(TIMESTAMP, index=True)

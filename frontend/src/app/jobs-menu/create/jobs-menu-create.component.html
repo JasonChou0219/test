@@ -1,0 +1,73 @@
+<div>
+    <h2>Job Configuration</h2>
+    <form class="general">
+        <h3>General</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="jobInfo.title" name="title">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Description</mat-label>
+          <textarea matInput [(ngModel)]="jobInfo.description" name="description"></textarea>
+        </mat-form-field>
+
+        <h3>Workflow</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Select Workflow</mat-label>
+               <mat-select [(ngModel)]="jobInfo.workflow_name" name="workflow_name">
+                <mat-option *ngFor="let workflow of workflows" [value]="workflow.name">
+                    {{ workflow.name }}
+                </mat-option>
+              </mat-select>
+        </mat-form-field>
+
+        <h3>Data acquisition</h3>
+            <div class="multi-select">
+                <mat-form-field appearance="fill">
+                  <mat-label>For Service</mat-label>
+                   <mat-select>
+                    <mat-option *ngFor="let service of services" [value]="service.name">
+                        {{ service.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Select Protocol</mat-label>
+                   <mat-select disabled="isDisabled">
+                    <mat-option value="one">First option</mat-option>
+                    <mat-option value="two">Second option</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+
+        <h3>Dataflow</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Select Dataflow</mat-label>
+               <mat-select>
+                <mat-option *ngFor="let dataflow of dataflows" [value]="dataflow.title">
+                    {{ dataflow.title }}
+                </mat-option>
+              </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+              <mat-label>Select Database</mat-label>
+               <mat-select [(ngModel)]="jobInfo.database_name" name="database_name">
+                <mat-option *ngFor="let database of databases" [value]="database.title">
+                    {{ database.title }}
+                </mat-option>
+              </mat-select>
+        </mat-form-field>
+        <div class="button">
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="create()">
+                Create
+            </button>
+            <button mat-button (click)="cancel()">Cancel</button>
+        </div>
+        <div class="button">
+
+        </div>
+    </form>
+</div>

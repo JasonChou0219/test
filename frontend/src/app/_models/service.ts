@@ -25,6 +25,21 @@ export interface Service {
     dataHandlerActive: boolean;
 }
 
+export interface ServiceInfo {
+    // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
+    //  more rapidly/easily in the backend
+    uuid?: string;
+    server_uuid: string;
+    name: string;
+    type: string;
+    address: string;
+    port: number;
+    available?: boolean;
+    user?: number;
+    databaseId?: number;
+    dataHandlerActive: boolean;
+}
+
 export interface ServiceStatus {
     online: boolean;
     status: string;

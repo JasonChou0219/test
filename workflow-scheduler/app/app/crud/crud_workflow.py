@@ -4,14 +4,14 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
-from app.models.flow import Flow
-from app.schemas.flow import FlowCreate, FlowUpdate
+from app.models.workflow import Workflow
+from app.schemas.workflow import WorkflowCreate, WorkflowUpdate
 from app.api.deps import get_db_workflow_designer
 
 
-class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
+class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     def create_with_owner(
-        self, db: Session, *, obj_in: FlowCreate, owner_id: int
+        self, db: Session, *, obj_in: WorkflowCreate, owner_id: int
     ) -> Flow:
         db_designer = get_db_workflow_designer()
         obj_in_data = jsonable_encoder(obj_in)
@@ -23,14 +23,14 @@ class CRUDFlow(CRUDBase[Flow, FlowCreate, FlowUpdate]):
 
     def get_multi_by_owner(
         self, db: Session, *, owner_id: int, skip: int = 0, limit: int = 100
-    ) -> List[Flow]:
+    ) -> List[Workflow]:
         return (
             db.query(self.model)
-            .filter(Flow.owner_id == owner_id)
+            .filter(Worflow.owner_id == owner_id)
             .offset(skip)
             .limit(limit)
             .all()
         )
 
 
-job = CRUDFlow(Flow)
+job = CRUDWorkflow(Workflow)

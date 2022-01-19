@@ -55,6 +55,10 @@ import { FileSelectorComponent } from './file-selector/file-selector.component';
 
 import { NodeRedEditorComponent } from './workflow-design-menu/workflow-editor-node-red/node-red-editor/node-red-editor.component';
 
+import {JobsMenuCreateComponent} from './jobs-menu/create/jobs-menu-create.component';
+import {JobsMenuOverviewComponent} from './jobs-menu/overview/jobs-menu-overview.component';
+import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-scheduler.component';
+
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { LogViewComponent } from './log-view/log-view.component';
@@ -112,6 +116,9 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         EditWorkflowComponent,
         FileSelectorComponent,
         NodeRedEditorComponent,
+        JobsMenuCreateComponent,
+        JobsMenuOverviewComponent,
+        JobsMenuSchedulerComponent,
         // DeviceCommandComponent,
         // DeviceFeatureComponent,
         // DevicePropertyComponent,
