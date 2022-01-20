@@ -1,5 +1,4 @@
-from xml import etree
-
+from xml.etree import ElementTree
 from app.schemas import Feature, Command, CommandParameter, DataType, CommandResponse, Property, DefinedExecutionError
 
 
@@ -11,7 +10,8 @@ class FeatureParser:
         self.xml_string = xml_string
 
     def parse_xml(self):
-        root = etree.fromstring(self.xml_string)
+
+        root = ElementTree.fromstring(self.xml_string)
 
         feature = Feature()
         feature.feature_version = root.get('FeatureVersion')
@@ -133,4 +133,4 @@ class FeatureParser:
         feature.properties = feature_props_ls
         feature.errors = feature_errors
 
-        return feature
+        return {feature.identifier: feature}

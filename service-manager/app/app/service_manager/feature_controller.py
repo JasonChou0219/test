@@ -1,5 +1,5 @@
 from multiprocessing.pool import ThreadPool
-from typing import List
+from typing import List, Dict
 
 from sila2.client import SilaClient
 
@@ -8,23 +8,27 @@ from app.service_manager.featurer_parser import FeatureParser
 
 
 class FeatureController:
-    silaClient: SilaClient
-    features: List[Feature]
+    sila_client: SilaClient
+    features: Dict[str, Feature]
 
-    def __init__(self, silaClient: SilaClient):
+    def __init__(self, sila_client: SilaClient):
         feature_xml = []
-        self.silaClient = silaClient
+        self.features = {}
+        self.sila_client = sila_client
 
-        for feature_identifier in self.silaClient.SiLAService.ImplementedFeatures.get():
+        for feature_identifier in self.sila_client.SiLAService.ImplementedFeatures.get():
             feature_xml.append(feature_identifier)
 
         feature_definitions_xml = list(
-            map(lambda id: self.silaClient.SiLAService.GetFeatureDefinition(id), feature_xml))
+            map(lambda id: self.sila_client.SiLAService.GetFeatureDefinition(id), feature_xml))
 
         for xml_definition in feature_definitions_xml:
             for x in range(0, len(xml_definition)):
                 parser = FeatureParser(xml_definition[x])
-                self.features.append(parser.parse_xml())
+                self.features.update(parser.parse_xml())
+
+    def get_feature_by_identifier(self, identifier: str):
+        return self.features[identifier]
 
     def run_function(self,
                      identifier: str,
@@ -33,7 +37,7 @@ class FeatureController:
                      is_observable: bool,
                      response_identifiers: List[str] = None,
                      parameters: List = None):
-        response = (getattr(vars(self.silaClient)[identifier], function))
+        response = (getattr(vars(self.sila_client)[identifier], function))
 
         response_values = []
 
@@ -72,21 +76,12 @@ class FeatureController:
 def main():
     client = SilaClient("127.0.0.1", 50052)
 
-    features = []
+    fc = FeatureController(client)
 
-    for feature_identifier in client.SiLAService.ImplementedFeatures.get():
-        features.append(feature_identifier)
+    print(fc.get_feature_by_identifier("TimerProvider"))
+    print(fc.run_function("GreetingProvider", "StartYear", True, False))
 
-    feature_definitions = list(map(lambda id: client.SiLAService.GetFeatureDefinition(id), features))
-
-    print(feature_definitions[3][0])
-
-    my_features = []
-
-    for definition in feature_definitions:
-        for x in range(0, len(definition)):
-            my_features.append(str(parse_xml(definition[x])))
-
+    """
     pool = ThreadPool()
     # TODO from Threading, Event, Queue?
     timer = pool.apply_async(run_function, (client, 'TimerProvider', 'Countdown', False, True,
@@ -106,7 +101,7 @@ def main():
     print(f"Current DayTime {current_day_time.get()}")
 
 
-"""
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = [executor.submit(run_function, client, 'TimerProvider', 'Countdown', False, True,
                                  ["Timestamp"], [1000000, "Hello SILA"]),
