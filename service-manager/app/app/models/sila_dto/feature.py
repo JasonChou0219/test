@@ -20,7 +20,7 @@ class Feature(Base):
     maturity_level = Column(String(200))
     originator = Column(String(200))
     sila2_version = Column(String(200))
-    identifier = Column(String(200))
+    identifier = Column(String(200), index=True)
     display_name = Column(String(200))
     description = Column(String(200))
     locale = Column(String(200))
