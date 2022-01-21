@@ -39,13 +39,6 @@ class Command(BaseModel):
     error_identifiers: Optional[List[str]] = []
 
 
-class PropertyResponse(BaseModel):
-    identifier: Optional[str] = None
-    display_name: Optional[str] = None
-    description: Optional[str] = None
-    data_type: Optional[DataType] = None
-
-
 class Property(BaseModel):
     identifier: Optional[str] = None
     display_name: Optional[str] = None

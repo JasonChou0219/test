@@ -5,4 +5,4 @@ from .token import Token, TokenPayload
 from .user import User, UserCreate, UserInDB, UserUpdate
 from .workflow import Workflow, WorkflowCreate, WorkflowInDB, WorkflowUpdate
 from .job import Job, JobCreate, JobInDB, JobUpdate
-from .sila_client import Feature, PropertyResponse, Property, Command, CommandResponse, CommandParameter, DefinedExecutionError, DataType
+from .sila_client import Feature, Property, Command, CommandResponse, CommandParameter, DefinedExecutionError, DataType

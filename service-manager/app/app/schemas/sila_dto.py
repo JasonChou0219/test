@@ -10,7 +10,7 @@ class DataType(BaseModel):
 
 
 class DefinedExecutionError(BaseModel):
-    identifier:  Optional[str] = None
+    identifier: Optional[str] = None
     display_name: Optional[str] = None
     description: Optional[str] = None
 
@@ -37,13 +37,6 @@ class Command(BaseModel):
     parameters: Optional[List[CommandParameter]] = []
     responses: Optional[List[CommandResponse]] = []
     error_identifiers: Optional[List[str]] = []
-
-
-class PropertyResponse(BaseModel):
-    identifier: Optional[str] = None
-    display_name: Optional[str] = None
-    description: Optional[str] = None
-    data_type: Optional[DataType] = None
 
 
 class Property(BaseModel):

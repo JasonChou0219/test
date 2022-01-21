@@ -1,3 +1,6 @@
+import json
+from typing import List
+
 import aiohttp
 from fastapi import APIRouter
 
@@ -15,12 +18,15 @@ target_service_url = target_service_hostname + ":" \
                      + str(settings.API_V1_STR) + "/"
 
 
-@router.get("/", response_model=schemas.Feature)
-async def get_feature_definition():
-    target_route = target_service_url + "sm_functions/features/"
+@router.get("/", response_model=List[schemas.Feature])
+async def connect_to_client_and_get_features(client_ip: str, client_port: int):
+    feature_list = []
+    target_route = target_service_url + "sm_functions/connect/"
+    query_params = [('client_ip', client_ip), ('client_port', client_port)]
     async with aiohttp.ClientSession() as session:
-        async with session.get(target_route, ssl=False) as resp:
-            data = await resp.text()
-            feature = Feature.parse_raw(data)
-            return feature
+        async with session.get(target_route, ssl=False, params=query_params) as resp:
+            client_features = await resp.json()
+            for client_feature in client_features:
+                feature_list.append(Feature.parse_obj(client_feature))
+            return feature_list
 
