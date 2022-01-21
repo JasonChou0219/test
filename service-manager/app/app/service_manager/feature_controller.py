@@ -72,15 +72,6 @@ class FeatureController:
 # TODO reimplement with DB
 # def parse_datatype(xml_subtree):
 
-
-def main():
-    client = SilaClient("127.0.0.1", 50052)
-
-    fc = FeatureController(client)
-
-    print(fc.get_feature_by_identifier("TimerProvider"))
-    print(fc.run_function("GreetingProvider", "StartYear", True, False))
-
     """
     pool = ThreadPool()
     # TODO from Threading, Event, Queue?
@@ -112,6 +103,3 @@ def main():
         greeting = future[1]
         start_year = future[2]
 """
-
-if __name__ == "__main__":
-    main()

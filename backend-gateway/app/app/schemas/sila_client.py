@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from mypy.errors import List
 from pydantic import BaseModel
@@ -65,4 +65,4 @@ class Feature(BaseModel):
 class FunctionResponse(BaseModel):
     feature_identifier: Optional[str] = None
     function_identifier: Optional[str] = None
-    response: Optional[str] = None
+    response: Optional[Any] = None

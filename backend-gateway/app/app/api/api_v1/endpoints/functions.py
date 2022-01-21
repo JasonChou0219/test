@@ -2,7 +2,7 @@ import json
 from typing import List, Optional
 
 import aiohttp
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from app import schemas
 from app.core.config import settings
@@ -31,23 +31,28 @@ async def connect_to_client_and_get_features(client_ip: str, client_port: int):
             return feature_list
 
 
-@router.get("/function", response_model=schemas.FunctionResponse)
+@router.get("/function"
+            #response_model=schemas.FunctionResponse
+            )
 async def run_client_function(client_ip: str,
                               client_port: int,
                               identifier: str,
                               function: str,
                               is_property: bool,
                               is_observable: bool,
-                              response_identifiers: Optional[List[str]],
-                              parameters: Optional[List]):
+                              response_identifiers: Optional[List[str]] = Query(None),
+                              parameters: Optional[List[str]] = Query(None)):
+
     target_route = target_service_url + "sm_functions/function/"
     query_params = [('client_ip', client_ip), ('client_port', client_port), ('identifier', identifier),
                     ('function', function), ('is_property', str(is_property)), ('is_observable', str(is_observable))]
 
     if response_identifiers:
-        query_params.append(('response_identifiers', response_identifiers))
+        for response_id in response_identifiers:
+            query_params.append(('response_identifiers', response_id))
     if parameters:
-        query_params.append( ('parameters', parameters))
+        for param in parameters:
+            query_params.append(('parameters', param))
 
     async with aiohttp.ClientSession() as session:
         async with session.get(target_route, ssl=False, params=query_params) as resp:
