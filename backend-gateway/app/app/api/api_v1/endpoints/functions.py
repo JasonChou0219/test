@@ -31,9 +31,7 @@ async def connect_to_client_and_get_features(client_ip: str, client_port: int):
             return feature_list
 
 
-@router.get("/function"
-            #response_model=schemas.FunctionResponse
-            )
+@router.get("/function", response_model=schemas.FunctionResponse)
 async def run_client_function(client_ip: str,
                               client_port: int,
                               identifier: str,
