@@ -33,9 +33,9 @@ def run_function(client_ip,
                  is_property: bool,
                  is_observable: bool,
                  response_identifiers: List[str] = None,
-                 parameters: List = None):
+                 parameters: List[str] = None):
     client_identifier = get_connection_identifier(client_ip, client_port)
     feature_controller = client_feature_controllers[client_identifier]
-    feature_controller.run_function(
+    return feature_controller.run_function(
         identifier, function, is_property, is_observable, response_identifiers, parameters)
 

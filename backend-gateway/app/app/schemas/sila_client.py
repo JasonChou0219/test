@@ -10,7 +10,7 @@ class DataType(BaseModel):
 
 
 class DefinedExecutionError(BaseModel):
-    identifier:  Optional[str] = None
+    identifier: Optional[str] = None
     display_name: Optional[str] = None
     description: Optional[str] = None
 
@@ -60,3 +60,9 @@ class Feature(BaseModel):
     commands: Optional[List[Command]] = []
     properties: Optional[List[Property]] = []
     errors: Optional[List[DefinedExecutionError]] = []
+
+
+class FunctionResponse(BaseModel):
+    feature_identifier: Optional[str] = None
+    function_identifier: Optional[str] = None
+    response: Optional[str] = None
