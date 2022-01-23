@@ -9,7 +9,7 @@ interface RowData {
 }
 
 @Component({
-  selector: 'app-overview',
+  selector: 'app-data-acquisition-menu-overview',
   templateUrl: './data-acquisition-menu-overview.component.html',
   styleUrls: ['./data-acquisition-menu-overview.component.scss']
 })

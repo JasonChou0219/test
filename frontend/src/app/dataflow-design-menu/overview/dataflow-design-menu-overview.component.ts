@@ -13,7 +13,7 @@ interface RowData {
 }
 
 @Component({
-    selector: 'app-overview',
+    selector: 'app-dataflow-design-menu-overview',
     templateUrl: './dataflow-design-menu-overview.component.html',
     styleUrls: ['./dataflow-design-menu-overview.component.scss'],
 })
