@@ -14,6 +14,7 @@ import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-schedu
 import { DataflowDesignMenuOverviewComponent } from "@app/dataflow-design-menu/overview/dataflow-design-menu-overview.component";
 import { KnimeComponent} from "@app/dataflow-design-menu/knime/knime.component";
 import { DataAcquisitionMenuOverviewComponent } from '@app/data-acquisition-menu/overview/data-acquisition-menu-overview.component';
+import { DataAcquisitionMenuAddDatabaseComponent } from '@app/data-acquisition-menu/add-database/data-acquisition-menu-add-database.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -75,6 +76,10 @@ const routes: Routes = [
             {
                 path: 'data-acquisition',
                 component: DataAcquisitionMenuOverviewComponent
+            },
+            {
+                path: 'databases/create',
+                component: DataAcquisitionMenuAddDatabaseComponent
             },
 
         ]

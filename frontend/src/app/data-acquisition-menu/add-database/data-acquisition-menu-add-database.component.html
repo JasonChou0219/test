@@ -1,0 +1,52 @@
+<div class="page">
+    <h1>Database creation</h1>
+    <form class="general">
+        <mat-form-field appearance="fill">
+            <mat-label>Title</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.title" name="title">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <textarea matInput [(ngModel)]="databaseInfo.description" name="description"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.name" name="name">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Username</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.username" name="username">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Password</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.password" name="password">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Address</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.address" name="address">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Port</mat-label>
+            <input matInput [(ngModel)]="databaseInfo.port" name="port">
+        </mat-form-field>
+
+        <div class="button">
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="create()">
+                Create
+            </button>
+            <button mat-button (click)="cancel()">Cancel</button>
+        </div>
+        <div class="button">
+
+        </div>
+    </form>
+</div>
