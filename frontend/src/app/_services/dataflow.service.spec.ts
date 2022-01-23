@@ -3,14 +3,14 @@ import { TestBed } from '@angular/core/testing'
 import { DataflowService } from './dataflow.service'
 
 describe('DataflowService', () => {
-    let dataflow: DataflowService
+    let service: DataflowService
 
     beforeEach(() => {
         TestBed.configureTestingModule({})
-        dataflow = TestBed.inject(DataflowService)
+        service = TestBed.inject(DataflowService)
     })
 
     it('should be created', () => {
-        expect(dataflow).toBeTruthy()
+        expect(service).toBeTruthy()
     })
 })
