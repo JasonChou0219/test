@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class DatabaseBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
+    name: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
     address: Optional[str] = None
@@ -18,6 +19,7 @@ class DatabaseBase(BaseModel):
 # Properties to receive on item creation
 class DatabaseCreate(DatabaseBase):
     title: str
+    name: str
     username: str
     password: str
     address: str
@@ -33,6 +35,7 @@ class DatabaseUpdate(DatabaseBase):
 class DatabaseInDBBase(DatabaseBase):
     id: int
     title: str
+    name: str
     username: str
     password: str
     address: str
