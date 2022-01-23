@@ -60,7 +60,7 @@ export class JobsMenuCreateComponent implements OnInit {
     this.services = mockServiceInfoList
     this.workflows = mockWorkflowInfoList
     this.dataflows = mockDataflowInfoList
-    this.databases = mockDatabaseInfoList
+    //this.databases = mockDatabaseInfoList
   }
 
 }

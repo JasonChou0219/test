@@ -124,3 +124,18 @@ def delete_database(
     database = crud.database.remove(db=db, route=target_route, id=id, current_user=current_user)
     database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
+
+
+@router.get("/{id}/status", response_model=schemas.DatabaseStatus)
+def read_database_status(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: int,
+        current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get database by ID.
+    """
+    target_route = f"{target_service_url}databases/{id}/status"
+    status = crud.database.get_status(db=db, route=target_route, id=id, current_user=current_user).json()
+    return status

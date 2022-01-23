@@ -5,3 +5,4 @@ export * from './service.service';
 export * from './workflow-editor.service';
 export * from './icon.service'
 export * from './dataflow.service';
+export * from './database.service';

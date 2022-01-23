@@ -46,7 +46,7 @@
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink="/dashboard/data-acquisition" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
                         <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:database-plus-outline"></mat-icon>Add database</a>
                         <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-outline"></mat-icon>Create protocol</a>
                     </mat-nav-list>

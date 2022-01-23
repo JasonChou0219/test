@@ -13,6 +13,7 @@ import {JobsMenuOverviewComponent} from './jobs-menu/overview/jobs-menu-overview
 import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-scheduler.component';
 import { DataflowDesignMenuOverviewComponent } from "@app/dataflow-design-menu/overview/dataflow-design-menu-overview.component";
 import { KnimeComponent} from "@app/dataflow-design-menu/knime/knime.component";
+import { DataAcquisitionMenuOverviewComponent } from '@app/data-acquisition-menu/overview/data-acquisition-menu-overview.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -70,6 +71,10 @@ const routes: Routes = [
             {
                 path: 'knime',
                 component: KnimeComponent
+            },
+            {
+                path: 'data-acquisition',
+                component: DataAcquisitionMenuOverviewComponent
             },
 
         ]

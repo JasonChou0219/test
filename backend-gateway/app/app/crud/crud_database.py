@@ -8,6 +8,7 @@ from app.crud.base_rerouting import CRUDRerouteBase
 from app.models.database import Database
 from app.models.user import User
 from app.schemas.database import DatabaseCreate, DatabaseUpdate
+from app.schemas.database_status import DatabaseStatus
 
 
 class CRUDDatabase(CRUDRerouteBase[Database, DatabaseCreate, DatabaseUpdate]):
@@ -26,6 +27,14 @@ class CRUDDatabase(CRUDRerouteBase[Database, DatabaseCreate, DatabaseUpdate]):
     ) -> List[Database]:
         user_dict = jsonable_encoder(current_user)
         response = get(route, params=dict({'skip': skip, 'limit': limit}, **user_dict))
+        return response
+
+    @staticmethod
+    def get_status(
+            db: Session, *, route: str, id: int,  current_user: User
+    ) -> DatabaseStatus:
+        user_dict = jsonable_encoder(current_user)
+        response = get(route, params=dict({'id': id}, **user_dict))
         return response
 
 

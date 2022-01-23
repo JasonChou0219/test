@@ -119,3 +119,18 @@ def delete_database(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     database = crud.database.remove(db=db, id=id)
     return database
+
+
+@router.get("/{id}/status", response_model=schemas.DatabaseStatus)
+def read_database_status(
+        *,
+        request: Request,
+        db: Session = Depends(deps.get_db),
+        id: int,
+) -> Any:
+    """
+    Get database status by database ID.
+    """
+    database = read_database(request=request, db=db, id=id)
+
+    return schemas.DatabaseStatus(online=True, status='some_status')
