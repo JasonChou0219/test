@@ -11,8 +11,8 @@ class DatabaseBase(BaseModel):
     password: Optional[str] = None
     address: Optional[str] = None
     port: Optional[int] = None
-    owner: str
-    owner_id: Optional[int]
+    owner: Optional[str] = None
+    owner_id: Optional[int] = None
 
 
 # Properties to receive on item creation
@@ -22,6 +22,8 @@ class DatabaseCreate(DatabaseBase):
     password: str
     address: str
     port: int
+    owner: str
+    owner_id: int
 
 
 # Properties to receive on item update
@@ -37,6 +39,7 @@ class DatabaseInDBBase(DatabaseBase):
     password: str
     address: str
     port: int
+    owner: str
     owner_id: int
 
     class Config:
