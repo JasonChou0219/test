@@ -31,6 +31,7 @@ export class DataAcquisitionMenuOverviewComponent implements OnInit {
     @ViewChild(MatTable) table: MatTable<RowData>;
     constructor(
         public databaseService: DatabaseService,
+        private router: Router,
     ) {}
 
     async getDatabases() {
@@ -59,6 +60,10 @@ export class DataAcquisitionMenuOverviewComponent implements OnInit {
     async delete(i: number) {
         await this.databaseService.deleteDatabase(this.dataSource[i].database.id);
         await this.refresh();
+    }
+
+    edit(i: number) {
+        this.router.navigate(['/dashboard/databases/' + this.dataSource[i].database.id + '/update/']);
     }
 
     async refresh() {

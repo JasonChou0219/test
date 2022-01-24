@@ -15,6 +15,7 @@ import { DataflowDesignMenuOverviewComponent } from "@app/dataflow-design-menu/o
 import { KnimeComponent} from "@app/dataflow-design-menu/knime/knime.component";
 import { DataAcquisitionMenuOverviewComponent } from '@app/data-acquisition-menu/overview/data-acquisition-menu-overview.component';
 import { DataAcquisitionMenuAddDatabaseComponent } from '@app/data-acquisition-menu/add-database/data-acquisition-menu-add-database.component';
+import { DataAcquisitionMenuUpdateDatabaseComponent } from '@app/data-acquisition-menu/update-database/data-acquisition-menu-update-database.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -80,6 +81,10 @@ const routes: Routes = [
             {
                 path: 'databases/create',
                 component: DataAcquisitionMenuAddDatabaseComponent
+            },
+            {
+                path: 'databases/:id/update',
+                component: DataAcquisitionMenuUpdateDatabaseComponent
             },
 
         ]

@@ -63,6 +63,7 @@ import { DataflowDesignMenuOverviewComponent } from './dataflow-design-menu/over
 
 import { DataAcquisitionMenuOverviewComponent } from './data-acquisition-menu/overview/data-acquisition-menu-overview.component';
 import { DataAcquisitionMenuAddDatabaseComponent } from './data-acquisition-menu/add-database/data-acquisition-menu-add-database.component';
+import { DataAcquisitionMenuUpdateDatabaseComponent } from '@app/data-acquisition-menu/update-database/data-acquisition-menu-update-database.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -141,6 +142,7 @@ import { MatSortModule } from '@angular/material/sort';
         KnimeComponent,
         DataAcquisitionMenuOverviewComponent,
         DataAcquisitionMenuAddDatabaseComponent,
+        DataAcquisitionMenuUpdateDatabaseComponent,
     ],
     imports: [
         BrowserModule,
