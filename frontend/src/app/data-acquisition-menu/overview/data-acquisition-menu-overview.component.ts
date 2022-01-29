@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTable } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import { DatabaseService } from '@app/_services';
 import { Database, DatabaseStatus } from '@app/_models';
 import { Router } from '@angular/router';
+import { MatSort } from '@angular/material/sort';
 
 interface RowData {
     database: Database;
@@ -15,7 +16,7 @@ interface RowData {
   styleUrls: ['./data-acquisition-menu-overview.component.scss']
 })
 export class DataAcquisitionMenuOverviewComponent implements OnInit {
-    dataSource: RowData[] = [];
+    dataSource: MatTableDataSource<RowData>;
     tableColumns = [
         'title',
         'description',
@@ -29,7 +30,7 @@ export class DataAcquisitionMenuOverviewComponent implements OnInit {
         'edit',
     ];
 
-    @ViewChild(MatTable) table: MatTable<RowData>;
+    @ViewChild(MatSort) sort: MatSort;
     constructor(
         public databaseService: DatabaseService,
         private router: Router,
@@ -44,16 +45,22 @@ export class DataAcquisitionMenuOverviewComponent implements OnInit {
                 status: {online: false, status: ''}
             });
         }
-        this.dataSource = data;
-        this.table.renderRows();
 
-        for (let i = 0; i < this.dataSource.length; i++) {
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+                case 'title': return item.database.title;
+                default: return item[property];
+            }
+        };
+        this.dataSource.sort = this.sort;
+
+        for (let i = 0; i < this.dataSource.data.length; i++) {
             const promise = this.databaseService.getDatabaseStatus(
-                this.dataSource[i].database.id
+                this.dataSource.data[i].database.id
             );
             promise.then((status) => {
-                this.dataSource[i].status = status;
-                this.table.renderRows();
+                this.dataSource.data[i].status = status;
             });
         }
     }
