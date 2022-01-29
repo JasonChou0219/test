@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { DatabaseService } from '@app/_services';
 import { Database, DatabaseStatus } from '@app/_models';
+import { Router } from '@angular/router';
 
 interface RowData {
     database: Database;
