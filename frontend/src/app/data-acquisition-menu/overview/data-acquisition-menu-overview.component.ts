@@ -66,12 +66,12 @@ export class DataAcquisitionMenuOverviewComponent implements OnInit {
     }
 
     async delete(i: number) {
-        await this.databaseService.deleteDatabase(this.dataSource[i].database.id);
+        await this.databaseService.deleteDatabase(this.dataSource.data[i].database.id);
         await this.refresh();
     }
 
     edit(i: number) {
-        this.router.navigate(['/dashboard/databases/' + this.dataSource[i].database.id + '/update/']);
+        this.router.navigate(['/dashboard/databases/' + this.dataSource.data[i].database.id + '/update/']);
     }
 
     async refresh() {
