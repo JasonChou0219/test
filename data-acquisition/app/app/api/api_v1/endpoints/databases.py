@@ -3,6 +3,9 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import Request
+from requests.exceptions import ConnectionError
+from influxdb import InfluxDBClient
+from influxdb.exceptions import InfluxDBClientError
 
 from app import crud, models, schemas
 from app.api import deps
@@ -45,6 +48,9 @@ def create_database(
     """
     Create new database.
     """
+
+    check_database_connection_details_and_credentials(database_in)
+
     database = crud.database.create(db=db, obj_in=database_in)
     return database
 
@@ -70,6 +76,9 @@ def update_database(
         raise HTTPException(status_code=404, detail="Database not found")
     if not user.is_superuser and (database.owner_id != user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    check_database_connection_details_and_credentials(database_in)
+
     database = crud.database.update(db=db, db_obj=database, obj_in=database_in)
     return database
 
@@ -133,4 +142,32 @@ def read_database_status(
     """
     database = read_database(request=request, db=db, id=id)
 
-    return schemas.DatabaseStatus(online=True, status='some_status')
+    client = InfluxDBClient(host=database.address, port=database.port, username=database.username,
+                            password=database.password, database=database.name, timeout=0.5)
+    try:
+        # Attempt to retrieve the list of users, which checks both that the connection details are correct
+        # and that the user has admin privileges
+        client.get_list_users()
+    # Timeout, meaning the database cannot be reached
+    except ConnectionError:
+        return schemas.DatabaseStatus(online=False, status='Database not found for connection details')
+    # User must be admin
+    except InfluxDBClientError:
+        return schemas.DatabaseStatus(online=False, status='Not enough permissions')
+
+    return schemas.DatabaseStatus(online=True, status='Ready')
+
+
+def check_database_connection_details_and_credentials(database: schemas.Database) -> None:
+    client = InfluxDBClient(host=database.address, port=database.port, username=database.username,
+                            password=database.password, database=database.name, timeout=0.5)
+    try:
+        # Attempt to retrieve the list of users, which checks both that the connection details are correct
+        # and that the user has admin privileges
+        client.get_list_users()
+    # Timeout, meaning the database cannot be reached
+    except ConnectionError:
+        raise HTTPException(status_code=404, detail="Database not found for connection details")
+    # User must be admin
+    except InfluxDBClientError:
+        raise HTTPException(status_code=401, detail="Not enough permissions")
