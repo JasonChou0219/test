@@ -3,7 +3,7 @@
     <form class="general">
         <mat-form-field appearance="fill">
             <mat-label>Title</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.title" name="title">
+            <input matInput [(ngModel)]="databaseInfo.title" name="title" required>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
@@ -13,27 +13,27 @@
 
         <mat-form-field appearance="fill">
             <mat-label>Name</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.name" name="name">
+            <input matInput [(ngModel)]="databaseInfo.name" name="name" required>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
             <mat-label>Username</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.username" name="username">
+            <input matInput [(ngModel)]="databaseInfo.username" name="username" required>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
             <mat-label>Password</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.password" name="password">
+            <input matInput [(ngModel)]="databaseInfo.password" name="password" required>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
             <mat-label>Address</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.address" name="address">
+            <input matInput [(ngModel)]="databaseInfo.address" name="address" required>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
             <mat-label>Port</mat-label>
-            <input matInput [(ngModel)]="databaseInfo.port" name="port">
+            <input matInput [(ngModel)]="databaseInfo.port" name="port" pattern="\d*" required>
         </mat-form-field>
 
         <div class="button">
