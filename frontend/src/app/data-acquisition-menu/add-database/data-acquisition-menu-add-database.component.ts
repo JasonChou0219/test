@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatabaseInfo } from '@app/_models';
 import { DatabaseService } from '@app/_services';
 import { Router } from '@angular/router';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-data-acquisition-menu-add-database',
