@@ -14,3 +14,5 @@ class ServiceInfo(BaseModel):
     server_name: Optional[str] = None
     description: Optional[str] = None
     feature_names: Optional[List[str]] = []
+    online: Optional[bool]
+    favourite: Optional[bool]

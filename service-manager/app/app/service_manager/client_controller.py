@@ -31,6 +31,9 @@ def discover_clients():
         sila_service.type = client.SiLAService.ServerType.get()
         sila_service.version = client.SiLAService.ServerVersion.get()
 
+        sila_service.online = True
+        sila_service.favourite = False
+
         # sila_service.parsed_ip_address = client.SiLAService.get()
         # sila_service.port = 0
 

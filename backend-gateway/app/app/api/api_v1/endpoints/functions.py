@@ -1,4 +1,3 @@
-import json
 from typing import List, Optional
 
 import aiohttp
@@ -6,7 +5,6 @@ from fastapi import APIRouter, Query
 
 from app import schemas
 from app.core.config import settings
-from app.schemas import Feature
 
 router = APIRouter()
 target_service_hostname = "http://sila2_manager_service-manager_1"  # -> to env var
