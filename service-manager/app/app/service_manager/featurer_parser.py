@@ -2,14 +2,14 @@ from xml.etree import ElementTree
 from app.schemas import Feature, Command, CommandParameter, DataType, CommandResponse, Property, DefinedExecutionError
 
 
-class FeatureParser:
+class ClientFeatureParser:
+    xml_string: str
 
-    xml_string:str
-
-    def __init__(self, xml_string:str):
+    def __init__(self, xml_string: str):
         self.xml_string = xml_string
 
     def parse_xml(self):
+        print(self.xml_string)
 
         root = ElementTree.fromstring(self.xml_string)
 
