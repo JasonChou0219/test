@@ -18,31 +18,45 @@ target_service_url = target_service_hostname + ":" \
                      + str(settings.API_V1_STR) + "/"
 
 
-@router.get("/", response_model=List[schemas.Feature])
+@router.get("/connect")
 async def connect_to_client_and_get_features(client_ip: str, client_port: int):
-    feature_list = []
     target_route = target_service_url + "sm_functions/connect/"
     query_params = [('client_ip', client_ip), ('client_port', client_port)]
     async with aiohttp.ClientSession() as session:
         async with session.get(target_route, ssl=False, params=query_params) as resp:
-            client_features = await resp.json()
-            for client_feature in client_features:
-                feature_list.append(Feature.parse_obj(client_feature))
-            return feature_list
+            response = await resp.json()
+            return response
+
+
+@router.get("/discover", response_model=List[schemas.ServiceInfo])
+async def connect_to_client_and_get_features():
+    target_route = target_service_url + "sm_functions/discover/"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(target_route, ssl=False) as resp:
+            response = await resp.json()
+            return response
+
+
+@router.get("/browse_features", response_model=List[schemas.Feature])
+async def connect_to_client_and_get_features(service_uuid: str):
+    target_route = target_service_url + "sm_functions/browse_features/"
+    query_params = [('service_uuid', service_uuid)]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(target_route, ssl=False, params=query_params) as resp:
+            response = await resp.json()
+            return response
 
 
 @router.get("/function", response_model=schemas.FunctionResponse)
-async def run_client_function(client_ip: str,
-                              client_port: int,
+async def run_client_function(service_uuid: str,
                               identifier: str,
                               function: str,
                               is_property: bool,
                               is_observable: bool,
                               response_identifiers: Optional[List[str]] = Query(None),
                               parameters: Optional[List[str]] = Query(None)):
-
     target_route = target_service_url + "sm_functions/function/"
-    query_params = [('client_ip', client_ip), ('client_port', client_port), ('identifier', identifier),
+    query_params = [('service_uuid', service_uuid), ('identifier', identifier),
                     ('function', function), ('is_property', str(is_property)), ('is_observable', str(is_observable))]
 
     if response_identifiers:

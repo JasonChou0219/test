@@ -21,12 +21,12 @@ def mdns_discover():
 
 
 @router.get("/browse_features", response_model=List[schemas.Feature])
-def browse_features(serveruuid: str):
-    return client_controller.discover_clients()
+def browse_features(service_uuid: str):
+    return client_controller.browse_features(service_uuid)
 
 
 @router.get("/function", response_model=schemas.FunctionResponse)
-def run_function(service_uuid:str,
+def run_function(service_uuid: str,
                  identifier: str,
                  function: str,
                  is_property: bool,
