@@ -25,7 +25,7 @@ def browse_features(service_uuid: str):
     return client_controller.browse_features(service_uuid)
 
 
-@router.get("/function", response_model=schemas.FunctionResponse)
+@router.get("/unobservable", response_model=schemas.FunctionResponse)
 def run_function(service_uuid: str,
                  identifier: str,
                  function: str,

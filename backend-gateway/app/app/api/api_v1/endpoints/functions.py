@@ -47,7 +47,7 @@ async def connect_to_client_and_get_features(service_uuid: str):
             return response
 
 
-@router.get("/function", response_model=schemas.FunctionResponse)
+@router.get("/unobservable", response_model=schemas.FunctionResponse)
 async def run_client_function(service_uuid: str,
                               identifier: str,
                               function: str,
@@ -55,7 +55,7 @@ async def run_client_function(service_uuid: str,
                               is_observable: bool,
                               response_identifiers: Optional[List[str]] = Query(None),
                               parameters: Optional[List[str]] = Query(None)):
-    target_route = target_service_url + "sm_functions/function/"
+    target_route = target_service_url + "sm_functions/unobservable/"
     query_params = [('service_uuid', service_uuid), ('identifier', identifier),
                     ('function', function), ('is_property', str(is_property)), ('is_observable', str(is_observable))]
 
