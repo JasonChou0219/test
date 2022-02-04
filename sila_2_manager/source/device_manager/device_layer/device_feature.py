@@ -115,6 +115,7 @@ class Feature:
     maturity_level: str
     locale: str
     feature_version: str
+
     feature_version_minor: int
     feature_version_major: int
 
