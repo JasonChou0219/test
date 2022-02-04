@@ -6,21 +6,19 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.workflow import Workflow
 from app.schemas.workflow import WorkflowCreate, WorkflowUpdate
-from app.api.deps import get_db_workflow_designer
+from app.api.deps import get_db_workflow_designer_node_red
 
 
 class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     def create_with_owner(
         self, db: Session, *, obj_in: WorkflowCreate, owner_id: int
-    ) -> Flow:
-        db_designer = get_db_workflow_designer()
-
+    ) -> Workflow:
+        # db_designer = get_db_workflow_designer()
         ############ Todo: Merge relict. Check if this is necessary!
-        obj_in.flow = flow.flow
+        # obj_in.workflow = workflow.workflow
         ############
-
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data, owner_id=owner_id)
+        obj_in_data = obj_in
+        db_obj = self.model(**obj_in_data.json(), job_id=owner_id)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -31,14 +29,16 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     ) -> List[Workflow]:
         return (
             db.query(self.model)
-            .filter(Worflow.owner_id == owner_id)
+            .filter(Workflow.job_id == owner_id)
             .offset(skip)
             .limit(limit)
             .all()
         )
 
-class Designer(CRUDBase[FlowBase, FlowCreate, FlowUpdate]):
+
+class Designer(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     pass
 
-job = CRUDWorkflow(Workflow)
-flow_designer = Designer(Flow)
+
+workflow = CRUDWorkflow(Workflow)
+flow_designer = Designer(Workflow)

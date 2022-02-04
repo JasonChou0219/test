@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SERVER_NAME: str
     SERVER_HOST: AnyHttpUrl
+    WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT: int
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
@@ -55,9 +56,9 @@ class Settings(BaseSettings):
 
     POSTGRES_SERVER_WORKFLOW_DESIGNER_PYTHON: str
     POSTGRES_DB_WORKFLOW_DESIGNER_PYTHON: str
-    SQLALCHEMY_DESIGNER_DATABASE_URI: Optional[PostgresDsn] = None
+    SQLALCHEMY_DESIGNER_PYTHON_DATABASE_URI: Optional[PostgresDsn] = None
 
-    @validator("SQLALCHEMY_DESIGNER_DATABASE_URI", pre=True)
+    @validator("SQLALCHEMY_DESIGNER_PYTHON_DATABASE_URI", pre=True)
     def assemble_db_connection_designer_python(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
@@ -71,9 +72,9 @@ class Settings(BaseSettings):
 
     POSTGRES_SERVER_WORKFLOW_DESIGNER_NODE_RED: str
     POSTGRES_DB_WORKFLOW_DESIGNER_NODE_RED: str
-    SQLALCHEMY_DESIGNER_DATABASE_URI: Optional[PostgresDsn] = None
+    SQLALCHEMY_DESIGNER_NODE_RED_DATABASE_URI: Optional[PostgresDsn] = None
 
-    @validator("SQLALCHEMY_DESIGNER_DATABASE_URI", pre=True)
+    @validator("SQLALCHEMY_DESIGNER_NODE_RED_DATABASE_URI", pre=True)
     def assemble_db_connection_designer_node_red(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v

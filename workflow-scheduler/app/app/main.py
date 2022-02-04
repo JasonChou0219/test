@@ -32,4 +32,4 @@ if settings.BACKEND_GATEWAY_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-threading.Thread(target=scheduler).start()
+# threading.Thread(target=scheduler).start()

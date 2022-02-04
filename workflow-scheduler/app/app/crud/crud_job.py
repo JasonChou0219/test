@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.job import Job
 from app.schemas.job import JobCreate, JobUpdate
-from app.api.deps import get_db_workflow_designer
+from app.api.deps import get_db_workflow_designer_node_red
 from app import crud
 
 
@@ -20,7 +20,8 @@ class CRUDJob(CRUDBase[Job, JobCreate, JobUpdate]):
 
         ############ Todo: Merge relict. Move to endpoint!
         # Get connection to Workflow Designer Database
-        db_designer = get_db_workflow_designer()
+        print('Here is obj_in:', obj_in)
+        db_designer = get_db_workflow_designer_node_red()
         _ = next(db_designer)
         # Retrieve flow with specified ID
         flow = crud.flow.get(db=_, id=obj_in.flow_id)

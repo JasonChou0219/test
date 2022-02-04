@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from .workflow import Workflow  # noqa: F401
     from .service import Service  # noqa: F401
     ######### Todo: Merge relict. Replace flow with workflow
-    from .flow import Flow
 
 
 class User(Base):
@@ -21,12 +20,12 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
-    items = relationship("Item", back_populates="owner")
+    # items = relationship("Item", back_populates="owner")
     # jobs = relationship("Job", back_populates="owner")
-    workflows = relationship("Workflow", back_populates="owner")
+    # workflows = relationship("Workflow", back_populates="owner")
 
     ####### Todo: Merge relict. Replace flow with workflow
     # flows = relationship("Flow", back_populates="owner")
     #######
 
-    services = relationship("Service", back_populates="owner")
+    # services = relationship("Service", back_populates="owner")

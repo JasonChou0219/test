@@ -9,13 +9,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_flow_container(job_flow: Json):
-    container = __start_container()
+def create_node_red_executor_container(job_flow: Json):
+    container = __start_node_red_executor_container()
     # time.sleep(5)
-    __push_workflow_to_container(job_flow, container)
+    __push_workflow_to_node_red_container(job_flow, container)
     return container
 
-def __start_container() -> Container:
+
+def __start_node_red_executor_container() -> Container:
     client = docker.from_env()
     container = client.containers.run('zechlin/node-red-executor', detach=True, network='sila2_manager_default')
     logger.info(f'Container {container.attrs["Name"]} created')
@@ -26,7 +27,7 @@ def __start_container() -> Container:
     return container
 
 
-def __push_workflow_to_container(flow, container: Container):
+def __push_workflow_to_node_red_container(flow, container: Container):
     container.reload()
     ip = container.attrs['NetworkSettings']['Networks']['sila2_manager_default']['IPAddress']
     # Localhost only for non-docker testing
