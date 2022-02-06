@@ -82,6 +82,9 @@ def update_database(
 
     check_database_connection_details_and_credentials(database_in)
 
+    database_in.owner_id = user.id
+    database_in.owner = user.email
+
     database = crud.database.update(db=db, db_obj=database, obj_in=database_in)
     return database
 
