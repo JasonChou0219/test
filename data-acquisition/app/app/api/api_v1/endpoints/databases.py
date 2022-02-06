@@ -48,8 +48,13 @@ def create_database(
     """
     Create new database.
     """
-
     check_database_connection_details_and_credentials(database_in)
+
+    query_params = dict(request.query_params.items())
+    user = models.User(**query_params)
+
+    database_in.owner_id = user.id
+    database_in.owner = user.email
 
     database = crud.database.create(db=db, obj_in=database_in)
     return database

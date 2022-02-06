@@ -51,8 +51,6 @@ def create_database(
     Create new database.
     """
     target_route = f"{target_service_url}databases/"
-    database_in.owner = current_user.email
-    database_in.owner_id = current_user.id
     database = crud.database.create_with_owner(db=db, route=target_route, obj_in=database_in, current_user=current_user)
 
 #    For future reference, if intending to simply forward the response from the service

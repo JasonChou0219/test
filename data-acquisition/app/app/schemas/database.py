@@ -24,8 +24,6 @@ class DatabaseCreate(DatabaseBase):
     password: str
     address: str
     port: int
-    owner: str
-    owner_id: int
 
 
 # Properties to receive on item update
