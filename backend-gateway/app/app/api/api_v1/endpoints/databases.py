@@ -53,6 +53,19 @@ def create_database(
     database_in.owner = current_user.email
     database_in.owner_id = current_user.id
     database = crud.database.create_with_owner(db=db, route=target_route, obj_in=database_in, current_user=current_user)
+
+#    For future reference, if intending to simply forward the response from the service
+#    response = Response(content=database.content,
+#                 status_code=database.status_code,
+#                 headers=database.headers,
+#                 media_type="application/json")
+#    return response
+
+    if not database:
+        raise HTTPException(status_code=database.status_code,
+                            detail=database.json()['detail'],
+                            headers=database.headers)
+
     database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
 
@@ -70,14 +83,21 @@ def update_database(
     """
     target_route = f"{target_service_url}databases/{id}"
     database = crud.database.get(db=db, route=target_route, id=id, current_user=current_user)
+
     if not database:
-        raise HTTPException(status_code=404, detail="Database not found")
-    else:
-        database = parse_obj_as(schemas.DatabaseInDB, database.json())
-        if not crud.user.is_superuser(current_user) and (database.owner_id != current_user.id):
-            raise HTTPException(status_code=400, detail="Not enough permissions")
+        raise HTTPException(status_code=database.status_code,
+                            detail=database.json()['detail'],
+                            headers=database.headers)
+
+    database = parse_obj_as(schemas.DatabaseInDB, database.json())
     database = crud.database.update(db=db, route=target_route, db_obj=database,
                                     obj_in=database_in, current_user=current_user)
+
+    if not database:
+        raise HTTPException(status_code=database.status_code,
+                            detail=database.json()['detail'],
+                            headers=database.headers)
+
     database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
 
@@ -95,11 +115,10 @@ def read_database(
     target_route = f"{target_service_url}databases/{id}"
     database = crud.database.get(db=db, route=target_route, id=id, current_user=current_user)
     if not database:
-        raise HTTPException(status_code=404, detail="Database not found")
-    else:
-        database = parse_obj_as(schemas.DatabaseInDB, database.json())
-        if not crud.user.is_superuser(current_user) and (database.owner_id != current_user.id):
-            raise HTTPException(status_code=400, detail="Not enough permissions")
+        raise HTTPException(status_code=database.status_code,
+                            detail=database.json()['detail'],
+                            headers=database.headers)
+    database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
 
 
@@ -114,14 +133,14 @@ def delete_database(
     Delete a database.
     """
     target_route = f"{target_service_url}databases/{id}"
-    database = crud.database.get(db=db, route=target_route, id=id, current_user=current_user)
-    if not database:
-        raise HTTPException(status_code=404, detail="Database not found")
-    else:
-        database = parse_obj_as(schemas.DatabaseInDB, database.json())
-        if not crud.user.is_superuser(current_user) and (database.owner_id != current_user.id):
-            raise HTTPException(status_code=400, detail="Not enough permissions")
+
     database = crud.database.remove(db=db, route=target_route, id=id, current_user=current_user)
+
+    if not database:
+        raise HTTPException(status_code=database.status_code,
+                            detail=database.json()['detail'],
+                            headers=database.headers)
+
     database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
 
@@ -137,5 +156,13 @@ def read_database_status(
     Get database by ID.
     """
     target_route = f"{target_service_url}databases/{id}/status"
-    status = crud.database.get_status(db=db, route=target_route, id=id, current_user=current_user).json()
+    status = crud.database.get_status(db=db, route=target_route, id=id, current_user=current_user)
+
+    if not status:
+        raise HTTPException(status_code=status.status_code,
+                            detail=status.json()['detail'],
+                            headers=status.headers)
+
+    status = parse_obj_as(schemas.DatabaseStatus, status.json())
+
     return status
