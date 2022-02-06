@@ -114,10 +114,12 @@ def read_database(
     """
     target_route = f"{target_service_url}databases/{id}"
     database = crud.database.get(db=db, route=target_route, id=id, current_user=current_user)
+
     if not database:
         raise HTTPException(status_code=database.status_code,
                             detail=database.json()['detail'],
                             headers=database.headers)
+
     database = parse_obj_as(schemas.DatabaseInDB, database.json())
     return database
 
@@ -133,7 +135,6 @@ def delete_database(
     Delete a database.
     """
     target_route = f"{target_service_url}databases/{id}"
-
     database = crud.database.remove(db=db, route=target_route, id=id, current_user=current_user)
 
     if not database:
@@ -164,5 +165,4 @@ def read_database_status(
                             headers=status.headers)
 
     status = parse_obj_as(schemas.DatabaseStatus, status.json())
-
     return status
