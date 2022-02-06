@@ -29,14 +29,15 @@ def read_databases(
     Retrieve databases.
     """
     target_route = f"{target_service_url}databases/"
-    if crud.user.is_superuser(current_user):
-        databases = crud.database.get_multi(db, route=target_route, skip=skip, limit=limit, current_user=current_user)
-    else:
-        databases = crud.database.get_multi_by_owner(
-            db=db, route=target_route, current_user=current_user, skip=skip, limit=limit
-        )
-    database = parse_obj_as(List[schemas.DatabaseInDB], databases.json())
-    return database
+    databases = crud.database.get_multi(db, route=target_route, skip=skip, limit=limit, current_user=current_user)
+
+    if not databases:
+        raise HTTPException(status_code=databases.status_code,
+                            detail=databases.json()['detail'],
+                            headers=databases.headers)
+
+    databases = parse_obj_as(List[schemas.DatabaseInDB], databases.json())
+    return databases
 
 
 @router.post("/", response_model=schemas.Database)
