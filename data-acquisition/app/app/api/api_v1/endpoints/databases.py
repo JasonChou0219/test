@@ -72,8 +72,6 @@ def update_database(
     Update a database.
     """
     query_params = dict(request.query_params.items())
-    for key in ['id']:
-        query_params.pop(key)
     user = models.User(**query_params)
 
     database = crud.database.get(db=db, id=id)
@@ -99,8 +97,6 @@ def read_database(
     Get database by ID.
     """
     query_params = dict(request.query_params.items())
-    for key in ['id']:
-        query_params.pop(key)
     user = models.User(**query_params)
 
     database = crud.database.get(db=db, id=id)
@@ -122,8 +118,6 @@ def delete_database(
     Delete a database.
     """
     query_params = dict(request.query_params.items())
-    for key in ['id']:
-        query_params.pop(key)
     user = models.User(**query_params)
 
     database = crud.database.get(db=db, id=id)
