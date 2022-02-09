@@ -12,10 +12,10 @@ interface RowData {
 
 @Component({
   selector: 'app-data-acquisition-menu-overview',
-  templateUrl: './data-acquisition-menu-overview.component.html',
-  styleUrls: ['./data-acquisition-menu-overview.component.scss']
+  templateUrl: './databases-menu-overview.component.html',
+  styleUrls: ['./databases-menu-overview.component.scss']
 })
-export class DataAcquisitionMenuOverviewComponent implements OnInit {
+export class DatabasesMenuOverviewComponent implements OnInit {
     dataSource: MatTableDataSource<RowData>;
     tableColumns = [
         'title',

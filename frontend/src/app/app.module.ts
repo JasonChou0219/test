@@ -61,9 +61,9 @@ import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-schedu
 
 import { DataflowDesignMenuOverviewComponent } from './dataflow-design-menu/overview/dataflow-design-menu-overview.component';
 
-import { DataAcquisitionMenuOverviewComponent } from './data-acquisition-menu/overview/data-acquisition-menu-overview.component';
-import { DataAcquisitionMenuAddDatabaseComponent } from './data-acquisition-menu/add-database/data-acquisition-menu-add-database.component';
-import { DataAcquisitionMenuUpdateDatabaseComponent } from '@app/data-acquisition-menu/update-database/data-acquisition-menu-update-database.component';
+import { DatabasesMenuOverviewComponent } from './databases-menu/overview/databases-menu-overview.component';
+import { DatabasesMenuAddDatabaseComponent } from './databases-menu/add-database/databases-menu-add-database.component';
+import { DatabasesMenuUpdateDatabaseComponent } from './databases-menu/update-database/databases-menu-update-database.component';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
@@ -140,9 +140,9 @@ import { MatSortModule } from '@angular/material/sort';
         FooterBarComponent,
         DataflowDesignMenuOverviewComponent,
         KnimeComponent,
-        DataAcquisitionMenuOverviewComponent,
-        DataAcquisitionMenuAddDatabaseComponent,
-        DataAcquisitionMenuUpdateDatabaseComponent,
+        DatabasesMenuOverviewComponent,
+        DatabasesMenuAddDatabaseComponent,
+        DatabasesMenuUpdateDatabaseComponent,
     ],
     imports: [
         BrowserModule,

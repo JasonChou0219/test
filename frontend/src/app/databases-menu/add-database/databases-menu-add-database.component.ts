@@ -1,24 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseInfo } from '@app/_models';
 import { DatabaseService } from '@app/_services';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-    selector: 'app-data-acquisition-menu-update-database',
-    templateUrl: './data-acquisition-menu-update-database.component.html',
-    styleUrls: ['./data-acquisition-menu-update-database.component.scss']
+    selector: 'app-data-acquisition-menu-add-database',
+    templateUrl: './databases-menu-add-database.component.html',
+    styleUrls: ['./databases-menu-add-database.component.scss']
 })
-export class DataAcquisitionMenuUpdateDatabaseComponent implements OnInit {
+export class DatabasesMenuAddDatabaseComponent implements OnInit {
     databaseInfo: DatabaseInfo;
-    id: number;
     form: FormGroup;
     submitted = false;
 
     constructor(
         public databaseService: DatabaseService,
         private router: Router,
-        private route: ActivatedRoute,
         private formBuilder: FormBuilder,
     ) {
         this.databaseInfo = {
@@ -32,22 +30,7 @@ export class DataAcquisitionMenuUpdateDatabaseComponent implements OnInit {
         }
     }
 
-    async getDatabase() {
-        await this.databaseService.getDatabase(this.id).then(
-            (database) => this.databaseInfo = database,
-            () => this.cancel()
-        );
-
-        this.f.title.setValue(this.databaseInfo.title);
-        this.f.description.setValue(this.databaseInfo.description);
-        this.f.name.setValue(this.databaseInfo.name);
-        this.f.username.setValue(this.databaseInfo.username);
-        this.f.password.setValue(this.databaseInfo.password);
-        this.f.address.setValue(this.databaseInfo.address);
-        this.f.port.setValue(this.databaseInfo.port);
-    }
-
-    async update() {
+    async create() {
         this.submitted = true;
 
         // Stop here if form is invalid
@@ -63,7 +46,7 @@ export class DataAcquisitionMenuUpdateDatabaseComponent implements OnInit {
         this.databaseInfo.address = this.f.address.value;
         this.databaseInfo.port = this.f.port.value;
 
-        await this.databaseService.setDatabaseInfo(this.databaseInfo);
+        await this.databaseService.createDatabase(this.databaseInfo);
         this.router.navigate(['/dashboard/data-acquisition']);
     }
 
@@ -72,11 +55,6 @@ export class DataAcquisitionMenuUpdateDatabaseComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.route.params.subscribe(params => {
-            this.id = params.id;
-        })
-        this.getDatabase();
-
         this.form = this.formBuilder.group({
             title: ['', Validators.required],
             description: [''],
@@ -85,9 +63,9 @@ export class DataAcquisitionMenuUpdateDatabaseComponent implements OnInit {
             password: ['', Validators.required],
             address: ['', Validators.required],
             port: ['', [Validators.required,
-                Validators.pattern('^[0-9]*$'),
-                Validators.min(0),
-                Validators.max(65535)]]
+                        Validators.pattern('^[0-9]*$'),
+                        Validators.min(0),
+                        Validators.max(65535)]]
         });
     }
 

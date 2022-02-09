@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataAcquisitionMenuAddDatabaseComponent } from './data-acquisition-menu-add-database.component';
+import { DatabasesMenuAddDatabaseComponent } from './databases-menu-add-database.component';
 
 describe('AddDatabaseComponent', () => {
-  let component: DataAcquisitionMenuAddDatabaseComponent;
-  let fixture: ComponentFixture<DataAcquisitionMenuAddDatabaseComponent>;
+  let component: DatabasesMenuAddDatabaseComponent;
+  let fixture: ComponentFixture<DatabasesMenuAddDatabaseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DataAcquisitionMenuAddDatabaseComponent ]
+      declarations: [ DatabasesMenuAddDatabaseComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DataAcquisitionMenuAddDatabaseComponent);
+    fixture = TestBed.createComponent(DatabasesMenuAddDatabaseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
