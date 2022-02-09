@@ -64,11 +64,11 @@ export class DatabasesMenuUpdateDatabaseComponent implements OnInit {
         this.databaseInfo.port = this.f.port.value;
 
         await this.databaseService.setDatabaseInfo(this.databaseInfo);
-        this.router.navigate(['/dashboard/data-acquisition']);
+        this.router.navigate(['/dashboard/databases']);
     }
 
     cancel() {
-        this.router.navigate(['/dashboard/data-acquisition']);
+        this.router.navigate(['/dashboard/databases']);
     }
 
     ngOnInit(): void {
