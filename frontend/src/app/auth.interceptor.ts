@@ -30,7 +30,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if(request.url.startsWith("${env.apiUrl}:/assets/")){
            return next.handle(request);
         }
-        
+
         /* Used for debugging
         // Used to bypass login mechanism
         if(request.url.startsWith("http://localhost/api/v1/login")){

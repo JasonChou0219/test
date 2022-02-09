@@ -35,12 +35,11 @@ export class AccountService {
         };
         const result = this.http.post<User>(`${env.apiUrl}/api/v1/login/access-token`, body.toString(), options);
         // const result = this.http.post<User>(, body.toString(), options);
+
         return result.pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
-                console.log('hdfuiahiosfhahfaulhfalufhawfuawilfuawfu')
-                console.log(user)
                 return user;
             }));
     }
