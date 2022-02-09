@@ -21,6 +21,7 @@ if settings.BACKEND_GATEWAY_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[str(origin) for origin in settings.BACKEND_GATEWAY_CORS_ORIGINS],
+        # allow_origins=["*"],  # Allows all origins
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

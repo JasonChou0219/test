@@ -36,13 +36,21 @@ services:
     ports:
       - "5555:5555"
 
+  db-workflow-designer-node-red:
+    ports:
+      - "5432:5432"
+
+  db-workflow-scheduler:
+    ports:
+      - "6432:5432"
+
   backend-gateway:
     ports:
-      - "8888:8888"
+      - "8887:8887"
     volumes:
       - ./backend-gateway/app:/app
     environment:
-      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8887
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - PORT=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
     build:
@@ -57,6 +65,7 @@ services:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway.rule= Host(`backend-gateway.localhost`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway.rule= Host(`localhost`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
 
@@ -65,7 +74,7 @@ services:
       - ./backend-gateway/app:/app
     environment:
       - RUN=celery worker -A app.worker -l info -Q main-queue -c 1
-      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8887
       - SERVER_HOST=http://${DOMAIN?Variable not set}
     build:
       context: ./backend-gateway
@@ -96,8 +105,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager.rule= Host(`service-manager.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-service-manager.rule= Host(`service-manager.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
 
   celeryworker-service-manager:
@@ -130,6 +139,7 @@ services:
     #  - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     volumes:
       - ./workflow-scheduler/app:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:9999
       - SERVER_HOST=http://${DOMAIN?Variable not set}
@@ -146,8 +156,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler.rule= Host(`workflow-scheduler.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler.rule= Host(`workflow-scheduler.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
 
   workflow-designer-python:
@@ -171,8 +181,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python.rule= Host(`workflow-designer-python.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python.rule= Host(`workflow-designer-python.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
   data-acquisition:

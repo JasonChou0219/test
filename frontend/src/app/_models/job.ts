@@ -18,6 +18,7 @@ export interface Job {
     workflows?: Workflow[];
     dataflows?: Dataflow[];
     data_protocols?: DataProtocol[];
+    database: string;
 }
 
 export interface JobInfo {
@@ -33,6 +34,7 @@ export interface JobInfo {
     workflows?: WorkflowInfoList;
     dataflows?: DataflowInfoList;
     data_protocols?: DataProtocolInfoList;
+    database?: string;
 }
 
 export interface JobInfoList {

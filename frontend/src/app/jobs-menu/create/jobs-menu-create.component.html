@@ -14,7 +14,7 @@
         <h3>Workflow</h3>
         <mat-form-field appearance="fill">
           <mat-label>Select Workflow</mat-label>
-               <mat-select [(ngModel)]="jobInfo.workflow_name" name="workflow_name">
+               <mat-select [(ngModel)]="jobInfo.workflows" name="workflow_name">
                 <mat-option *ngFor="let workflow of workflows" [value]="workflow.name">
                     {{ workflow.name }}
                 </mat-option>
@@ -51,7 +51,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill">
               <mat-label>Select Database</mat-label>
-               <mat-select [(ngModel)]="jobInfo.database_name" name="database_name">
+               <mat-select [(ngModel)]="jobInfo.database" name="database">
                 <mat-option *ngFor="let database of databases" [value]="database.title">
                     {{ database.title }}
                 </mat-option>

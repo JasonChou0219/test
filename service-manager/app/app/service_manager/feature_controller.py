@@ -3,8 +3,8 @@ from typing import List, Dict
 
 from sila2.client import SilaClient
 
-from app.schemas.sila_dto import Feature
-from app.service_manager.featurer_parser import FeatureParser
+from app.schemas.sila_service_feature_dto import Feature
+from app.service_manager.featurer_parser import ClientFeatureParser
 
 
 class FeatureController:
@@ -24,7 +24,7 @@ class FeatureController:
 
         for xml_definition in feature_definitions_xml:
             for x in range(0, len(xml_definition)):
-                parser = FeatureParser(xml_definition[x])
+                parser = ClientFeatureParser(xml_definition[x])
                 self.features.update(parser.parse_xml())
 
     def get_feature_by_identifier(self, identifier: str):
