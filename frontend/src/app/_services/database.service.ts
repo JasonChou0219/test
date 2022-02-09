@@ -14,42 +14,42 @@ export class DatabaseService {
 
     async getDatabaseList(): Promise<DatabaseInfo[]> {
         return this.http
-            .get<DatabaseInfo[]>(`${env.apiUrl}:81/api/v1/databases/`) // TODO port in env
+            .get<DatabaseInfo[]>(`${env.apiUrl}/api/v1/databases/`)
             .pipe(map((database) => database))
             .toPromise();
     }
     async getDatabase(databaseID: number): Promise<Database> {
         return this.http
-            .get<Database>(`${env.apiUrl}:81/api/v1/databases/${databaseID}/`) // TODO port in env
+            .get<Database>(`${env.apiUrl}/api/v1/databases/${databaseID}/`)
             .toPromise();
     }
     async setDatabaseInfo(databaseInfo: DatabaseInfo) {
         return this.http
             .put(
-                `${env.apiUrl}:81/api/v1/databases/${databaseInfo.id}/`, // TODO port in env
+                `${env.apiUrl}/api/v1/databases/${databaseInfo.id}/`,
                 databaseInfo
             )
             .toPromise();
     }
     async setDatabase(database: Database) {
         return this.http
-            .put(`${env.apiUrl}:81/api/v1/databases/${database.id}/`, database) // TODO port in env
+            .put(`${env.apiUrl}/api/v1/databases/${database.id}/`, database)
             .toPromise();
     }
     async createDatabase(database: DatabaseInfo) {
         return this.http
-            .post(`${env.apiUrl}:81/api/v1/databases/`, database) // TODO port in env
+            .post(`${env.apiUrl}/api/v1/databases/`, database)
             .toPromise();
     }
     async deleteDatabase(databaseID: number) {
         return this.http
-            .delete(`${env.apiUrl}:81/api/v1/databases/${databaseID}/`) // TODO port in env
+            .delete(`${env.apiUrl}/api/v1/databases/${databaseID}/`)
             .toPromise();
     }
 
     async getDatabaseStatus(databaseID: number): Promise<DatabaseStatus> {
         return this.http
-            .get<DatabaseStatus>(`${env.apiUrl}:81/api/v1/databases/${databaseID}/status/`) // TODO port in env
+            .get<DatabaseStatus>(`${env.apiUrl}/api/v1/databases/${databaseID}/status/`)
             .toPromise();
     }
 }

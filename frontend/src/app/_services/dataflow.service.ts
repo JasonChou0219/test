@@ -13,7 +13,7 @@ export class DataflowService {
 
     async getDataflowList(): Promise<any[]> {
         return this.http
-            .get<any[]>(this.serverUrl + ':81/api/v1/dataflows/') // TODO port in env
+            .get<any[]>(this.serverUrl + '/api/v1/dataflows/')
             .pipe()
             .toPromise();
     }
