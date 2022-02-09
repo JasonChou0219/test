@@ -200,13 +200,14 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-flower-https.tls.certresolver=le
         - traefik.http.services.${STACK_NAME?Variable not set}-flower.loadbalancer.server.port=5555
 
+
   backend-gateway:
     image: '${DOCKER_IMAGE_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
     networks:
         - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
         - default
-    ports:
-      - "${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}"
+    #ports:
+     # - "${DOMAIN?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-backend-gateway
     env_file:
@@ -216,8 +217,8 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
     build:
       context: ./backend-gateway
       dockerfile: backend-gateway.dockerfile
@@ -251,7 +252,8 @@ services:
   service-manager:
     image: '${DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
     ports:
-      - "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
+      - "82:82"
+      #- "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -264,8 +266,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:80
     build:
       context: ./service-manager
       dockerfile: service-manager.dockerfile
@@ -303,15 +306,17 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     ports:
-      - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
+      - "83:83"
+      #  - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-designer-python
     env_file:
       - .env
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
+      - HOST=0.0.0.0
       - PORT=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:80
     build:
       context: ./workflow-designer-python
       dockerfile: workflow-designer-python.dockerfile
@@ -353,7 +358,8 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     ports:
-      - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
+      - "84:84"
+      #- "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-scheduler
     env_file:
@@ -363,8 +369,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:80
     build:
       context: ./workflow-scheduler
       dockerfile: workflow-scheduler.dockerfile

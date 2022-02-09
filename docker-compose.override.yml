@@ -65,6 +65,7 @@ services:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway.rule= Host(`backend-gateway.localhost`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway.rule= Host(`localhost`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-gateway-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-backend-gateway.loadbalancer.server.port=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
 
@@ -104,8 +105,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager.rule= Host(`service-manager.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-service-manager.rule= Host(`service-manager.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
 
   celeryworker-service-manager:
@@ -155,8 +156,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler.rule= Host(`workflow-scheduler.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler.rule= Host(`workflow-scheduler.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
 
   workflow-designer-python:
@@ -180,8 +181,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python.rule= Host(`workflow-designer-python.localhost`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python.rule= Host(`workflow-designer-python.localhost`)
+      #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
 networks:
