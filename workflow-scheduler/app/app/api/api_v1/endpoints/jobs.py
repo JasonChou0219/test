@@ -15,7 +15,7 @@ from app.core.config import settings
 from app.api.deps import get_db_workflow_designer_node_red
 
 router = APIRouter()
-workflow_designer_python_hostname = "http://sila2_device_manager_workflow-designer-python_1"  # -> to env var
+workflow_designer_python_hostname = "http://sila2_manager_workflow-designer-python_1"  # -> to env var
 workflow_designer_python_service_url = workflow_designer_python_hostname + ":" \
                      + str(settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT) \
                      + str(settings.API_V1_STR) + "/"
