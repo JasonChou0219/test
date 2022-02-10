@@ -46,8 +46,9 @@ export const mockServiceInfoList = [
 
 export const mockWorkflowInfo = {
     id: 1,
-    name: 'Mock Workflow 1',
+    title: 'Mock Workflow 1',
     fileName: '',
+    workflow_type: 'python',
     services: mockServiceInfoList,
     data: 'workflow data here ...',
     owner: 'Workflow Owner',
@@ -59,8 +60,9 @@ export const mockWorkflowInfoList = [
     mockWorkflowInfo,
     {
         id: 2,
-        name: 'Mock Workflow 2',
+        title: 'Mock Workflow 2',
         fileName: '',
+        workflow_type: 'python',
         services: mockServiceInfoList,
         data: 'workflow data here ...',
         owner: 'Workflow Owner',
@@ -69,8 +71,9 @@ export const mockWorkflowInfoList = [
     },
     {
         id: 3,
-        name: 'Mock Workflow 3',
+        title: 'Mock Workflow 3',
         fileName: '',
+        workflow_type: 'node-red',
         services: mockServiceInfoList,
         data: 'workflow data here ...',
         owner: 'Workflow Owner',

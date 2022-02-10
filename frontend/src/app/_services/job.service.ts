@@ -50,21 +50,21 @@ export class JobService {
             .delete(`${env.apiUrl}/api/v1/jobs/${jobID}`)
             .toPromise();
     }
-    async startJob(jobID: number) {
+    async startScheduledJob(jobID: number) {
         return this.http
             .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
                 running: true,
             })
             .toPromise();
     }
-    async stopJob(jobID: number) {
+    async stopScheduledJob(jobID: number) {
         return this.http
             .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
                 running: false,
             })
             .toPromise();
     }
-    async getJobStatus(id: number): Promise<JobStatus> {
+    async getScheduledJobStatus(id: number): Promise<JobStatus> {
         return this.http
             .get<JobStatus>(this.serverUrl + '/api/jobStatus/' + id)
             .toPromise();

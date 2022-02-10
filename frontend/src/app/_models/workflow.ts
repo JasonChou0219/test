@@ -27,3 +27,12 @@ export interface WorkflowInfoList {
     // data: WorkflowInfo[];
     data: WorkflowInfo[];
 }
+
+export interface WorkflowInfoTuple {
+    0: number;
+    1: string;
+    2: Date;
+}
+export interface WorkflowInfoTupleList {
+    0: WorkflowInfoTuple[];
+}
