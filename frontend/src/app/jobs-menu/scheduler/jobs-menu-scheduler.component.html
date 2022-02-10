@@ -3,17 +3,21 @@
         <h2>Jobs</h2>
         <div class="flex-container" style="justify-content: space-between; align-items: center; margin: 5px">
             <div class="flex-column" style="flex-basis: 66.66%; border-width: 0px">
-                <mat-form-field appearance="fill" style="width: 100%">
-                  <mat-label>Filter Jobs</mat-label>
-                  <input matInput>  <!-- [(ngModel)]="jobInfo.title" name="title" -->
-                </mat-form-field>
+                <form [formGroup]="filterInput" (ngSubmit)="onSubmit()">
+                    <mat-form-field appearance="fill" style="width: 100%">
+                        <mat-label>Filter Jobs</mat-label>
+                         <!-- [(ngModel)]="jobInfo.title" name="title" -->
+                        <input matInput formControlName="searchTagTitle" type="text"/>
+                    </mat-form-field>
+                </form>
             </div>
             <div class="flex-column" style="text-align: right; border-width: 0px">
                 <button
                     mat-flat-button
                     color="primary"
                     matTooltip="Filter jobs"
-                    (click)="filter()">
+                    [disabled]="!filterInput.valid"
+                    type=submit>
                     <mat-icon aria-hidden="false" aria-label="Filter symbol" svgIcon="assets:filter-outline" style="transform: scale(1.3)"></mat-icon>
                 </button>
             </div>
@@ -21,22 +25,60 @@
     </div>
     <div class="flex-column" style="flex-basis: 66.66%">
         <h2>Schedule New Job</h2>
-        <div>Selected Job:</div>
+        <div *ngIf="selectedJob">Selected Job: {{this.selectedJob.title}}</div>
+        <form [formGroup]="newScheduledJobInput">
+            <mat-form-field>
+                <mat-label>Execute at</mat-label>
+                <input
+                    matInput
+                    formControlName="executeAt"
+                    type="datetime-local"
+                    placeholder="start date"
+                    step="1"
+
+                >
+            </mat-form-field>
+        </form>
+        <button
+            mat-flat-button
+            color="primary"
+            matTooltip="Schedule a new job"
+            [disabled]="!newScheduledJobInput.valid || !selectedJob"
+            (click)="scheduleJob()">
+            Schedule
+        </button>
     </div>
 </div>
 
 <div class="flex-container">
     <div class="flex-column" style="flex-basis: 33.33%;">
-        <mat-card class="example-card">
-            <mat-card-title>Job 1</mat-card-title>
+        <mat-card class="example-card" *ngFor="let job of this.jobsShown">
+            <mat-card-title>{{job.title}}</mat-card-title>
             <mat-card-content>
-                My content
+                {{job.description}}
+                <h5>Job-ID:  {{job.id}} </h5>
+                <h5>Workflows:  {{job.workflows}} </h5>
+                <!--
+                <h5>Dataflows:  {{job.dataflows}} </h5>
+                <h5>Data Protocols:  {{job.data_protocols}} </h5>
+                <h5>Database:  {{job.database}} </h5>
+                -->
             </mat-card-content>
             <mat-card-actions>
-                <button mat-button>Action 1</button>
-                <button mat-button>Action 2</button>
+                <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="selectJob(job)">
+                    Select
+                </button>
+                <button
+                    mat-flat-button
+                    color="secondary" >
+                    Action 2
+                </button>
             </mat-card-actions>
         </mat-card>
+        <!--
         <mat-card class="example-card">
             <mat-card-title>Job 2</mat-card-title>
             <mat-card-content>
@@ -67,6 +109,7 @@
                 <button mat-button>Action 2</button>
             </mat-card-actions>
         </mat-card>
+        -->
     </div>
     <div class="flex-column" style="flex-basis: 66.66%;">
 
