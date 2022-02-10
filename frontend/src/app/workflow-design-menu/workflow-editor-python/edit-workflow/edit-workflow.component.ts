@@ -10,7 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class EditWorkflowComponent implements OnInit {
     constructor(
         public dialogRef: MatDialogRef<EditWorkflowComponent>,
-        @Inject(MAT_DIALOG_DATA) public name: string
+        @Inject(MAT_DIALOG_DATA) public title: string
     ) {}
 
     ngOnInit(): void {}

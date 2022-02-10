@@ -46,10 +46,10 @@ import { AddServiceComponent} from './services-menu/service-browser/add-service/
 import { EditServiceComponent} from './services-menu/service-browser/edit-service/edit-service.component';
 
 
-import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor/workflow-editor.component';
-import { EditorComponent } from './workflow-design-menu/workflow-editor/editor/editor.component';
-import { AddWorkflowComponent } from './workflow-design-menu/workflow-editor/add-workflow/add-workflow.component';
-import { EditWorkflowComponent } from './workflow-design-menu/workflow-editor/edit-workflow/edit-workflow.component';
+import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor-python/workflow-editor.component';
+import { EditorComponent } from './workflow-design-menu/workflow-editor-python/editor/editor.component';
+import { AddWorkflowComponent } from './workflow-design-menu/workflow-editor-python/add-workflow/add-workflow.component';
+import { EditWorkflowComponent } from './workflow-design-menu/workflow-editor-python/edit-workflow/edit-workflow.component';
 import { CodeEditorModule, CodeEditorService } from '@ngstack/code-editor';
 import { FileSelectorComponent } from './file-selector/file-selector.component';
 
