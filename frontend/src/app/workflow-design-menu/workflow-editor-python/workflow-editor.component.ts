@@ -71,7 +71,7 @@ export class WorkflowEditorComponent implements OnInit {
         //    fileName: result.fileName,
         //    data: result.data,
         // });
-        this.getWorkflow();
+        await this.getWorkflow();
     }
     async getWorkflow() {
         this.dataSource = await (
