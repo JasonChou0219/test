@@ -57,6 +57,14 @@
             </div>
         </mat-form-field>
 
+        <mat-form-field appearance="fill">
+            <mat-label>Retention policy</mat-label>
+            <input matInput formControlName="retention_policy">
+            <div *ngIf="submitted && f.retention_policy.errors" class="invalid-feedback">
+                <div *ngIf="f.retention_policy.errors.required">Retention policy is required</div>
+            </div>
+        </mat-form-field>
+
         <div class="button">
             <button
                 mat-flat-button

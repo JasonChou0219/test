@@ -17,5 +17,6 @@ class Database(Base):
     password = Column(String, index=False)
     address = Column(String, index=False)
     port = Column(Integer, index=False)
+    retention_policy = Column(String, index=False)
     owner = Column(String, index=True)
     owner_id = Column(String, index=True)

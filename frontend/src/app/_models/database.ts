@@ -7,6 +7,7 @@
     password: string;
     address: string;
     port: number;
+    retention_policy: string;
     owner?: string;
     owner_id?: number;
 }
@@ -20,6 +21,7 @@ export interface DatabaseInfo {
     password: string;
     address: string;
     port: number;
+    retention_policy: string;
     owner?: string;
     owner_id?: number;
 }

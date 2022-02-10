@@ -48,7 +48,7 @@ def create_database(
     """
     Create new database.
     """
-    check_database_connection_details_and_credentials(database_in)
+    check_database_details(database_in)
 
     query_params = dict(request.query_params.items())
     user = models.User(**query_params)
@@ -80,7 +80,7 @@ def update_database(
     if not user.is_superuser and (database.owner_id != user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
 
-    check_database_connection_details_and_credentials(database_in)
+    check_database_details(database_in)
 
     database_in.owner_id = user.id
     database_in.owner = user.email
@@ -147,29 +147,52 @@ def read_database_status(
     client = InfluxDBClient(host=database.address, port=database.port, username=database.username,
                             password=database.password, database=database.name, timeout=0.5)
     try:
-        # Attempt to retrieve the list of users, which checks both that the connection details are correct
+        # Attempt to create a database, which checks both that the connection details are correct
         # and that the user has admin privileges
-        client.get_list_users()
+        client.create_database(database.name)
+        # Attempt to create a retention policy, which checks that the specified retention policy is valid
+        client.create_retention_policy(name=database.retention_policy,
+                                       duration=database.retention_policy,
+                                       replication='1',
+                                       database=database.name)
     # Timeout, meaning the database cannot be reached
     except ConnectionError:
         return schemas.DatabaseStatus(online=False, status='Database not found for connection details')
     # User must be admin
-    except InfluxDBClientError:
-        return schemas.DatabaseStatus(online=False, status='Not enough permissions')
+    except InfluxDBClientError as e:
+        # User must be admin
+        if e.code == 401 or e.code == 403:
+            return schemas.DatabaseStatus(online=False, status='Not enough permissions')
+        # Retention policy must be valid
+        elif e.code == 400:
+            return schemas.DatabaseStatus(online=False, status='Invalid retention policy')
+        else:
+            return schemas.DatabaseStatus(online=False, status=e.content)
 
     return schemas.DatabaseStatus(online=True, status='Ready')
 
 
-def check_database_connection_details_and_credentials(database: schemas.Database) -> None:
+def check_database_details(database: schemas.Database) -> None:
     client = InfluxDBClient(host=database.address, port=database.port, username=database.username,
                             password=database.password, database=database.name, timeout=0.5)
     try:
-        # Attempt to retrieve the list of users, which checks both that the connection details are correct
+        # Attempt to create a database, which checks both that the connection details are correct
         # and that the user has admin privileges
-        client.get_list_users()
+        client.create_database(database.name)
+        # Attempt to create a retention policy, which checks that the specified retention policy is valid
+        client.create_retention_policy(name=database.retention_policy,
+                                       duration=database.retention_policy,
+                                       replication='1',
+                                       database=database.name)
     # Timeout, meaning the database cannot be reached
     except ConnectionError:
         raise HTTPException(status_code=404, detail="Database not found for connection details")
-    # User must be admin
-    except InfluxDBClientError:
-        raise HTTPException(status_code=401, detail="Not enough permissions")
+    except InfluxDBClientError as e:
+        # User must be admin
+        if e.code == 401 or e.code == 403:
+            raise HTTPException(status_code=401, detail="Not enough permissions")
+        # Retention policy must be valid
+        elif e.code == 400:
+            raise HTTPException(status_code=400, detail="Invalid retention policy")
+        else:
+            raise HTTPException(status_code=e.code, detail=e.content)

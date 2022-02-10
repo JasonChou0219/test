@@ -27,6 +27,7 @@ export class DatabasesMenuUpdateDatabaseComponent implements OnInit {
             name: '',
             address: '',
             port: undefined,
+            retention_policy: '',
             username: '',
             password: '',
         }
@@ -45,6 +46,7 @@ export class DatabasesMenuUpdateDatabaseComponent implements OnInit {
         this.f.password.setValue(this.databaseInfo.password);
         this.f.address.setValue(this.databaseInfo.address);
         this.f.port.setValue(this.databaseInfo.port);
+        this.f.retention_policy.setValue(this.databaseInfo.retention_policy);
     }
 
     async update() {
@@ -62,6 +64,7 @@ export class DatabasesMenuUpdateDatabaseComponent implements OnInit {
         this.databaseInfo.password = this.f.password.value;
         this.databaseInfo.address = this.f.address.value;
         this.databaseInfo.port = this.f.port.value;
+        this.databaseInfo.retention_policy = this.f.retention_policy.value
 
         await this.databaseService.setDatabaseInfo(this.databaseInfo);
         this.router.navigate(['/dashboard/databases']);
@@ -87,7 +90,8 @@ export class DatabasesMenuUpdateDatabaseComponent implements OnInit {
             port: ['', [Validators.required,
                 Validators.pattern('^[0-9]*$'),
                 Validators.min(0),
-                Validators.max(65535)]]
+                Validators.max(65535)]],
+            retention_policy: ['', Validators.required]
         });
     }
 

@@ -12,6 +12,7 @@ class DatabaseBase(BaseModel):
     password: Optional[str] = None
     address: Optional[str] = None
     port: Optional[int] = None
+    retention_policy: Optional[str] = None
     owner: Optional[str] = None
     owner_id: Optional[int] = None
 
@@ -24,6 +25,7 @@ class DatabaseCreate(DatabaseBase):
     password: str
     address: str
     port: int
+    retention_policy: str
 
 
 # Properties to receive on item update
@@ -40,6 +42,7 @@ class DatabaseInDBBase(DatabaseBase):
     password: str
     address: str
     port: int
+    retention_policy: str
     owner: str
     owner_id: int
 

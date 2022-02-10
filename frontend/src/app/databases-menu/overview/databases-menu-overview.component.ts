@@ -25,6 +25,7 @@ export class DatabasesMenuOverviewComponent implements OnInit {
         'password',
         'address',
         'port',
+        'retention_policy',
         'online',
         'status',
         'edit',

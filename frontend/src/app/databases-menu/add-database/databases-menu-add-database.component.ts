@@ -25,6 +25,7 @@ export class DatabasesMenuAddDatabaseComponent implements OnInit {
             name: '',
             address: '',
             port: undefined,
+            retention_policy: '',
             username: '',
             password: '',
         }
@@ -45,6 +46,7 @@ export class DatabasesMenuAddDatabaseComponent implements OnInit {
         this.databaseInfo.password = this.f.password.value;
         this.databaseInfo.address = this.f.address.value;
         this.databaseInfo.port = this.f.port.value;
+        this.databaseInfo.retention_policy = this.f.retention_policy.value;
 
         await this.databaseService.createDatabase(this.databaseInfo);
         this.router.navigate(['/dashboard/databases']);
@@ -65,7 +67,8 @@ export class DatabasesMenuAddDatabaseComponent implements OnInit {
             port: ['', [Validators.required,
                         Validators.pattern('^[0-9]*$'),
                         Validators.min(0),
-                        Validators.max(65535)]]
+                        Validators.max(65535)]],
+            retention_policy: ['', Validators.required]
         });
     }
 
