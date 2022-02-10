@@ -2,9 +2,10 @@
 
 export interface Workflow {
     id?: number;
-    name: string;
+    title: string;
     fileName: string;
     services?: ServiceInfo[];
+    workflow_type: string;
     data: string;
     owner?: string;
     owner_id?: number;
@@ -12,8 +13,9 @@ export interface Workflow {
 }
 export interface WorkflowInfo {
     id?: number;
-    name: string;
+    title: string;
     fileName: string;
+    workflow_type: string;
     services?: ServiceInfo[];
     data: string;
     owner?: string;
@@ -24,4 +26,13 @@ export interface WorkflowInfo {
 export interface WorkflowInfoList {
     // data: WorkflowInfo[];
     data: WorkflowInfo[];
+}
+
+export interface WorkflowInfoTuple {
+    0: number;
+    1: string;
+    2: Date;
+}
+export interface WorkflowInfoTupleList {
+    0: WorkflowInfoTuple[];
 }

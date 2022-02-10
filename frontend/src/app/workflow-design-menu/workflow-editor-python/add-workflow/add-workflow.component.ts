@@ -14,7 +14,7 @@ export class AddWorkflowComponent implements OnInit {
         private reader: FileReaderService,
         public dialogRef: MatDialogRef<AddWorkflowComponent>
     ) {
-        this.workflow = { name: '', fileName: '', data: '' };
+        this.workflow = { title: '', fileName: '', data: '', workflow_type: 'python'};
     }
 
     ngOnInit(): void {}
@@ -23,6 +23,7 @@ export class AddWorkflowComponent implements OnInit {
         this.workflow.fileName = file.name;
     }
     async add() {
+        console.log(this.file)
         this.workflow.data = await this.reader.readFile(this.file);
     }
 }

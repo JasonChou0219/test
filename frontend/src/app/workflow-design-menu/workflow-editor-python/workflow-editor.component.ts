@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiceService } from '@app/_services/service.service';
 import { WorkflowEditorService } from '@app/_services/workflow-editor.service';
-import { WorkflowInfo } from '@app/_models';
+import {ServiceInfo, WorkflowInfo} from '@app/_models';
 import { AddWorkflowComponent } from './/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from './edit-workflow/edit-workflow.component';
+import { AccountService } from '@app/_services';
 import { MatDialog } from '@angular/material/dialog';
 import {
     animate,
@@ -44,6 +45,7 @@ export class WorkflowEditorComponent implements OnInit {
         private fileReaderService: FileReaderService,
         private serviceService: ServiceService,
         private workflowEditorService: WorkflowEditorService,
+        private accountService: AccountService,
         public dialog: MatDialog,
     ) {}
 
@@ -53,20 +55,23 @@ export class WorkflowEditorComponent implements OnInit {
         console.log('Result Create: ', result)
         console.log(localStorage.getItem('user'))
         const info: WorkflowInfo = {
-                name: result.name,
+                title: result.title,
                 fileName: result.fileName,
-                owner: '',
+                workflow_type: result.workflow_type,
+                owner: this.accountService.userValue.username,
+                owner_id: parseInt(this.accountService.userValue.id, 10),
                 // services?: string[];
                 data: result.data,
+                description: '',
         }
         console.log('Info object: ', info)
         await this.workflowEditorService.createUserWorkflow(info);
-        //{
+        // {
         //    name: result.name,
         //    fileName: result.fileName,
         //    data: result.data,
-        //});
-        this.getWorkflow();
+        // });
+        await this.getWorkflow();
     }
     async getWorkflow() {
         this.dataSource = await (
@@ -85,7 +90,7 @@ export class WorkflowEditorComponent implements OnInit {
             );
             this.dataSource[i].model = {
                 language: 'python',
-                uri: workflow.name,
+                uri: workflow.title,
                 value: workflow.data,
             };
             this.dataSource[i].workflowLoaded = true;
@@ -103,11 +108,11 @@ export class WorkflowEditorComponent implements OnInit {
         const info = this.dataSource[i].info;
         console.log('Info: ', info)
         const dialogRef = this.dialog.open(EditWorkflowComponent, {
-            data: info.name,
+            data: info.title,
         });
         const result = await dialogRef.afterClosed().toPromise();
 
-        info.name = result
+        info.title = result
         if (result) {
             await this.workflowEditorService.setUserWorkflowInfo(info);
         }
@@ -117,7 +122,7 @@ export class WorkflowEditorComponent implements OnInit {
         this.dataSource[i].info.fileName = file.name;
         this.dataSource[i].model = {
             language: 'python',
-            uri: this.dataSource[i].info.name,
+            uri: this.dataSource[i].info.title,
             value: data,
         };
     }
@@ -125,6 +130,7 @@ export class WorkflowEditorComponent implements OnInit {
         const info = this.dataSource[i].info;
         const model = this.dataSource[i].model;
         info.data = model.value
+        console.log(info)
         this.workflowEditorService.setUserWorkflow(info);
     }
     async delete(i: number) {

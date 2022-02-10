@@ -15,8 +15,8 @@
         <mat-form-field appearance="fill">
           <mat-label>Select Workflow</mat-label>
                <mat-select [(ngModel)]="jobInfo.workflows" name="workflow_name">
-                <mat-option *ngFor="let workflow of workflows" [value]="workflow.name">
-                    {{ workflow.name }}
+                <mat-option *ngFor="let workflow of workflows" [value]="[[workflow.id, workflow.title, this.getDate()]]">
+                    {{ workflow.title }} ({{workflow.workflow_type}})
                 </mat-option>
               </mat-select>
         </mat-form-field>
@@ -26,7 +26,7 @@
                 <mat-form-field appearance="fill">
                   <mat-label>For Service</mat-label>
                    <mat-select>
-                    <mat-option *ngFor="let service of services" [value]="service.name">
+                    <mat-option *ngFor="let service of services" [value]="[service.name]">
                         {{ service.name }}
                     </mat-option>
                   </mat-select>
@@ -44,7 +44,7 @@
         <mat-form-field appearance="fill">
           <mat-label>Select Dataflow</mat-label>
                <mat-select>
-                <mat-option *ngFor="let dataflow of dataflows" [value]="dataflow.title">
+                <mat-option *ngFor="let dataflow of dataflows" [value]="[dataflow.title]">
                     {{ dataflow.title }}
                 </mat-option>
               </mat-select>

@@ -37,6 +37,7 @@ class JobBase(BaseModel):
     # service_bookings:
     execute_at: Optional[datetime]
     created_at: Optional[datetime]
+    running: Optional[bool] = False
 
 
 # Properties to receive on item creation

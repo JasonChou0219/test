@@ -5,7 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { AboutComponent } from './settings-menu/about/about.component';
-import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor/workflow-editor.component';
+import { WorkflowEditorComponent } from './workflow-design-menu/workflow-editor-python/workflow-editor.component';
 import { NodeRedEditorComponent } from './workflow-design-menu/workflow-editor-node-red/node-red-editor/node-red-editor.component';
 import { ServiceListComponent } from './services-menu/service-browser/service-list/service-list.component';
 import {JobsMenuCreateComponent} from './jobs-menu/create/jobs-menu-create.component';
