@@ -50,6 +50,14 @@ export class JobService {
             .delete(`${env.apiUrl}/api/v1/jobs/${jobID}`)
             .toPromise();
     }
+    async createScheduledJob(scheduledJob) {  // : ScheduledJob
+        return null
+        // this.http
+        //     .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
+        //         running: true,
+        //     })
+        //    .toPromise();
+    }
     async startScheduledJob(jobID: number) {
         return this.http
             .put(this.serverUrl + `/api/jobs/${jobID}/status`, {

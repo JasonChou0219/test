@@ -38,7 +38,7 @@ export class JobsMenuCreateComponent implements OnInit {
             description: '',
             owner: this.accountService.userValue.username,
             owner_id: parseInt(this.accountService.userValue.id, 10),
-            execute_at: now,
+            execute_at: null,
             created_at: now,
             running: false,
             workflows: [],  // [Tuple(int, str, datetime)] --> []Tuple(workflow_id, workflow_type, workflow_execute_at)]
