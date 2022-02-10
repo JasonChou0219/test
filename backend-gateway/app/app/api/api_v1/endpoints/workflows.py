@@ -10,7 +10,7 @@ from app.api import deps
 from app.core.config import settings
 
 router = APIRouter()
-target_service_hostname = "http://sila2_device_manager_workflow-designer-python_1"  # -> to env var
+target_service_hostname = "http://sila2_manager_workflow-designer-python_1"  # -> to env var
 target_service_port = settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT  # -> to env var
 target_service_api_version = settings.API_V1_STR  # -> to env var
 
