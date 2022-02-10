@@ -33,7 +33,8 @@ class CRUDRerouteBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             current_user: User,
     ) -> Optional[ModelType]:
         user_dict = jsonable_encoder(current_user)
-        response = get(route, params=dict({'id': id}, **user_dict))
+        #response = get(route, params=dict({'id': id}, **user_dict))
+        response = get(route, params=dict(**user_dict))
         return response
         # return db.query(self.model).filter(self.model.id == id).first()
 

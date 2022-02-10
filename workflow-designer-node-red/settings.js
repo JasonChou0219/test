@@ -32,16 +32,9 @@ module.exports = {
  ******************************************************************************/
 
     /** The file containing the flows. If not set, defaults to flows_<hostname>.json **/
-    // flowFile: 'flows.json',
+    flowFile: 'flows.json',
 
-    storageModule: require("node-red-contrib-storagemodule-postgres"),
-    postgresURI: "postgres://postgres:DIB-central@db-workflow-designer/workflow-designer",
-    //postgresURI: "postgres://username:password@postgressIP:5432/database",
-    postgresSchema: "public",   //optional, defaults to the public schema
-    // Enable module reinstalls on start-up; this ensures modules installed post-deploy are restored after a restage
-    autoInstallModules: true,
     userDir: '/data/', //required to install nodes via the palette manager
-
 
     /** By default, credentials are encrypted in storage using a generated key. To
      * specify your own secret, set the following property.

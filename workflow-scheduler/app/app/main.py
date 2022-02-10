@@ -1,8 +1,11 @@
+import threading
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+from app.scheduler import main as scheduler
 
 app = FastAPI(
     title=settings.WORKFLOW_SCHEDULER_NAME,
@@ -28,3 +31,5 @@ if settings.BACKEND_GATEWAY_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# threading.Thread(target=scheduler).start()

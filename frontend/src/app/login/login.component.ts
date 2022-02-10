@@ -71,20 +71,14 @@ export class LoginComponent implements OnInit {
             .pipe(first())
             .subscribe({
                 next: () => {
-                    // get return url from query parameters or default to home page
-                    console.log('Before route')
+                    // Get return url from query parameters or default to home page
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-                    console.log('route:');
-                    console.log(returnUrl);
-                    // this.router.navigateByUrl(returnUrl);
+                    this.router.navigateByUrl(returnUrl);
                     },
                     error: error => {
                         this.alertService.error(error);
                         this.loading = false;
                     }
                 });
-        // Todo: Fix login!
-        this.router.navigateByUrl('/dashboard');  // temporary rerouting.
-        console.log('rerouted!')
     }
 }

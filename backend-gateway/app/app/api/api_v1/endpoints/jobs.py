@@ -7,11 +7,10 @@ from pydantic import parse_obj_as
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api import deps
 from app.core.config import settings
 
 router = APIRouter()
-target_service_hostname = "http://sila2_device_manager_workflow-scheduler_1"  # -> to env var
+target_service_hostname = "http://sila2_manager_workflow-scheduler_1"  # -> to env var
 target_service_port = settings.WORKFLOW_SCHEDULER_UVICORN_PORT  # -> to env var
 target_service_api_version = settings.API_V1_STR  # -> to env var
 
@@ -51,12 +50,10 @@ def create_job(
     """
     Create new job.
     """
-    print(job_in)
     target_route = f"{target_service_url}jobs/"
-    job_in.owner = current_user.email
-    job_in.owner_id = current_user.id
-
     job = crud.job.create_with_owner(db=db, route=target_route, obj_in=job_in, current_user=current_user)
+    if not job:
+        raise HTTPException(status_code=job.status_code, detail=job.json()['detail'], headers=job.headers)
     job = parse_obj_as(schemas.JobInDB, job.json())
     return job
 
@@ -81,6 +78,8 @@ def update_job(
         if not crud.user.is_superuser(current_user) and (job.owner_id != current_user.id):
             raise HTTPException(status_code=400, detail="Not enough permissions")
     job = crud.job.update(db=db, route=target_route, db_obj=job, obj_in=job_in, current_user=current_user)
+    if not job:
+        raise HTTPException(status_code=job.status_code, detail=job.json()['detail'], headers=job.headers)
     job = parse_obj_as(schemas.JobInDB, job.json())
     return job
 
@@ -128,5 +127,7 @@ def delete_job(
             # current_user.id = 'superuser'
             pass
     job = crud.job.remove(db=db, route=target_route, id=id, current_user=current_user)
+    if not job:
+        raise HTTPException(status_code=job.status_code, detail=job.json()['detail'], headers=job.headers)
     job = parse_obj_as(schemas.JobInDB, job.json())
     return job

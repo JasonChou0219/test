@@ -1,11 +1,11 @@
 <div class="flex-container">
-    <div class="flex-column" style="flex-basis: 33.33%;">
+    <div class="flex-column" style="flex-basis: 33.33%">
         <h2>Jobs</h2>
-        <div class="flex-container" style="justify-content: space-between; align-items: center; margin: 5px;">
+        <div class="flex-container" style="justify-content: space-between; align-items: center; margin: 5px">
             <div class="flex-column" style="flex-basis: 66.66%; border-width: 0px">
                 <mat-form-field appearance="fill" style="width: 100%">
                   <mat-label>Filter Jobs</mat-label>
-                  <input matInput style="width: 100%">  <!-- [(ngModel)]="jobInfo.title" name="title" -->
+                  <input matInput>  <!-- [(ngModel)]="jobInfo.title" name="title" -->
                 </mat-form-field>
             </div>
             <div class="flex-column" style="text-align: right; border-width: 0px">
@@ -19,8 +19,9 @@
             </div>
         </div>
     </div>
-    <div class="flex-column" style="flex-basis: 66.66%;">
+    <div class="flex-column" style="flex-basis: 66.66%">
         <h2>Schedule New Job</h2>
+        <div>Selected Job:</div>
     </div>
 </div>
 

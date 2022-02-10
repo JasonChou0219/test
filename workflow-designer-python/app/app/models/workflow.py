@@ -13,8 +13,9 @@ if TYPE_CHECKING:
 
 class Workflow(Base):
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    fileName = Column(String, index=True)
+    title = Column(String, index=True)
+    workflow_type = Column(String, index=False)
+    file_name = Column(String, index=True)
     data = Column(Text, index=False)
     description = Column(String, index=True)
     owner = Column(String, index=True)

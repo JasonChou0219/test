@@ -113,20 +113,20 @@ services:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
-  db-workflow-designer:
+  db-workflow-designer-node-red:
     image: postgres:12
     volumes:
-      - app-db-workflow-designer-data:/var/lib/postgresql/data/pgdata/workflow-designer/
+      - app-db-workflow-designer-node-red-data:/var/lib/postgresql/data/pgdata/workflow-designer-node-red/
     env_file:
       - .env
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata/workflow-designer
-      - POSTGRES_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER}
-      - POSTGRES_DB=${POSTGRES_DB_WORKFLOW_DESIGNER}
+      - PGDATA=/var/lib/postgresql/data/pgdata/workflow-designer-node-red
+      - POSTGRES_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER_NODE_RED}
+      - POSTGRES_DB=${POSTGRES_DB_WORKFLOW_DESIGNER_NODE_RED}
     deploy:
       placement:
         constraints:
-          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+          - node.labels.${STACK_NAME?Variable not set}.app-db-workflow-designer-node-red-data == true
 
   db-workflow-scheduler:
     image: postgres:12
@@ -200,13 +200,14 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-flower-https.tls.certresolver=le
         - traefik.http.services.${STACK_NAME?Variable not set}-flower.loadbalancer.server.port=5555
 
+
   backend-gateway:
     image: '${DOCKER_IMAGE_BACKEND_GATEWAY?Variable not set}:${TAG-latest}'
     networks:
         - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
         - default
-    ports:
-      - "${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}"
+    #ports:
+     # - "${DOMAIN?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-backend-gateway
     env_file:
@@ -216,8 +217,8 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${BACKEND_GATEWAY_UVICORN_PORT?Variable not set}
     build:
       context: ./backend-gateway
       dockerfile: backend-gateway.dockerfile
@@ -251,7 +252,8 @@ services:
   service-manager:
     image: '${DOCKER_IMAGE_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
     ports:
-      - "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
+      - "82:82"
+      #- "${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}"
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -264,8 +266,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${SERVICE_MANAGER_UVICORN_PORT?Variable not set}:80
     build:
       context: ./service-manager
       dockerfile: service-manager.dockerfile
@@ -303,15 +306,17 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     ports:
-      - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
+      - "83:83"
+      #  - "${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-designer-python
     env_file:
       - .env
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
+      - HOST=0.0.0.0
       - PORT=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}:80
     build:
       context: ./workflow-designer-python
       dockerfile: workflow-designer-python.dockerfile
@@ -335,6 +340,10 @@ services:
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - DB_HOST=${POSTGRES_DB_WORKFLOW_DESIGNER_PYTHON?Variable not set}
+      - DB_USER=${POSTGRES_USER?Variable not set}
+      - DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - DB_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER_PYTHON?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST?Variable not set}
     build:
@@ -349,7 +358,8 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     ports:
-      - "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
+      - "84:84"
+      #- "${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}"
     depends_on:
       - db-workflow-scheduler
     env_file:
@@ -359,8 +369,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}:80
     build:
       context: ./workflow-scheduler
       dockerfile: workflow-scheduler.dockerfile
@@ -373,6 +384,29 @@ services:
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
         - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-scheduler-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-workflow-scheduler.loadbalancer.server.port=${WORKFLOW_SCHEDULER_UVICORN_PORT?Variable not set}
+
+  workflow-executor-node-red:
+    image: '${DOCKER_IMAGE_WORKFLOW_EXECUTOR_NODE_RED?Variable not set}:${TAG-latest}'
+    profiles:
+      - "don't start"
+    depends_on:
+      - db-workflow-designer-node-red
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+    ports:
+      - "2880:1880"
+    build:
+      context: ./workflow-executor-node-red
+      dockerfile: workflow-executor-node-red.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
   celeryworker-workflow-scheduler:
     image: '${DOCKER_IMAGE_CELERYWORKER_WORKFLOW_SCHEDULER?Variable not set}:${TAG-latest}'
@@ -391,20 +425,6 @@ services:
       dockerfile: celeryworker.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-
-  # mdns_repeater:
-  #    image: jdbeeler/mdns-repeater:latest
-  #    # image: raetha/mdns-repeater
-  #    network_mode: "host"
-  #    privileged: true
-  #    env_file:
-  #      - ./service-manager/mdns-repeater.conf
-  #    volumes:
-  #      - //var/run/docker.sock:/var/run/docker.sock
-  #    deploy:
-  #      labels:
-  #        - traefik.enable=true
-  #        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
@@ -425,8 +445,8 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
         - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
-  workflow-designer:
-    image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER?Variable not set}:${TAG-latest}'
+  workflow-designer-node-red:
+    image: '${DOCKER_IMAGE_WORKFLOW_DESIGNER_NODE_RED?Variable not set}:${TAG-latest}'
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -434,18 +454,22 @@ services:
       - "1880:1880"
       - "${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}:${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}"
     depends_on:
-      - db-workflow-designer
+      - db-workflow-designer-node-red
     env_file:
       - .env
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - DB_HOST=${POSTGRES_DB_WORKFLOW_DESIGNER_NODE_RED?Variable not set}
+      - DB_USER=${POSTGRES_USER?Variable not set}
+      - DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - DB_SERVER=${POSTGRES_SERVER_WORKFLOW_DESIGNER_NODE_RED?Variable not set}
       # Allow explicit env var override for tests
       - PORT=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
       - BIND=${DOMAIN?Variable not set}:${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
     build:
-      context: ./workflow-designer
-      dockerfile: workflow-designer.dockerfile
+      context: ./workflow-designer-node-red
+      dockerfile: workflow-designer-node-red.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     deploy:
@@ -453,14 +477,14 @@ services:
         - traefik.enable=false
         - traefik.port=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-        - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=1880
-        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer.loadbalancer.server.port=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-node-red-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-node-red.loadbalancer.server.port=1880
+        - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-node-red.loadbalancer.server.port=${WORKFLOW_DESIGNER_NODE_RED_PORT?Variable not set}
 
 volumes:
   app-db-backend-gateway-data:
   app-db-service-manager-data:
-  app-db-workflow-designer-data:
+  app-db-workflow-designer-node-red-data:
   app-db-workflow-designer-python-data:
   app-db-workflow-scheduler-data:
 

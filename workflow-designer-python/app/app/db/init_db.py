@@ -20,8 +20,9 @@ def init_db(db: Session) -> None:
     print('yesss')
     workflow_in = schemas.WorkflowCreate(
         id=1,
-        name='test',
-        fileName='test_file',
+        title='test',
+        file_name='test_file',
+        workflow_type='python',
         services=['test_device_1', 'test_device_2'],
         data='A fancy script.',
         owner='Hans',
