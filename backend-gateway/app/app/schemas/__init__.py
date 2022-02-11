@@ -5,6 +5,7 @@ from .token import Token, TokenPayload
 from .user import User, UserCreate, UserInDB, UserUpdate
 from .workflow import Workflow, WorkflowCreate, WorkflowInDB, WorkflowUpdate
 from .job import Job, JobCreate, JobInDB, JobUpdate
+from .scheduled_job import ScheduledJob, ScheduledJobCreate, ScheduledJobInDB, ScheduledJobUpdate, ScheduledJobStatus
 from .database import Database, DatabaseCreate, DatabaseInDB, DatabaseUpdate
 from .database_status import DatabaseStatus
 from .sila_client import Feature, Property, Command, CommandResponse, CommandParameter, DefinedExecutionError, DataType, \
