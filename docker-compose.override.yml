@@ -191,7 +191,7 @@ services:
     volumes:
       - ./data-acquisition/app:/app
     environment:
-      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8891
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - PORT=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
     build:
@@ -204,8 +204,8 @@ services:
     command: /start-reload.sh
     labels:
       - traefik.enable=true
-      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-data-acquisition-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      # - traefik.http.routers.${STACK_NAME?Variable not set}-data-acquisition-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-data-acquisition.loadbalancer.server.port=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
 
   celeryworker-data-acquisition:

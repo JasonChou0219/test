@@ -457,8 +457,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${DATA_ACQUISITION_UVICORN_PORT?Variable not set}:80
     build:
       context: ./data-acquisition
       dockerfile: data-acquisition.dockerfile
