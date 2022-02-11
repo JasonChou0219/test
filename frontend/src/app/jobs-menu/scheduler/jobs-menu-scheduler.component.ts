@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { FormBuilder } from '@angular/forms'
-import {JobService, AccountService, WorkflowEditorService} from '@app/_services';
+import {JobService, ScheduledJobService, AccountService, WorkflowEditorService} from '@app/_services';
 import {JobInfo, JobInfoList, WorkflowInfo} from '@app/_models';
 
 
@@ -18,7 +18,8 @@ export class JobsMenuSchedulerComponent implements OnInit {
     jobsShown: JobInfo[];
   constructor(
       private formBuilder: FormBuilder,
-      public jobService: JobService,
+      private jobService: JobService,
+      private scheduledJobService: ScheduledJobService,
       private accountService: AccountService
   ) {
       this.filterInput = this.formBuilder.group({
@@ -62,7 +63,8 @@ export class JobsMenuSchedulerComponent implements OnInit {
       console.log(this.getScheduledJobExecutionTime())
       this.selectedJob.execute_at = this.getScheduledJobExecutionTime()
       console.log(this.selectedJob)
-      this.jobService.createScheduledJob()
+      // this.selectedJob
+      await this.scheduledJobService.createUserScheduledJob(this.selectedJob)
   }
   async getJobs() {
       this.jobs = await (

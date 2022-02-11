@@ -12,7 +12,7 @@ class CRUDScheduledJob(CRUDBase[ScheduledJob, ScheduledJobCreate, ScheduledJobUp
     def create_with_owner(
         self, db: Session, *, obj_in: ScheduledJobCreate, owner_id: int
     ) -> ScheduledJob:
-        obj_in.owner_id=owner_id
+        obj_in.owner_id = owner_id
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
         db.add(db_obj)

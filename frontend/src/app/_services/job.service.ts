@@ -58,23 +58,4 @@ export class JobService {
         //     })
         //    .toPromise();
     }
-    async startScheduledJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: true,
-            })
-            .toPromise();
-    }
-    async stopScheduledJob(jobID: number) {
-        return this.http
-            .put(this.serverUrl + `/api/jobs/${jobID}/status`, {
-                running: false,
-            })
-            .toPromise();
-    }
-    async getScheduledJobStatus(id: number): Promise<JobStatus> {
-        return this.http
-            .get<JobStatus>(this.serverUrl + '/api/jobStatus/' + id)
-            .toPromise();
-    }
 }

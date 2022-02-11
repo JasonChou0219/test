@@ -56,10 +56,9 @@ def create_scheduled_job(
     user = schemas.User(**dict(request.query_params.items()))
     # user_dict = jsonable_encoder(user)
     # scheduled_job_in.owner_id = user.id
-
+    scheduled_job_in.scheduled_at = datetime.now()
     try:
         scheduled_job = crud.scheduled_job.create(db=db, obj_in=scheduled_job_in)
-        crud.scheduled_job.create_with_owner(db=db, obj_in=scheduled_job_in, owner_id=scheduled_job.id)
     except IntegrityError as db_exception:
         raise HTTPException(status_code=452, detail=f"{type(db_exception).__name__}:{db_exception.orig}")
     return scheduled_job

@@ -1,50 +1,96 @@
+<div class="flex-container" style="justify-content: flex-end">
+    <button mat-button (click)="refresh()" >
+        <mat-icon
+            style="transform: scale(1)"
+            aria-hidden="false"
+            aria-label="Refresh symbol"
+            matTooltip="Refresh scheduled jobs"
+            color="primary">
+            refresh
+        </mat-icon>
+    </button>
+
+</div>
 <div class="flex-container">
     <div class="flex-column">
-        <h2>Exited</h2>
+        <h2>Scheduled</h2>
     </div>
     <div class="flex-column">
         <h2>Running</h2>
     </div>
     <div class="flex-column">
-        <h2>Scheduled</h2>
+        <h2>Exited</h2>
     </div>
 </div>
 
 <div class="flex-container">
     <div class="flex-column">
-        <mat-card class="example-card">
-            <mat-card-title>Job 1</mat-card-title>
-            <mat-card-content>
-                My content
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button>Action 1</button>
-                <button mat-button>Action 2</button>
-            </mat-card-actions>
-        </mat-card>
+        <ng-container *ngFor="let scheduledJob of this.scheduledJobs">
+            <mat-card class="example-card" *ngIf="[0, 1, 6].includes(scheduledJob.job_status)">
+                <mat-card-title >{{scheduledJob.title}}</mat-card-title>
+                <mat-card-content>
+                    {{scheduledJob.description}}
+                    <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
+                    <h5>Workflows:  {{scheduledJob.workflows}} </h5>
+                    <!--
+                    <h5>Dataflows:  {{job.dataflows}} </h5>
+                    <h5>Data Protocols:  {{job.data_protocols}} </h5>
+                    <h5>Database:  {{job.database}} </h5>
+                    -->
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>Action 1</button>
+                    <button mat-button>Action 2</button>
+                </mat-card-actions>
+            </mat-card>
+        </ng-container>
     </div>
     <div class="flex-column">
-        <mat-card class="example-card">
-            <mat-card-title>Job 2</mat-card-title>
-            <mat-card-content>
-                My content
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button>Action 1</button>
-                <button mat-button>Action 2</button>
-            </mat-card-actions>
-        </mat-card>
+        <ng-container *ngFor="let scheduledJob of this.scheduledJobs">
+            <mat-card class="example-card" *ngIf="[2].includes(scheduledJob.job_status)">
+                <mat-card-title >{{scheduledJob.title}}</mat-card-title>
+                <mat-card-content>
+                    {{scheduledJob.description}}
+                    <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
+                    <h5>Workflows:  {{scheduledJob.workflows}} </h5>
+                    <!--
+                    <h5>Dataflows:  {{job.dataflows}} </h5>
+                    <h5>Data Protocols:  {{job.data_protocols}} </h5>
+                    <h5>Database:  {{job.database}} </h5>
+                    -->
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>Action 1</button>
+                    <button mat-button>Action 2</button>
+                </mat-card-actions>
+            </mat-card>
+        </ng-container>
     </div>
     <div class="flex-column">
-        <mat-card class="example-card">
-            <mat-card-title>Job 3</mat-card-title>
-            <mat-card-content>
-                My content
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button>Action 1</button>
-                <button mat-button>Action 2</button>
-            </mat-card-actions>
-        </mat-card>
+        <ng-container *ngFor="let scheduledJob of this.scheduledJobs">
+            <mat-card class="example-card" *ngIf="[3, 4, 5].includes(scheduledJob.job_status)">
+                <mat-card-title >{{scheduledJob.title}}</mat-card-title>
+                <mat-card-content>
+                    {{scheduledJob.description}}
+                    <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
+                    <h5>Workflows:  {{scheduledJob.workflows}} </h5>
+                    <!--
+                    <h5>Dataflows:  {{job.dataflows}} </h5>
+                    <h5>Data Protocols:  {{job.data_protocols}} </h5>
+                    <h5>Database:  {{job.database}} </h5>
+                    -->
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>Action 1</button>
+                    <button mat-button>Action 2</button>
+                </mat-card-actions>
+            </mat-card>
+        </ng-container>
     </div>
 </div>
