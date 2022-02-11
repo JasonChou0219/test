@@ -59,6 +59,12 @@ import {JobsMenuCreateComponent} from './jobs-menu/create/jobs-menu-create.compo
 import {JobsMenuOverviewComponent} from './jobs-menu/overview/jobs-menu-overview.component';
 import {JobsMenuSchedulerComponent} from './jobs-menu/scheduler/jobs-menu-scheduler.component';
 
+import { DataflowDesignMenuOverviewComponent } from './dataflow-design-menu/overview/dataflow-design-menu-overview.component';
+
+import { DatabasesMenuOverviewComponent } from './databases-menu/overview/databases-menu-overview.component';
+import { DatabasesMenuAddDatabaseComponent } from './databases-menu/add-database/databases-menu-add-database.component';
+import { DatabasesMenuUpdateDatabaseComponent } from './databases-menu/update-database/databases-menu-update-database.component';
+
 import { AuthInterceptor } from './auth.interceptor';
 import { HttpErrorInterceptor } from './http-error.interceptor';
 // import { LogViewComponent } from './log-view/log-view.component';
@@ -85,6 +91,8 @@ import { AboutComponent } from './settings-menu/about/about.component';
 // import { DatabaseLinkComponent } from './database-link/database-link.component';
 // import { AddDatabaseComponent } from './add-database/add-database.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
+import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
+import { MatSortModule } from '@angular/material/sort';
 
 
 @NgModule({
@@ -130,6 +138,11 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // DatabaseLinkComponent,
         // AddDatabaseComponent,
         FooterBarComponent,
+        DataflowDesignMenuOverviewComponent,
+        KnimeComponent,
+        DatabasesMenuOverviewComponent,
+        DatabasesMenuAddDatabaseComponent,
+        DatabasesMenuUpdateDatabaseComponent,
     ],
     imports: [
         BrowserModule,
@@ -164,9 +177,10 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
         // }),
         CodeEditorModule,
         CodeEditorModule.forRoot({
-             baseUrl: './assets/monaco',
-             typingsWorkerUrl: './assets/workers/typings-worker.js',
+            baseUrl: './assets/monaco',
+            typingsWorkerUrl: './assets/workers/typings-worker.js',
         }),
+        MatSortModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

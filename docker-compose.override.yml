@@ -185,6 +185,43 @@ services:
       #- traefik.http.routers.${STACK_NAME?Variable not set}-workflow-designer-python-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
       - traefik.http.services.${STACK_NAME?Variable not set}-workflow-designer-python.loadbalancer.server.port=${WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT?Variable not set}
 
+  data-acquisition:
+    ports:
+      - "8891:8891"
+    volumes:
+      - ./data-acquisition/app:/app
+    environment:
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - PORT=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+    build:
+      context: ./data-acquisition
+      dockerfile: data-acquisition.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: /start-reload.sh
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-data-acquisition-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      - traefik.http.services.${STACK_NAME?Variable not set}-data-acquisition.loadbalancer.server.port=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+
+  celeryworker-data-acquisition:
+    volumes:
+      - ./data-acquisition/app:/app
+    environment:
+      - RUN=celery worker -A app.worker -l info -Q main-queue -c 1
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+    build:
+      context: ./data-acquisition
+      dockerfile: celeryworker.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
+
 networks:
   traefik-public:
     # For local dev, don't expect an external Traefik network

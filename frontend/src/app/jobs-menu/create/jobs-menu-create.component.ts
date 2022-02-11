@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { format } from 'date-fns';
 
-import {JobService, WorkflowEditorService, AccountService } from '@app/_services';
+import {JobService, WorkflowEditorService, AccountService, DatabaseService} from '@app/_services';
 import {JobInfo, DatabaseInfo, WorkflowInfo, ServiceInfo, DataflowInfo, WorkflowInfoList, WorkflowInfoTuple, WorkflowInfoTupleList } from '@app/_models';
 
 // Import mocked data
@@ -24,7 +24,8 @@ export class JobsMenuCreateComponent implements OnInit {
     constructor(
         public jobService: JobService,
         private workflowEditorService: WorkflowEditorService,
-        private accountService: AccountService
+        private accountService: AccountService,
+        private databaseService: DatabaseService
     ) {
         const now = new Date();
         const today = now.getDate();
@@ -71,7 +72,7 @@ export class JobsMenuCreateComponent implements OnInit {
     console.log(this.jobInfo)
     this.services = mockServiceInfoList
     this.dataflows = mockDataflowInfoList
-    this.databases = mockDatabaseInfoList
+    this.databases = await this.databaseService.getDatabaseList()
     await this.getWorkflows()
   }
 

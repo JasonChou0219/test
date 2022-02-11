@@ -42,17 +42,29 @@
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
                 <mat-expansion-panel-header>
                     <mat-icon svgIcon="assets:database-import-outline"></mat-icon>
-                    <span class="full-width" *ngIf="isExpanded || isShowing">Data Acquisition</span>
+                    <span class="full-width" *ngIf="isExpanded || isShowing">Databases</span>
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:database-plus-outline"></mat-icon>Add database</a>
-                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-outline"></mat-icon>Create protocol</a>
+                        <a mat-list-item routerLink="/dashboard/databases" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink="/dashboard/databases/create" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:database-plus-outline"></mat-icon>Add database</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
 
+
+            <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
+                <mat-expansion-panel-header>
+                    <mat-icon svgIcon="assets:database-import-outline"></mat-icon>
+                    <span class="full-width" *ngIf="isExpanded || isShowing">Data Protocol Design</span>
+                </mat-expansion-panel-header>
+                <div *ngIf="isExpanded">
+                    <mat-nav-list dense>
+                        <a mat-list-item routerLink="/dashboard/data-protocols" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink="'/about'" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:wrench-outline"></mat-icon>Create protocol</a>
+                    </mat-nav-list>
+                </div>
+            </mat-expansion-panel>
 
 
             <mat-expansion-panel [class.mat-elevation-z0]="true" dense hideToggle="true">
@@ -62,8 +74,8 @@
                 </mat-expansion-panel-header>
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:knime"></mat-icon>Knime</a>
+                        <a mat-list-item routerLink="/dashboard/dataflows" *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
+                        <a mat-list-item routerLink="/dashboard/knime" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:knime"></mat-icon>Knime</a>
                     </mat-nav-list>
                  </div>
             </mat-expansion-panel>
