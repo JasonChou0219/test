@@ -2,6 +2,7 @@ from .crud_service import service
 from .crud_item import item
 from .crud_user import user
 from .crud_job import job
+from .crud_scheduled_job import scheduled_job
 from .crud_workflow import workflow
 
 # For a new basic set of CRUD operations you could just do
