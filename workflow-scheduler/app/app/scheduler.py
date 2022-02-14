@@ -1,16 +1,20 @@
 import queue
 import time
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from threading import Thread
 from typing import Optional
 from uuid import UUID
+from fastapi.encoders import jsonable_encoder
 
 from app import crud
 from app.api import deps
-from app.schemas import Job
+from app.schemas import ScheduledJob
+from app.models import ScheduledJob
 from app.util import docker_helper
+
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -55,27 +59,50 @@ event_queue = queue.SimpleQueue()
 process_status_queue = queue.SimpleQueue()
 scheduler = BackgroundScheduler()
 
-jobs = {}
-scheduled_jobs = {}
-
+scheduled_jobs = {}  # Scheduled Jobs that are stored as scheduled jobs
+submitted_jobs = {}  # Scheduled jobs that are submitted to the scheduler
+db = next(deps.get_db())
 
 def event_listener(event):
     event_queue.put(event)
 
 
 def change_job_status(job_id: int, status: JobStatus):
-    jobs[job_id].status = status
+
+    scheduled_jobs[job_id].job_status = status
+    logging.info('Updating ScheduledJob Status')
+    original_scheduled_job = crud.scheduled_job.get(db=db, id=job_id)
+    scheduled_job = crud.scheduled_job.update(db=db, db_obj=original_scheduled_job, obj_in=jsonable_encoder(scheduled_jobs[job_id]))
+    # crud.scheduled_job.update(db=deps.get_db(), db_obj=ScheduledJob, obj_in=scheduled_jobs[job_id])
+    logging.info('Successfully updated ScheduledJob Status')
 
 
-def start_job(job: Job, status_queue: queue.SimpleQueue):
+def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
     # devices = [
     #     asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
     # ]
+    logging.info(f'Starting job {job.title}')
+    logging.info(f'Scanning for workflows')
+    job_workflows = []
+    if job.workflows:
+        logging.info('Workflows are:')
+        logging.info(job.workflows)
+        logging.info(type(job.workflows))
+        for workflow in job.workflows:
+            logging.info('workflow is:')
+            logging.info(workflow[0])
+            workflow = crud.workflow.get(db=db, id=workflow[0])
+            logging.info(workflow)
+            logging.info(f'Added workflow {workflow[0]} with title {workflow[1]}')
+            job_workflows.append(workflow)  # Owner is the job!
+
+    # What if workflows empty?
 
     # Todo: Implement the request to get all workflows related to a job and query the respective workflow from the database
     # Todo: Depending on workflow_type, change the executor that it is pushed to!
     # --> #
-    workflows = crud.workflow.get_multi_by_owner(db=deps.get_db(), current_user=job.id)  # Owner is the job!
+
+
     for workflow in workflows:
         if workflow.workflow.type == 'python':
             # Todo: Implement a check for start_time of the workflow here.
@@ -132,86 +159,88 @@ def wait_until_container_stops(container, job_id: int,
 
 def handle_process_status_events(event: ProcessStatusEvent):
     if event.event_type == ProcessStatusEventType.STARTED:
-        jobs[event.job_id].container_id = event.message
+        scheduled_jobs[event.job_id].container_id = event.message
         change_job_status(event.job_id, JobStatus.RUNNING)
-        print(f'{jobs[event.job_id].title} started')
+        print(f'{scheduled_jobs[event.job_id].title} started')
     elif event.event_type == ProcessStatusEventType.FINISHED_SUCCESSFUL:
         change_job_status(event.job_id,
                           JobStatus.FINISHED_SUCCESSFUL)
-        print(f'{jobs[event.job_id].title} finished successful')
+        print(f'{scheduled_jobs[event.job_id].title} finished successful')
     elif event.event_type == ProcessStatusEventType.ERROR:
         change_job_status(event.job_id,
                           JobStatus.FINISHED_ERROR)
-        print(f'{jobs[event.job_id].title} Error')
+        print(f'{scheduled_jobs[event.job_id].title} Error')
 
 
 def handle_scheduling_jobs(event):
     if event.code == events.EVENT_JOB_SUBMITTED:
-        if event.job_id in scheduled_jobs:
-            job_id = scheduled_jobs[event.job_id]
-            job_entry = jobs[job_id]
+        if event.job_id in submitted_jobs:
+            job_id = submitted_jobs[event.job_id]
+            job_entry = scheduled_jobs[job_id]
             change_job_status(job_id, JobStatus.SUBMITTED_FOR_EXECUTION)
             print(f'{job_entry.title} submitted')
     elif event.code == events.EVENT_JOB_REMOVED:
-        if event.job_id in scheduled_jobs:
-            job_entry = jobs[scheduled_jobs[event.job_id]]
+        if event.job_id in submitted_jobs:
+            job_entry = scheduled_jobs[submitted_jobs[event.job_id]]
             print(f'{job_entry.title} removed')
     elif event.code == events.EVENT_JOB_ERROR:
-        if event.job_id in scheduled_jobs:
-            job_id = scheduled_jobs[event.job_id]
-            job_entry = jobs[job_id]
+        if event.job_id in submitted_jobs:
+            job_id = submitted_jobs[event.job_id]
+            job_entry = scheduled_jobs[job_id]
             change_job_status(job_id,
                               JobStatus.FINISHED_ERROR)
             print(f'scheduling error for {job_entry.title}')
     elif event.code == events.EVENT_JOB_MISSED:
-        if event.job_id in scheduled_jobs:
-            job_id = scheduled_jobs[event.job_id]
-            job_entry = jobs[job_id]
+        if event.job_id in submitted_jobs:
+            job_id = submitted_jobs[event.job_id]
+            job_entry = scheduled_jobs[job_id]
             change_job_status(job_id,
                               JobStatus.FINISHED_ERROR)
             print(f'job {job_entry.title} missed')
 
 
 def schedule_future_jobs_from_database():
-    jobs_from_db = crud.job.get_multi(next(deps.get_db()))
-    if len(jobs_from_db) > 0:
-        for job in jobs_from_db:
-            schedule_job(job)
+    scheduled_jobs_from_db = crud.scheduled_job.get_multi(db)
+    if len(scheduled_jobs_from_db) > 0:
+        logging.info(f'1. Queried scheduled jobs from database: {scheduled_jobs_from_db[0].workflows}')
+        if len(scheduled_jobs_from_db) > 1:
+            logging.info(f'2. Queried scheduled jobs from database: {scheduled_jobs_from_db[1].workflows}')
+        for scheduled_job in scheduled_jobs_from_db:
+            logging.info(scheduled_job)
+            schedule_job(scheduled_job)
 
 
-def schedule_job(job: Job):
-    if (job.uid not in jobs) or (
-            jobs[job.uid].status == JobStatus.FINISHED_ERROR or
-            jobs[job.uid].status == JobStatus.FINISHED_SUCCESSFUL
-            or jobs[job.uid].status
-            == JobStatus.FINISHED_MANUALLY):
+def schedule_job(job: ScheduledJob):
+    if (job.id not in scheduled_jobs) or (
+            scheduled_jobs[job.id].status == JobStatus.FINISHED_ERROR or
+            scheduled_jobs[job.id].status == JobStatus.FINISHED_SUCCESSFUL or
+            scheduled_jobs[job.id].status == JobStatus.FINISHED_MANUALLY):
         scheduled_job = scheduler.add_job(start_job,
                                           'date',
                                           args=[job, process_status_queue],
                                           name=f'job: {job.title}',
                                           run_date=job.execute_at)
-        jobs[job.id] = JobState(
-            job.id, job.title, scheduled_job.id, '0', job.created_at, JobStatus.WAITING_FOR_EXECUTION)
-        scheduled_jobs[scheduled_job.id] = job.id
-        change_job_status(job.id,
-                          JobStatus.WAITING_FOR_EXECUTION)
+        scheduled_jobs[job.id] = \
+            JobState(job.id, job.title, scheduled_job.id, '0', job.created_at, JobStatus.WAITING_FOR_EXECUTION)
+        submitted_jobs[scheduled_job.id] = job.id
+        change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
 
 
-def schedule_job_now(job: Job):
+def schedule_job_now(job: ScheduledJob):
     if (job.id in jobs) and (
-            jobs[job.id].status != JobStatus.FINISHED_ERROR or
-            jobs[job.id].status != JobStatus.FINISHED_SUCCESSFUL
+            scheduled_jobs[job.id].status != JobStatus.FINISHED_ERROR or
+            scheduled_jobs[job.id].status != JobStatus.FINISHED_SUCCESSFUL
             or
-            jobs[job.id].status != JobStatus.FINISHED_MANUALLY):
+            scheduled_jobs[job.id].status != JobStatus.FINISHED_MANUALLY):
         pass
         # stop_experiment(job.id)
     scheduled_job = scheduler.add_job(start_job,
                                       args=[job, process_status_queue],
                                       name=f'job: {job.title}')
-    jobs[job.id] = JobState(
+    scheduled_jobs[job.id] = JobState(
         job.id, job.title, scheduled_job.id, '0', job.execute_at,
         JobStatus.WAITING_FOR_EXECUTION)
-    scheduled_jobs[job.id] = job.id
+    submitted_jobs[job.id] = job.id
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
 
 
