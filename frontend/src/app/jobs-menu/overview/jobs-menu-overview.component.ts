@@ -32,6 +32,10 @@ export class JobsMenuOverviewComponent implements OnInit {
   async refresh() {
         await this.getScheduledJobs()
     }
+  async deleteScheduledJob(id: number) {
+        await this.scheduledJobService.deleteUserScheduledJob(id)
+        await this.refresh()
+  }
   async ngOnInit() {
       await this.getScheduledJobs()
   }

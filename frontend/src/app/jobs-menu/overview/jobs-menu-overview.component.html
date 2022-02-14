@@ -42,7 +42,7 @@
                 </mat-card-content>
                 <mat-card-actions>
                     <button mat-button>Action 1</button>
-                    <button mat-button>Action 2</button>
+                    <button mat-button (click)="deleteScheduledJob(scheduledJob.id)">Delete</button>
                 </mat-card-actions>
             </mat-card>
         </ng-container>
@@ -65,7 +65,7 @@
                 </mat-card-content>
                 <mat-card-actions>
                     <button mat-button>Action 1</button>
-                    <button mat-button>Action 2</button>
+                    <button mat-button (click)="deleteScheduledJob(scheduledJob.id)">Delete</button>
                 </mat-card-actions>
             </mat-card>
         </ng-container>
@@ -78,6 +78,7 @@
                     {{scheduledJob.description}}
                     <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
                     <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Scheduled at:  {{scheduledJob.execute_at}} </h5>
                     <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
                     <h5>Workflows:  {{scheduledJob.workflows}} </h5>
                     <!--
@@ -88,7 +89,7 @@
                 </mat-card-content>
                 <mat-card-actions>
                     <button mat-button>Action 1</button>
-                    <button mat-button>Action 2</button>
+                    <button mat-button (click)="deleteScheduledJob(scheduledJob.id)">Delete</button>
                 </mat-card-actions>
             </mat-card>
         </ng-container>
