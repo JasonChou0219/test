@@ -73,8 +73,9 @@
                 </button>
                 <button
                     mat-flat-button
-                    color="secondary" >
-                    Action 2
+                    color="secondary"
+                    (click)="deleteJob(job.id)">
+                    Delete
                 </button>
             </mat-card-actions>
         </mat-card>
