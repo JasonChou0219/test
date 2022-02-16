@@ -15,7 +15,7 @@
         <mat-form-field appearance="fill">
           <mat-label>Select Workflow</mat-label>
                <mat-select [(ngModel)]="jobInfo.workflows" name="workflow_name">
-                <mat-option *ngFor="let workflow of workflows" [value]="[[workflow.id, workflow.title, this.getDate()]]">
+                <mat-option *ngFor="let workflow of workflows" [value]="[[workflow.id, workflow.workflow_type, this.getDate()]]">
                     {{ workflow.title }} ({{workflow.workflow_type}})
                 </mat-option>
               </mat-select>
