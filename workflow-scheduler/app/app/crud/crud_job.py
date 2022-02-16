@@ -17,30 +17,11 @@ class CRUDJob(CRUDBase[Job, JobCreate, JobUpdate]):
     def create_with_owner(
         self, db: Session, *, obj_in: JobCreate, owner_id: int
     ) -> Job:
-
-        ############ Todo: Merge relict. Move to endpoint!
-        # Get connection to Workflow Designer Database
-        print('Here is obj_in:', obj_in)
-        db_designer = get_db_workflow_designer_node_red()
-        _ = next(db_designer)
-        # Retrieve flow with specified ID
-        flow = crud.flow.get(db=_, id=obj_in.flow_id)
-        obj_in.uuid = uuid4()
-        obj_in.flow = flow.flow
-        obj_in.created_at = datetime.now()
-        ############
-
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, owner_id=owner_id)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
-
-        ############ Todo: Merge relict. Check if necessary!
-        # Change parsed flow style again for returning
-        db_obj.flow = json.dumps(flow.flow)
-        ############
-
         return db_obj
 
     def get_multi_by_owner(
