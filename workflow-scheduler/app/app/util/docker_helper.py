@@ -92,14 +92,14 @@ def create_python_workflow_image(docker_client, image_name: str):
     image, logs = docker_client.images.build(path='app/workflow-executor-python/', tag=image_name)
     return image
 
-def create_python_workflow_container(docker_client, container_name: str, workflow_data: str, services_data: str):
+def create_python_workflow_container(docker_client, image_name: str, container_name: str, workflow_data: str, services_data: str):
     dc = DriverConfig(name='local', options={
         'max-size': '10m'
     })
     # publish_all_ports
     extra_hosts = {'host.docker.internal': 'host-gateway'}
     container = docker_client.containers.create(
-        'workflow_executor_python',
+        image_name,
         'python main.py',
         name=container_name,
         # detach=False,
@@ -118,4 +118,3 @@ def create_python_workflow_container(docker_client, container_name: str, workflo
         container.put_archive('/usr/src/app', buff)
     _delete_file(tar)
     return container
-

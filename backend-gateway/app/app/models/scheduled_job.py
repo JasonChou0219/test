@@ -39,4 +39,5 @@ class ScheduledJob(Base):
     created_at = Column(TIMESTAMP(timezone=True), index=True)
     execute_at = Column(TIMESTAMP(timezone=True), index=True)
     scheduled_at = Column(TIMESTAMP(timezone=True), index=True)
+    job_id = Column(Integer, index=False)
     job_status = Column(IntEnum(ScheduledJobStatus), index=False)

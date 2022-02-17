@@ -14,7 +14,7 @@ export class JobsMenuSchedulerComponent implements OnInit {
     filterInput;
     newScheduledJobInput;
     selectedJob = null;
-    jobs: JobInfo[];  // WorkflowInfo
+    jobs: JobInfo[];
     jobsShown: JobInfo[];
     lastSearchTag: string = '';
   constructor(

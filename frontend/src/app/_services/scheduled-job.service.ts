@@ -14,14 +14,6 @@ export class ScheduledJobService {
     serverUrl = env.apiUrl;
     constructor(private http: HttpClient) {
     }
-    /*
-    async getUserScheduledJobsInfo(): Promise<ScheduledJobInfo[]> {
-        return this.http
-            .get<ScheduledJobInfo[]>(`${env.apiUrl}/api/v1/scheduled_jobs/`)
-            .pipe(map((scheduledJob) => scheduledJob))
-            .toPromise();
-    }
-    */
     async getUserScheduledJobsInfo(): Promise<ScheduledJobInfo[]> {
         return this.http
             .get<ScheduledJobInfo[]>(`${env.apiUrl}/api/v1/scheduled_jobs/`)
@@ -37,7 +29,7 @@ export class ScheduledJobService {
         console.log('endpoint: ', scheduledJobInfo)
         return this.http
             .put(
-                `${env.apiUrl}/api/v1/jscheduled_obs/${scheduledJobInfo.id}`,
+                `${env.apiUrl}/api/v1/scheduled_jobs/${scheduledJobInfo.id}`,
                 scheduledJobInfo
             )
             .toPromise();
@@ -48,6 +40,7 @@ export class ScheduledJobService {
             .toPromise();
     }
     async createUserScheduledJob(scheduledJob: ScheduledJobInfo) {
+        scheduledJob.job_id = scheduledJob.id
         return this.http
             .post(`${env.apiUrl}/api/v1/scheduled_jobs/`, scheduledJob)
             .toPromise();

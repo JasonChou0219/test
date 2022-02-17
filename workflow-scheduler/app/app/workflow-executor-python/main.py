@@ -1,7 +1,4 @@
-# from source.device_manager.device_layer.device_interface import DeviceInterface, DeviceType
-# from source.device_manager.device_layer.sila_device import SilaDevice
-# from source.device_manager.device_layer.dummy_device import DummyDevice
-import workflow_script
+import workflow
 import services
 from uuid import UUID
 
@@ -13,7 +10,8 @@ def main():
     #     for info in devices.devices
     # ]
     # return workflow_script.run(devs)
-    return workflow_script.run()
+    print('main.py executed \n')
+    return workflow.run()
 
 if __name__ == "__main__":
     main()

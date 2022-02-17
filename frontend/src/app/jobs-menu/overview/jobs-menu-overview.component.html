@@ -31,7 +31,9 @@
                 <mat-card-content>
                     {{scheduledJob.description}}
                     <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>Based on job template:  {{scheduledJob.job_id}} </h5>
                     <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Execute at:  {{scheduledJob.execute_at}} </h5>
                     <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
                     <h5>Workflows:  {{scheduledJob.workflows}} </h5>
                     <!--
@@ -54,7 +56,9 @@
                 <mat-card-content>
                     {{scheduledJob.description}}
                     <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>based on job template:  {{scheduledJob.job_id}} </h5>
                     <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
+                    <h5>Executed at:  {{scheduledJob.execute_at}} </h5>
                     <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
                     <h5>Workflows:  {{scheduledJob.workflows}} </h5>
                     <!--
@@ -77,8 +81,9 @@
                 <mat-card-content>
                     {{scheduledJob.description}}
                     <h5>Scheduled Job-ID:  {{scheduledJob.id}} </h5>
+                    <h5>based on job template:  {{scheduledJob.job_id}} </h5>
                     <h5>Scheduled at:  {{scheduledJob.scheduled_at}} </h5>
-                    <h5>Scheduled at:  {{scheduledJob.execute_at}} </h5>
+                    <h5>Executed at:  {{scheduledJob.execute_at}} </h5>
                     <h5>Job status:  {{scheduledJobStatus[scheduledJob.job_status]}} </h5>
                     <h5>Workflows:  {{scheduledJob.workflows}} </h5>
                     <!--

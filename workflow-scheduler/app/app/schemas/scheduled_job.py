@@ -34,6 +34,7 @@ class ScheduledJobBase(BaseModel):
     execute_at: datetime = None
     created_at: datetime = None
     scheduled_at: datetime = None
+    job_id: int = None
     job_status: ScheduledJobStatus = ScheduledJobStatus(6)
 
 
@@ -44,13 +45,15 @@ class ScheduledJobCreate(ScheduledJobBase):
 
 # Properties to receive on item update
 class ScheduledJobUpdate(ScheduledJobBase):
+    id: int
+    job_id: int
     pass
 
 
 # Properties shared by models stored in DB
 class ScheduledJobInDBBase(ScheduledJobBase):
     id: int
-
+    job_id: int
     class Config:
         orm_mode = True
 

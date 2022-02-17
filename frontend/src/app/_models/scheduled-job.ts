@@ -31,6 +31,7 @@ export interface ScheduledJob {
     execute_at: Date;
     created_at: Date;
     scheduled_at: Date;
+    job_id: number;
     job_status: typeof ScheduledJobStatus;
 }
 
@@ -50,6 +51,7 @@ export interface ScheduledJobInfo {
     execute_at: Date;
     created_at: Date;
     scheduled_at: Date;
+    job_id: number;
     job_status: typeof  ScheduledJobStatus;
 }
 

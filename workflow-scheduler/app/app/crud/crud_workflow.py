@@ -31,6 +31,14 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
             .all()
         )
 
+    def get(self, db: Session, id: int, job_id: int) -> Workflow:
+        return (
+            db.query(self.model)
+                .filter(Workflow.id == id,
+                        Workflow.job_id == job_id)
+                .first()
+        )
+
 
 class Designer(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     pass

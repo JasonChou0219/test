@@ -28,8 +28,6 @@ def read_scheduled_jobs(
     Retrieve scheduled_jobs.
     """
     query_params = dict(request.query_params.items())
-    print('###############')
-    print(query_params)
     for key in ['skip', 'limit']:
         query_params.pop(key)
     user = schemas.User(**query_params)
@@ -54,8 +52,6 @@ def create_scheduled_job(
     Create new scheduled_job.
     """
     user = schemas.User(**dict(request.query_params.items()))
-    # user_dict = jsonable_encoder(user)
-    # scheduled_job_in.owner_id = user.id
     scheduled_job_in.scheduled_at = datetime.now()
     try:
         scheduled_job = crud.scheduled_job.create(db=db, obj_in=scheduled_job_in)
