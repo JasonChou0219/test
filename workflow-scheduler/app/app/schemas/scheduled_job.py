@@ -34,7 +34,7 @@ class ScheduledJobBase(BaseModel):
     execute_at: datetime = None
     created_at: datetime = None
     scheduled_at: datetime = None
-    job_id: int = None
+    job_id: Optional[int] = None
     job_status: ScheduledJobStatus = ScheduledJobStatus(6)
 
 
