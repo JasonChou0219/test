@@ -9,23 +9,23 @@ from app.service_manager import client_controller
 router = APIRouter()
 
 
-@router.get("/connect")
+@router.get("/connect/")
 def connect_client(client_ip: str, client_port: int):
     client_controller.connect_client(client_ip, client_port)
     return True
 
 
-@router.get("/discover", response_model=List[schemas.ServiceInfo])
+@router.get("/discover/", response_model=List[schemas.ServiceInfo])
 def mdns_discover():
     return client_controller.discover_clients()
 
 
-@router.get("/browse_features", response_model=List[schemas.Feature])
+@router.get("/browse_features/", response_model=List[schemas.Feature])
 def browse_features(service_uuid: str):
     return client_controller.browse_features(service_uuid)
 
 
-@router.get("/unobservable", response_model=schemas.FunctionResponse)
+@router.get("/unobservable/", response_model=schemas.FunctionResponse)
 def run_function(service_uuid: str,
                  identifier: str,
                  function: str,
