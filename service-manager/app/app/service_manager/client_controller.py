@@ -11,10 +11,10 @@ service_feature_controllers: Dict[str, FeatureController] = {}
 
 
 def discover_clients():
-    services = List[ServiceInfo]
+    services = []
     browser = SilaDiscoveryBrowser()
     try:
-        browser.find_server("IllegalNameValue", timeout=5)
+        browser.find_server("IllegalNameValue", timeout=2)
     except:
         pass
 
@@ -27,22 +27,26 @@ def discover_clients():
         sila_service.type = client.SiLAService.ServerType.get()
         sila_service.description = client.SiLAService.ServerDescription.get()
 
+        #sila_service.parsed_ip_address = client.SiLAService.__address
+        #sila_service.port = client.SiLAService.__port
+
         sila_service.uuid = client.SiLAService.ServerUUID.get()
         sila_service.type = client.SiLAService.ServerType.get()
         sila_service.version = client.SiLAService.ServerVersion.get()
 
         sila_service.online = True
         sila_service.favourite = False
+        sila_service.isGateway = False
 
-        # sila_service.parsed_ip_address = client.SiLAService.get()
-        # sila_service.port = 0
+       #prop_address = getattr(client.SiLAService, "address")
+       # prop_port = getattr(client.SiLAService, "port")
 
         for feature_identifier in client.SiLAService.ImplementedFeatures.get():
             sila_service.feature_names.append(feature_identifier)
 
         services.append(sila_service)
 
-    return services
+    return list(services)
 
 
 def connect_client(client_ip: str, client_port: int):

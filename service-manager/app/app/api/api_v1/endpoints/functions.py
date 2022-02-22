@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/connect")
 def connect_client(client_ip: str, client_port: int):
     client_controller.connect_client(client_ip, client_port)
-    return
+    return True
 
 
 @router.get("/discover", response_model=List[schemas.ServiceInfo])
