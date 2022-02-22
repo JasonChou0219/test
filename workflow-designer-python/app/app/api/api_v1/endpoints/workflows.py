@@ -25,7 +25,7 @@ def read_workflows(
     query_params = dict(request.query_params.items())
     for key in ['skip', 'limit']:
         query_params.pop(key)
-    user = models.User(**query_params)
+    user = schemas.User(**query_params)
 
     if user.is_superuser:
         workflows = crud.workflow.get_multi(db, skip=skip, limit=limit)
@@ -47,8 +47,8 @@ def create_workflow(
     """
     Create new workflow.
     """
-    user = models.User(**dict(request.query_params.items()))
-
+    user = schemas.User(**dict(request.query_params.items()))
+    workflow_in.workflow_type = 'python'
     workflow = crud.workflow.create(db=db, obj_in=workflow_in)
     return workflow
 
@@ -68,7 +68,7 @@ def update_workflow(
     query_params = dict(request.query_params.items())
     for key in ['id']:
         query_params.pop(key)
-    user = models.User(**query_params)
+    user = schemas.User(**query_params)
 
     workflow = crud.workflow.get(db=db, id=id)
     if not workflow:
@@ -90,9 +90,9 @@ def read_workflow(
     Get workflow by ID.
     """
     query_params = dict(request.query_params.items())
-    for key in ['id']:
-        query_params.pop(key)
-    user = models.User(**query_params)
+    # for key in ['id']:
+    #     query_params.pop(key)
+    user = schemas.User(**query_params)
 
     workflow = crud.workflow.get(db=db, id=id)
     if not workflow:
@@ -115,7 +115,7 @@ def delete_workflow(
     query_params = dict(request.query_params.items())
     for key in ['id']:
         query_params.pop(key)
-    user = models.User(**query_params)
+    user = schemas.User(**query_params)
 
     workflow = crud.workflow.get(db=db, id=id)
     if not workflow:

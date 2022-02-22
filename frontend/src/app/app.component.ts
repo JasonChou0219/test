@@ -45,6 +45,9 @@ export class AppComponent {
     this.matIconRegistry.addSvgIconInNamespace('assets', 'calendar-clock-outline',
         this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/calendar-clock-outline.svg')
     );
+    this.matIconRegistry.addSvgIconInNamespace('assets', 'chronograf',
+        this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/chronograf.svg')
+    );
     this.matIconRegistry.addSvgIconInNamespace('assets', 'clock-outline',
         this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/clock-outline.svg')
     );

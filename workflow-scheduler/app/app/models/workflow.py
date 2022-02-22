@@ -12,10 +12,21 @@ if TYPE_CHECKING:
 
 
 class Workflow(Base):
-    id = Column(Integer, primary_key=True, index=True)
-    workflow = Column(JSON)
-    description = Column(String, index=True)
+    uid = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, index=True)
     title = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="workflows")
+    workflow_type = Column(String, index=True)
+    file_name = Column(String, index=False)
+    data = Column(JSON, index=False)
+    owner = Column(String, index=True)
+    owner_id = Column(Integer, index=True)
+    description = Column(String, index=True)
+    job_id = Column(Integer, ForeignKey("job.id"))
+
+    #id = Column(Integer, primary_key=True, index=True)
+    #workflow = Column(JSON)
+    #description = Column(String, index=True)
+    #title = Column(String, index=True)
+    #owner_id = Column(Integer, ForeignKey("user.id"))
+    #owner = relationship("User", back_populates="workflows")
     #jobs = relationship("Job", back_populates="workflow")

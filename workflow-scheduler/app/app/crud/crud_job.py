@@ -1,4 +1,7 @@
+import json
+from datetime import datetime
 from typing import List
+from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -6,6 +9,8 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.job import Job
 from app.schemas.job import JobCreate, JobUpdate
+from app.api.deps import get_db_workflow_designer_node_red
+from app import crud
 
 
 class CRUDJob(CRUDBase[Job, JobCreate, JobUpdate]):

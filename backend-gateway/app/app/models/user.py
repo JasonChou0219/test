@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .item import Item  # noqa: F401
     from .service import Service  # noqa: F401
     from .workflow import Workflow
+    from .database import Database
 
 
 class User(Base):

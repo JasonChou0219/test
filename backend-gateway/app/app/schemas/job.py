@@ -1,16 +1,14 @@
-from typing import Optional
+from typing import Optional, List, Tuple
 from datetime import datetime
-from uuid import uuid4, UUID
+
 from enum import IntEnum
 
 from pydantic import BaseModel, Json
 
-from .workflow import WorkflowInDB
-
 
 class JobStatus(IntEnum):
     WAITING_FOR_EXECUTION = 0
-    SUBMITED_FOR_EXECUTION = 1
+    SUBMITTED_FOR_EXECUTION = 1
     RUNNING = 2
     FINISHED_SUCCESSFUL = 3
     FINISHED_ERROR = 4
@@ -20,20 +18,18 @@ class JobStatus(IntEnum):
 
 # Shared properties
 class JobBase(BaseModel):
+    id: Optional[int] = None
     title: Optional[str] = None
     description: Optional[str] = None
     owner: Optional[str] = None
     owner_id: Optional[int] = None
 
-    # workflow: WorkflowInDB = None
-    workflow_id: Optional[int] = None
-    workflow_type: Optional[str] = None
-    workflow_execute_at: Optional[datetime]
+    workflows: Optional[List[Tuple[int, str, datetime]]] = []  # [workflow_id, workflow_type, workflow_execute_at]
 
     # data_acquisition_protocol: Optional[Json] = None
     # data_acquisition_protocol_execute_at: Optional[datetime]
 
-    # dataflow: Optiona[Json] = None
+    # dataflow: Optional[Json] = None
     # dataflow_type: Optional[str] = None
     # dataflow_execute_at: Optional[datetime]
     # database: Optional[UUID]
@@ -41,14 +37,15 @@ class JobBase(BaseModel):
     # service_bookings:
     execute_at: Optional[datetime]
     created_at: Optional[datetime]
+    running: Optional[bool] = False
 
 
 # Properties to receive on item creation
 class JobCreate(JobBase):
     title: str
-    # uuid: UUID = uuid4()
-
-    # workflow: WorkflowInDB
+    owner: str
+    owner_id: int
+    created_at: datetime
 
 
 # Properties to receive on item update
@@ -58,10 +55,11 @@ class JobUpdate(JobBase):
 
 # Properties shared by models stored in DB
 class JobInDBBase(JobBase):
-    # uuid: UUID
     id: int
     title: str
+    owner: str
     owner_id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True

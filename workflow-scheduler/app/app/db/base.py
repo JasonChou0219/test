@@ -6,4 +6,4 @@ from app.models.item import Item  # noqa
 from app.models.user import User  # noqa
 from app.models.workflow import Workflow # noqa
 from app.models.job import Job # noqa
-
+from app.models.scheduled_job import ScheduledJob, ScheduledJobStatus # noqa

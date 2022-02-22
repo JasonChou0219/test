@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.base import CRUDBase
 from app.models.service import Service
-from app.schemas.deprecated_service import ServiceCreate, ServiceUpdate
+from app.schemas.service import ServiceCreate, ServiceUpdate
 
 
 class CRUDService(CRUDBase[Service, ServiceCreate, ServiceUpdate]):

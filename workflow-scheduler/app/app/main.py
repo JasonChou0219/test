@@ -1,8 +1,16 @@
+import threading
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+import docker
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+from app.scheduler import main as scheduler
+from app.util.data_directories import create_directories
+from app.util import docker_helper
+
+create_directories()
 
 app = FastAPI(
     title=settings.WORKFLOW_SCHEDULER_NAME,
@@ -28,3 +36,9 @@ if settings.BACKEND_GATEWAY_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+docker_client =docker.from_env()
+image_name = 'workflow_executor_python'
+image = docker_helper.create_python_workflow_image(docker_client, image_name)
+threading.Thread(target=scheduler).start()

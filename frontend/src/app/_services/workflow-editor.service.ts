@@ -36,7 +36,7 @@ export class WorkflowEditorService {
     }
     async setUserWorkflow(workflow: Workflow) {
         return this.http
-            .put(`${env.apiUrl}/api/v1/workflows/${workflow.id}/`, workflow)
+            .put(`${env.apiUrl}/api/v1/workflows/${workflow.id}`, workflow)
             .toPromise();
     }
     async createUserWorkflow(workflow: WorkflowInfo) {
