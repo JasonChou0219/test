@@ -37,7 +37,10 @@ class FeatureController:
                      is_observable: bool,
                      response_identifiers: List[str] = None,
                      parameters: List = None):
-        response = (getattr(vars(self.sila_client)[identifier], function))
+        try:
+            response = (getattr(vars(self.sila_client)[identifier], function))
+        except KeyError:
+            raise ValueError("Client has no identifier matching " + identifier)
 
         response_values = []
 
