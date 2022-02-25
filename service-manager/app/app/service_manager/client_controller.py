@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from sila2.client import SilaClient
 from sila2.discovery import SilaDiscoveryBrowser
@@ -76,7 +76,7 @@ def run_function(service_uuid: str,
                  function_indetifier: str,
                  is_property: bool,
                  response_identifiers: List[str] = None,
-                 parameters: List[str] = None):
+                 parameters: [List[Union[int, str, float]]] = None):
     feature_controller = service_feature_controllers[service_uuid]
     try:
         function_resp = feature_controller.run_function(

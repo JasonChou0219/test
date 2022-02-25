@@ -41,7 +41,7 @@ class FeatureController:
         except KeyError:
             raise ValueError("Client has no identifier matching " + feature_identifier)
 
-        response_values = []
+        response_values = {}
 
         if is_property:
            # if is_observable:
@@ -65,7 +65,8 @@ class FeatureController:
                 #command_response = command_response.get_responses()
 
             for response_id in response_identifiers:
-                response_values.append(str(response_id) + ":" + getattr(command_response, response_id))
+                response_values.update({str(response_id): getattr(command_response, response_id)})
+
         return response_values
 
 
