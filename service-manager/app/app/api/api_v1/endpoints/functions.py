@@ -75,7 +75,7 @@ def browse_features(service_uuid: str):
     return features
 
 
-@router.get("/unobservable/")
+@router.get("/unobservable/", response_model=schemas.FunctionResponse)
 def run_function(service_uuid: str,
                  feature_identifier: str,
                  function_identifier: str,
