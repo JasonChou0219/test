@@ -1,3 +1,4 @@
+requests
 sila2
 appdirs
 filelock 
