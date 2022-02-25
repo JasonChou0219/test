@@ -76,19 +76,25 @@ def browse_features(service_uuid: str):
 
 @router.get("/unobservable/", response_model=schemas.FunctionResponse)
 def run_function(service_uuid: str,
-                 identifier: str,
-                 function: str,
+                 feature_identifier: str,
+                 function_identifier: str,
                  is_property: bool,
-                 is_observable: bool,
                  response_identifiers: Optional[List[str]] = Query(None),
                  parameters: Optional[List[Union[int, str, float]]] = Query(None)):
     try:
         response = FunctionResponse()
-        response.feature_identifier = identifier
-        response.function_identifier = function
+        response.feature_identifier = feature_identifier
+        response.function_identifier = function_identifier
 
-        response.response = client_controller.run_function(service_uuid, identifier, function, is_property,
-                                                           is_observable, response_identifiers=response_identifiers,
+        for param in parameters:
+            try:
+                param = float(param) if '.' in param else int(param)
+            except:
+                if param.lower() in ["true", "false"]:
+                    param = True if param.lower() == "true" else False
+
+        response.response = client_controller.run_function(service_uuid, feature_identifier, function_identifier, is_property,
+                                                           response_identifiers=response_identifiers,
                                                            parameters=parameters)
         return response
 
@@ -118,15 +124,6 @@ def run_function(service_uuid: str,
                 status_code=405,
                 detail="IllegalArgument: Expected a property but identifier belong to a command",
             )
-        if "Unobservable" in str(attribute_error) and is_observable:
-            raise HTTPException(
-                status_code=405,
-                detail="AttributeError: Command or function is not observable",
-            )
-        raise HTTPException(
-            status_code=400,
-            detail="AttributeError: " + str(attribute_error),
-        )
     except Exception as exception:
         raise HTTPException(
             status_code=400,
