@@ -66,7 +66,6 @@ class FeatureController:
 
             for response_id in response_identifiers:
                 response_values.append(str(response_id) + ":" + getattr(command_response, response_id))
-
         return response_values
 
 

@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import ValidationError
+# noinspection PyInterpreter
 from sila2.framework import SilaConnectionError
 
 from app import schemas
@@ -85,17 +86,32 @@ def run_function(service_uuid: str,
         response = FunctionResponse()
         response.feature_identifier = feature_identifier
         response.function_identifier = function_identifier
-
+        print('oaeufgalwbglwenfaeögnöwg')
+        print(parameters)
         for param in parameters:
-            try:
-                param = float(param) if '.' in param else int(param)
-            except:
-                if param.lower() in ["true", "false"]:
-                    param = True if param.lower() == "true" else False
-
+            #try:
+            #    param = float(param) if '.' in param else int(param)
+            #    parsed_params.append(param)
+            #    print('try')
+            #    print(param)
+            #except:
+            #    print('except')
+            #    print(param)
+            if str(param).lower() in ["true", "false"]:
+                print('9999999999999999999999999999')
+                param = True if str(param).lower() == "true" else False
+            #    parsed_params.append(param)
+            #    print('9999999999999999999999999999')
+            #    continue
+        print('~~~~~~~~~~~~~~~')
+        print(parameters)
         response.response = client_controller.run_function(service_uuid, feature_identifier, function_identifier, is_property,
                                                            response_identifiers=response_identifiers,
                                                            parameters=parameters)
+        print('+++++++++++++')
+        print(response)
+        print(response.response)
+        print('####')
         return response
 
     except ValidationError as validation_error:
