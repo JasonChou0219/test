@@ -110,15 +110,14 @@ async def browse_features(service_uuid: str):
 
 @router.get("/unobservable", response_model=schemas.FunctionResponse)
 async def run_client_function(service_uuid: str,
-                              identifier: str,
-                              function: str,
+                              feature_identifier: str,
+                              function_identifier: str,
                               is_property: bool,
-                              is_observable: bool,
                               response_identifiers: Optional[List[str]] = Query(None),
                               parameters: Optional[List[Union[int, str, float]]] = Query(None)):
     target_route = target_service_url + "sm_functions/unobservable/"
-    query_params = [('service_uuid', service_uuid), ('identifier', identifier),
-                    ('function', function), ('is_property', str(is_property)), ('is_observable', str(is_observable))]
+    query_params = [('service_uuid', service_uuid), ('feature_identifier', feature_identifier),
+                    ('function_identifier', function_identifier), ('is_property', str(is_property))]
 
     if response_identifiers:
         for response_id in response_identifiers:

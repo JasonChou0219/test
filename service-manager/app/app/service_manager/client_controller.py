@@ -13,7 +13,7 @@ service_feature_controllers: Dict[str, FeatureController] = {}
 
 def discover_clients():
     services = []
-    browser = SilaDiscoveryBrowser()
+    browser = SilaDiscoveryBrowser(insecure=True)
     try:
         browser.find_server("IllegalNameValue", timeout=2)
     except:
@@ -49,7 +49,7 @@ def get_service_info(client):
 
 
 def connect_client(client_ip: str, client_port: int, reset: str = None):
-    client = SilaClient(str(client_ip), client_port)
+    client = SilaClient(str(client_ip), client_port, insecure=True)
     service_uuid = client.SiLAService.ServerUUID.get()
     if reset and service_uuid in sila_services:
         raise ValueError("Client already in use")
@@ -72,16 +72,15 @@ def browse_features(service_uuid: str):
 
 
 def run_function(service_uuid: str,
-                 identifier: str,
-                 function: str,
+                 feature_identifier: str,
+                 function_indetifier: str,
                  is_property: bool,
-                 is_observable: bool,
                  response_identifiers: List[str] = None,
                  parameters: List[str] = None):
     feature_controller = service_feature_controllers[service_uuid]
     try:
         function_resp = feature_controller.run_function(
-            identifier, function, is_property, is_observable, response_identifiers, parameters)
+            feature_identifier, function_indetifier, is_property, response_identifiers, parameters)
     except SilaConnectionError:
         sila_services.pop(service_uuid)
         raise ValueError("Lost connection with client with uuid" + service_uuid)
