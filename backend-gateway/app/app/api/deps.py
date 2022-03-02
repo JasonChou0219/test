@@ -11,6 +11,9 @@ from app.core import security
 from app.core.config import settings
 from app.db.session import SessionLocal
 
+# Todo: Remove once proper API call to Workflow_Designer_Node_RED has been established
+from app.db.session import SessionLocal_WorkflowDesigner_Node_Red
+
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token",
     # To-do: scopes={"me": "Read information about the current user.", "items": "Read items."},
@@ -20,6 +23,15 @@ reusable_oauth2 = OAuth2PasswordBearer(
 def get_db() -> Generator:
     try:
         db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+
+
+# Todo: Remove once proper API call to Workflow_Designer_Node_RED has been established
+def get_db_workflow_designer_node_red() -> Generator:
+    try:
+        db = SessionLocal_WorkflowDesigner_Node_Red()
         yield db
     finally:
         db.close()
