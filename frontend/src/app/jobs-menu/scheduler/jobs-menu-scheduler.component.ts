@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { FormBuilder } from '@angular/forms'
-import {JobService, AccountService, WorkflowEditorService} from '@app/_services';
+import {JobService, ScheduledJobService, AccountService, WorkflowEditorService} from '@app/_services';
 import {JobInfo, JobInfoList, WorkflowInfo} from '@app/_models';
 
 
@@ -14,11 +14,13 @@ export class JobsMenuSchedulerComponent implements OnInit {
     filterInput;
     newScheduledJobInput;
     selectedJob = null;
-    jobs: JobInfo[];  // WorkflowInfo
+    jobs: JobInfo[];
     jobsShown: JobInfo[];
+    lastSearchTag: string = '';
   constructor(
       private formBuilder: FormBuilder,
-      public jobService: JobService,
+      private jobService: JobService,
+      private scheduledJobService: ScheduledJobService,
       private accountService: AccountService
   ) {
       this.filterInput = this.formBuilder.group({
@@ -42,27 +44,28 @@ export class JobsMenuSchedulerComponent implements OnInit {
       return this.newScheduledJobInput.get('executeAt').value
   }
   filter(searchTag: string) {
+    this.lastSearchTag = searchTag
     this.jobsShown = [];
     for (let entry in this.jobs) {
-        console.log(this.jobs[entry])
-        console.log(searchTag)
-        if (this.jobs[entry].title.includes(searchTag)) {
+        if (this.jobs[entry].title.includes(this.lastSearchTag)) {
             this.jobsShown.push(this.jobs[entry])
-        } else if (searchTag === '') {
-            const tmp = this.getJobs()
-            this.jobsShown = this.jobs
         }
+        }
+    if (this.lastSearchTag === '') {
+        const tmp = this.getJobs()
+        this.jobsShown = this.jobs
     }
   }
   async selectJob(job: JobInfo) {
       this.selectedJob = job
   }
   async scheduleJob(){
-      console.log('Scheduling a new job!')
-      console.log(this.getScheduledJobExecutionTime())
       this.selectedJob.execute_at = this.getScheduledJobExecutionTime()
-      console.log(this.selectedJob)
-      this.jobService.createScheduledJob()
+      await this.scheduledJobService.createUserScheduledJob(this.selectedJob)
+  }
+  async deleteJob(id: number) {
+      await this.jobService.deleteUserJob(id)
+      await this.refresh()
   }
   async getJobs() {
       this.jobs = await (
@@ -71,6 +74,10 @@ export class JobsMenuSchedulerComponent implements OnInit {
             return jobInfo
         });
     }
+  async refresh() {
+      await this.getJobs()
+      this.filter(this.lastSearchTag)
+  }
   async ngOnInit() {
       await this.getJobs()
       this.jobsShown = this.jobs

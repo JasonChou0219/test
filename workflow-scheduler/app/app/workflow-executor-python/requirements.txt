@@ -1,0 +1,9 @@
+requests
+sila2
+appdirs
+filelock 
+influxdb
+numpy
+pandas
+matplotlib
+scipy

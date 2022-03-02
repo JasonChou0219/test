@@ -1,7 +1,8 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import aiohttp
-from fastapi import APIRouter, Query
+from aiohttp import ClientConnectorError
+from fastapi import APIRouter, Query, HTTPException
 
 from app import schemas
 from app.core.config import settings
@@ -17,45 +18,106 @@ target_service_url = target_service_hostname + ":" \
 
 
 @router.get("/connect")
-async def connect_to_client_and_get_features(client_ip: str, client_port: int):
+async def connect_to_client(client_ip: str, client_port: int, reset: bool = False):
     target_route = target_service_url + "sm_functions/connect/"
     query_params = [('client_ip', client_ip), ('client_port', client_port)]
+    if reset:
+        query_params.append(('reset', "true"))
     async with aiohttp.ClientSession() as session:
-        async with session.get(target_route, ssl=False, params=query_params) as resp:
-            response = await resp.json()
-            return response
+        try:
+            async with session.get(target_route, ssl=False, params=query_params) as resp:
+                response = await resp.json()
+                if resp.status == 200:
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=resp.status,
+                        detail=str(response),
+                    )
+        except ClientConnectorError as client_error:
+            raise HTTPException(
+                status_code=404,
+                detail=str(client_error),
+            )
+
+
+@router.get("/connect_initial")
+async def initial_connect_to_client_and_get_features(client_ip: str, client_port: int, reset: bool = False):
+    target_route = target_service_url + "sm_functions/connect_initial/"
+    query_params = [('client_ip', client_ip), ('client_port', client_port)]
+    if reset:
+        query_params.append(('reset', "true"))
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(target_route, ssl=False, params=query_params) as resp:
+                response = await resp.json()
+                if resp.status == 200:
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=resp.status,
+                        detail=str(response),
+                    )
+        except ClientConnectorError as client_error:
+            raise HTTPException(
+                status_code=404,
+                detail=str(client_error),
+            )
 
 
 @router.get("/discover", response_model=List[schemas.ServiceInfo])
-async def connect_to_client_and_get_features():
+async def discover_clients():
     target_route = target_service_url + "sm_functions/discover/"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(target_route, ssl=False) as resp:
-            response = await resp.json()
-            return response
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(target_route, ssl=False) as resp:
+                response = await resp.json()
+                if resp.status == 200:
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=resp.status,
+                        detail=str(response),
+                    )
+    except ClientConnectorError as client_error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(client_error),
+        )
 
 
 @router.get("/browse_features", response_model=List[schemas.Feature])
-async def connect_to_client_and_get_features(service_uuid: str):
+async def browse_features(service_uuid: str):
     target_route = target_service_url + "sm_functions/browse_features/"
     query_params = [('service_uuid', service_uuid)]
-    async with aiohttp.ClientSession() as session:
-        async with session.get(target_route, ssl=False, params=query_params) as resp:
-            response = await resp.json()
-            return response
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(target_route, ssl=False, params=query_params) as resp:
+                response = await resp.json()
+            if resp.status == 200:
+                return response
+            else:
+                raise HTTPException(
+                    status_code=resp.status,
+                    detail=str(response),
+                )
+    except ClientConnectorError as client_error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(client_error),
+        )
 
 
 @router.get("/unobservable", response_model=schemas.FunctionResponse)
 async def run_client_function(service_uuid: str,
-                              identifier: str,
-                              function: str,
+                              feature_identifier: str,
+                              function_identifier: str,
                               is_property: bool,
-                              is_observable: bool,
                               response_identifiers: Optional[List[str]] = Query(None),
-                              parameters: Optional[List[str]] = Query(None)):
+                              parameters: Optional[List[Union[int, str, float]]] = Query(None)):
     target_route = target_service_url + "sm_functions/unobservable/"
-    query_params = [('service_uuid', service_uuid), ('identifier', identifier),
-                    ('function', function), ('is_property', str(is_property)), ('is_observable', str(is_observable))]
+    query_params = [('service_uuid', service_uuid), ('feature_identifier', feature_identifier),
+                    ('function_identifier', function_identifier), ('is_property', str(is_property))]
 
     if response_identifiers:
         for response_id in response_identifiers:
@@ -64,7 +126,19 @@ async def run_client_function(service_uuid: str,
         for param in parameters:
             query_params.append(('parameters', param))
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(target_route, ssl=False, params=query_params) as resp:
-            data = await resp.json()
-            return data
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(target_route, ssl=False, params=query_params) as resp:
+                response = await resp.json()
+            if resp.status == 200:
+                return response
+            else:
+                raise HTTPException(
+                    status_code=resp.status,
+                    detail=str(response),
+                )
+    except ClientConnectorError as client_error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(client_error),
+        )

@@ -297,6 +297,22 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
         - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
 
+  mdns_repeater:
+    image: jdbeeler/mdns-repeater:latest
+    # image: raetha/mdns-repeater
+    network_mode: "host"
+    privileged: true
+    env_file:
+      - ./service-manager/mdns-repeater.conf
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      labels:
+        - traefik.enable=false
+        - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        - traefik.http.routers.${STACK_NAME?Variable not set}-service-manager-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        - traefik.http.services.${STACK_NAME?Variable not set}-service-manager.loadbalancer.server.port=${SERVICE_MANAGER_UVICORN_PORT?Variable not set}
+
   celeryworker-service-manager:
     image: '${DOCKER_IMAGE_CELERYWORKER_SERVICE_MANAGER?Variable not set}:${TAG-latest}'
     depends_on:
@@ -457,8 +473,9 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - HOST=0.0.0.0
       - PORT=${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
-      - BIND=${DOMAIN?Variable not set}:${DATA_ACQUISITION_UVICORN_PORT?Variable not set}
+      - BIND=0.0.0.0:${DATA_ACQUISITION_UVICORN_PORT?Variable not set}:80
     build:
       context: ./data-acquisition
       dockerfile: data-acquisition.dockerfile

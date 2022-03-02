@@ -15,5 +15,6 @@ class ServiceInfo(BaseModel):
     description: Optional[str] = None
     feature_names: Optional[List[str]] = []
     online: Optional[bool] = False
+    isGateway: Optional[bool]
     favourite: Optional[bool] = False
 

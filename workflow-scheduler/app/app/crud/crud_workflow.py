@@ -13,10 +13,6 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
     def create_with_owner(
         self, db: Session, *, obj_in: WorkflowCreate, owner_id: int
     ) -> Workflow:
-        # db_designer = get_db_workflow_designer()
-        ############ Todo: Merge relict. Check if this is necessary!
-        # obj_in.workflow = workflow.workflow
-        ############
         obj_in_data = obj_in
         db_obj = self.model(**obj_in_data.json(), job_id=owner_id)
         db.add(db_obj)
@@ -33,6 +29,14 @@ class CRUDWorkflow(CRUDBase[Workflow, WorkflowCreate, WorkflowUpdate]):
             .offset(skip)
             .limit(limit)
             .all()
+        )
+
+    def get(self, db: Session, id: int, job_id: int) -> Workflow:
+        return (
+            db.query(self.model)
+                .filter(Workflow.id == id,
+                        Workflow.job_id == job_id)
+                .first()
         )
 
 

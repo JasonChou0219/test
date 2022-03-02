@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {ScheduledJobService} from '@app/_services';
+import {ScheduledJobInfo, ScheduledJobStatus} from '@app/_models';
 
 
 interface RowData {
@@ -14,17 +16,28 @@ interface RowData {
   styleUrls: ['./jobs-menu-overview.component.scss']
 })
 export class JobsMenuOverviewComponent implements OnInit {
-    dataSource: RowData[] = [];
-    tableColumns = [
-        'name',
-        'online',
-        'edit',
-    ];
+    scheduledJobs: ScheduledJobInfo[];
     selected: number | null = null;
-
-  constructor() { }
-
-  ngOnInit(): void {
+    scheduledJobStatus = ScheduledJobStatus
+  constructor(
+      private scheduledJobService: ScheduledJobService,
+  ) {}
+  async getScheduledJobs() {
+    this.scheduledJobs = await (
+          await this.scheduledJobService.getUserScheduledJobsInfo()
+      ).map((scheduledJobInfo) => {
+          return scheduledJobInfo
+      });
+  }
+  async refresh() {
+        await this.getScheduledJobs()
+    }
+  async deleteScheduledJob(id: number) {
+        await this.scheduledJobService.deleteUserScheduledJob(id)
+        await this.refresh()
+  }
+  async ngOnInit() {
+      await this.getScheduledJobs()
   }
 
 }

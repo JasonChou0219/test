@@ -5,16 +5,23 @@ from enum import IntEnum
 from pydantic import BaseModel
 
 
+class ScheduledJobStatus(IntEnum):
+    WAITING_FOR_EXECUTION = 0
+    SUBMITTED_FOR_EXECUTION = 1
+    RUNNING = 2
+    FINISHED_SUCCESSFUL = 3
+    FINISHED_ERROR = 4
+    FINISHED_MANUALLY = 5
+    UNKNOWN = 6
+
+
 # Shared properties
-class JobBase(BaseModel):
-    title: Optional[str] = None
+class ScheduledJobBase(BaseModel):
+    title: str = None
     description: Optional[str] = None
-    owner: Optional[str] = None
-    owner_id: Optional[int] = None
+    owner: str = None
+    owner_id: int = None
 
-    # workflow: Optional[Json] = None
-
-    # workflow: WorkflowInDB = None
     workflows: Optional[List[Tuple[int, str, datetime]]] = []   # [workflow_id, workflow_type, workflow_execute_at]
 
     # data_acquisition_protocol: Optional[Json] = None
@@ -24,43 +31,36 @@ class JobBase(BaseModel):
     # dataflow_execute_at: Optional[datetime]
     # database: Optional[UUID]
     # service_bookings:
-    execute_at: Optional[datetime] = None
-    created_at: Optional[datetime] = None
+    execute_at: datetime = None
+    created_at: datetime = None
+    scheduled_at: datetime = None
+    job_id: int = None
+    job_status: ScheduledJobStatus = ScheduledJobStatus(6)
 
 
 # Properties to receive on item creation
-class JobCreate(JobBase):
-    title: str
-    owner: str
-    owner_id: int
-    # created_at: datetime  # = datetime.now()
-    # uuid: UUID = uuid4()
-    # workflow: WorkflowInDB
-    created_at: datetime
+class ScheduledJobCreate(ScheduledJobBase):
+    pass
 
 
 # Properties to receive on item update
-class JobUpdate(JobBase):
+class ScheduledJobUpdate(ScheduledJobBase):
     pass
 
 
 # Properties shared by models stored in DB
-class JobInDBBase(JobBase):
+class ScheduledJobInDBBase(ScheduledJobBase):
     id: int
-    title: str
-    owner: str
-    owner_id: int
-    created_at: datetime
 
     class Config:
         orm_mode = True
 
 
 # Properties to return to client
-class Job(JobInDBBase):
+class ScheduledJob(ScheduledJobInDBBase):
     pass
 
 
 # Properties properties stored in DB
-class JobInDB(JobInDBBase):
+class ScheduledJobInDB(ScheduledJobInDBBase):
     pass

@@ -31,39 +31,41 @@ class FeatureController:
         return self.features[identifier]
 
     def run_function(self,
-                     identifier: str,
-                     function: str,
+                     feature_identifier: str,
+                     function_identifier: str,
                      is_property: bool,
-                     is_observable: bool,
                      response_identifiers: List[str] = None,
                      parameters: List = None):
-        response = (getattr(vars(self.sila_client)[identifier], function))
+        try:
+            response = (getattr(vars(self.sila_client)[feature_identifier], function_identifier))
+        except KeyError:
+            raise ValueError("Client has no identifier matching " + feature_identifier)
 
-        response_values = []
+        response_values = {}
 
         if is_property:
-            if is_observable:
+           # if is_observable:
                 # how to cancel
-                response_stream = response.subscribe()
-                for value in response_stream:
-                    print(value)
+            #    response_stream = response.subscribe()
+             #   for value in response_stream:
+              #      print(value)
 
             return response.get()
         else:
             command_response = response(*parameters)
-            if is_observable:
-                response_stream = command_response.subscribe_intermediate_responses()
+            #if is_observable:
+             #   response_stream = command_response.subscribe_intermediate_responses()
 
                 # might need a flip around for user canceling
-                while not command_response.done:
-                    for value in response_stream:
-                        print("Value:", value)
+              #  while not command_response.done:
+               #     for value in response_stream:
+                #        print("Value:", value)
 
-                response_stream.cancel()
-                command_response = command_response.get_responses()
+                #response_stream.cancel()
+                #command_response = command_response.get_responses()
 
             for response_id in response_identifiers:
-                response_values.append(getattr(command_response, response_id))
+                response_values.update({str(response_id): getattr(command_response, response_id)})
 
         return response_values
 
