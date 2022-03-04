@@ -1,6 +1,8 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
+from requests import get
 from sqlalchemy.orm import Session
 from fastapi import Request
 
@@ -51,6 +53,8 @@ def create_protocol(
     query_params = dict(request.query_params.items())
     user = models.User(**query_params)
 
+    check_protocol(protocol_in, user)
+
     protocol_in.owner_id = user.id
     protocol_in.owner = user.email
 
@@ -76,6 +80,10 @@ def update_protocol(
     """
     query_params = dict(request.query_params.items())
     user = models.User(**query_params)
+
+    check_protocol(protocol_in, user)
+
+    # TODO do not allow to modify service?
 
     protocol = crud.protocol.get(db=db, id=id)
     if not protocol:
@@ -276,4 +284,109 @@ def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol
 
 
 def check_protocol(protocol: models.Protocol, user: models.User):
-    pass
+    user_dict = jsonable_encoder(user)
+    response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
+
+    # TODO check no duplicate features, commands, parameters, etc. exist
+
+    if not response:
+        raise HTTPException(status_code=response.status_code,
+                            detail=response.json()['detail'],
+                            headers=response.headers)
+
+    # Retrieve features information from response
+    actual_features = {}
+    for feature in jsonable_encoder(response.json()):
+        actual_features[feature['identifier']] = {}
+
+        actual_commands = {}
+        for command in feature['commands']:
+            actual_command = {'observable': command['observable'],
+                              'parameters': [],
+                              'responses': []}
+            for parameter in command['parameters']:
+                actual_command['parameters'].append(parameter['identifier'])
+            for response in command['responses']:
+                actual_command['responses'].append(response['identifier'])
+            actual_commands[command['identifier']] = actual_command
+        actual_features[feature['identifier']]['commands'] = actual_commands
+
+        actual_properties = {}
+        for property in feature['properties']:
+            actual_property = {'observable': property['observable']}
+            actual_properties[property['identifier']] = actual_property
+        actual_features[feature['identifier']]['properties'] = actual_properties
+
+    # Check protocol information actually exists for specified service
+
+    # Check features exist
+    for protocol_feature in protocol.service.features:
+        if protocol_feature.identifier not in actual_features.keys():
+            raise HTTPException(status_code=404,
+                                detail=("Feature " + protocol_feature.identifier
+                                        + " does not exist for service " + protocol.service.uuid))
+
+        # Check commands exist
+        for protocol_command in protocol_feature.commands:
+            if protocol_command.identifier not in actual_features[protocol_feature.identifier]['commands'].keys():
+                raise HTTPException(status_code=404,
+                                    detail=("Command " + protocol_command.identifier
+                                            + " does not exist for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid))
+
+            # Check command observable property is the same
+            if protocol_command.observable != actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['observable']:
+                raise HTTPException(status_code=405,
+                                    detail=("Command " + protocol_command.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " has observable value of " + str(actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['observable'])))
+
+            # Check parameters exist
+            for protocol_parameter in protocol_command.parameters:
+                if protocol_parameter.identifier not in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['parameters']:
+                    raise HTTPException(status_code=404,
+                                        detail=("Parameter " + protocol_parameter.identifier
+                                                + " does not exist for command " + protocol_command.identifier
+                                                + " for feature " + protocol_feature.identifier
+                                                + " for service " + protocol.service.uuid))
+
+            # Check all parameters are specified
+            protocol_parameters_identifiers = [protocol_parameter.identifier for protocol_parameter in protocol_command.parameters]
+            for required_parameter in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['parameters']:
+                if required_parameter not in protocol_parameters_identifiers:
+                    raise HTTPException(status_code=404,
+                                        detail=("Parameter " + required_parameter
+                                                + " is not provided for command " + protocol_command.identifier
+                                                + " for feature " + protocol_feature.identifier
+                                                + " for service " + protocol.service.uuid))
+
+            # If no responses are specified, add all of them
+            if not protocol_command.responses:
+                for response in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['responses']:
+                    protocol_command.responses.append(models.Response(identifier=response))
+            # Otherwise check that the specified responses exist
+            else:
+                for protocol_response in protocol_command.responses:
+                    if protocol_response.identifier not in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['responses']:
+                        raise HTTPException(status_code=404,
+                                            detail=("Response " + protocol_response.identifier
+                                                    + " does not exist for command " + protocol_command.identifier
+                                                    + " for feature " + protocol_feature.identifier
+                                                    + " for service " + protocol.service.uuid))
+
+        # Check properties exist
+        for protocol_property in protocol_feature.properties:
+            if protocol_property.identifier not in actual_features[protocol_feature.identifier]['properties'].keys():
+                raise HTTPException(status_code=404,
+                                    detail=("Property " + protocol_property.identifier
+                                            + " does not exist for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid))
+
+            # Check property observable property is the same
+            if protocol_property.observable != actual_features[protocol_feature.identifier]['properties'][protocol_property.identifier]['observable']:
+                raise HTTPException(status_code=405,
+                                    detail=("Property " + protocol_property.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " has observable value of " + str(actual_features[protocol_feature.identifier]['properties'][protocol_property.identifier]['observable'])))

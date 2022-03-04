@@ -12,4 +12,3 @@ class Response(Base):
     id = Column(Integer, primary_key=True, index=True)
     identifier = Column(String, index=True)
     command_id = Column(Integer, ForeignKey('command.id'))
-    # TODO unless any response is specified, save all of them
