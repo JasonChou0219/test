@@ -288,6 +288,7 @@ def check_protocol(protocol: models.Protocol, user: models.User):
     response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
 
     # TODO check no duplicate features, commands, parameters, etc. exist
+    # TODO check interval value
 
     if not response:
         raise HTTPException(status_code=response.status_code,
