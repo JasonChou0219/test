@@ -148,6 +148,7 @@ def delete_protocol(
     return protocol_schema_from_model(protocol)
 
 
+# This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_model_from_schema_create(protocol_in: schemas.ProtocolCreate) -> models.Protocol:
     protocol = models.Protocol(title=protocol_in.title,
                                owner_id=protocol_in.owner_id,
@@ -190,6 +191,7 @@ def protocol_model_from_schema_create(protocol_in: schemas.ProtocolCreate) -> mo
     return protocol
 
 
+# This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_model_from_schema_update(protocol_in: schemas.ProtocolUpdate) -> models.Protocol:
     protocol = models.Protocol(title=protocol_in.title,
                                owner_id=protocol_in.owner_id,
@@ -232,6 +234,7 @@ def protocol_model_from_schema_update(protocol_in: schemas.ProtocolUpdate) -> mo
     return protocol
 
 
+# This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol:
     features = []
     for feature_in in protocol_in.service.features:
@@ -285,6 +288,8 @@ def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol
 
 def check_protocol(protocol: models.Protocol, user: models.User):
     user_dict = jsonable_encoder(user)
+
+    # TODO In the future this will be used through the backend gateway, and not directly from the service manager
     response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
 
     # TODO check no duplicate features, commands, parameters, etc. exist
