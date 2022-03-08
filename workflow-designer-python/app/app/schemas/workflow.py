@@ -1,4 +1,5 @@
 from typing import Optional, List
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -28,7 +29,7 @@ class WorkflowUpdate(WorkflowBase):
 
 # Properties shared by models stored in DB
 class WorkflowInDBBase(WorkflowBase):
-    id: int
+    id: UUID
     title: str
     owner_id: int
     workflow_type: str

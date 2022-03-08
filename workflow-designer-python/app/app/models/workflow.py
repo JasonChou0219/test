@@ -1,6 +1,8 @@
+import uuid
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableList
 
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class Workflow(Base):
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(String, index=True)
     workflow_type = Column(String, index=False)
     file_name = Column(String, index=True)

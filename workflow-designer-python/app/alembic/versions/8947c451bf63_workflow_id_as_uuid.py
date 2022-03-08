@@ -1,16 +1,16 @@
-"""initial commit
+"""Workflow ID as UUID
 
-Revision ID: 9dc6cc2eed27
+Revision ID: 8947c451bf63
 Revises: 
-Create Date: 2022-02-04 12:47:42.403471
+Create Date: 2022-03-08 17:43:18.304226
 
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '9dc6cc2eed27'
+revision = '8947c451bf63'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,7 +31,7 @@ def upgrade():
     op.create_index(op.f('ix_user_full_name'), 'user', ['full_name'], unique=False)
     op.create_index(op.f('ix_user_id'), 'user', ['id'], unique=False)
     op.create_table('workflow',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('title', sa.String(), nullable=True),
     sa.Column('workflow_type', sa.String(), nullable=True),
     sa.Column('file_name', sa.String(), nullable=True),

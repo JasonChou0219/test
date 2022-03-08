@@ -1,4 +1,5 @@
 from typing import Any, List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -57,7 +58,7 @@ def update_workflow(
         *,
         request: Request,
         db: Session = Depends(deps.get_db),
-        id: int,
+        id: UUID,
         workflow_in: schemas.WorkflowUpdate,
 ) -> Any:
 
@@ -83,7 +84,7 @@ def read_workflow(
         *,
         request: Request,
         db: Session = Depends(deps.get_db),
-        id: int,
+        id: UUID,
 ) -> Any:
     """
     Get workflow by ID.
@@ -106,7 +107,7 @@ def delete_workflow(
         *,
         request: Request,
         db: Session = Depends(deps.get_db),
-        id: int,
+        id: UUID,
 ) -> Any:
     """
     Delete an workflow.
