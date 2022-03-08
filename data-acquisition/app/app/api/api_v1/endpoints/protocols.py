@@ -292,9 +292,6 @@ def check_protocol(protocol: models.Protocol, user: models.User):
     # TODO In the future this will be used through the backend gateway, and not directly from the service manager
     response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
 
-    # TODO check no duplicate features, commands, parameters, etc. exist
-    # TODO check interval value
-
     if not response:
         raise HTTPException(status_code=response.status_code,
                             detail=response.json()['detail'],
@@ -325,20 +322,35 @@ def check_protocol(protocol: models.Protocol, user: models.User):
 
     # Check protocol information actually exists for specified service
 
-    # Check features exist
     for protocol_feature in protocol.service.features:
+        # Check feature exists
         if protocol_feature.identifier not in actual_features.keys():
             raise HTTPException(status_code=404,
                                 detail=("Feature " + protocol_feature.identifier
                                         + " does not exist for service " + protocol.service.uuid))
 
-        # Check commands exist
+        # Check that there are no duplicate features
+        if len([feature.identifier for feature in protocol.service.features if feature.identifier == protocol_feature.identifier]) > 1:
+            raise HTTPException(status_code=405,
+                                detail=("Feature " + protocol_feature.identifier
+                                        + " for service " + protocol.service.uuid
+                                        + " is specified multiple times"))
+
         for protocol_command in protocol_feature.commands:
+            # Check command exists
             if protocol_command.identifier not in actual_features[protocol_feature.identifier]['commands'].keys():
                 raise HTTPException(status_code=404,
                                     detail=("Command " + protocol_command.identifier
                                             + " does not exist for feature " + protocol_feature.identifier
                                             + " for service " + protocol.service.uuid))
+
+            # Check that there are no duplicate commands for feature
+            if len([command.identifier for command in protocol_feature.commands if command.identifier == protocol_command.identifier]) > 1:
+                raise HTTPException(status_code=405,
+                                    detail=("Command " + protocol_command.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " is specified multiple times"))
 
             # Check command observable property is the same
             if protocol_command.observable != actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['observable']:
@@ -348,14 +360,31 @@ def check_protocol(protocol: models.Protocol, user: models.User):
                                             + " for service " + protocol.service.uuid
                                             + " has observable value of " + str(actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['observable'])))
 
-            # Check parameters exist
+            # Check interval is positive non-zero value for unobservable and non-meta commands
+            if (not protocol_command.observable and not protocol_command.meta) and protocol_command.interval < 1:
+                raise HTTPException(status_code=405,
+                                    detail=("Command " + protocol_command.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " must have interval greater than or equal to 1 "))
+
             for protocol_parameter in protocol_command.parameters:
+                # Check parameter exists
                 if protocol_parameter.identifier not in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['parameters']:
                     raise HTTPException(status_code=404,
                                         detail=("Parameter " + protocol_parameter.identifier
                                                 + " does not exist for command " + protocol_command.identifier
                                                 + " for feature " + protocol_feature.identifier
                                                 + " for service " + protocol.service.uuid))
+
+                # Check that there are no duplicate parameters for command
+                if len([parameter.identifier for parameter in protocol_command.parameters if parameter.identifier == protocol_parameter.identifier]) > 1:
+                    raise HTTPException(status_code=405,
+                                        detail=("Parameter " + protocol_parameter.identifier
+                                                + " for command " + protocol_command.identifier
+                                                + " for feature " + protocol_feature.identifier
+                                                + " for service " + protocol.service.uuid
+                                                + " is specified multiple times"))
 
             # Check all parameters are specified
             protocol_parameters_identifiers = [protocol_parameter.identifier for protocol_parameter in protocol_command.parameters]
@@ -371,7 +400,7 @@ def check_protocol(protocol: models.Protocol, user: models.User):
             if not protocol_command.responses:
                 for response in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['responses']:
                     protocol_command.responses.append(models.Response(identifier=response))
-            # Otherwise check that the specified responses exist
+            # Otherwise check that the specified responses exist and that there are no duplicates
             else:
                 for protocol_response in protocol_command.responses:
                     if protocol_response.identifier not in actual_features[protocol_feature.identifier]['commands'][protocol_command.identifier]['responses']:
@@ -381,13 +410,29 @@ def check_protocol(protocol: models.Protocol, user: models.User):
                                                     + " for feature " + protocol_feature.identifier
                                                     + " for service " + protocol.service.uuid))
 
-        # Check properties exist
+                    if len([response.identifier for response in protocol_command.responses if response.identifier == protocol_response.identifier]) > 1:
+                        raise HTTPException(status_code=405,
+                                            detail=("Response " + protocol_response.identifier
+                                                    + " for command " + protocol_command.identifier
+                                                    + " for feature " + protocol_feature.identifier
+                                                    + " for service " + protocol.service.uuid
+                                                    + " is specified multiple times"))
+
         for protocol_property in protocol_feature.properties:
+            # Check property exists
             if protocol_property.identifier not in actual_features[protocol_feature.identifier]['properties'].keys():
                 raise HTTPException(status_code=404,
                                     detail=("Property " + protocol_property.identifier
                                             + " does not exist for feature " + protocol_feature.identifier
                                             + " for service " + protocol.service.uuid))
+
+            # Check that there are no duplicate properties for feature
+            if len([property.identifier for property in protocol_feature.properties if property.identifier == protocol_property.identifier]) > 1:
+                raise HTTPException(status_code=405,
+                                    detail=("Property " + protocol_property.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " is specified multiple times"))
 
             # Check property observable property is the same
             if protocol_property.observable != actual_features[protocol_feature.identifier]['properties'][protocol_property.identifier]['observable']:
@@ -396,3 +441,11 @@ def check_protocol(protocol: models.Protocol, user: models.User):
                                             + " for feature " + protocol_feature.identifier
                                             + " for service " + protocol.service.uuid
                                             + " has observable value of " + str(actual_features[protocol_feature.identifier]['properties'][protocol_property.identifier]['observable'])))
+
+            # Check interval is positive non-zero value for unobservable and non-meta properties
+            if (not protocol_property.observable and not protocol_property.meta) and protocol_property.interval < 1:
+                raise HTTPException(status_code=405,
+                                    detail=("Property " + protocol_property.identifier
+                                            + " for feature " + protocol_feature.identifier
+                                            + " for service " + protocol.service.uuid
+                                            + " must have interval greater than or equal to 1 "))
