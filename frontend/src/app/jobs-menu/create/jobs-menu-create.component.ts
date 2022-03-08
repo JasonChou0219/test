@@ -60,13 +60,19 @@ export class JobsMenuCreateComponent implements OnInit {
   cancel() {
       console.log('Cancel function executed')
   }
-  async getWorkflows() {
-        this.workflows = await (
-            await this.workflowEditorService.getUserWorkflowsInfo()
-        ).map((workflowInfo) => {
-            return workflowInfo
-        });
-    }
+    async getWorkflows() {
+          this.workflows = await (
+              await this.workflowEditorService.getUserWorkflowsInfo('node-red')
+          ).map((workflowInfo) => {
+              return workflowInfo
+          });
+          this.workflows = this.workflows.concat(await (
+              await this.workflowEditorService.getUserWorkflowsInfo('python')
+          ).map((workflowInfo) => {
+              return workflowInfo
+          }));
+          console.log(this.workflows)
+      }
 
   async ngOnInit() {
     console.log(this.jobInfo)

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Json
 # Shared properties
 class WorkflowBase(BaseModel):
     uid: Optional[int] = None
-    id: Optional[int] = None
+    id: Optional[str] = None
     title: Optional[str] = None
 
     workflow_type: Optional[str] = None
@@ -32,7 +32,7 @@ class WorkflowUpdate(WorkflowBase):
 # Properties shared by models stored in DB
 class WorkflowInDBBase(WorkflowBase):
     uid: int
-    id: int
+    id: str
     title: str
     owner_id: int
     workflow_type: str

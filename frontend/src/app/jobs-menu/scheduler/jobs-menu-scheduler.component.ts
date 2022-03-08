@@ -68,7 +68,7 @@ export class JobsMenuSchedulerComponent implements OnInit {
       await this.refresh()
   }
   async getJobs() {
-      this.jobs = await (
+      this.jobs = (
             await this.jobService.getUserJobsInfo()
         ).map((jobInfo) => {
             return jobInfo

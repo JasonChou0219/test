@@ -29,7 +29,6 @@ def read_workflows(
 
     if user.is_superuser:
         workflows = crud.workflow.get_multi(db, skip=skip, limit=limit)
-        print(workflows)
     else:
          workflows = crud.workflow.get_multi_by_owner(
              db=db, owner_id=user.id, skip=skip, limit=limit

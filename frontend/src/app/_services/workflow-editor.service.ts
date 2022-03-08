@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { env } from '@environments/environment';
+import { stringify } from 'querystring';
 
 import { Workflow, WorkflowInfo, WorkflowInfoList } from '@app/_models';
 
@@ -14,9 +15,13 @@ export class WorkflowEditorService {
     constructor(private http: HttpClient) {
     }
 
-    async getUserWorkflowsInfo(): Promise<WorkflowInfo[]> {
+    async getUserWorkflowsInfo(wfType: string = 'python'): Promise<WorkflowInfo[]> {
+        const data = {
+            wf_type: wfType
+        }
+        const params = stringify(data)
         return this.http
-            .get<WorkflowInfo[]>(`${env.apiUrl}/api/v1/workflows/`)
+            .get<WorkflowInfo[]>(`${env.apiUrl}/api/v1/workflows/?` + params)
             .pipe(map((workflow) => workflow))
             .toPromise();
     }

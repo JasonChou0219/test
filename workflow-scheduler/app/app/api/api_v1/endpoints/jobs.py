@@ -76,10 +76,9 @@ def create_job(
             # Todo: Add workfow_type = "node-red" to the workflow object stored in the workflow-designer-node-red
             #  database --> Use the  same model and schema that we use here!
             print('This is a node-red workflow')
-            db_designer = get_db_workflow_designer_node_red()
-            _ = next(db_designer)
-            # Retrieve flow with specified ID
-            workflow = crud.workflow.get(db=_, id=workflow[0])
+            workflow = get(f"http://workflow-designer-node-red:85/flow-manager/flow-files/flow/{workflow[0]}",
+                           params=dict(**user_dict))
+            print(workflow.content)
             workflows.append(workflow)
     try:
         job = crud.job.create(db=db, obj_in=job_in)

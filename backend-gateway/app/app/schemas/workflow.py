@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 # Shared properties
 class WorkflowBase(BaseModel):
+    id: Optional[str] = None
     title: Optional[str] = None
     workflow_type: Optional[str] = None
     file_name: Optional[str] = None
@@ -28,7 +29,7 @@ class WorkflowUpdate(WorkflowBase):
 
 # Properties shared by models stored in DB
 class WorkflowInDBBase(WorkflowBase):
-    id: int
+    id: str
     title: str
     workflow_type: str
     owner_id: int

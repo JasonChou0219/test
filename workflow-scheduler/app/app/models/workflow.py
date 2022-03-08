@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class Workflow(Base):
     uid = Column(Integer, primary_key=True, index=True)
-    id = Column(Integer, index=True)
+    id = Column(String, index=True)
     title = Column(String, index=True)
     workflow_type = Column(String, index=True)
     file_name = Column(String, index=False)
