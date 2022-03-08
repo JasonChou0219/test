@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from requests import delete, get, post, put
 from typing import Any, List
 
@@ -16,7 +18,7 @@ target_service_api_version = settings.API_V1_STR  # -> to env var
 
 target_service_url_python = target_service_hostname + ":" \
                             + str(settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT) \
-                            + str(settings.API_V1_STR) + "/workflows"
+                            + str(settings.API_V1_STR) + "/workflows/"
 target_service_url_node_red = "http://workflow-designer-node-red:85/flow-manager/all-flows/"
 
 
@@ -31,6 +33,8 @@ def read_workflows(
     """
     Retrieve workflows.
     """
+    print("### HERE ###")
+    print(wf_type)
     if wf_type == "python":
         target_route = target_service_url_python
     elif wf_type == "node-red":
@@ -57,6 +61,8 @@ def create_workflow(
     """
     Create new workflow.
     """
+    print("### create_workflow ###")
+    print(workflow_in)
     target_route = f"{target_service_url_python}"
     workflow_in.owner = current_user.email
     workflow_in.owner_id = current_user.id
@@ -69,7 +75,7 @@ def create_workflow(
 def update_workflow(
     *,
     db: Session = Depends(deps.get_db),
-    id: int,
+    id: UUID,
     workflow_in: schemas.WorkflowUpdate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
@@ -94,7 +100,7 @@ def update_workflow(
 def read_workflow(
     *,
     db: Session = Depends(deps.get_db),
-    id: int,
+    id: UUID,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
@@ -115,7 +121,7 @@ def read_workflow(
 def delete_workflow(
     *,
     db: Session = Depends(deps.get_db),
-    id: int,
+    id: UUID,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
