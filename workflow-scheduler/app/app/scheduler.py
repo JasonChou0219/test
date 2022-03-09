@@ -277,6 +277,7 @@ def schedule_job_now(job: ScheduledJob):
     submitted_jobs[job.id] = job.id
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
 
+
 def main():
     image = docker_helper.create_python_workflow_image(docker_client, image_name)
     scheduler.start()
