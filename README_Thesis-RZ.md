@@ -4,10 +4,15 @@
 
 Requirements: [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-1) Clone the [_idprz_ branch of the SiLA 2 Manager](https://gitlab.com/lukas.bromig/sila2_manager/-/tree/idprz)
+1) Clone the [_node-red-final_ branch of the SiLA 2 Manager](https://gitlab.com/lukas.bromig/sila2_manager/-/tree/node-red-final)
 2) Run `docker-compose up -d` to start the stack
 3) Refer to the documentation of the SiLA 2 Manager for further information if issues occur
-4) Access the Node-Red Workflow Editor under http://localhost:1880
+4) Access the Frontend under http://localhost:4200
+5) Log-in on the top-right with credentials `admin@lamas.biovt.mw.tum.de` 
+and password `1234` 
+6) Create flows under Workflow Design / Node-RED and click deploy
+7) Create a Job template under Jobs / Create Job by selecting the workflow
+8) Schedule the job for execution under Jobs / Schedule Job (Schedule one hour early) 
 
 A documentation of the API can be found at http://localhost/docs/
 
