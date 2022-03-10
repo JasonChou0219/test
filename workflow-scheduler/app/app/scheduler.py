@@ -70,6 +70,7 @@ db = next(deps.get_db())
 docker_client = docker.from_env()
 image_name = 'workflow_executor_python'
 
+
 def event_listener(event):
     event_queue.put(event)
 
@@ -107,7 +108,7 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                 if workflow.workflow_type == 'python':
                     # Todo: Implement a check for start_time of the workflow here.
                     #  The workflow start time may deviate from the job start time
-                    services = 'None'
+                    services = 'None'  # workflow.services
                     container_name = job.title + '_' + str(job.id) + '-' + workflow.title + '_' + str(workflow.id)
                     container = docker_helper.create_python_workflow_container(
                         docker_client,
@@ -276,6 +277,7 @@ def schedule_job_now(job: ScheduledJob):
         status=JobStatus.WAITING_FOR_EXECUTION)
     submitted_jobs[job.id] = job.id
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
+
 
 def main():
     image = docker_helper.create_python_workflow_image(docker_client, image_name)

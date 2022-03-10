@@ -21,7 +21,7 @@ class Workflow(Base):
     owner = Column(String, index=True)
     owner_id = Column(Integer, index=True)
     description = Column(String, index=True)
-    job_id = Column(Integer, ForeignKey("job.id"))
+    job_id = Column(Integer, ForeignKey("job.id", ondelete='CASCADE'))
 
     #id = Column(Integer, primary_key=True, index=True)
     #workflow = Column(JSON)

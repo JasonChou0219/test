@@ -38,7 +38,7 @@ if settings.BACKEND_GATEWAY_CORS_ORIGINS:
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-docker_client =docker.from_env()
+docker_client = docker.from_env()
 image_name = 'workflow_executor_python'
 image = docker_helper.create_python_workflow_image(docker_client, image_name)
 threading.Thread(target=scheduler).start()

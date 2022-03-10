@@ -88,9 +88,11 @@ def _create_temporary_tar(workflow_data: str, services_data: str):
     _delete_file(services_file)
     return tar_file
 
+
 def create_python_workflow_image(docker_client, image_name: str):
     image, logs = docker_client.images.build(path='app/workflow-executor-python/', tag=image_name)
     return image
+
 
 def create_python_workflow_container(docker_client, image_name: str, container_name: str, workflow_data: str, services_data: str):
     dc = DriverConfig(name='local', options={

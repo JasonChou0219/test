@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy.dialects.postgresql import JSON
 
 from app.db.base_class import Base
+from .workflow import Workflow
 
 if TYPE_CHECKING:
-    from .job import Job  # noqa: F401
-    from .workflow import Flow  # noqa: F401
+    # from .workflow import Workflow  # noqa: F401
     from .user import User  # noqa: F401
 
 
@@ -20,6 +20,7 @@ class Job(Base):
     owner_id = Column(Integer, index=True)
 
     workflows = Column(JSON, index=False)
+    workflow = relationship(Workflow, backref="job", passive_deletes=True)
 
     created_at = Column(TIMESTAMP(timezone=True), index=True)
     execute_at = Column(TIMESTAMP(timezone=True), index=True)
