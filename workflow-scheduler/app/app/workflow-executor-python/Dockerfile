@@ -7,5 +7,6 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 COPY ./main.py .
 COPY ./data/ ./data
+COPY ./logs/ ./logs
 
 RUN pip install --no-cache-dir -r requirements.txt
