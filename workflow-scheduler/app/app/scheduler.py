@@ -1,3 +1,4 @@
+import json
 import queue
 import os
 import time
@@ -136,7 +137,7 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                     # Todo: Implement a check for start_time of the workflow here.
                     #  The workflow start time may deviate from the job start time
                     logging.info('Starting a node-red container')
-                    container = docker_helper.create_node_red_executor_container(workflow.data)
+                    container = docker_helper.create_node_red_executor_container(json.loads(workflow.data))
                     logging.info(f'Created docker container for job workflow {workflow.id}: \"{container.name}\"')
                     # output_thread = Thread(target=print_container_output, args=(container, job.id, ), daemon=True)
                     wait_thread = Thread(target=wait_until_container_stops,

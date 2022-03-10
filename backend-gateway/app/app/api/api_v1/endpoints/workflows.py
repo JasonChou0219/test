@@ -33,8 +33,6 @@ def read_workflows(
     """
     Retrieve workflows.
     """
-    print("### HERE ###")
-    print(wf_type)
     if wf_type == "python":
         target_route = target_service_url_python
     elif wf_type == "node-red":
@@ -47,7 +45,6 @@ def read_workflows(
         workflows = crud.workflow.get_multi_by_owner(
             db=db, route=target_route, current_user=current_user, skip=skip, limit=limit
         )
-    # workflows = parse_obj_as(List[schemas.WorkflowInDB], workflows.json())
     return workflows
 
 

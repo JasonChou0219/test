@@ -48,33 +48,15 @@ class CRUDWorkflow(CRUDRerouteBase[Workflow, WorkflowCreate, WorkflowUpdate]):
         user_dict = jsonable_encoder(current_user)
         response = []
         if wf_type == "python":
-            print('+++++++Py+++++++')
+            # print('+++++++Py+++++++')
             response = get(route, params=dict({'skip': skip, 'limit': limit}, **user_dict))
-            print(response.json())
             response = parse_obj_as(List[WorkflowInDB], response.json())
-            print(response)
         elif wf_type == "node-red":
-            # Get the node red workflows
+            # print('+++++++NR+++++++')
             response = get(route)
-
-            print('+++++++NR+++++++')
             response = response.json()
-            # response_node_red_content = []
-            print("######")
             for workflowItem in response:
-                # print(workflowItem)
                 workflowItem["owner_id"] = current_user.id
-                # workflowItem["id"] = 1
-            response_node_red_data = parse_obj_as(List[WorkflowBase], response)
-        # print(response_node_red_data)
-        # response_node_red_content = ' '.join(',' + str(e) for e in response_node_red_content).replace('\'', '\"')
-        # node_red_content = bytes(response_node_red_content, 'UTF-8')
-        # print('+++++++NR type+++++++')
-        # Todo: Concatenate responses
-        #response = response_python  # + response_node_red
-        # return of kind db.query(self.model).offset(skip).limit(limit).all()
-        # return response_node_red_data
-        # response = response_node_red_data
         return response
 
     """
