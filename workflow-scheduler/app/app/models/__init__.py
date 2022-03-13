@@ -4,3 +4,11 @@ from .user import User
 from .workflow import Workflow
 from .job import Job
 from .scheduled_job import ScheduledJob
+from .protocol import Protocol
+from .protocol_service import ProtocolService
+from .feature import Feature
+from .command import Command
+from .parameter import Parameter
+from .response import Response
+from .property import Property
+from .database import Database

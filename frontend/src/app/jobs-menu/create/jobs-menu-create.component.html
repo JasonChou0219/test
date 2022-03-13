@@ -21,6 +21,26 @@
               </mat-select>
         </mat-form-field>
 
+        <h3>Protocols and Databases</h3>
+        <ng-container *ngFor="let protocolInfoAndDatabaseInfo of jobInfo.list_protocol_and_database; let i = index">
+            <mat-form-field appearance="fill">
+                <mat-label>Protocol</mat-label>
+                <mat-select [(ngModel)]="protocolInfoAndDatabaseInfo[0]" name="protocol" placeholder="Protocol">
+                    <mat-option *ngFor="let protocol of protocols" [value]="protocol.id">{{ protocol.title }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Database</mat-label>
+                <mat-select [(ngModel)]="protocolInfoAndDatabaseInfo[1]" name="database" placeholder="Database">
+                    <mat-option *ngFor="let database of databases" [value]="database.id">{{ database.title }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </ng-container>
+
+        <div class="button">
+            <button mat-flat-button color="primary" (click)="addProtocolInfoAndDatabaseInfo()">Add</button>
+        </div>
+
         <h3>Data acquisition</h3>
             <div class="multi-select">
                 <mat-form-field appearance="fill">

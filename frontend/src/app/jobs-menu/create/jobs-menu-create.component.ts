@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { format } from 'date-fns';
 
-import {JobService, WorkflowEditorService, AccountService, DatabaseService} from '@app/_services';
-import {JobInfo, DatabaseInfo, WorkflowInfo, ServiceInfo, DataflowInfo, WorkflowInfoList, WorkflowInfoTuple, WorkflowInfoTupleList } from '@app/_models';
+import {JobService, WorkflowEditorService, AccountService, DatabaseService, ProtocolService} from '@app/_services';
+import {JobInfo, DatabaseInfo, WorkflowInfo, ServiceInfo, DataflowInfo, WorkflowInfoList, WorkflowInfoTuple, WorkflowInfoTupleList, ProtocolInfo } from '@app/_models';
 
 // Import mocked data
 import { mockDatabaseInfoList, mockServiceInfoList, mockDataflowInfoList } from '@app/_models';
@@ -20,12 +20,14 @@ export class JobsMenuCreateComponent implements OnInit {
     services: ServiceInfo[] = [];
     workflows: WorkflowInfo[];  // WorkflowInfo
     dataflows: DataflowInfo[] = [];
+    protocols: ProtocolInfo[] = [];
 
     constructor(
         public jobService: JobService,
         private workflowEditorService: WorkflowEditorService,
         private accountService: AccountService,
-        private databaseService: DatabaseService
+        private databaseService: DatabaseService,
+        private protocolService: ProtocolService,
     ) {
         const now = new Date();
         const today = now.getDate();
@@ -44,6 +46,7 @@ export class JobsMenuCreateComponent implements OnInit {
             running: false,
             workflows: [],  // [Tuple(int, str, datetime)] --> []Tuple(workflow_id, workflow_type, workflow_execute_at)]
             database: '',  // Tuple(int, str, datetime) --> Tuple(database_id, database_type)
+            list_protocol_and_database: [],
             // dataflows: {data: null},  // [Tuple(int, str, datetime)] --> [Tuple(dataflow_id, dataflow_type, dataflow_execute_at)]
             // data_protocols: null  // [Tuple(int, str, datetime)] -->
             // [Tuple(data_protocol_id, data_protocol_type, data_protocol_execute_at)]
@@ -68,12 +71,34 @@ export class JobsMenuCreateComponent implements OnInit {
         });
     }
 
+  async getProtocols() {
+        this.protocols = await (
+            await this.protocolService.getProtocolInfoList()
+        ).map((protocolInfo) => {
+            return protocolInfo
+        });
+  }
+
+  async getDatabases() {
+        this.databases = await (
+            await this.databaseService.getDatabaseList()
+        ).map((databaseInfo) => {
+            return databaseInfo
+        });
+  }
+
   async ngOnInit() {
     console.log(this.jobInfo)
     this.services = mockServiceInfoList
     this.dataflows = mockDataflowInfoList
-    this.databases = await this.databaseService.getDatabaseList()
+    await this.getProtocols();
+    await this.getDatabases()
     await this.getWorkflows()
   }
 
+  async addProtocolInfoAndDatabaseInfo() {
+      this.jobInfo.list_protocol_and_database.push([
+          undefined, undefined
+      ])
+  }
 }

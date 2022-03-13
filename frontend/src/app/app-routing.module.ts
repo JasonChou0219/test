@@ -16,6 +16,8 @@ import { KnimeComponent} from "@app/dataflow-design-menu/knime/knime.component";
 import { DatabasesMenuOverviewComponent } from './databases-menu/overview/databases-menu-overview.component';
 import { DatabasesMenuAddDatabaseComponent } from './databases-menu/add-database/databases-menu-add-database.component';
 import { DatabasesMenuUpdateDatabaseComponent } from './databases-menu/update-database/databases-menu-update-database.component';
+import { ProtocolsMenuAddProtocolComponent} from '@app/protocols-menu/add-protocol/protocols-menu-add-protocol.component';
+import { ProtocolsMenuOverviewComponent } from '@app/protocols-menu/overview/protocols-menu-overview.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -85,6 +87,14 @@ const routes: Routes = [
             {
                 path: 'databases/:id/update',
                 component: DatabasesMenuUpdateDatabaseComponent
+            },
+            {
+                path: 'protocols/create',
+                component: ProtocolsMenuAddProtocolComponent
+            },
+            {
+                path: 'protocols',
+                component: ProtocolsMenuOverviewComponent
             },
 
         ]

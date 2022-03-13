@@ -13,6 +13,7 @@ from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 
 from app import crud
+from app import models
 from app.api import deps
 from app.schemas import ScheduledJob, ScheduledJobUpdate
 from app.models import ScheduledJob
@@ -21,6 +22,8 @@ from app.util.data_directories import TEMP_DIRECTORY
 
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
+from influxdb import InfluxDBClient
+from requests import get
 
 
 class ProcessStatusEventType(IntEnum):
@@ -64,6 +67,8 @@ event_queue = queue.SimpleQueue()
 process_status_queue = queue.SimpleQueue()
 scheduler = BackgroundScheduler()
 
+job_id_to_data_acquisition_job = {}
+
 scheduled_jobs = {}  # Scheduled Jobs that are stored as scheduled jobs
 submitted_jobs = {}  # Scheduled jobs that are submitted to the scheduler
 db = next(deps.get_db())
@@ -91,6 +96,37 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
     # ]
     logging.info(f'Starting job {job.title}')
     logging.info(f'Scanning for workflows')
+
+    for protocol_and_database in job.list_protocol_and_database:
+        protocol = protocol_and_database[0]
+        database = protocol_and_database[1]
+
+        interval_to_properties_and_commands = {}
+
+        # TODO meta
+        # TODO observables
+        for feature in protocol.service.features:
+            for command in feature.commands:
+                if not command.observable and not command.meta:
+                    if command.interval not in interval_to_properties_and_commands.keys():
+                        interval_to_properties_and_commands[command.interval] = []
+                    interval_to_properties_and_commands[command.interval].append((command, feature.identifier))
+            for property in feature.properties:
+                if not property.observable and not property.meta:
+                    if property.interval not in interval_to_properties_and_commands.keys():
+                        interval_to_properties_and_commands[property.interval] = []
+                    interval_to_properties_and_commands[property.interval].append((property, feature.identifier))
+
+        for interval in interval_to_properties_and_commands.keys():
+            apscheduler_job = scheduler.add_job(save_data,
+                                                'interval',
+                                                seconds=interval,
+                                                args=[interval_to_properties_and_commands[interval], protocol.service.uuid, database])
+            apscheduler_job.resume()
+            if job.id not in job_id_to_data_acquisition_job:
+                job_id_to_data_acquisition_job[job.id] = []
+            job_id_to_data_acquisition_job[job.id].append(apscheduler_job)
+
     job_workflows = []
     if job.workflows:
         if job.workflows != None:
@@ -276,6 +312,67 @@ def schedule_job_now(job: ScheduledJob):
         status=JobStatus.WAITING_FOR_EXECUTION)
     submitted_jobs[job.id] = job.id
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
+
+
+def save_data(properties_and_commands, service_uuid, database):
+    for property_or_command in properties_and_commands:
+        if isinstance(property_or_command[0], models.Command):
+            # TODO make parameters dict of identifier and value
+            parameters = []
+            for parameter in property_or_command[0].parameters:
+                parameters.append(parameter.value)
+            responses = []
+            for response in property_or_command[0].responses:
+                responses.append(response.identifier)
+
+            # TODO route from settings
+            response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+                           params=dict({'service_uuid': service_uuid,
+                                        'feature_identifier': property_or_command[1],
+                                        'function_identifier': property_or_command[0].identifier,
+                                        'is_property': False,
+                                        'response_identifiers': responses,
+                                        'parameters': parameters}))
+
+        else:
+            # TODO route from settings
+            response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+                           params=dict({'service_uuid': service_uuid,
+                                        'feature_identifier': property_or_command[1],
+                                        'function_identifier': property_or_command[0].identifier,
+                                        'is_property': True}))
+
+        try:
+            client = InfluxDBClient(host=database.address,
+                                    port=database.port,
+                                    username=database.username,
+                                    password=database.password,
+                                    database=database.name)
+            client.create_database(database.name)
+            point = {}
+            tags = {'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier}
+            point['measurement'] = 'data-acquisition'
+            point['tags'] = tags
+            point['time'] = datetime.now()
+
+            if not response:
+                point['fields'] = response.json()['detail']
+            else:
+                point['fields'] = response.json()['response']
+
+            points = [point]
+
+            client.write_points(points)
+        except Exception as e:
+            print(e)
+
+
+def stop_data_acquisition_for_job(job_id: int):
+    if job_id in job_id_to_data_acquisition_job.keys():
+        for job in job_id_to_data_acquisition_job[job_id]:
+            job.remove()
+        del job_id_to_data_acquisition_job[job_id]
+
 
 def main():
     image = docker_helper.create_python_workflow_image(docker_client, image_name)

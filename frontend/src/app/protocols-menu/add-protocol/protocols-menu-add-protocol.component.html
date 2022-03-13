@@ -1,0 +1,92 @@
+<div class="page">
+    <h1>Protocol Creation</h1>
+    <form class="general">
+        <mat-form-field appearance="fill">
+            <mat-label>Title</mat-label>
+            <input matInput [(ngModel)]="protocolInfo.title" name="title" placeholder="Title"/>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Service</mat-label>
+            <mat-select [(ngModel)]="selectedService" name="service" placeholder="Service" (selectionChange)="selectService()">
+                <mat-option *ngFor="let service of services" [value]="service">{{service.service_uuid}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <h2>Add Command</h2>
+        <div class="multi-select">
+            <mat-form-field appearance="fill">
+                <mat-label>Feature</mat-label>
+                <mat-select [(ngModel)]="selectedFeatureForCommand" name="feature" placeholder="Feature">
+                    <mat-option *ngFor="let availableFeature of availableFeatures" [value]="availableFeature">{{availableFeature.identifier}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="selectedFeatureForCommand !== undefined" appearance="fill">
+                <mat-label>Command</mat-label>
+                <mat-select [(ngModel)]="selectedCommand" name="command" placeholder="Command">
+                    <mat-option *ngFor="let availableCommand of selectedFeatureForCommand.commands" [value]="availableCommand">{{availableCommand.identifier}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="button">
+            <button mat-flat-button color="primary" (click)="addCommand()">Add Command</button>
+        </div>
+
+        <h2>Add Property</h2>
+        <div class="multi-select">
+            <mat-form-field appearance="fill">
+                <mat-label>Feature</mat-label>
+                <mat-select [(ngModel)]="selectedFeatureForProperty" name="feature" placeholder="Feature">
+                    <mat-option *ngFor="let availableFeature of availableFeatures" [value]="availableFeature">{{availableFeature.identifier}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="selectedFeatureForProperty !== undefined" appearance="fill">
+                <mat-label>Property</mat-label>
+                <mat-select [(ngModel)]="selectedProperty" name="property" placeholder="Property">
+                    <mat-option *ngFor="let availableProperty of selectedFeatureForProperty.properties" [value]="availableProperty">{{availableProperty.identifier}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="button">
+            <button mat-flat-button color="primary" (click)="addProperty()">Add Property</button>
+        </div>
+
+        <ng-container *ngFor="let feature of protocolInfo.service.features">
+            <h3>Feature: {{feature.identifier}}</h3>
+            <ng-container *ngFor="let command of feature.commands">
+                <h4>Command: {{command.identifier}}</h4>
+                <div class="multi-select">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Interval</mat-label>
+                        <input matInput type="number" [(ngModel)]="command.interval" name="command_interval" placeholder="Interval"/>
+                    </mat-form-field>
+                    <mat-checkbox [(ngModel)]="command.meta" name="command_meta">Meta</mat-checkbox>
+                </div>
+                <ng-container *ngFor="let parameter of command.parameters">
+                    <h5>Parameter: {{parameter.identifier}}</h5>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Value</mat-label>
+                        <input matInput [(ngModel)]="parameter.value" name="parameter_value" placeholder="Value"/>
+                    </mat-form-field>
+                </ng-container>
+                <ng-container *ngFor="let response of command.responses">
+                    <h5>Response: {{response.identifier}}</h5>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngFor="let property of feature.properties">
+                <h4>Property: {{property.identifier}}</h4>
+                <div class="multi-select">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Interval</mat-label>
+                        <input matInput type="number" [(ngModel)]="property.interval" name="property_interval" placeholder="Interval"/>
+                    </mat-form-field>
+                    <mat-checkbox [(ngModel)]="property.meta" name="property_meta">Meta</mat-checkbox>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <div class="button">
+            <button mat-flat-button color="primary" (click)="createProtocol()">Create Protocol</button>
+        </div>
+    </form>
+</div>

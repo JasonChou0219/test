@@ -93,6 +93,8 @@ import { AboutComponent } from './settings-menu/about/about.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
 import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
+import { ProtocolsMenuAddProtocolComponent } from './protocols-menu/add-protocol/protocols-menu-add-protocol.component';
+import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protocols-menu-overview.component';
 
 
 @NgModule({
@@ -143,6 +145,8 @@ import { MatSortModule } from '@angular/material/sort';
         DatabasesMenuOverviewComponent,
         DatabasesMenuAddDatabaseComponent,
         DatabasesMenuUpdateDatabaseComponent,
+        ProtocolsMenuAddProtocolComponent,
+        ProtocolsMenuOverviewComponent,
     ],
     imports: [
         BrowserModule,

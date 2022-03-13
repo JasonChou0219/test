@@ -2,6 +2,7 @@
     Workflow, WorkflowInfoList, WorkflowInfoTuple,
     Dataflow, DataflowInfoList,
     DataProtocol, DataProtocolInfoList,
+    Protocol, Database,
 } from '@app/_models';
 
 
@@ -15,7 +16,8 @@ export interface Job {
 
     workflows?: Workflow[];
     dataflows?: Dataflow[];
-    data_protocols?: DataProtocol[];
+    // data_protocols?: DataProtocol[];
+    list_protocol_and_database?: ProtocolAndDatabaseTuple[];
 
     execute_at: Date;
     created_at: Date;
@@ -33,7 +35,8 @@ export interface JobInfo {
 
     workflows?: WorkflowInfoTuple[];  // WorkflowInfoList[];
     dataflows?: DataflowInfoList;
-    data_protocols?: DataProtocolInfoList;
+    // data_protocols?: DataProtocolInfoList;
+    list_protocol_and_database?: [number, number][];
 
     execute_at: Date;
     created_at: Date;
@@ -48,4 +51,9 @@ export interface JobInfoList {
 export interface JobStatus {
     online: boolean;
     status: string;
+}
+
+export interface ProtocolAndDatabaseTuple {
+    protocol: Protocol;
+    database: Database;
 }

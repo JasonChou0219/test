@@ -106,8 +106,11 @@ export class ServiceService {
     constructor(private http: HttpClient) {
     }
     async getServiceList(): Promise<Service[]> {
+        return this.http
+            .get<Service[]>('http://127.0.0.1:82/api/v1/services/')
+            .toPromise();
         // Mock implementation
-        return [test_service_1]
+        //return [test_service_1]
         // Real implementation
         // return this.http
         //     .get<ServiceList>(this.serverUrl + '/api/services')
@@ -144,10 +147,9 @@ export class ServiceService {
     }
     getServiceFeatures(uuid: string): Promise<ServiceFeature[]> {
         return this.http
-            .get<ServiceFeatureList>(
-                this.serverUrl + '/api/serviceFeatures/' + uuid
+            .get<ServiceFeature[]>(
+                this.serverUrl + '/api/v1/functions/browse_features/?service_uuid=' + uuid
             )
-            .pipe(map((featureList) => featureList.data))
             .toPromise();
     }
     getServiceFeaturesDataHandler(uuid: string): Promise<ServiceFeature[]> {

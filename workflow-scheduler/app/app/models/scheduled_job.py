@@ -35,6 +35,7 @@ class ScheduledJob(Base):
     owner_id = Column(Integer, index=True)
 
     workflows = Column(JSON, index=False)
+    list_protocol_and_database = Column(JSON, index=False)
 
     created_at = Column(TIMESTAMP(timezone=True), index=True)
     execute_at = Column(TIMESTAMP(timezone=True), index=True)
