@@ -86,10 +86,13 @@ def run_function(service_uuid: str,
         response = FunctionResponse()
         response.feature_identifier = feature_identifier
         response.function_identifier = function_identifier
-        for param in parameters:
+        for i, param in enumerate(parameters):
+            print(i)
             if str(param).lower() in ["true", "false"]:
+                print('converting')
                 param = True if str(param).lower() == "true" else False
-
+                parameters[i] = param
+        print(parameters)
         response.response = client_controller.run_function(service_uuid,
                                                            feature_identifier, function_identifier, is_property,
                                                            response_identifiers=response_identifiers,

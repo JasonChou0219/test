@@ -19,8 +19,17 @@ div.mat-card-header {
     flex-direction: row;
     justify-content: space-between;
 }
+
 div.mat-card-header-entry {
     margin: auto;
+}
+
+.mat-header-cell{
+    padding: 10px;
+}
+
+.mat-cell{
+    padding:10px;
 }
 
 .edit {
