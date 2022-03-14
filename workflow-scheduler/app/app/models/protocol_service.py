@@ -13,4 +13,4 @@ class ProtocolService(Base):
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String, index=True)
     protocol_id = Column(Integer, ForeignKey('protocol.id'))
-    features = relationship("Feature", cascade="all, delete-orphan")
+    features = relationship("Feature", cascade="all, delete-orphan", lazy='joined')

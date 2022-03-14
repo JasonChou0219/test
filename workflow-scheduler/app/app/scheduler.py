@@ -101,6 +101,9 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
         protocol = protocol_and_database[0]
         database = protocol_and_database[1]
 
+        protocol = crud.protocol.get(db=next(deps.get_db()), id=protocol, job_id=job.job_id)
+        database = crud.database.get(db=next(deps.get_db()), id=database, job_id=job.job_id)
+
         interval_to_properties_and_commands = {}
 
         # TODO meta
@@ -350,13 +353,16 @@ def save_data(properties_and_commands, service_uuid, database):
                                     database=database.name)
             client.create_database(database.name)
             point = {}
-            tags = {'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier}
+            if isinstance(property_or_command[0], models.Command):
+                tags = {'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier}
+            else:
+                tags = {'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier}
             point['measurement'] = 'data-acquisition'
             point['tags'] = tags
             point['time'] = datetime.now()
 
             if not response:
-                point['fields'] = response.json()['detail']
+                point['fields'] = {'error': response.json()['detail']}
             else:
                 point['fields'] = response.json()['response']
 
@@ -364,7 +370,7 @@ def save_data(properties_and_commands, service_uuid, database):
 
             client.write_points(points)
         except Exception as e:
-            print(e)
+            logging.error(e)
 
 
 def stop_data_acquisition_for_job(job_id: int):

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class Protocol(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    service = relationship("ProtocolService", uselist=False, cascade="all, delete-orphan")
+    service = relationship("ProtocolService", uselist=False, cascade="all, delete-orphan", lazy='joined')
     owner = Column(String, index=True)
     owner_id = Column(String, index=True)
     job_id = Column(Integer, ForeignKey("job.id"))

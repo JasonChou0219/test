@@ -13,5 +13,5 @@ class Feature(Base):
     id = Column(Integer, primary_key=True, index=True)
     identifier = Column(String, index=True)
     service_id = Column(Integer, ForeignKey('protocolservice.id'))
-    commands = relationship("Command", cascade="all, delete-orphan")
-    properties = relationship("Property", cascade="all, delete-orphan")
+    commands = relationship("Command", cascade="all, delete-orphan", lazy='joined')
+    properties = relationship("Property", cascade="all, delete-orphan", lazy='joined')
