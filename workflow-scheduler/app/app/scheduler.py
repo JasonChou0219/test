@@ -95,8 +95,8 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
     #     asdict(get_device_info(booking.device)) for booking in exp.deviceBookings
     # ]
     logging.info(f'Starting job {job.title}')
-    logging.info(f'Scanning for workflows')
 
+    logging.info(f'Scanning for protocols and databases')
     for protocol_and_database in job.list_protocol_and_database:
         protocol = protocol_and_database[0]
         database = protocol_and_database[1]
@@ -130,6 +130,7 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                 job_id_to_data_acquisition_job[job.id] = []
             job_id_to_data_acquisition_job[job.id].append(apscheduler_job)
 
+    logging.info(f'Scanning for workflows')
     job_workflows = []
     if job.workflows:
         if job.workflows != None:
@@ -354,6 +355,7 @@ def save_data(properties_and_commands, service_uuid, database):
             client.create_database(database.name)
             point = {}
             if isinstance(property_or_command[0], models.Command):
+                # TODO save used parameters
                 tags = {'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier}
             else:
                 tags = {'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier}
