@@ -1,8 +1,0 @@
-sila2lib
-appdirs
-filelock 
-influxdb
-numpy
-pandas
-matplotlib
-scipy
