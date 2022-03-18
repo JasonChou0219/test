@@ -1,5 +1,5 @@
 from multiprocessing.pool import ThreadPool
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from sila2.client import SilaClient
 
