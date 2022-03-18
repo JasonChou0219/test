@@ -1,8 +1,8 @@
-from typing import List, Optional, Union, Dict
+from typing import List, Optional, Union, Dict, Any
 
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Body
 from pydantic import ValidationError
-# noinspection PyInterpreter
+
 from sila2.framework import SilaConnectionError
 
 from app import schemas
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get("/connect/")
-def connect_client(client_ip: str, client_port: int,  reset: str = None):
+def connect_client(client_ip: str, client_port: int, reset: str = None):
     try:
         client_controller.connect_client(client_ip, client_port, reset)
         return True
@@ -75,28 +75,33 @@ def browse_features(service_uuid: str):
     return features
 
 
-@router.get("/unobservable/", response_model=schemas.FunctionResponse)
+@router.post("/unobservable/", response_model=schemas.FunctionResponse)
 def run_function(service_uuid: str,
                  feature_identifier: str,
                  function_identifier: str,
-                 is_property: bool,
                  response_identifiers: Optional[List[str]] = Query(None),
-                 parameters: Optional[List[Union[int, str, float]]] = Query(None)):
+                 parameters: Optional[List[Union[str, int, float, Any]]] = Query(None),
+                 named_parameters: Optional[Dict[str, Any]] = Body(None)):
     try:
         response = FunctionResponse()
         response.feature_identifier = feature_identifier
         response.function_identifier = function_identifier
-        for i, param in enumerate(parameters):
-            print(i)
-            if str(param).lower() in ["true", "false"]:
-                print('converting')
-                param = True if str(param).lower() == "true" else False
-                parameters[i] = param
-        print(parameters)
+
+        params = []
+
+        if parameters is not None:
+            params = parameters
+            for i, param in enumerate(params):
+                if str(param).lower() in ["true", "false"]:
+                    params[i] = True if str(param).lower() == "true" else False
+
+        if named_parameters is not None:
+            params = named_parameters
+
         response.response = client_controller.run_function(service_uuid,
-                                                           feature_identifier, function_identifier, is_property,
+                                                           feature_identifier, function_identifier,
                                                            response_identifiers=response_identifiers,
-                                                           parameters=parameters)
+                                                           parameters=params)
 
         return response
 
@@ -120,15 +125,8 @@ def run_function(service_uuid: str,
             status_code=405,
             detail="TypeError: " + str(type_error),
         )
-    except AttributeError as attribute_error:
-        if "Command" in str(attribute_error) and is_property:
-            raise HTTPException(
-                status_code=405,
-                detail="IllegalArgument: Expected a property but identifier belong to a command",
-            )
     except Exception as exception:
         raise HTTPException(
             status_code=400,
             detail=str(exception)
         )
-
