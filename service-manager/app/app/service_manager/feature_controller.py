@@ -20,7 +20,7 @@ class FeatureController:
             feature_xml.append(feature_identifier)
 
         feature_definitions_xml = list(
-            map(lambda id: self.sila_client.SiLAService.GetFeatureDefinition(id), feature_xml))
+            map(lambda feature_id: self.sila_client.SiLAService.GetFeatureDefinition(feature_id), feature_xml))
 
         for xml_definition in feature_definitions_xml:
             for x in range(0, len(xml_definition)):
@@ -33,9 +33,16 @@ class FeatureController:
     def run_function(self,
                      feature_identifier: str,
                      function_identifier: str,
-                     is_property: bool,
                      response_identifiers: List[str] = None,
-                     parameters: List = None):
+                     parameters: Union[Dict, List] = None):
+
+        property_list = []
+
+        for prop in self.features[feature_identifier].properties:
+            property_list.append(prop.identifier)
+
+        is_property = function_identifier in property_list
+
         try:
             response = (getattr(vars(self.sila_client)[feature_identifier], function_identifier))
         except KeyError:
@@ -44,15 +51,21 @@ class FeatureController:
         response_values = {}
 
         if is_property:
-           # if is_observable:
+            # if is_observable:
                 # how to cancel
             #    response_stream = response.subscribe()
              #   for value in response_stream:
               #      print(value)
 
-            return response.get()
+            if response_identifiers:
+                if response_identifiers is not None:
+                    raise ValueError("ExecutionError: SiLA-Property expects no response identifier")
+            response_values.update({str(function_identifier): response.get()})
         else:
-            command_response = response(*parameters)
+            if type(parameters) is dict:
+                command_response = response(**parameters)
+            else:
+                command_response = response(*parameters)
             #if is_observable:
              #   response_stream = command_response.subscribe_intermediate_responses()
 
@@ -64,7 +77,17 @@ class FeatureController:
                 #response_stream.cancel()
                 #command_response = command_response.get_responses()
 
+            response_identifier_all = []
+            for command in self.features[feature_identifier].commands:
+                for resp in command.responses:
+                    response_identifier_all.append(resp.identifier)
+
+            if response_identifiers is None:
+                response_identifiers = response_identifier_all
+
             for response_id in response_identifiers:
+                if response_id not in response_identifier_all:
+                    raise  ValueError("ExecutionError: Client has no response identifier matching " + response_id)
                 response_values.update({str(response_id): getattr(command_response, response_id)})
 
         return response_values
@@ -72,7 +95,6 @@ class FeatureController:
 
 # TODO ObservableTest
 # TODO reimplement with DB
-# def parse_datatype(xml_subtree):
 
     """
     pool = ThreadPool()

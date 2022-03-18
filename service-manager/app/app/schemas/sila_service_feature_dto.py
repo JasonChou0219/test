@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Union
 
 from mypy.errors import List
 from pydantic import BaseModel

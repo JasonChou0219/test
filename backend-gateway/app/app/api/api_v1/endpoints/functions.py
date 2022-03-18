@@ -1,8 +1,9 @@
-from typing import List, Optional, Union
+import json
+from typing import List, Optional, Union, Any, Dict
 
 import aiohttp
 from aiohttp import ClientConnectorError
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Body
 
 from app import schemas
 from app.core.config import settings
@@ -108,27 +109,36 @@ async def browse_features(service_uuid: str):
         )
 
 
-@router.get("/unobservable", response_model=schemas.FunctionResponse)
+@router.post("/unobservable", response_model=schemas.FunctionResponse)
 async def run_client_function(service_uuid: str,
                               feature_identifier: str,
                               function_identifier: str,
-                              is_property: bool,
                               response_identifiers: Optional[List[str]] = Query(None),
-                              parameters: Optional[List[Union[int, str, float]]] = Query(None)):
+                              parameters: Optional[List[Union[str, int, float, Any]]] = Query(None),
+                              named_parameters: Optional[Dict[str, Any]] = Body(None)):
     target_route = target_service_url + "sm_functions/unobservable/"
     query_params = [('service_uuid', service_uuid), ('feature_identifier', feature_identifier),
-                    ('function_identifier', function_identifier), ('is_property', str(is_property))]
+                    ('function_identifier', function_identifier)]
+
+    if parameters and named_parameters:
+        raise HTTPException(
+            status_code=400,
+            detail=str("Illegal Method Call: Can not mix named and unnamed parameters"),
+        )
 
     if response_identifiers:
         for response_id in response_identifiers:
             query_params.append(('response_identifiers', response_id))
+
     if parameters:
         for param in parameters:
             query_params.append(('parameters', param))
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(target_route, ssl=False, params=query_params) as resp:
+
+            async with session.post(target_route, ssl=False, params=query_params,
+                                    data=json.dumps(named_parameters) if named_parameters else None) as resp:
                 response = await resp.json()
             if resp.status == 200:
                 return response
