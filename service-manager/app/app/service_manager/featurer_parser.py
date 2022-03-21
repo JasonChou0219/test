@@ -9,7 +9,6 @@ class ClientFeatureParser:
         self.xml_string = xml_string
 
     def parse_xml(self):
-
         root = ElementTree.fromstring(self.xml_string)
 
         feature = Feature()

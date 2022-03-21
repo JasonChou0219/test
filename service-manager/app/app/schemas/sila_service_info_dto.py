@@ -17,3 +17,5 @@ class ServiceInfo(BaseModel):
     isGateway: Optional[bool]
     online: Optional[bool]
     favourite: Optional[bool]
+    owner: Optional[str] = None
+    owner_id: Optional[str] = None
