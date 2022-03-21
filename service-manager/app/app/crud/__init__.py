@@ -1,6 +1,7 @@
 from .crud_service import service
 from .crud_user import user
-
+from .crud_sila_service import service_info
+from .crud_sila_feature import feature
 # For a new basic set of CRUD operations you could just do
 
 # from .base import CRUDBase

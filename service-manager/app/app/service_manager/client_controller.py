@@ -1,5 +1,7 @@
+import os
 from typing import List, Dict, Union
 
+import grpc
 from sila2.client import SilaClient
 from sila2.discovery import SilaDiscoveryBrowser
 from sila2.framework import SilaConnectionError
@@ -48,8 +50,13 @@ def get_service_info(client):
     return sila_service
 
 
-def connect_client(client_ip: str, client_port: int, reset: str = None):
-    client = SilaClient(str(client_ip), client_port, insecure=True)
+def connect_client(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
+    if encrypted:
+        root_cert = open(r'./cert.pem', "rb").read()
+        client = SilaClient(str(client_ip), client_port, root_certs=root_cert)
+    else:
+        client = SilaClient(str(client_ip), client_port, insecure=True)
+
     service_uuid = client.SiLAService.ServerUUID.get()
     if reset and service_uuid in sila_services:
         raise ValueError("Client already in use")
@@ -60,8 +67,8 @@ def connect_client(client_ip: str, client_port: int, reset: str = None):
     return service_uuid
 
 
-def connect_initial(client_ip: str, client_port: int, reset: str = None):
-    uuid = connect_client(client_ip, client_port, reset)
+def connect_initial(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
+    uuid = connect_client(client_ip, client_port, reset, encrypted)
     service_info = get_service_info(sila_services.get(uuid))
     return service_info
 
