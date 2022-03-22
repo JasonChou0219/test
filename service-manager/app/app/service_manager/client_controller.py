@@ -67,6 +67,10 @@ def connect_client(client_ip: str, client_port: int, reset: str = None, encrypte
     return service_uuid
 
 
+def disconnect_client(service_uuid: str):
+    service_feature_controllers.pop(service_uuid)
+
+
 def connect_initial(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
     uuid = connect_client(client_ip, client_port, reset, encrypted)
     service_info = get_service_info(sila_services.get(uuid))
@@ -80,14 +84,14 @@ def browse_features(service_uuid: str):
 
 def run_function(service_uuid: str,
                  feature_identifier: str,
-                 function_indetifier: str,
+                 function_identifiers: str,
                  response_identifiers: List[str] = None,
                  parameters: Union[Dict, List] = None):
     feature_controller = service_feature_controllers[service_uuid]
 
     try:
         function_resp = feature_controller.run_function(
-            feature_identifier, function_indetifier, response_identifiers, parameters)
+            feature_identifier, function_identifiers, response_identifiers, parameters)
     except SilaConnectionError:
         sila_services.pop(service_uuid)
         raise ValueError("Lost connection with client with uuid" + service_uuid)

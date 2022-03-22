@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class SilaFeatureBase(BaseModel):
     category: Optional[str] = None
-    feature_version: Optional[int] = None
+    feature_version: Optional[str] = None
     maturity_level: Optional[str] = None
     originator: Optional[str] = None
     sila2_version: Optional[str] = None
@@ -17,9 +17,12 @@ class SilaFeatureBase(BaseModel):
     properties: Optional[dict] = None
     errors: Optional[dict] = None
 
+    class Config:
+        orm_mode = True
+
 
 class SilaFeatureCreate(SilaFeatureBase):
-    owner_uuid: int
+    owner_uuid: Optional[str] = None
     pass
 
 
