@@ -8,6 +8,5 @@ from .job import Job, JobCreate, JobInDB, JobUpdate
 from .scheduled_job import ScheduledJob, ScheduledJobCreate, ScheduledJobInDB, ScheduledJobUpdate, ScheduledJobStatus
 from .database import Database, DatabaseCreate, DatabaseInDB, DatabaseUpdate
 from .database_status import DatabaseStatus
-from .sila_client import Feature, Property, Command, CommandResponse, CommandParameter, DefinedExecutionError, DataType, \
-    FunctionResponse
+from .sila_client import Feature, FunctionResponse
 from .service_info import ServiceInfo

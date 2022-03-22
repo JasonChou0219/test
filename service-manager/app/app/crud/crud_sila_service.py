@@ -17,13 +17,20 @@ class CRUDServiceInfo(CRUDBase[ServiceInfo, ServiceInfoCreate, ServiceInfoUpdate
         yield db.query(models.ServiceInfo).filter(models.ServiceInfo.uuid == uuid).first()
 
     def has_service_info_by_server_uuid(self, db: Session, uuid: str):
-        yield db.query(models.ServiceInfo).filter(models.ServiceInfo.uuid == uuid).first()
+        return db.query(models.ServiceInfo).filter(models.ServiceInfo.uuid == uuid).first()
 
     def get_all_service_info(self, db: Session):
         return db.query(models.ServiceInfo).all()
 
     def create_service_info(self, db: Session, service_info: schemas.ServiceInfoCreate, owner_id: int, owner: str):
         db_service_info = models.ServiceInfo(**service_info.dict())
+        db.add(db_service_info)
+        db.commit()
+        db.refresh(db_service_info)
+        return db_service_info
+
+    def create_feature_info(self, db: Session, feature_info: schemas.SilaFeatureCreate, owner_id: int, owner: str):
+        db_service_info = models.Feature(**service_info.dict())
         db.add(db_service_info)
         db.commit()
         db.refresh(db_service_info)

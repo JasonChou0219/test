@@ -1,15 +1,14 @@
 from typing import List, Optional, Union, Dict, Any
 
 from fastapi import APIRouter, Query, HTTPException, Depends, Body
-from pydantic import ValidationError
+from pydantic import ValidationError, parse_obj_as
 from sila2.framework import SilaConnectionError
 from sqlalchemy.orm import Session
 
-from app import schemas, crud, models
-from app.api import deps
+from app import schemas, crud
 from app.api.deps import get_db
-from app.models import ServiceInfo
-from app.schemas import FunctionResponse
+from app.models import ServiceInfo, Feature
+from app.schemas import FunctionResponse, SilaFeatureCreate, Command
 from app.schemas.sila_service_db import ServiceInfoCreate
 from app.service_manager import client_controller
 
@@ -21,9 +20,18 @@ def connect_client(client_ip: str, client_port: int, user_id: int, user_name: st
                    encrypted: str = None, db: Session = Depends(get_db)):
     try:
         service_info = client_controller.connect_initial(client_ip, client_port, reset, encrypted)
-        map_to_db = map_service_info_to_db(service_info, user_name, user_id)
-        create_service_info_entry(map_to_db, user_name, user_id, db)
+        db_info = map_service_info_to_db(service_info, user_name, user_id)
+
+        if crud.service_info.has_service_info_by_server_uuid(db, service_info.uuid) is None:
+            crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
+                                                  owner=user_name)
+
+            features = browse_features(service_info.uuid)
+
+            for feature in features:
+                crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
         return True
+
     except SilaConnectionError as connection_error:
         raise HTTPException(
             status_code=404,
@@ -40,6 +48,18 @@ def connect_client(client_ip: str, client_port: int, user_id: int, user_name: st
 def connect_initial(client_ip: str, client_port: int, user_id: int, user_name: str = None, reset: str = None,
                     encrypted: str = None, db: Session = Depends(get_db)):
     try:
+        service_info = client_controller.connect_initial(client_ip, client_port, reset, encrypted)
+        db_info = map_service_info_to_db(service_info, user_name, user_id)
+
+        if crud.service_info.has_service_info_by_server_uuid(db, service_info.uuid) is None:
+            crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
+                                                  owner=user_name)
+
+            features = browse_features(service_info.uuid)
+
+            for feature in features:
+                crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
+
         service_info = client_controller.connect_initial(client_ip, client_port, reset, encrypted)
         map_to_db = map_service_info_to_db(service_info, user_name, user_id)
         info_in_db = create_service_info_entry(map_to_db, user_name, user_id, db)
@@ -75,6 +95,25 @@ def map_service_info_to_db(service_info: schemas.ServiceInfo, user_name: str, us
     return service_info_create
 
 
+def map_dto_to_db(feature: schemas.Feature, owner_uuid: int):
+    feature_db = SilaFeatureCreate()
+    feature_db.owner_uuid = owner_uuid
+    feature_db.category = feature.category
+    feature_db.feature_version = feature.feature_version
+    feature_db.maturity_level = feature.maturity_level
+    feature_db.originator = feature.originator
+    feature_db.sila2_version = feature.sila2_version
+    feature_db.identifier = feature.identifier
+    feature_db.display_name = feature.display_name
+    feature_db.description = feature.description
+    feature_db.locale = feature.locale
+    feature_db.commands = {command.identifier: command for command in feature.commands}
+    feature_db.properties = {prop.identifier: prop for prop in feature.properties}
+    feature_db.errors = {err.identifier: err for err in feature.errors}
+
+    return feature_db
+
+
 @router.get("/discover/", response_model=List[schemas.ServiceInfo])
 def mdns_discover():
     clients = client_controller.discover_clients()
@@ -98,7 +137,7 @@ def browse_clients(db: Session = Depends(get_db)):
     return clients
 
 
-@router.post("/update_service")
+@router.put("/update_service")
 async def update_service(service_uuid: str, user_id: int,
                          update_data: Dict[str, Any] = Body(...),
                          super_user: str = None,
@@ -122,6 +161,7 @@ async def delete_service(service_uuid: str, user_id: int, super_user: str = None
     if not super_user and (service_info.owner_id != user_id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
     crud.service_info.delete_service_info(db, service_uuid)
+    crud.feature.remove_all_features_for_uuid(db, service_uuid)
     return True
 
 
@@ -160,26 +200,53 @@ def parse_service_info(db_client: ServiceInfo):
     service_info.owner = db_client.owner
     service_info.owner_id = db_client.owner_id
     service_info.isGateway = db_client.isGateway if db_client.isGateway else False
+    service_info.online = True
 
     return service_info
 
 
-@router.get("/browse_features/", response_model=List[schemas.Feature])
-def browse_features(service_uuid: str):
+@router.get("/browse_features/", response_model=List[schemas.SilaFeatureBase])
+def browse_features(service_uuid: str, db: Session = Depends(get_db)):
     try:
         features = client_controller.browse_features(service_uuid)
+        converted = []
+        for feature in features:
+            converted.append(map_dto_to_db(feature, 0).copy(exclude={'owner_uuid': True}))
+
     except ValidationError as validation_error:
         raise HTTPException(
             status_code=405,
             detail=str(validation_error),
         )
     except KeyError:
+
+        db_features = crud.feature.get_all_features_for_uuid(db, service_uuid)
+        if db_features:
+            return db_features
+        else:
+            raise HTTPException(
+                status_code=405,
+                detail=str("ClientError: No client matching " + service_uuid),
+            )
+
+    return converted
+
+
+@router.get("/disconnect")
+def run_function(service_uuid: str):
+    try:
+        client_controller.disconnect_client(service_uuid)
+        return True
+    except KeyError:
         raise HTTPException(
             status_code=405,
-            detail=str("ClientError: No client matching " + service_uuid),
+            detail=str("ClientError: No client connected matching " + service_uuid),
         )
-
-    return features
+    except Exception as exception:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exception)
+        )
 
 
 @router.post("/unobservable/", response_model=schemas.FunctionResponse)
@@ -238,51 +305,14 @@ def run_function(service_uuid: str,
         )
 
 
-## CRUD Operations ##
 def create_service_info_entry(service_info: schemas.ServiceInfoCreate, owner: str, owner_id: int,
                               db: Session):
     db_service_info = crud.service_info.has_service_info_by_server_uuid(db, uuid=service_info.uuid)
     create_service = None
-
     try:
         create_service = crud.service_info.create_service_info(db=db, service_info=service_info, owner_id=owner_id,
                                                                owner=owner)
     except:
-        return True
+        return False
 
     return create_service
-
-
-@router.get("/service_info/", response_model=List[schemas.ServiceInfoDB])
-def get_all_services(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    service_info = crud.service_info.get_all_service_info(db, skip=skip, limit=limit)
-    return service_info
-
-
-@router.get("/service_info/{service_name}", response_model=schemas.ServiceInfoDB)
-def get_service_info_by_name(service_name: str, db: Session = Depends(get_db)):
-    db_service_info = crud.service_info.get_service_info_by_server_name(db, service_name=service_name)
-    if db_service_info is None:
-        raise HTTPException(status_code=404, detail="No service found with name " + service_name)
-    return db_service_info
-
-
-@router.get("/service_info/{service_uuid}", response_model=schemas.ServiceInfoDB)
-def get_service_info_by_uuid(service_uuid: str, db: Session = Depends(get_db)):
-    db_service_info = crud.service_info.get_service_info_by_server_uuid(db, uuid=service_uuid)
-    if db_service_info is None:
-        print("none")
-    return db_service_info
-
-
-@router.post("/service_info/{service_uuid}/features/", response_model=schemas.SilaFeatureDB)
-def create_feature_for_service(
-        uuid: str, feature: schemas.SilaFeatureCreate, db: Session = Depends(get_db)
-):
-    return crud.feature.create_feature_for_uuid(db=db, feature=feature, service_info_uuid=uuid)
-
-
-@router.get("/service_info/{service_uuid}/features", response_model=List[schemas.SilaFeatureDB])
-def read_items(uuid: str, db: Session = Depends(get_db)):
-    items = crud.feature.get_all_features_for_uuid(db, uuid)
-    return items

@@ -14,6 +14,9 @@ class DefinedExecutionError(BaseModel):
     display_name: Optional[str] = None
     description: Optional[str] = None
 
+    class Config:
+        orm_mode = True
+
 
 class CommandParameter(BaseModel):
     identifier: Optional[str] = None
@@ -21,12 +24,18 @@ class CommandParameter(BaseModel):
     description: Optional[str] = None
     data_type: Optional[DataType] = None
 
+    class Config:
+        orm_mode = True
+
 
 class CommandResponse(BaseModel):
     identifier: Optional[str] = None
     display_name: Optional[str] = None
     description: Optional[str] = None
     data_type: Optional[DataType] = None
+
+    class Config:
+        orm_mode = True
 
 
 class Command(BaseModel):
@@ -38,6 +47,9 @@ class Command(BaseModel):
     responses: Optional[List[CommandResponse]] = []
     error_identifiers: Optional[List[str]] = []
 
+    class Config:
+        orm_mode = True
+
 
 class Property(BaseModel):
     identifier: Optional[str] = None
@@ -45,6 +57,9 @@ class Property(BaseModel):
     description: Optional[str] = None
     observable: Optional[bool] = False
     data_type: Optional[DataType] = None
+
+    class Config:
+        orm_mode = True
 
 
 class Feature(BaseModel):
@@ -61,8 +76,14 @@ class Feature(BaseModel):
     properties: Optional[List[Property]] = []
     errors: Optional[List[DefinedExecutionError]] = []
 
+    class Config:
+        orm_mode = True
+
 
 class FunctionResponse(BaseModel):
     feature_identifier: Optional[str] = None
     function_identifier: Optional[str] = None
     response: Dict[str, Any] = None
+
+    class Config:
+        orm_mode = True

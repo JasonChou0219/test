@@ -7,4 +7,4 @@ from .sila_service_feature_dto import Feature, Property, Command, CommandRespons
     FunctionResponse
 from .sila_service_info_dto import ServiceInfo
 from .sila_service_db import ServiceInfoDB, ServiceInfoCreate, ServiceInfoUpdate
-from .sila_feature_db import SilaFeatureDB, SilaFeatureCreate, SilaFeatureUpdate
+from .sila_feature_db import SilaFeatureDB, SilaFeatureCreate, SilaFeatureUpdate, SilaFeatureBase
