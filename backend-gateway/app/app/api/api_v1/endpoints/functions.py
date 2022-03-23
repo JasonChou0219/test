@@ -248,7 +248,7 @@ async def browse_features(service_uuid: str):
 
 
 @router.get("/disconnect")
-async def run_function(service_uuid: str):
+async def disconnect_client(service_uuid: str):
     target_route = target_service_url + "sm_functions/disconnect/"
     query_params = [('service_uuid', service_uuid)]
     try:
@@ -279,7 +279,6 @@ async def run_client_function(service_uuid: str,
     target_route = target_service_url + "sm_functions/unobservable/"
     query_params = [('service_uuid', service_uuid), ('feature_identifier', feature_identifier),
                     ('function_identifier', function_identifier)]
-
     if parameters and named_parameters:
         raise HTTPException(
             status_code=400,
