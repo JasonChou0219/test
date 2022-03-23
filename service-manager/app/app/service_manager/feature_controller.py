@@ -37,14 +37,13 @@ class FeatureController:
                      parameters: Union[Dict, List] = None):
 
         property_list = []
-
         for prop in self.features[feature_identifier].properties:
             property_list.append(prop.identifier)
 
         is_property = function_identifier in property_list
 
         try:
-            response = (getattr(vars(self.sila_client)[feature_identifier], function_identifier))
+            response = getattr(vars(self.sila_client)[feature_identifier], function_identifier)
         except KeyError:
             raise ValueError("Client has no identifier matching " + feature_identifier)
 
@@ -78,9 +77,11 @@ class FeatureController:
                 #command_response = command_response.get_responses()
 
             response_identifier_all = []
+
             for command in self.features[feature_identifier].commands:
-                for resp in command.responses:
-                    response_identifier_all.append(resp.identifier)
+                if command.identifier == function_identifier:
+                    for resp in command.responses:
+                        response_identifier_all.append(resp.identifier)
 
             if response_identifiers is None:
                 response_identifiers = response_identifier_all
