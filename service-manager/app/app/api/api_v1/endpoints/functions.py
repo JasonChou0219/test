@@ -233,7 +233,7 @@ def browse_features(service_uuid: str, db: Session = Depends(get_db)):
 
 
 @router.get("/disconnect")
-def run_function(service_uuid: str):
+def disconnect_client(service_uuid: str):
     try:
         client_controller.disconnect_client(service_uuid)
         return True
@@ -262,16 +262,15 @@ def run_function(service_uuid: str,
         response.function_identifier = function_identifier
 
         params = []
-
         if parameters is not None:
             params = parameters
             for i, param in enumerate(params):
                 if str(param).lower() in ["true", "false"]:
                     params[i] = True if str(param).lower() == "true" else False
-
+                if str(param).isdecimal():  # Floats are not supported by REST query parameters
+                    params[i] = int(param)
         if named_parameters is not None:
             params = named_parameters
-
         response.response = client_controller.run_function(service_uuid,
                                                            feature_identifier, function_identifier,
                                                            response_identifiers=response_identifiers,
