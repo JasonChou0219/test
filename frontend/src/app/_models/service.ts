@@ -10,6 +10,36 @@ export interface DiscoveredSilaServiceList {
     data: SilaServerInfo[];
 }
 
+export interface SilaServiceInfo{
+    name?: string
+    type?: string
+    parsed_ip_address: string
+    port: number
+    uuid: string
+    version?: string
+    server_name?: string
+    description?: string
+    feature_names?: string[]
+    online: boolean
+    connected: boolean
+    isGateway: boolean
+    favourite: boolean
+    owner?: string
+    owner_uuid?: string
+}
+
+export interface EditSilaServiceInfo{
+    name?: string
+    parsed_ip_address: string
+    port: number
+}
+
+export interface AddSilaServiceInfo{
+    parsed_ip_address: string
+    port: number
+    encrypted: boolean
+}
+
 export interface Service {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend

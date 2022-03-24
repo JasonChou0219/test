@@ -17,7 +17,7 @@
                  <div *ngIf="isExpanded">
                      <mat-nav-list dense>
                         <a mat-list-item routerLink='/dashboard/services' *ngIf="isShowing || isExpanded"><mat-icon>menu</mat-icon>Overview</a>
-                        <a mat-list-item routerLink="#" *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:map-search-outline"></mat-icon>Discovery</a>
+                        <a mat-list-item routerLink='/dashboard/discover' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:map-search-outline"></mat-icon>Discovery</a>
                         <a mat-list-item routerLink='/dashboard/about' *ngIf="isShowing || isExpanded"><mat-icon svgIcon="assets:web-plus"></mat-icon>Edge Gateway</a>
                     </mat-nav-list>
                  </div>

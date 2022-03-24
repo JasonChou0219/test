@@ -175,10 +175,18 @@ def map_db_to_service_info(db: Session):
     clients_in_db = crud.service_info.get_all_service_info(db)
     for db_client in clients_in_db:
         service_info = parse_service_info(db_client)
+
         if db_client.uuid in map(mapToUUID, online_devices):
             service_info.online = True
         else:
             service_info.online = False
+
+        if db_client.uuid in client_controller.get_connected_clients():
+            service_info.connected = True
+            service_info.online = True
+        else:
+            service_info.connected = False
+
         clients.append(service_info)
 
     return list(clients)

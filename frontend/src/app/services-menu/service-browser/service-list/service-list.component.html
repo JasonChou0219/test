@@ -8,7 +8,7 @@
                     class="header"
                     mat-icon-button
                     color="primary"
-                    (click)="add_service()"
+                    routerLink='/dashboard/discover'
                     matTooltip="Move to discovery! Add a new service using auto-discovery"
                 >
                     <mat-icon>explore</mat-icon>
@@ -18,8 +18,8 @@
                     class="header"
                     mat-icon-button
                     color="primary"
-                    (click)="add_edge_gateway()"
-                    matTooltip="Move to discovery! Add a new edge gateway to enable auto-discovery of services in another network"
+                    (click)="add_service()"
+                    matTooltip="Add a new service manually"
                 >
                     <mat-icon>add</mat-icon>
                 </button>
@@ -70,7 +70,7 @@
         <ng-container matColumnDef="address">
             <th mat-header-cell *matHeaderCellDef>Address</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.service.address }}
+                {{ element.service.parsed_ip_address }}
             </td>
         </ng-container>
 
@@ -81,10 +81,10 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="free">
-            <th mat-header-cell *matHeaderCellDef>In use</th>
+        <ng-container matColumnDef="isGateway">
+            <th mat-header-cell *matHeaderCellDef>Gateway</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.service.available ? 'No' : 'Yes' }}
+                {{ element.service.isGateway ? 'Yes' : 'No' }}
             </td>
         </ng-container>
 
@@ -93,7 +93,7 @@
             <td mat-cell *matCellDef="let element">
                 <span
                     [ngStyle]="
-                        element.status.online
+                        element.service.online
                             ? { color: 'green' }
                             : { color: 'red' }
                     "
@@ -102,7 +102,7 @@
                 <span
                     class="circle"
                     [ngStyle]="
-                        element.status.online
+                        element.service.online
                             ? { 'background-color': 'green' }
                             : { 'background-color': 'red' }
                     "
@@ -111,10 +111,24 @@
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="toggleConnection">
+            <th mat-header-cell *matHeaderCellDef>Toggle Connection</th>
+            <td mat-cell *matCellDef="let element; let i = dataIndex">
+                <button mat-icon-button (click)="toggleConnection(i)" >
+                    <mat-icon *ngIf="!element.service.connected" matTooltip="Connect">link</mat-icon>
+                    <mat-icon *ngIf="element.service.connected" matTooltip="Disconnect">link_off</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
         <ng-container matColumnDef="edit">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let element; let i = dataIndex">
                 <div class="edit">
+                    <button mat-icon-button (click)="toggleFavourite(i)" >
+                        <mat-icon *ngIf="!element.service.favourite" matTooltip="Set Favourite">star_border</mat-icon>
+                        <mat-icon *ngIf="element.service.favourite" matTooltip="Unset Favourite">star</mat-icon>
+                    </button>
                     <button mat-icon-button (click)="expand(i)">
                         <mat-icon matTooltip="Expand to view service detail">info</mat-icon>
                     </button>
@@ -143,10 +157,19 @@
                     <div class="details">
                         <div class="column">
                             <div class="row">
-                                <div class="title">Internal UUID:</div>
+                                <div class="title">Server UUID:</div>
                             </div>
                             <div class="row">
-                                <div class="title">Server UUID:</div>
+                                <div class="title">Version:</div>
+                            </div>
+                            <div class="row">
+                                <div class="title">Servername:</div>
+                            </div>
+                            <div class="row">
+                                <div class="title">Description:</div>
+                            </div>
+                            <div class="row">
+                                <div class="title">Owner:</div>
                             </div>
                         </div>
                         <div class="column">
@@ -154,7 +177,16 @@
                                 <div class="data">{{ element.service.uuid }}</div>
                             </div>
                             <div class="row">
-                                <div class="data">{{ element.service.server_uuid }}</div>
+                                <div class="data">{{ element.service.version }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="data">{{ element.service.server_name }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="data">{{ element.service.description }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="data">{{ element.service.owner ? element.service.owner : "--"}}</div>
                             </div>
                         </div>
 
