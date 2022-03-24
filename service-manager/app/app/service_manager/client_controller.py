@@ -1,7 +1,6 @@
-import os
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional, Any
+from queue import Queue
 
-import grpc
 from sila2.client import SilaClient
 from sila2.discovery import SilaDiscoveryBrowser
 from sila2.framework import SilaConnectionError
@@ -11,6 +10,7 @@ from app.service_manager.feature_controller import FeatureController
 
 sila_services: Dict[str, SilaClient] = {}
 service_feature_controllers: Dict[str, FeatureController] = {}
+observables_dict: Dict = {}
 
 
 def discover_clients():
@@ -97,3 +97,38 @@ def run_function(service_uuid: str,
         raise ValueError("Lost connection with client with uuid" + service_uuid)
 
     return function_resp
+
+
+def register_observable(service_uuid: str, feature_identifier: str, function_identifier: str,
+                        named_parameters: Optional[Dict[str, Any]] = None
+                        ) -> str:
+    # Create the observable instance
+    feature_controller = service_feature_controllers[service_uuid]
+    observable_instance = feature_controller.get_observable_instance(
+        feature_identifier, function_identifier, named_parameters)
+
+    # Get response identifiers
+    response_identifiers = []
+    intermediate_response_identifiers = []
+    for command in feature_controller.features[feature_identifier].commands:
+        if command.identifier == function_identifier:
+            for resp in command.responses:
+                response_identifiers.append(resp.identifier)
+            for resp in command.intermediate_responses:
+                intermediate_response_identifiers.append(resp.identifier)
+
+    # Add the instance to the observables dict with execution_uuid as key
+    observables_dict.update({observable_instance.execution_uuid: (
+        observable_instance, Queue(maxsize=1000), intermediate_response_identifiers, response_identifiers)}
+    )
+    intermediate_response_subscription = observable_instance.subscribe_to_intermediate_responses()
+    intermediate_response_subscription.add_callback(
+        lambda resp: observables_dict[observable_instance.execution_uuid][1].put({
+                        "status": observable_instance.status,
+                        "progress": observable_instance.progress,
+                        "estimated_remaining_time": observable_instance.estimated_remaining_time,
+                        "intermediate_response": resp,
+                        "response": None
+                    }, timeout=1)
+    )
+    return str(observable_instance.execution_uuid)

@@ -5,7 +5,7 @@
     </head>
     <body>
         <script>
-            var ws = new WebSocket("ws://127.0.0.1:5678/"),
+            var ws = new WebSocket("ws://localhost:82/api/v1/sm_functions/ws/observable/3c6ae8e8-a95e-4519-b81c-38f045299510"),
                 messages = document.createElement('ul');
             ws.onopen = function(event) {
                 var messages = document.getElementsByTagName('ul')[0],
@@ -13,7 +13,7 @@
                     content = document.createTextNode('Connected to: ' + event.currentTarget.url);
                 message.appendChild(content);
                 messages.appendChild(message);
-                ws.send('fd4082f6-51e6-448b-9882-64a00c117c2f')
+                ws.send('c3eb7a19-9f20-4283-a353-c4cac8c3eb91')
                 };
 
             ws.onmessage = function (event) {
