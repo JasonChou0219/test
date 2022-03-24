@@ -1,5 +1,6 @@
 from typing import List, Dict, Union, Optional, Any
 from queue import Queue
+from uuid import UUID
 
 from sila2.client import SilaClient
 from sila2.discovery import SilaDiscoveryBrowser
@@ -118,9 +119,6 @@ def register_observable(service_uuid: str, feature_identifier: str, function_ide
                 intermediate_response_identifiers.append(resp.identifier)
 
     # Add the instance to the observables dict with execution_uuid as key
-    observables_dict.update({observable_instance.execution_uuid: (
-        observable_instance, Queue(maxsize=1000), intermediate_response_identifiers, response_identifiers)}
-    )
     intermediate_response_subscription = observable_instance.subscribe_to_intermediate_responses()
     intermediate_response_subscription.add_callback(
         lambda resp: observables_dict[observable_instance.execution_uuid][1].put({
@@ -131,4 +129,15 @@ def register_observable(service_uuid: str, feature_identifier: str, function_ide
                         "response": None
                     }, timeout=1)
     )
+    observables_dict.update({observable_instance.execution_uuid: (
+        observable_instance, Queue(maxsize=1000), intermediate_response_identifiers, response_identifiers, intermediate_response_subscription)}
+    )
     return str(observable_instance.execution_uuid)
+
+
+def disconnect_websocket(execution_uuid):
+    intermediate_response_subscription = observables_dict[UUID(execution_uuid)][4]
+    intermediate_response_subscription.clear_callbacks()
+    intermediate_response_subscription.cancel()
+    observables_dict.pop(UUID(execution_uuid))
+

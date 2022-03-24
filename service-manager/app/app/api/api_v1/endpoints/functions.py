@@ -6,7 +6,8 @@ import json
 import asyncio
 
 from fastapi import APIRouter, Query, HTTPException, Depends, Body, WebSocket
-from starlette.websockets import WebSocketDisconnect
+from starlette.websockets import WebSocketDisconnect, WebSocketClose
+from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 
 from pydantic import ValidationError, parse_obj_as
 from sila2.framework import SilaConnectionError
@@ -341,17 +342,14 @@ class ConnectionManager:
         self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
-        print('Before connect')
         await websocket.accept()
-        print('Connected websocket')
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        print('Disconnecting')
+        print('Disconnect')
         self.active_connections.remove(websocket)
 
     async def send_response(self, message: str, websocket: WebSocket):
-        print('Send response: ', message)
         await websocket.send_text(message)
 
 
@@ -362,7 +360,7 @@ manager = ConnectionManager()
 async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
     await manager.connect(websocket)
     try:
-        """ Endpoint """
+        """ Serve websocket for observable commands """
 
         # This must be implemented with queues and events. This is not functional, but shows how it could work.
         requested_execution_uuid = UUID(await websocket.receive_text())
@@ -376,22 +374,17 @@ async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
             observable_instance = client_controller.observables_dict[requested_execution_uuid][0]
             response_queue: Queue = client_controller.observables_dict[requested_execution_uuid][1]
             while True:
-                print('0')
                 if not response_queue.empty():
+                    # Process intermediate responses
                     results = response_queue.get(timeout=1)
                     response_queue.task_done()
                     response_dict = dict(results.items())
                     responses = {}
-                    print('1')
-                    print(observable_instance.done)
-                    # Send intermediate responses
-                    print('3')
+
                     for response_identifier in intermediate_response_identifiers:
                         responses.update(
                             {response_identifier: getattr(response_dict['intermediate_response'], response_identifier)}
                         )
-                        print('++++++++++++++++++++++++++++++')
-                    print(response_dict['status'].name)
                     result_obj = {
                         str(requested_execution_uuid): {
                             "status": response_dict['status'].name,
@@ -405,7 +398,6 @@ async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
 
                 elif observable_instance.done:
                     # Send final response
-                    print('2')
                     try:
                         response = observable_instance.get_responses()
                         responses = {}
@@ -427,7 +419,8 @@ async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
 
                     await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
                     break
-
                 await asyncio.sleep(0.2)
-    except WebSocketDisconnect:
+            client_controller.disconnect_websocket(execution_uuid)
+    except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
+        client_controller.disconnect_websocket(execution_uuid)
         manager.disconnect(websocket)
