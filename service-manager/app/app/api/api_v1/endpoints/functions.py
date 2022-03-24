@@ -3,6 +3,7 @@ from uuid import UUID
 from queue import Queue
 from time import sleep
 import json
+import asyncio
 
 from fastapi import APIRouter, Query, HTTPException, Depends, Body, WebSocket
 from starlette.websockets import WebSocketDisconnect
@@ -340,14 +341,18 @@ class ConnectionManager:
         self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
+        print('Before connect')
         await websocket.accept()
+        print('Connected websocket')
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
+        print('Disconnecting')
         self.active_connections.remove(websocket)
 
     async def send_response(self, message: str, websocket: WebSocket):
-        await websocket.send_json(message)
+        print('Send response: ', message)
+        await websocket.send_text(message)
 
 
 manager = ConnectionManager()
@@ -378,8 +383,30 @@ async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
                     response_dict = dict(results.items())
                     responses = {}
                     print('1')
-                    if observable_instance.done:
-                        print('2')
+                    print(observable_instance.done)
+                    # Send intermediate responses
+                    print('3')
+                    for response_identifier in intermediate_response_identifiers:
+                        responses.update(
+                            {response_identifier: getattr(response_dict['intermediate_response'], response_identifier)}
+                        )
+                        print('++++++++++++++++++++++++++++++')
+                    print(response_dict['status'].name)
+                    result_obj = {
+                        str(requested_execution_uuid): {
+                            "status": response_dict['status'].name,
+                            "progress": response_dict['progress'],
+                            "estimated_remaining_time": str(response_dict['estimated_remaining_time']),
+                            "intermediate_response": responses,
+                            "response": None
+                        }
+                    }
+                    await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+
+                elif observable_instance.done:
+                    # Send final response
+                    print('2')
+                    try:
                         response = observable_instance.get_responses()
                         responses = {}
                         for response_identifier in response_identifiers:
@@ -395,26 +422,12 @@ async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
                                 "response": responses
                             }
                         }
-                        await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
-                        break
-                    else:
-                        print('3')
-                        for response_identifier in intermediate_response_identifiers:
-                            responses.update(
-                                {response_identifier: getattr(response_dict['intermediate_response'], response_identifier)}
-                            )
-                            print('++++++++++++++++++++++++++++++')
-                        print(response_dict['status'].name)
-                        result_obj = {
-                            str(requested_execution_uuid): {
-                                "status": response_dict['status'].name,
-                                "progress": response_dict['progress'],
-                                "estimated_remaining_time": str(response_dict['estimated_remaining_time']),
-                                "intermediate_response": responses,
-                                "response": None
-                            }
-                        }
-                        await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
-                sleep(0.2)
+                    except Exception:
+                        result_obj = {"Inside": "Empty"}
+
+                    await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+                    break
+
+                await asyncio.sleep(0.2)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
