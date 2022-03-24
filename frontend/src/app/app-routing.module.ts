@@ -18,6 +18,7 @@ import { DatabasesMenuAddDatabaseComponent } from './databases-menu/add-database
 import { DatabasesMenuUpdateDatabaseComponent } from './databases-menu/update-database/databases-menu-update-database.component';
 
 import { AuthGuard } from './auth.guard';
+import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
 
 
 const routes: Routes = [
@@ -34,7 +35,7 @@ const routes: Routes = [
     {
         path: 'dashboard',
         component: DashboardComponent,
-        //canActivate: [AuthGuard],
+        //canActivate: [AuLthGuard],
         children: [
             {
                  path: 'workflow_editor',
@@ -49,6 +50,10 @@ const routes: Routes = [
             {
                 path: 'services',
                 component: ServiceListComponent
+            },
+            {
+                path: 'discover',
+                component: DiscoverServiceComponent
             },
             {
                 path: 'about',

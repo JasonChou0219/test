@@ -88,7 +88,7 @@ class FeatureController:
 
             for response_id in response_identifiers:
                 if response_id not in response_identifier_all:
-                    raise  ValueError("ExecutionError: Client has no response identifier matching " + response_id)
+                    raise ValueError("ExecutionError: Client has no response identifier matching " + response_id)
                 response_values.update({str(response_id): getattr(command_response, response_id)})
 
         return response_values

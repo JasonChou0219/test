@@ -25,6 +25,8 @@ def discover_clients():
 
     for client in clients:
         sila_service = get_service_info(client)
+        if client.SiLAService.ServerUUID.get() in get_connected_clients():
+            sila_service.connected = True
         services.append(sila_service)
 
     return list(services)
@@ -46,6 +48,7 @@ def get_service_info(client):
     sila_service.isGateway = False
     for feature_identifier in client.SiLAService.ImplementedFeatures.get():
         sila_service.feature_names.append(feature_identifier)
+    sila_service.connected = False
 
     return sila_service
 
@@ -71,9 +74,14 @@ def disconnect_client(service_uuid: str):
     service_feature_controllers.pop(service_uuid)
 
 
+def get_connected_clients():
+    return service_feature_controllers.keys()
+
+
 def connect_initial(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
     uuid = connect_client(client_ip, client_port, reset, encrypted)
     service_info = get_service_info(sila_services.get(uuid))
+    service_info.connected = True
     return service_info
 
 

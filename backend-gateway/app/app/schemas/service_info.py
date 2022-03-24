@@ -17,5 +17,6 @@ class ServiceInfo(BaseModel):
     online: Optional[bool] = False
     isGateway: Optional[bool]
     favourite: Optional[bool] = False
+    connected: Optional[bool] = False
     owner: Optional[str] = None
     owner_uuid: Optional[str] = None

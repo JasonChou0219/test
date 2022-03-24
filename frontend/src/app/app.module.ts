@@ -93,6 +93,7 @@ import { AboutComponent } from './settings-menu/about/about.component';
 import { FooterBarComponent } from './footer-bar/footer-bar.component';
 import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
+import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
 
 
 @NgModule({
@@ -118,6 +119,7 @@ import { MatSortModule } from '@angular/material/sort';
         // ExperimentsComponent,
         // AddExperimentComponent,
         AboutComponent,
+        DiscoverServiceComponent,
         WorkflowEditorComponent,
         EditorComponent,
         AddWorkflowComponent,
