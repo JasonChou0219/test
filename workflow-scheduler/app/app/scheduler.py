@@ -70,6 +70,7 @@ db = next(deps.get_db())
 docker_client = docker.from_env()
 image_name = 'workflow_executor_python'
 
+
 def event_listener(event):
     event_queue.put(event)
 
