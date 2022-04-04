@@ -30,6 +30,15 @@ class FeatureController:
     def get_feature_by_identifier(self, identifier: str):
         return self.features[identifier]
 
+    def get_observable_instance(self,
+                                feature_identifier: str,
+                                function_identifier: str,
+                                parameters: Union[Dict, List] = None):
+        function_object = getattr(vars(self.sila_client)[feature_identifier],
+                                  function_identifier)
+        return function_object(**parameters)
+
+
     def run_function(self,
                      feature_identifier: str,
                      function_identifier: str,
@@ -94,8 +103,6 @@ class FeatureController:
         return response_values
 
 
-# TODO ObservableTest
-# TODO reimplement with DB
 
     """
     pool = ThreadPool()

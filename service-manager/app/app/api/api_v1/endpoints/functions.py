@@ -1,6 +1,14 @@
 from typing import List, Optional, Union, Dict, Any
+from uuid import UUID
+from queue import Queue
+from time import sleep
+import json
+import asyncio
 
-from fastapi import APIRouter, Query, HTTPException, Depends, Body
+from fastapi import APIRouter, Query, HTTPException, Depends, Body, WebSocket
+from starlette.websockets import WebSocketDisconnect, WebSocketClose
+from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+
 from pydantic import ValidationError, parse_obj_as
 from sila2.framework import SilaConnectionError
 from sqlalchemy.orm import Session
@@ -312,6 +320,18 @@ def run_function(service_uuid: str,
         )
 
 
+@router.post("/observable/", response_model=str)  # UUID
+def start_observable(service_uuid: str,
+                     feature_identifier: str,
+                     function_identifier: str,
+                     named_parameters: Optional[Dict[str, Any]] = Body(None)) -> str:  # returns execution  UUID
+    """ Registers observable in observables dict and instantiates SiLA Python client for observable """
+
+    return client_controller.register_observable(
+        service_uuid, feature_identifier, function_identifier, named_parameters
+    )
+
+
 def create_service_info_entry(service_info: schemas.ServiceInfoCreate, owner: str, owner_id: int,
                               db: Session):
     db_service_info = crud.service_info.has_service_info_by_server_uuid(db, uuid=service_info.uuid)
@@ -323,3 +343,92 @@ def create_service_info_entry(service_info: schemas.ServiceInfoCreate, owner: st
         return False
 
     return create_service
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        print('Disconnect')
+        self.active_connections.remove(websocket)
+
+    async def send_response(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+
+manager = ConnectionManager()
+
+
+@router.websocket("/ws/observable/{execution_uuid}")
+async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
+    await manager.connect(websocket)
+    try:
+        """ Serve websocket for observable commands """
+
+        # This must be implemented with queues and events. This is not functional, but shows how it could work.
+        requested_execution_uuid = UUID(await websocket.receive_text())
+        print(f'Received observable command request for uuid: {requested_execution_uuid}')
+        intermediate_response_identifiers = client_controller.observables_dict[requested_execution_uuid][2]
+        response_identifiers = client_controller.observables_dict[requested_execution_uuid][3]
+        execution_id_response_list = []
+
+        if requested_execution_uuid in client_controller.observables_dict.keys():
+            print('Start streaming responses')
+            observable_instance = client_controller.observables_dict[requested_execution_uuid][0]
+            response_queue: Queue = client_controller.observables_dict[requested_execution_uuid][1]
+            while True:
+                if not response_queue.empty():
+                    # Process intermediate responses
+                    results = response_queue.get(timeout=1)
+                    response_queue.task_done()
+                    response_dict = dict(results.items())
+                    responses = {}
+
+                    for response_identifier in intermediate_response_identifiers:
+                        responses.update(
+                            {response_identifier: getattr(response_dict['intermediate_response'], response_identifier)}
+                        )
+                    result_obj = {
+                        str(requested_execution_uuid): {
+                            "status": response_dict['status'].name,
+                            "progress": response_dict['progress'],
+                            "estimated_remaining_time": str(response_dict['estimated_remaining_time']),
+                            "intermediate_response": responses,
+                            "response": None
+                        }
+                    }
+                    await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+
+                elif observable_instance.done:
+                    # Send final response
+                    try:
+                        response = observable_instance.get_responses()
+                        responses = {}
+                        for response_identifier in response_identifiers:
+                            responses.update(
+                                {response_identifier: getattr(response, response_identifier)}
+                            )
+                        result_obj = {
+                            str(requested_execution_uuid): {
+                                "status": observable_instance.status.name,
+                                "progress": observable_instance.progress,
+                                "estimated_remaining_time": str(observable_instance.estimated_remaining_time),
+                                "intermediate_response": None,
+                                "response": responses
+                            }
+                        }
+                    except Exception:
+                        result_obj = {"Inside": "Empty"}
+
+                    await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+                    break
+                await asyncio.sleep(0.2)
+            client_controller.disconnect_websocket(execution_uuid)
+    except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
+        client_controller.disconnect_websocket(execution_uuid)
+        manager.disconnect(websocket)
