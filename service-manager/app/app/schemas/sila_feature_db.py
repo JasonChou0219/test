@@ -1,10 +1,9 @@
-from typing import Optional, Any, Union, Dict
+from typing import List, Optional
 
-from mypy.errors import List
 from pydantic import BaseModel
 
 
-class Feature(BaseModel):
+class SilaFeatureBase(BaseModel):
     category: Optional[str] = None
     feature_version: Optional[str] = None
     maturity_level: Optional[str] = None
@@ -18,11 +17,21 @@ class Feature(BaseModel):
     properties: Optional[dict] = None
     errors: Optional[dict] = None
 
+    class Config:
+        orm_mode = True
 
-class FunctionResponse(BaseModel):
-    feature_identifier: Optional[str] = None
-    function_identifier: Optional[str] = None
-    response: Dict[str, Any] = None
+
+class SilaFeatureCreate(SilaFeatureBase):
+    owner_uuid: Optional[str] = None
+    pass
+
+
+class SilaFeatureDB(SilaFeatureBase):
+    id: int
 
     class Config:
         orm_mode = True
+
+
+class SilaFeatureUpdate(SilaFeatureBase):
+    pass

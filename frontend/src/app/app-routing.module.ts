@@ -21,6 +21,7 @@ import { ProtocolsMenuOverviewComponent } from '@app/protocols-menu/overview/pro
 import { ProtocolsMenuUpdateProtocolComponent } from '@app/protocols-menu/update-protocol/protocols-menu-update-protocol.component';
 
 import { AuthGuard } from './auth.guard';
+import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
 
 
 const routes: Routes = [
@@ -37,7 +38,7 @@ const routes: Routes = [
     {
         path: 'dashboard',
         component: DashboardComponent,
-        //canActivate: [AuthGuard],
+        //canActivate: [AuLthGuard],
         children: [
             {
                  path: 'workflow_editor',
@@ -52,6 +53,10 @@ const routes: Routes = [
             {
                 path: 'services',
                 component: ServiceListComponent
+            },
+            {
+                path: 'discover',
+                component: DiscoverServiceComponent
             },
             {
                 path: 'about',

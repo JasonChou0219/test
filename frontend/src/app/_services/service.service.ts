@@ -1,10 +1,17 @@
-import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { env } from '@environments/environment';
+import {Injectable} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {env} from '@environments/environment';
 
-import {SilaServerInfo, DiscoveredSilaServiceList, Service, ServiceStatus, ServiceList, ServiceUuidList,
-ServiceStatusList, ServiceFeatureList, ServiceParameter, ServiceProperty, ServiceCommand, ServiceFeature} from '@app/_models';
+import {
+    DiscoveredSilaServiceList,
+    Service,
+    ServiceFeature,
+    ServiceFeatureList,
+    ServiceStatus,
+    SilaServerInfo,
+    SilaServiceInfo
+} from '@app/_models';
 
 
 const test_service_1: Service = {
@@ -105,38 +112,60 @@ export class ServiceService {
     serverUrl = env.apiUrl;
     constructor(private http: HttpClient) {
     }
-    async getServiceList(): Promise<Service[]> {
-        return this.http
-            .get<Service[]>('http://127.0.0.1:82/api/v1/services/')
-            .toPromise();
-        // Mock implementation
-        //return [test_service_1]
-        // Real implementation
-        // return this.http
-        //     .get<ServiceList>(this.serverUrl + '/api/services')
-        //     .pipe(map((serviceList) => serviceList.data))
-        //     .toPromise();
+    async getServiceList(): Promise<SilaServiceInfo[]> {
+        return await this.browseServiceInfo()
     }
-    async getService(uuid: string): Promise<Service> {
+
+    async connectService(ip: string, port: number, encrypted?: boolean, reset?: boolean){
+
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('client_ip', ip)
+        queryParams = queryParams.append('client_port', port)
+        if (reset) {  queryParams = queryParams.append('reset', reset) }
+        if (encrypted)  { queryParams = queryParams.append('encrypted', encrypted) }
         return this.http
-            .get<Service>(this.serverUrl + '/api/services/' + uuid)
+            .get(`${env.apiUrl}/api/v1/functions/connect`, {params: queryParams})
+            .toPromise()
+    }
+
+    async updateServiceInfo(uuid: string, body){
+        return this.http
+            .put(`${env.apiUrl}/api/v1/functions/` +  uuid,  body)
+            .toPromise()
+    }
+
+    async browseServiceInfo(){
+        return this.http
+            .get<[SilaServiceInfo]>(`${env.apiUrl}/api/v1/functions/browse`)
+            .toPromise()
+    }
+
+    async discoverServiceMDNS(){
+        return this.http
+            .get<[SilaServiceInfo]>(`${env.apiUrl}/api/v1/functions/discover`)
+            .toPromise()
+    }
+
+    async deleteServiceInfo(uuid: string) {
+        return this.http
+            .delete(`${env.apiUrl}/api/v1/functions/` + uuid)
             .toPromise();
     }
-    async setService(uuid: string, service: Service) {
+
+    async disconnectService(uuid: string) {
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
         return this.http
-            .put(this.serverUrl + '/api/services/' + uuid, service)
-            .toPromise();
+            .get(`${env.apiUrl}/api/v1/functions/disconnect`, {params: queryParams})
+            .toPromise()
     }
+
     async addService(service: Service) {
         return this.http
             .post(this.serverUrl + '/api/services', service)
             .toPromise();
     }
-    async deleteService(uuid: string) {
-        return this.http
-            .delete(this.serverUrl + '/api/services/' + uuid)
-            .toPromise();
-    }
+
     async getServiceStatus(uuid: string): Promise<ServiceStatus> {
     //    // Mock implementation
         return test_service_1_status
@@ -147,9 +176,10 @@ export class ServiceService {
     }
     getServiceFeatures(uuid: string): Promise<ServiceFeature[]> {
         return this.http
-            .get<ServiceFeature[]>(
-                this.serverUrl + '/api/v1/functions/browse_features/?service_uuid=' + uuid
+            .get<ServiceFeatureList>(
+                this.serverUrl + '/api/serviceFeatures/' + uuid
             )
+            .pipe(map((featureList) => featureList.data))
             .toPromise();
     }
     getServiceFeaturesDataHandler(uuid: string): Promise<ServiceFeature[]> {
@@ -160,14 +190,7 @@ export class ServiceService {
             .pipe(map((featureList) => featureList.data))
             .toPromise();
     }
-    async discoverSilaServices(): Promise<SilaServerInfo[]> {
-        return this.http
-            .get<DiscoveredSilaServiceList>(
-                this.serverUrl + '/api/silaDiscovery/'
-            )
-            .pipe(map((serviceList) => serviceList.data))
-            .toPromise();
-    }
+
     async getServiceLog(param?: {
         from?: Date;
         to?: Date;

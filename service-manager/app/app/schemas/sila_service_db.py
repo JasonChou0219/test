@@ -1,10 +1,9 @@
 from typing import Optional
 
-from mypy.errors import List
 from pydantic import BaseModel
 
 
-class ServiceInfo(BaseModel):
+class ServiceInfoBase(BaseModel):
     name: Optional[str] = None
     type: Optional[str] = None
     parsed_ip_address: Optional[str] = None
@@ -13,10 +12,24 @@ class ServiceInfo(BaseModel):
     version: Optional[str] = None
     server_name: Optional[str] = None
     description: Optional[str] = None
-    feature_names: Optional[List[str]] = []
-    online: Optional[bool] = False
-    isGateway: Optional[bool]
     favourite: Optional[bool] = False
-    connected: Optional[bool] = False
+    feature_names: Optional[str] = None
+    isGateway: Optional[bool] = None
+
+
+class ServiceInfoDB(ServiceInfoBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ServiceInfoCreate(ServiceInfoBase):
+    owner_id: Optional[int] = 0
     owner: Optional[str] = None
-    owner_uuid: Optional[str] = None
+    pass
+
+
+# Properties to receive via API on update
+class ServiceInfoUpdate(ServiceInfoBase):
+    pass

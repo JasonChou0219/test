@@ -1,5 +1,7 @@
+import os
 from typing import List, Dict, Union
 
+import grpc
 from sila2.client import SilaClient
 from sila2.discovery import SilaDiscoveryBrowser
 from sila2.framework import SilaConnectionError
@@ -23,6 +25,8 @@ def discover_clients():
 
     for client in clients:
         sila_service = get_service_info(client)
+        if client.SiLAService.ServerUUID.get() in get_connected_clients():
+            sila_service.connected = True
         services.append(sila_service)
 
     return list(services)
@@ -44,12 +48,18 @@ def get_service_info(client):
     sila_service.isGateway = False
     for feature_identifier in client.SiLAService.ImplementedFeatures.get():
         sila_service.feature_names.append(feature_identifier)
+    sila_service.connected = False
 
     return sila_service
 
 
-def connect_client(client_ip: str, client_port: int, reset: str = None):
-    client = SilaClient(str(client_ip), client_port, insecure=True)
+def connect_client(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
+    if encrypted:
+        root_cert = open(r'./cert.pem', "rb").read()
+        client = SilaClient(str(client_ip), client_port, root_certs=root_cert)
+    else:
+        client = SilaClient(str(client_ip), client_port, insecure=True)
+
     service_uuid = client.SiLAService.ServerUUID.get()
     if reset and service_uuid in sila_services:
         raise ValueError("Client already in use")
@@ -60,9 +70,18 @@ def connect_client(client_ip: str, client_port: int, reset: str = None):
     return service_uuid
 
 
-def connect_initial(client_ip: str, client_port: int, reset: str = None):
-    uuid = connect_client(client_ip, client_port, reset)
+def disconnect_client(service_uuid: str):
+    service_feature_controllers.pop(service_uuid)
+
+
+def get_connected_clients():
+    return service_feature_controllers.keys()
+
+
+def connect_initial(client_ip: str, client_port: int, reset: str = None, encrypted: str = None):
+    uuid = connect_client(client_ip, client_port, reset, encrypted)
     service_info = get_service_info(sila_services.get(uuid))
+    service_info.connected = True
     return service_info
 
 
@@ -73,14 +92,14 @@ def browse_features(service_uuid: str):
 
 def run_function(service_uuid: str,
                  feature_identifier: str,
-                 function_indetifier: str,
-                 is_property: bool,
+                 function_identifiers: str,
                  response_identifiers: List[str] = None,
-                 parameters: [List[Union[int, str, float]]] = None):
+                 parameters: Union[Dict, List] = None):
     feature_controller = service_feature_controllers[service_uuid]
+
     try:
         function_resp = feature_controller.run_function(
-            feature_identifier, function_indetifier, is_property, response_identifiers, parameters)
+            feature_identifier, function_identifiers, response_identifiers, parameters)
     except SilaConnectionError:
         sila_services.pop(service_uuid)
         raise ValueError("Lost connection with client with uuid" + service_uuid)

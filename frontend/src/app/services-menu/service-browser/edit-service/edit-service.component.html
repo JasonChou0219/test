@@ -10,21 +10,22 @@
         />
     </mat-form-field>
     <mat-form-field>
-        <mat-label>Type</mat-label>
-        <mat-select [(ngModel)]="serviceWorkCopy.type" name="type">
-            <mat-option *ngFor="let type of serviceTypes" [value]="type.value">
-                {{ type.name }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field>
         <mat-label>Address</mat-label>
         <input
             matInput
-            value="{{ serviceWorkCopy.address }}"
-            [(ngModel)]="serviceWorkCopy.address"
+            value="{{ serviceWorkCopy.parsed_ip_address }}"
+            [(ngModel)]="serviceWorkCopy.parsed_ip_address"
             name="address"
+        />
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Port</mat-label>
+        <input
+            matInput
+            value="{{ serviceWorkCopy.port }}"
+            [(ngModel)]="serviceWorkCopy.port"
+            name="port"
         />
     </mat-form-field>
 </form>

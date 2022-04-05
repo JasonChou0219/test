@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Service } from '@app/_models';
+import {AddSilaServiceInfo} from '@app/_models';
 import { ServiceService } from '@app/_services'
 
 @Component({
@@ -9,65 +9,23 @@ import { ServiceService } from '@app/_services'
     styleUrls: ['./add-service.component.scss'],
 })
 export class AddServiceComponent implements OnInit {
-    /*
-    serviceTypes = [
-        {
-            value: ServiceType.SILA,
-            name: this.serviceService.serviceTypeAsName(ServiceType.SILA),
-        },
-        {
-            value: ServiceType.CUSTOM,
-            name: this.serviceService.serviceTypeAsName(ServiceType.CUSTOM),
-        },
-        {
-            value: ServiceType.SOFT,
-            name: this.serviceService.serviceTypeAsName(ServiceType.SOFT),
-        },
-    ];
-    */
-    serviceTypes = [
-        {
-            value: 'SiLA 2',
-            name: 'SiLA2',
-        },
-        {
-            value: 'LADS',
-            name: 'OPC-UA',
-        },
-        {
-            value: 'Magic Unicorn',
-            name: 'Rainbow Unicorn',
-        },
-    ];
     dataSource = [];
-    tableColumns = ['name', 'uuid', 'address', 'port', 'hostname', 'select'];
+    tableColumns = ['address', 'port'];
 
     discoveryStarted = false;
-    service: Service;
+    serviceWorkCopy: AddSilaServiceInfo;
     constructor(
         public serviceService: ServiceService,
         public dialogRef: MatDialogRef<AddServiceComponent>
     ) {
-        this.service = {
-            uuid: '',
-            server_uuid: '',
-            name: '',
-            type: '',  // ServiceType.SILA,
-            address: '',
-            port: 50001,
-            available: true,
-            dataHandlerActive: false,
+        this.serviceWorkCopy = {
+            parsed_ip_address: '',
+            port: 50052,
+            encrypted: false
         };
     }
-    select(i: number) {
-        this.service.server_uuid = this.dataSource[i].uuid;
-        this.service.name = this.dataSource[i].name;
-        this.service.address = this.dataSource[i].ip;
-        this.service.port = this.dataSource[i].port;
-    }
-    async discovery() {
-        this.discoveryStarted = true;
-        this.dataSource = await this.serviceService.discoverSilaServices();
+    toggleEncrypted(){
+        this.serviceWorkCopy.encrypted = !this.serviceWorkCopy.encrypted
     }
 
     ngOnInit(): void {}
