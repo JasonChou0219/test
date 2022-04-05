@@ -1,8 +1,8 @@
 <div class="page">
     <h1>Protocol Creation</h1>
     <form class="general">
-        <div class="row">
-            <div class="column">
+        <div class="flex-container">
+            <div>
                 <mat-form-field appearance="fill">
                     <mat-label>Title</mat-label>
                     <input matInput [(ngModel)]="protocolInfo.title" name="title" placeholder="Title"/>
@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="column">
+            <div>
                 <h2>Features</h2>
                 <ng-container *ngFor="let feature of protocolInfo.service.features; let featureIndex = index">
                     <h3>Feature: {{feature.identifier}}</h3>
