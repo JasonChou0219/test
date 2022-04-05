@@ -144,21 +144,19 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
             apscheduler_job = scheduler.add_job(save_unobservable_data,
                                                 'interval',
                                                 seconds=interval,
-                                                args=[interval_to_non_meta_and_unobservable_properties_and_commands[interval], protocol.service.uuid, database])
-            apscheduler_job.resume()
+                                                args=[interval_to_non_meta_and_unobservable_properties_and_commands[interval], job.id, protocol.id, protocol.service.uuid, job.owner_id, database])
+            apscheduler_job.modify(next_run_time=datetime.now())
             if job.id not in job_id_to_data_acquisition_job:
                 job_id_to_data_acquisition_job[job.id] = []
             job_id_to_data_acquisition_job[job.id].append(apscheduler_job)
 
         # Run data acquisition for meta unobservable commands and properties
-        apscheduler_job = scheduler.add_job(save_unobservable_data,
-                                            args=[meta_and_unobservable_commands_and_properties, protocol.service.uuid, database])
-        apscheduler_job.resume()
+        scheduler.add_job(save_unobservable_data,
+                          args=[meta_and_unobservable_commands_and_properties, job.id, protocol.id, protocol.service.uuid, job.owner_id, database])
 
         # Save custom data
-        apscheduler_job = scheduler.add_job(save_custom_data,
-                                            args=[protocol.custom_data, database])
-        apscheduler_job.resume()
+        scheduler.add_job(save_custom_data,
+                          args=[protocol.custom_data, job.id, protocol.id, job.owner_id, database])
 
     logging.info(f'Scanning for workflows')
     job_workflows = []
@@ -348,7 +346,7 @@ def schedule_job_now(job: ScheduledJob):
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
 
 
-def save_unobservable_data(properties_and_commands, service_uuid, database):
+def save_unobservable_data(properties_and_commands, job_id, protocol_id, service_uuid, owner_id, database):
     for property_or_command in properties_and_commands:
         if isinstance(property_or_command[0], models.Command):
             # TODO make parameters dict of identifier and value
@@ -386,9 +384,9 @@ def save_unobservable_data(properties_and_commands, service_uuid, database):
             point = {}
             if isinstance(property_or_command[0], models.Command):
                 # TODO save used parameters
-                tags = {'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier}
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier, 'owner': owner_id}
             else:
-                tags = {'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier}
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier, 'owner': owner_id}
             point['measurement'] = 'data-acquisition'
             point['tags'] = tags
             point['time'] = datetime.now()
@@ -404,7 +402,8 @@ def save_unobservable_data(properties_and_commands, service_uuid, database):
         except Exception as e:
             logging.error(e)
 
-def save_custom_data(custom_data, database):
+
+def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
     try:
         client = InfluxDBClient(host=database.address,
                                 port=database.port,
@@ -413,7 +412,7 @@ def save_custom_data(custom_data, database):
                                 database=database.name)
         client.create_database(database.name)
         point = {}
-        tags = {}
+        tags = {'job': job_id, 'protocol': protocol_id, 'owner': owner_id}
         point['measurement'] = 'data-acquisition'
         point['tags'] = tags
         point['time'] = datetime.now()
