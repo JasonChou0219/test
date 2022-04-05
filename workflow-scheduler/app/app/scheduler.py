@@ -178,16 +178,16 @@ def start_container_log_storage(container: Container, job_id, workflow_id, queue
 def store_container_logs(container: Container, job_id, workflow_id):
     lgs = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
     for line in lgs:
-        container_logs[job_id][workflow_id][1].put(line.decode())
+        container_logs[job_id][workflow_id]['log_buffer'].put(line.decode())
 
 
 def prune_logs(max_queue_size: int, prune_amount: int):
     while True:
         for key in container_logs:
             for key2 in container_logs[key]:
-                if container_logs[key][key2][2].qsize() > max_queue_size:
+                if container_logs[key][key2]['log_buffer'].qsize() > max_queue_size:
                     for i in range(prune_amount):
-                        container_logs[key][key2][2].get()
+                        container_logs[key][key2]['log_buffer'].get()
 
 
 def wait_until_container_stops(container, job_id: int,

@@ -39,5 +39,7 @@ export class JobsMenuOverviewComponent implements OnInit {
   async ngOnInit() {
       await this.getScheduledJobs()
   }
+  async logWebsocket() {
 
+  }
 }

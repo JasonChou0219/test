@@ -136,13 +136,16 @@ async def logs_websocket(websocket: WebSocket, job_uuid: str, workflow_uuid: str
     """
     await manager.connect(websocket)
     try:
-        await manager.send_response(json.dumps({f'{job_uuid}_{workflow_uuid}':
-                                                container_logs[job_uuid][workflow_uuid]['log_buffer'].queue}),
+        # await manager.send_response(json.dumps({f'{job_uuid}_{workflow_uuid}':
+        #                                         container_logs[job_uuid][workflow_uuid]['log_buffer'].queue}),
+        #                             websocket)
+        await manager.send_response(str({f'{job_uuid}_{workflow_uuid}': container_logs}),
                                     websocket)
-        while True:
-            for line in container_logs[job_uuid][workflow_uuid]['log_stream']:
-                await manager.send_response(json.dumps({f'{job_uuid}_{workflow_uuid}': line}),
-                                            websocket)
+
+        for line in container_logs[int(job_uuid)][int(workflow_uuid)]['log_stream']:
+            print(line, flush=True)
+            await manager.send_response(json.dumps({f'{job_uuid}_{workflow_uuid}': line.decode()}),
+                                        websocket)
     except KeyError:
         raise HTTPException(status_code=404, detail="No entry found with Job/Workflow ID combination.")
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):

@@ -58,3 +58,9 @@ export interface ScheduledJobInfo {
 export interface ScheduledJobInfoList {
     data: ScheduledJobInfo[];
 }
+
+export interface WorkflowLogsDict {
+    container_id?: string;
+    log_buffer?: any;
+    log_stream?: any;
+}
