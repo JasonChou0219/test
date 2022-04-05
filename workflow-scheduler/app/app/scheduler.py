@@ -3,6 +3,7 @@ import os
 import time
 import logging
 import docker
+from docker.models.containers import Container
 from dataclasses import dataclass
 from copy import deepcopy
 from datetime import datetime
@@ -21,6 +22,8 @@ from app.util.data_directories import TEMP_DIRECTORY
 
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
+
+
 
 
 class ProcessStatusEventType(IntEnum):
@@ -52,7 +55,7 @@ class JobState:
     job_id: int
     title: str
     scheduled_job_id: int
-    job_template_id:int
+    job_template_id: int
     container_id: str
     start_time: datetime
     # end_time: int
@@ -66,6 +69,7 @@ scheduler = BackgroundScheduler()
 
 scheduled_jobs = {}  # Scheduled Jobs that are stored as scheduled jobs
 submitted_jobs = {}  # Scheduled jobs that are submitted to the scheduler
+container_logs = {}  # Storage of docker container logs per job and workflow
 db = next(deps.get_db())
 docker_client = docker.from_env()
 image_name = 'workflow_executor_python'
@@ -93,11 +97,13 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
     logging.info(f'Starting job {job.title}')
     logging.info(f'Scanning for workflows')
     job_workflows = []
+    container_logs.setdefault(job.id, {})
     if job.workflows:
         if job.workflows != None:
             for workflow_info in job.workflows:
                 workflow = crud.workflow.get(db=next(deps.get_db()), id=workflow_info[0], job_id=job.job_id)
-                logging.info(f'Added workflow {workflow.id} with title {workflow.title} and type {workflow.workflow_type}')
+                logging.info(
+                    f'Added workflow {workflow.id} with title {workflow.title} and type {workflow.workflow_type}')
                 job_workflows.append(workflow)  # Owner is the job!
 
             # Todo: Implement the request to get all workflows related to a job and query the respective workflow from the database
@@ -127,7 +133,7 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                     container.start()
                     output_thread.start()
                     wait_thread.start()
-
+                    start_container_log_storage(container, job.id, workflow.id, 200)
                     status_queue.put(
                         ProcessStatusEvent(job.id, ProcessStatusEventType.STARTED,
                                            container.id))
@@ -144,16 +150,44 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                     # Starting threads
                     # output_thread.start()
                     wait_thread.start()
-
+                    start_container_log_storage(container, job.id, workflow.id, 200)
                     status_queue.put(
                         ProcessStatusEvent(workflow.id, ProcessStatusEventType.STARTED,
                                            container.id))
                     pass
                 else:
                     pass
+
         else:
             logging.warning(f'Job {job.title} does not have any attached workflow!')
     return
+
+
+def start_container_log_storage(container: Container, job_id, workflow_id, queue_size: int):
+    if not isinstance(container_logs[job_id], dict): container_logs[job_id] = {}
+    container_logs[job_id].setdefault(workflow_id, {'container_id': container.id,
+                                                    'log_buffer': queue.Queue(queue_size),
+                                                    'log_stream': container.logs(follow=True, timestamps=True,
+                                                                                 stream=True, stdout=True,
+                                                                                 stderr=True)
+                                                    })
+    log_thread = Thread(target=store_container_logs, args=(container, job_id, workflow_id), daemon=True)
+    log_thread.start()
+
+
+def store_container_logs(container: Container, job_id, workflow_id):
+    lgs = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
+    for line in lgs:
+        container_logs[job_id][workflow_id][1].put(line.decode())
+
+
+def prune_logs(max_queue_size: int, prune_amount: int):
+    while True:
+        for key in container_logs:
+            for key2 in container_logs[key]:
+                if container_logs[key][key2][2].qsize() > max_queue_size:
+                    for i in range(prune_amount):
+                        container_logs[key][key2][2].get()
 
 
 def wait_until_container_stops(container, job_id: int,
@@ -175,7 +209,8 @@ def print_container_output(container, workflow_id):
     # container_output = container.attach(logs=False, stream=True)
     container_output = container.logs(follow=True, timestamps=True, stream=True, stdout=True, stderr=True)
     logging.info('Output thread started!')
-    log_path = os.path.join(TEMP_DIRECTORY, 'container', f'{datetime.now().strftime("%d_%m_%Y-%H_%M_%S")}_{str(workflow_id)}.log')
+    log_path = os.path.join(TEMP_DIRECTORY, 'container',
+                            f'{datetime.now().strftime("%d_%m_%Y-%H_%M_%S")}_{str(workflow_id)}.log')
     with open(log_path, "w") as file:
         for line in container_output:
             file.write(line.decode())
@@ -236,9 +271,9 @@ def schedule_future_jobs_from_database():
 
 def schedule_job(job: ScheduledJob):
     if job.id not in scheduled_jobs:  # or (
-            # scheduled_jobs[job.id].status == JobStatus.FINISHED_ERROR or
-            # scheduled_jobs[job.id].status == JobStatus.FINISHED_SUCCESSFUL or
-            # scheduled_jobs[job.id].status == JobStatus.FINISHED_MANUALLY):
+        # scheduled_jobs[job.id].status == JobStatus.FINISHED_ERROR or
+        # scheduled_jobs[job.id].status == JobStatus.FINISHED_SUCCESSFUL or
+        # scheduled_jobs[job.id].status == JobStatus.FINISHED_MANUALLY):
         scheduled_job = scheduler.add_job(start_job,
                                           'date',
                                           args=[job, process_status_queue],
@@ -286,6 +321,8 @@ def main():
     schedule_future_jobs_from_database()
     t = time.time()
     try:
+        # start log dict prune Thread
+        Thread(target=prune_logs, args=(180, 20), daemon=True)
         while True:
             try:
                 handle_scheduling_jobs(event_queue.get_nowait())
@@ -296,7 +333,6 @@ def main():
                 handle_process_status_events(process_status_queue.get_nowait())
             except queue.Empty:
                 pass
-
             # receive_and_execute_commands()
             t2 = time.time()
             if t2 - t >= 5:
