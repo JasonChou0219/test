@@ -5,7 +5,7 @@ import {
     Service,
     ServiceCommand,
     ServiceFeature,
-    ServiceProperty
+    ServiceProperty, SilaServiceInfo
 } from '@app/_models';
 import { ProtocolService, ServiceService } from '@app/_services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,8 +19,8 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     id: number;
 
     protocolInfo: ProtocolInfo;
-    services: Service[];
-    selectedService: Service;
+    services: SilaServiceInfo[];
+    selectedService: SilaServiceInfo;
     availableFeatures: ServiceFeature[];
 
     selectedFeatureForCommand: ServiceFeature;
@@ -60,7 +60,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     async getMatchingService() {
         await this.services.forEach(
             (service) => {
-                if (service.service_uuid === this.protocolInfo.service.uuid) {
+                if (service.uuid === this.protocolInfo.service.uuid) {
                     this.selectedService = service;
                 }
             }
@@ -74,7 +74,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
         await this.getMatchingService();
 
         if (! (this.selectedService == null)) {
-            this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.service_uuid);
+            this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
         }
     }
 
@@ -96,9 +96,9 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     }
 
     async selectService() {
-        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.service_uuid);
+        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
         this.protocolInfo.service = {
-            uuid: this.selectedService.service_uuid,
+            uuid: this.selectedService.uuid,
             features: [],
         }
     }

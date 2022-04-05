@@ -23,7 +23,7 @@ from app.util.data_directories import TEMP_DIRECTORY
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
 from influxdb import InfluxDBClient
-from requests import get
+from requests import post
 
 
 class ProcessStatusEventType(IntEnum):
@@ -360,7 +360,7 @@ def save_unobservable_data(properties_and_commands, service_uuid, database):
                 responses.append(response.identifier)
 
             # TODO route from settings
-            response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+            response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
                            params=dict({'service_uuid': service_uuid,
                                         'feature_identifier': property_or_command[1],
                                         'function_identifier': property_or_command[0].identifier,
@@ -370,7 +370,7 @@ def save_unobservable_data(properties_and_commands, service_uuid, database):
 
         else:
             # TODO route from settings
-            response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+            response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
                            params=dict({'service_uuid': service_uuid,
                                         'feature_identifier': property_or_command[1],
                                         'function_identifier': property_or_command[0].identifier,

@@ -2,7 +2,7 @@
     Workflow, WorkflowInfoList, WorkflowInfoTuple,
     Dataflow, DataflowInfoList,
     DataProtocol, DataProtocolInfoList,
-    Protocol, Database,
+    Protocol, Database, ProtocolAndDatabaseTuple,
 } from '@app/_models';
 
 
@@ -60,9 +60,4 @@ export interface ScheduledJobInfo {
 
 export interface ScheduledJobInfoList {
     data: ScheduledJobInfo[];
-}
-
-export interface ProtocolAndDatabaseTuple {
-    protocol: Protocol;
-    database: Database;
 }

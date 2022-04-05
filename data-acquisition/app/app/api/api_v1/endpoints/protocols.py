@@ -2,7 +2,7 @@ from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from requests import get
+from requests import get, post
 from sqlalchemy.orm import Session
 from fastapi import Request
 
@@ -308,7 +308,7 @@ def check_protocol(protocol: models.Protocol, user: models.User):
         actual_features[feature['identifier']] = {}
 
         actual_commands = {}
-        for command in feature['commands']:
+        for command in feature['commands'].values():
             actual_command = {'observable': command['observable'],
                               'parameters': [],
                               'responses': []}
@@ -320,7 +320,7 @@ def check_protocol(protocol: models.Protocol, user: models.User):
         actual_features[feature['identifier']]['commands'] = actual_commands
 
         actual_properties = {}
-        for property in feature['properties']:
+        for property in feature['properties'].values():
             actual_property = {'observable': property['observable']}
             actual_properties[property['identifier']] = actual_property
         actual_features[feature['identifier']]['properties'] = actual_properties
@@ -468,13 +468,13 @@ def execute_commands_and_properties(protocol: models.Protocol):
                 responses.append(response.identifier)
 
             if not command.observable:
-                response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
-                               params=dict({'service_uuid': protocol.service.uuid,
-                                            'feature_identifier': feature.identifier,
-                                            'function_identifier': command.identifier,
-                                            'is_property': False,
-                                            'response_identifiers': responses,
-                                            'parameters': parameters}))
+                response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
+                                params=dict({'service_uuid': protocol.service.uuid,
+                                             'feature_identifier': feature.identifier,
+                                             'function_identifier': command.identifier,
+                                             'is_property': False,
+                                             'response_identifiers': responses,
+                                             'parameters': parameters}))
 
                 if not response:
                     raise HTTPException(status_code=405,
@@ -491,11 +491,11 @@ def execute_commands_and_properties(protocol: models.Protocol):
         """
         for property in feature.properties:
             if not property.observable:
-                response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
-                               params=dict({'service_uuid': protocol.service.uuid,
-                                            'feature_identifier': feature.identifier,
-                                            'function_identifier': property.identifier,
-                                            'is_property': True}))
+                response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
+                                params=dict({'service_uuid': protocol.service.uuid,
+                                             'feature_identifier': feature.identifier,
+                                             'function_identifier': property.identifier,
+                                             'is_property': True}))
 
                 if not response:
                     raise HTTPException(status_code=405,

@@ -6,7 +6,7 @@ import {
     Service,
     ServiceCommand,
     ServiceFeature,
-    ServiceProperty
+    ServiceProperty, SilaServiceInfo
 } from '@app/_models';
 import { ProtocolService, ServiceService } from '@app/_services';
 import { Router } from '@angular/router';
@@ -18,8 +18,8 @@ import { Router } from '@angular/router';
 })
 export class ProtocolsMenuAddProtocolComponent implements OnInit {
     protocolInfo: ProtocolInfo;
-    services: Service[];
-    selectedService: Service;
+    services: SilaServiceInfo[];
+    selectedService: SilaServiceInfo;
     availableFeatures: ServiceFeature[];
 
     selectedFeatureForCommand: ServiceFeature;
@@ -62,9 +62,9 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
     }
 
     async selectService() {
-        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.service_uuid);
+        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
         this.protocolInfo.service = {
-            uuid: this.selectedService.service_uuid,
+            uuid: this.selectedService.uuid,
             features: [],
         }
     }

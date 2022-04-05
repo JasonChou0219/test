@@ -11,7 +11,7 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Service</mat-label>
                     <mat-select [(ngModel)]="selectedService" name="service" placeholder="Service" (selectionChange)="selectService()">
-                        <mat-option *ngFor="let service of services" [value]="service">{{service.name}} ({{service.service_uuid}})</mat-option>
+                        <mat-option *ngFor="let service of services" [value]="service">{{service.name}} ({{service.uuid}})</mat-option>
                     </mat-select>
                 </mat-form-field>
 
@@ -26,7 +26,7 @@
                     <mat-form-field *ngIf="selectedFeatureForCommand !== undefined" appearance="fill">
                         <mat-label>Command</mat-label>
                         <mat-select [(ngModel)]="selectedCommand" name="command" placeholder="Command">
-                            <mat-option *ngFor="let availableCommand of selectedFeatureForCommand.commands" [value]="availableCommand">{{availableCommand.identifier}}  - observable: {{availableCommand.observable}}</mat-option>
+                            <mat-option *ngFor="let availableCommand of selectedFeatureForCommand.commands | keyvalue" [value]="availableCommand.value">{{availableCommand.value.identifier}}  - observable: {{availableCommand.value.observable}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
@@ -45,7 +45,7 @@
                     <mat-form-field *ngIf="selectedFeatureForProperty !== undefined" appearance="fill">
                         <mat-label>Property</mat-label>
                         <mat-select [(ngModel)]="selectedProperty" name="property" placeholder="Property">
-                            <mat-option *ngFor="let availableProperty of selectedFeatureForProperty.properties" [value]="availableProperty">{{availableProperty.identifier}}  - observable: {{availableProperty.observable}}</mat-option>
+                            <mat-option *ngFor="let availableProperty of selectedFeatureForProperty.properties | keyvalue" [value]="availableProperty.value">{{availableProperty.value.identifier}}  - observable: {{availableProperty.value.observable}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
