@@ -194,6 +194,7 @@ def delete_job(
 # This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_model_from_schema(protocol_in: schemas.Protocol) -> models.Protocol:
     protocol = models.Protocol(title=protocol_in.title,
+                               custom_data=protocol_in.custom_data,
                                owner_id=protocol_in.owner_id,
                                owner=protocol_in.owner)
     service = models.ProtocolService(uuid=protocol_in.service.uuid)

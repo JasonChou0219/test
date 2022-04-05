@@ -54,6 +54,7 @@ def create_protocol(
     user = models.User(**query_params)
 
     check_protocol(protocol_in, user)
+    execute_commands_and_properties(protocol_in)
 
     protocol_in.owner_id = user.id
     protocol_in.owner = user.email
@@ -82,6 +83,7 @@ def update_protocol(
     user = models.User(**query_params)
 
     check_protocol(protocol_in, user)
+    execute_commands_and_properties(protocol_in)
 
     # TODO do not allow to modify service?
 
@@ -151,6 +153,7 @@ def delete_protocol(
 # This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_model_from_schema_create(protocol_in: schemas.ProtocolCreate) -> models.Protocol:
     protocol = models.Protocol(title=protocol_in.title,
+                               custom_data=protocol_in.custom_data,
                                owner_id=protocol_in.owner_id,
                                owner=protocol_in.owner)
     service = models.Service(uuid=protocol_in.service.uuid)
@@ -194,6 +197,7 @@ def protocol_model_from_schema_create(protocol_in: schemas.ProtocolCreate) -> mo
 # This is necessary because the conversion schema<->model does not work for nested objects
 def protocol_model_from_schema_update(protocol_in: schemas.ProtocolUpdate) -> models.Protocol:
     protocol = models.Protocol(title=protocol_in.title,
+                               custom_data=protocol_in.custom_data,
                                owner_id=protocol_in.owner_id,
                                owner=protocol_in.owner)
     service = models.Service(uuid=protocol_in.service.uuid)
@@ -279,6 +283,7 @@ def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol
 
     protocol = schemas.Protocol(id=protocol_in.id,
                                 title=protocol_in.title,
+                                custom_data=protocol_in.custom_data,
                                 owner_id=protocol_in.owner_id,
                                 owner=protocol_in.owner,
                                 service=service)
@@ -449,3 +454,57 @@ def check_protocol(protocol: models.Protocol, user: models.User):
                                             + " for feature " + protocol_feature.identifier
                                             + " for service " + protocol.service.uuid
                                             + " must have interval greater than or equal to 1 "))
+
+
+def execute_commands_and_properties(protocol: models.Protocol):
+    for feature in protocol.service.features:
+        for command in feature.commands:
+            # TODO make parameters dict of identifier and value
+            parameters = []
+            for parameter in command.parameters:
+                parameters.append(parameter.value)
+            responses = []
+            for response in command.responses:
+                responses.append(response.identifier)
+
+            if not command.observable:
+                response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+                               params=dict({'service_uuid': protocol.service.uuid,
+                                            'feature_identifier': feature.identifier,
+                                            'function_identifier': command.identifier,
+                                            'is_property': False,
+                                            'response_identifiers': responses,
+                                            'parameters': parameters}))
+
+                if not response:
+                    raise HTTPException(status_code=405,
+                                        detail=("Executing command " + command.identifier
+                                                + " of feature " + feature.identifier
+                                                + " of service " + protocol.service.uuid
+                                                + " produced the following error: "
+                                                + response.text))
+            else:
+                # TODO observables
+                pass
+
+        # TODO also check properties when they are fixed
+        """
+        for property in feature.properties:
+            if not property.observable:
+                response = get("http://service-manager:82/api/v1/sm_functions/unobservable",
+                               params=dict({'service_uuid': protocol.service.uuid,
+                                            'feature_identifier': feature.identifier,
+                                            'function_identifier': property.identifier,
+                                            'is_property': True}))
+
+                if not response:
+                    raise HTTPException(status_code=405,
+                                        detail=("Executing property " + property.identifier
+                                                + " of feature " + feature.identifier
+                                                + " of service " + protocol.service.uuid
+                                                + " produced the following error: "
+                                                + response.text))
+            else:
+                # TODO observables
+                pass
+        """

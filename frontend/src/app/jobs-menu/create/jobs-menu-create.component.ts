@@ -22,6 +22,11 @@ export class JobsMenuCreateComponent implements OnInit {
     dataflows: DataflowInfo[] = [];
     protocols: ProtocolInfo[] = [];
 
+    selectedProtocol: ProtocolInfo;
+    selectedDatabase: DatabaseInfo;
+
+    listProtocolInfoAndDatabaseInfo: [ProtocolInfo, DatabaseInfo][] = [];
+
     constructor(
         public jobService: JobService,
         private workflowEditorService: WorkflowEditorService,
@@ -58,6 +63,9 @@ export class JobsMenuCreateComponent implements OnInit {
         return new Date();
   }
   create() {
+        this.jobInfo.list_protocol_and_database = [];
+    this.listProtocolInfoAndDatabaseInfo.forEach((protocolInfoAndDatabaseInfo) =>
+        this.jobInfo.list_protocol_and_database.push([protocolInfoAndDatabaseInfo[0].id, protocolInfoAndDatabaseInfo[1].id]));
     const tmp = this.jobService.createUserJob(this.jobInfo)
   }
   cancel() {
@@ -96,9 +104,16 @@ export class JobsMenuCreateComponent implements OnInit {
     await this.getWorkflows()
   }
 
-  async addProtocolInfoAndDatabaseInfo() {
-      this.jobInfo.list_protocol_and_database.push([
-          undefined, undefined
+  addProtocolInfoAndDatabaseInfo() {
+      this.listProtocolInfoAndDatabaseInfo.push([
+          this.selectedProtocol, this.selectedDatabase
       ])
+
+      this.selectedProtocol = undefined;
+      this.selectedDatabase = undefined;
+  }
+
+  deleteProtocolAndDatabase(i: number) {
+        this.listProtocolInfoAndDatabaseInfo.splice(i, 1);
   }
 }

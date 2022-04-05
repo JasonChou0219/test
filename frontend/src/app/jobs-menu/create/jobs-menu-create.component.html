@@ -22,43 +22,29 @@
         </mat-form-field>
 
         <h3>Protocols and Databases</h3>
-        <ng-container *ngFor="let protocolInfoAndDatabaseInfo of jobInfo.list_protocol_and_database; let i = index">
-            <mat-form-field appearance="fill">
-                <mat-label>Protocol</mat-label>
-                <mat-select [(ngModel)]="protocolInfoAndDatabaseInfo[0]" name="protocol" placeholder="Protocol">
-                    <mat-option *ngFor="let protocol of protocols" [value]="protocol.id">{{ protocol.title }}</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Database</mat-label>
-                <mat-select [(ngModel)]="protocolInfoAndDatabaseInfo[1]" name="database" placeholder="Database">
-                    <mat-option *ngFor="let database of databases" [value]="database.id">{{ database.title }}</mat-option>
-                </mat-select>
-            </mat-form-field>
+        <ng-container *ngFor="let protocolInfoAndDatabaseInfo of listProtocolInfoAndDatabaseInfo; let i = index">
+            <h4>Protocol: {{protocolInfoAndDatabaseInfo[0].title}} - Database: {{protocolInfoAndDatabaseInfo[1].title}}</h4>
+            <button mat-icon-button (click)="deleteProtocolAndDatabase(i)">
+                <mat-icon matTooltip="Delete protocol and database">delete</mat-icon>
+            </button>
         </ng-container>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Protocol</mat-label>
+            <mat-select [(ngModel)]="selectedProtocol" name="protocol" placeholder="Protocol">
+                <mat-option *ngFor="let protocol of protocols" [value]="protocol">{{ protocol.title }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Database</mat-label>
+            <mat-select [(ngModel)]="selectedDatabase" name="database" placeholder="Database">
+                <mat-option *ngFor="let database of databases" [value]="database">{{ database.title }}</mat-option>
+            </mat-select>
+        </mat-form-field>
 
         <div class="button">
             <button mat-flat-button color="primary" (click)="addProtocolInfoAndDatabaseInfo()">Add</button>
         </div>
-
-        <h3>Data acquisition</h3>
-            <div class="multi-select">
-                <mat-form-field appearance="fill">
-                  <mat-label>For Service</mat-label>
-                   <mat-select>
-                    <mat-option *ngFor="let service of services" [value]="[service.name]">
-                        {{ service.name }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                  <mat-label>Select Protocol</mat-label>
-                   <mat-select disabled="isDisabled">
-                    <mat-option value="one">First option</mat-option>
-                    <mat-option value="two">Second option</mat-option>
-                  </mat-select>
-                </mat-form-field>
-            </div>
 
         <h3>Dataflow</h3>
         <mat-form-field appearance="fill">

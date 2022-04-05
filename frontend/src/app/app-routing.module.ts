@@ -18,6 +18,7 @@ import { DatabasesMenuAddDatabaseComponent } from './databases-menu/add-database
 import { DatabasesMenuUpdateDatabaseComponent } from './databases-menu/update-database/databases-menu-update-database.component';
 import { ProtocolsMenuAddProtocolComponent} from '@app/protocols-menu/add-protocol/protocols-menu-add-protocol.component';
 import { ProtocolsMenuOverviewComponent } from '@app/protocols-menu/overview/protocols-menu-overview.component';
+import { ProtocolsMenuUpdateProtocolComponent } from '@app/protocols-menu/update-protocol/protocols-menu-update-protocol.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -95,6 +96,10 @@ const routes: Routes = [
             {
                 path: 'protocols',
                 component: ProtocolsMenuOverviewComponent
+            },
+            {
+                path: 'protocols/:id/update',
+                component: ProtocolsMenuUpdateProtocolComponent
             },
 
         ]

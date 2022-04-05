@@ -1,22 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import {
     ProtocolInfo,
-    ProtocolParameterInfo,
-    ProtocolResponseInfo,
+    ProtocolParameterInfo, ProtocolResponseInfo,
     Service,
     ServiceCommand,
     ServiceFeature,
     ServiceProperty
 } from '@app/_models';
 import { ProtocolService, ServiceService } from '@app/_services';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-protocols-menu-add-protocol',
-    templateUrl: './protocols-menu-add-protocol.component.html',
-    styleUrls: ['./protocols-menu-add-protocol.component.scss']
+  selector: 'app-protocols-menu-update-protocol',
+  templateUrl: './protocols-menu-update-protocol.component.html',
+  styleUrls: ['./protocols-menu-update-protocol.component.scss']
 })
-export class ProtocolsMenuAddProtocolComponent implements OnInit {
+export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
+    id: number;
+
     protocolInfo: ProtocolInfo;
     services: Service[];
     selectedService: Service;
@@ -35,11 +36,12 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
         public serviceService: ServiceService,
         public protocolService: ProtocolService,
         private router: Router,
+        private route: ActivatedRoute,
     ) {
         this.protocolInfo = {
             title: '',
             service: {uuid: undefined,
-                      features: []},
+                features: []},
             custom_data: {},
         };
     }
@@ -48,12 +50,44 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
         this.services = await this.serviceService.getServiceList();
     }
 
-    ngOnInit(): void {
-        this.getServices();
+    async getProtocol() {
+        await this.protocolService.getProtocol(this.id).then(
+            (protocol) => this.protocolInfo = protocol,
+            () => this.cancel()
+        );
     }
 
-    async createProtocol() {
-        await this.protocolService.createProtocol(this.protocolInfo);
+    async getMatchingService() {
+        await this.services.forEach(
+            (service) => {
+                if (service.service_uuid === this.protocolInfo.service.uuid) {
+                    this.selectedService = service;
+                }
+            }
+        )
+    }
+
+    async getProtocolAndServiceInformation() {
+        await this.getProtocol();
+        await this.getServices();
+
+        await this.getMatchingService();
+
+        if (! (this.selectedService == null)) {
+            this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.service_uuid);
+        }
+    }
+
+    ngOnInit(): void {
+        this.route.params.subscribe(params => {
+            this.id = params.id;
+        })
+
+        this.getProtocolAndServiceInformation();
+    }
+
+    async updateProtocol() {
+        await this.protocolService.setProtocol(this.protocolInfo);
         this.router.navigate(['/dashboard/protocols']);
     }
 
@@ -100,8 +134,8 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
                     observable: this.selectedCommand.observable,
                     meta: false,
                     interval: 1,
-                    parameters: parameters,
-                    responses: responses,
+                    parameters,
+                    responses,
                 }],
                 properties: [],
             })
@@ -112,8 +146,8 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
                 observable: this.selectedCommand.observable,
                 meta: false,
                 interval: 1,
-                parameters: parameters,
-                responses: responses,
+                parameters,
+                responses,
             })
         }
         this.selectedFeatureForCommand = undefined;

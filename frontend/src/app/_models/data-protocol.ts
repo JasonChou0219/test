@@ -5,12 +5,18 @@ export interface Protocol {
     id?: number;
     title: string;
     service: ProtocolService;
+    custom_data?: {[key: string]: string};
+    owner?: string;
+    owner_id?: number;
 }
 
 export interface ProtocolInfo {
     id?: number;
     title: string;
     service: ProtocolServiceInfo;
+    custom_data?: {[key: string]: string};
+    owner?: string;
+    owner_id?: number;
 }
 
 export interface ProtocolService {

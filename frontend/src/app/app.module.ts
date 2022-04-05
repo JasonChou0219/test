@@ -95,6 +95,7 @@ import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
 import { ProtocolsMenuAddProtocolComponent } from './protocols-menu/add-protocol/protocols-menu-add-protocol.component';
 import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protocols-menu-overview.component';
+import { ProtocolsMenuUpdateProtocolComponent } from './protocols-menu/update-protocol/protocols-menu-update-protocol.component';
 
 
 @NgModule({
@@ -147,6 +148,7 @@ import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protoc
         DatabasesMenuUpdateDatabaseComponent,
         ProtocolsMenuAddProtocolComponent,
         ProtocolsMenuOverviewComponent,
+        ProtocolsMenuUpdateProtocolComponent,
     ],
     imports: [
         BrowserModule,

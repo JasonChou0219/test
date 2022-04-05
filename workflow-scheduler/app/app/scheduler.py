@@ -104,31 +104,61 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
         protocol = crud.protocol.get(db=next(deps.get_db()), id=protocol, job_id=job.job_id)
         database = crud.database.get(db=next(deps.get_db()), id=database, job_id=job.job_id)
 
-        interval_to_properties_and_commands = {}
+        interval_to_non_meta_and_unobservable_properties_and_commands = {}
+        non_meta_and_observable_commands_and_properties = []
+        meta_and_unobservable_commands_and_properties = []
+        meta_and_observable_commands_and_properties = []
 
-        # TODO meta
-        # TODO observables
+    # TODO observables
+    # TODO save what job and protocol data came from
         for feature in protocol.service.features:
+            # Separate commands into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
             for command in feature.commands:
-                if not command.observable and not command.meta:
-                    if command.interval not in interval_to_properties_and_commands.keys():
-                        interval_to_properties_and_commands[command.interval] = []
-                    interval_to_properties_and_commands[command.interval].append((command, feature.identifier))
+                if command.meta:
+                    if not command.observable:
+                        meta_and_unobservable_commands_and_properties.append((command, feature.identifier))
+                    else:
+                        meta_and_observable_commands_and_properties.append((command, feature.identifier))
+                elif command.observable:
+                    non_meta_and_observable_commands_and_properties.append((command, feature.identifier))
+                else:
+                    if command.interval not in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
+                        interval_to_non_meta_and_unobservable_properties_and_commands[command.interval] = []
+                    interval_to_non_meta_and_unobservable_properties_and_commands[command.interval].append((command, feature.identifier))
             for property in feature.properties:
-                if not property.observable and not property.meta:
-                    if property.interval not in interval_to_properties_and_commands.keys():
-                        interval_to_properties_and_commands[property.interval] = []
-                    interval_to_properties_and_commands[property.interval].append((property, feature.identifier))
+                # Separate properties into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
+                if property.meta:
+                    if not property.observable:
+                        meta_and_unobservable_commands_and_properties.append((property, feature.identifier))
+                    else:
+                        meta_and_observable_commands_and_properties.append((property, feature.identifier))
+                elif property.observable:
+                    non_meta_and_observable_commands_and_properties.append((property, feature.identifier))
+                else:
+                    if property.interval not in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
+                        interval_to_non_meta_and_unobservable_properties_and_commands[property.interval] = []
+                    interval_to_non_meta_and_unobservable_properties_and_commands[property.interval].append((property, feature.identifier))
 
-        for interval in interval_to_properties_and_commands.keys():
-            apscheduler_job = scheduler.add_job(save_data,
+        # Run data acquisition for non-meta unobservable commands and properties
+        for interval in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
+            apscheduler_job = scheduler.add_job(save_unobservable_data,
                                                 'interval',
                                                 seconds=interval,
-                                                args=[interval_to_properties_and_commands[interval], protocol.service.uuid, database])
+                                                args=[interval_to_non_meta_and_unobservable_properties_and_commands[interval], protocol.service.uuid, database])
             apscheduler_job.resume()
             if job.id not in job_id_to_data_acquisition_job:
                 job_id_to_data_acquisition_job[job.id] = []
             job_id_to_data_acquisition_job[job.id].append(apscheduler_job)
+
+        # Run data acquisition for meta unobservable commands and properties
+        apscheduler_job = scheduler.add_job(save_unobservable_data,
+                                            args=[meta_and_unobservable_commands_and_properties, protocol.service.uuid, database])
+        apscheduler_job.resume()
+
+        # Save custom data
+        apscheduler_job = scheduler.add_job(save_custom_data,
+                                            args=[protocol.custom_data, database])
+        apscheduler_job.resume()
 
     logging.info(f'Scanning for workflows')
     job_workflows = []
@@ -318,7 +348,7 @@ def schedule_job_now(job: ScheduledJob):
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
 
 
-def save_data(properties_and_commands, service_uuid, database):
+def save_unobservable_data(properties_and_commands, service_uuid, database):
     for property_or_command in properties_and_commands:
         if isinstance(property_or_command[0], models.Command):
             # TODO make parameters dict of identifier and value
@@ -373,6 +403,28 @@ def save_data(properties_and_commands, service_uuid, database):
             client.write_points(points)
         except Exception as e:
             logging.error(e)
+
+def save_custom_data(custom_data, database):
+    try:
+        client = InfluxDBClient(host=database.address,
+                                port=database.port,
+                                username=database.username,
+                                password=database.password,
+                                database=database.name)
+        client.create_database(database.name)
+        point = {}
+        tags = {}
+        point['measurement'] = 'data-acquisition'
+        point['tags'] = tags
+        point['time'] = datetime.now()
+
+        point['fields'] = custom_data
+
+        points = [point]
+
+        client.write_points(points)
+    except Exception as e:
+        logging.error(e)
 
 
 def stop_data_acquisition_for_job(job_id: int):

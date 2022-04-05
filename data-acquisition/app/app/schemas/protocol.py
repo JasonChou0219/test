@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from pydantic import BaseModel
 
@@ -9,6 +9,7 @@ from .service import Service
 class ProtocolBase(BaseModel):
     title: Optional[str] = None
     service: Optional[Service] = None
+    custom_data: Optional[Dict[str, str]] = {}
     owner: Optional[str] = None
     owner_id: Optional[int] = None
 

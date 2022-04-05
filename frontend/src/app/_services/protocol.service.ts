@@ -27,13 +27,13 @@ export class ProtocolService {
 
     async setProtocol(protocol: Protocol) {
         return this.http
-            .put(`${env.apiUrl}/api/v1/protocol/${protocol.id}/`, protocol)
+            .put(`${env.apiUrl}/api/v1/protocols/${protocol.id}/`, protocol)
             .toPromise();
     }
 
     async setProtocolInfo(protocolInfo: ProtocolInfo) {
         return this.http
-            .put(`${env.apiUrl}/api/v1/protocol/${protocolInfo.id}/`, protocolInfo)
+            .put(`${env.apiUrl}/api/v1/protocols/${protocolInfo.id}/`, protocolInfo)
             .toPromise();
     }
     async createProtocol(protocolInfo: ProtocolInfo) {

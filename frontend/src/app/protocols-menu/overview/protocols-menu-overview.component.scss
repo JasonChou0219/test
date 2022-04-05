@@ -14,3 +14,55 @@ div.mat-card-header {
 div.mat-card-header-entry {
     margin: auto;
 }
+div.mat-card-header-entry:first-child {
+    margin-left: 0;
+}
+div.mat-card-header-entry:last-child {
+    margin-right: 1%;
+}
+
+tr.row:not(.expanded):hover {
+    background-color: whitesmoke;
+}
+
+.expanded-element {
+    overflow: hidden;
+}
+
+.expanded-row {
+    height: 0;
+}
+
+.edit {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+button.header {
+    margin-left: 0;
+}
+button {
+    margin-left: 8px;
+}
+
+div.details {
+    display: flex;
+    align-items: stretch;
+}
+div.row {
+    flex-direction: row;
+}
+div.column {
+    flex-direction: column;
+    margin-right: 1.7em;
+}
+div.title {
+    font-size: 1em;
+    font-weight: 500;
+    padding-bottom: 0.5em;
+}
+div.data {
+    font-size: 1em;
+    padding-bottom: 0.5em;
+    color: rgba(0, 0, 0, 0.54);
+}
