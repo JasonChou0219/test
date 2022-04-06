@@ -17,7 +17,7 @@ log_dict = {}
 image_name = 'workflow_executor_python'
 services = 'None'
 workflow = "import logging\r\nimport time\r\nfrom datetime import datetime\r\n\r\ndef run():\r\n    while True:\r\n   " \
-           "     print(datetime.now(), flush=True)\r\n        time.sleep(1)\r\n        # logger.debug(datetime.now(" \
+           "     print(datetime.now(), flush=True)\r\n        time.sleep(2)\r\n        # logger.debug(datetime.now(" \
            "))\r\n\r\n\r\n\r\n "
 
 
@@ -41,10 +41,12 @@ def store_container_logs(container: Container, job_id, workflow_id):
 
 
 def prune_logs(max_queue_size: int, prune_amount: int):
-    for key in log_dict:
-        if log_dict[key][2].qsize() > max_queue_size:
-            for i in range(prune_amount):
-                log_dict[key][2].get()
+    while True:
+        for key in log_dict:
+            for key2 in log_dict[key]:
+                if log_dict[key][key2]['log_buffer'].qsize() > max_queue_size:
+                    for i in range(prune_amount):
+                        log_dict[key][key2]['log_buffer'].get()
 
 
 def start_container_log_storage(container: Container, job_id: str, workflow_id: str, queue_size: int):
@@ -68,7 +70,7 @@ def main():
     # log_dict.setdefault(1, )
     log_dict.setdefault(1, {})
     containers = []
-    for container_id in range(3):
+    for container_id in range(1):
         container_name = f'Test_{container_id}_{random.randint(0,1000)}'
         container = docker_helper.create_python_workflow_container(
             docker_client,
@@ -85,6 +87,8 @@ def main():
 
     try:
         asyncio.get_event_loop().run_until_complete(start_server)
+        prune_thread = Thread(target=prune_logs, args=(17, 3), daemon=True)
+        prune_thread.start()
         asyncio.get_event_loop().run_forever()
     # try:
     #     while True:
@@ -115,9 +119,16 @@ def create_dict_if_not_exists(d: dict):
 
 async def websocket_server(websocket, path):
     # id = await websocket.recv()
-    print(log_dict)
-    for line in log_dict[1][0]["log_stream"]:
-        print(line.decode())
+
+    lgs = list(log_dict[1][0]["log_buffer"].queue)
+
+    for item in lgs:
+        # print(type(item))
+        await websocket.send(item)
+
+    stream = log_dict[1][0]["log_stream"]
+    for line in stream:
+        # print(line.decode())
         await websocket.send(line.decode())
 
 
