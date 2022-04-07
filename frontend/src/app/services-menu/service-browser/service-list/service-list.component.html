@@ -117,7 +117,7 @@
                 <button mat-icon-button (click)="toggleConnection(i)" >
                     <mat-icon *ngIf="!element.service.connected" matTooltip="Connect">link</mat-icon>
                     <mat-icon *ngIf="element.service.connected" matTooltip="Disconnect">link_off</mat-icon>
-                </button>
+                </button>Server
             </td>
         </ng-container>
 
@@ -194,12 +194,10 @@
                     </div>
 
                     <h2>Features</h2>
-                    <!-- To be included
                     <app-service-detail
                         *ngIf="element.detailsLoaded"
                         [service]="element.service"
                     ></app-service-detail>
-                    -->
                 </div>
             </td>
         </ng-container>

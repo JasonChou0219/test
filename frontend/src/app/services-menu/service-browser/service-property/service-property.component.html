@@ -17,24 +17,23 @@
             </ng-template>
             <div class="property-description">{{ property.description }}</div>
         </div>
+
         <div class="border" *ngIf="expand">
             <div class="section-title">Response</div>
-            <div class="section-content">
+             <div class="section-content">
                 <div class="param-border">
                     <div class="params">
                         <div>
                             <div>
                                 <span class="param-name">{{
-                                    property.response.identifier
+                                    property.identifier
                                 }}</span>
                                 <span class="param-type">{{
-                                    property.response.data_type
+                                    property.data_type.type
                                 }}</span>
                             </div>
-                            <div class="param-desc">
-                                {{ property.response.description }}
-                            </div>
                         </div>
+                      <!--
                         <div>
                             <mat-form-field class="value-field">
                                 <mat-label>Return value</mat-label>
@@ -45,12 +44,14 @@
                                     placeholder="Return value"
                                     value=" {{this.returnValues[0].value}}"
                                     />
-                                <!--/ {{property.response.identifier.toLowerCase()}}"-->
+                                / {{property.response.identifier.toLowerCase()}}"
                             </mat-form-field>
                         </div>
+                        -->
                     </div>
                 </div>
             </div>
+            <!--
             <div class="section-title">Usage</div>
             <div class="section-content example-code">
                 <code>
@@ -66,6 +67,7 @@
                 </code>
             </div>
             <div>
+
                 <button
                     mat-flat-button
                     color="primary"
@@ -74,7 +76,8 @@
                 >
                     Run
                 </button>
-            </div>
+-->
         </div>
+
     </div>
 </div>

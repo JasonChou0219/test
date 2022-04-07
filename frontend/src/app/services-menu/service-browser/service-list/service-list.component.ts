@@ -10,7 +10,7 @@ import {
 import {
     Service,
     ServiceStatus,
-    ServiceUuidList, SilaServiceInfo,
+    ServiceUuidList, SilaDefinedExecutionError, SilaFeatureInfo, SilaProperty, SilaServiceInfo,
 } from '@app/_models';
 import { ServiceService } from '@app/_services'
 
@@ -19,6 +19,8 @@ import { MatTable } from '@angular/material/table';
 // import { ServiceDetailComponent } from '../service-detail/service-detail.component';  // To be included
 import { EditServiceComponent } from '../edit-service/edit-service.component';
 import { AddServiceComponent } from '../add-service/add-service.component';
+import {SilaCommand} from '@app/_models/service';
+import {forEachComment} from 'tslint';
 
 interface RowData {
     service: SilaServiceInfo;
@@ -41,6 +43,10 @@ interface RowData {
     ],
 })
 export class ServiceListComponent implements OnInit {
+    constructor(
+        public serviceService: ServiceService,
+        public dialog: MatDialog
+    ) {}
     dataSource: RowData[] = [];
     tableColumns = [
         'name',
@@ -55,10 +61,6 @@ export class ServiceListComponent implements OnInit {
     selected: number | null = null;
 
     @ViewChild(MatTable) table: MatTable<any>;
-    constructor(
-        public serviceService: ServiceService,
-        public dialog: MatDialog
-    ) {}
 
     async getServices() {
         const serviceList = await this.serviceService.getServiceList();
@@ -117,9 +119,9 @@ export class ServiceListComponent implements OnInit {
         await this.getServices();
     }
 
-    expand(i: number) {
-        this.selected = this.selected === i ? null : i;
-        this.dataSource[i].detailsLoaded = true;
+    async expand(i: number) {
+        this.selected = this.selected === i ? null : i
+        this.dataSource[i].detailsLoaded = true
     }
 
     async toggleFavourite(i: number) {

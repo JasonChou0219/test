@@ -28,6 +28,63 @@ export interface SilaServiceInfo{
     owner_uuid?: string
 }
 
+export interface SilaFeatureInfo {
+    category?: string
+    feature_version?: string
+    maturity_level?: string
+    originator: string
+    sila2_version: string
+    identifier?: string
+    display_name: string
+    description?: string
+    locale: string
+    commands?: any
+    properties?: any
+    errors?: any
+}
+
+export interface SilaCommand {
+    identifier: string
+    display_name: string
+    description: string
+    observable: boolean
+    parameters: [SilaCommandParameter]
+    responses: [SilaCommandResponse]
+    error_identifiers: [string]
+}
+
+export interface SilaProperty{
+    identifier: string
+    display_name: string
+    description: string
+    observable: boolean
+    data_type: SilaDataType
+}
+
+export interface SilaCommandParameter {
+    identifier: string
+    display_name: string
+    description: string
+    data_type: SilaDataType
+}
+
+export interface SilaCommandResponse{
+    identifier: string
+    display_name: string
+    description: string
+    data_type: SilaDataType
+}
+
+export interface SilaDefinedExecutionError{
+    identifier: string
+    display_name: string
+    description: string
+}
+
+export interface SilaDataType{
+    type: string
+}
+
 export interface EditSilaServiceInfo{
     name?: string
     parsed_ip_address: string
