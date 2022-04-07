@@ -31,13 +31,14 @@
                                 <span class="param-name">{{
                                     param.identifier
                                 }}</span>
-                                <span class="param-type">{{ param.data_type }}</span>
+                                <span class="param-type">{{ param.data_type.type }}</span>
                             </div>
                             <div class="param-desc">
                                 {{ param.description }}
                             </div>
                         </div>
                         <div>
+                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Set value</mat-label>
                                 <input
@@ -45,7 +46,8 @@
                                     type="text"
                                     [(ngModel)]="paramValues[i].value"
                                 />
-                            </mat-form-field>
+
+                            </mat-form-field> -->
                         </div>
                     </div>
                 </div>
@@ -63,7 +65,7 @@
                                     response.identifier
                                 }}</span>
                                 <span class="param-type">{{
-                                    response.data_type
+                                    response.data_type.type
                                 }}</span>
                             </div>
                             <div class="param-desc">
@@ -71,6 +73,7 @@
                             </div>
                         </div>
                         <div>
+                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Return value</mat-label>
                                 <input
@@ -81,12 +84,14 @@
                                     value="{{this.returnValues[j].value}}"
                                 />
                             </mat-form-field>
+                            -->
                         </div>
                     </div>
                 </div>
             </div>
             <div class="section-title">Usage</div>
             <div class="section-content example-code">
+                <!--
                 <code>
                     response =
                     <span class="python-object">yourObject</span>.<span
@@ -97,6 +102,7 @@
                     >,<span class="python-string"
                         >"{{ command.identifier }}"</span
                     >,parameters: {{ '{' }}
+
                     <ng-container
                         *ngFor="
                             let param of command.parameters;
@@ -110,10 +116,13 @@
                         <ng-container
                             *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
                         >
+
                             <span class="python-string">
                                 "{{ paramValues[i].value }}"
                             </span>
+
                         </ng-container>
+
                         <ng-template #noString>
                             {{ paramValues[i].value }}
                         </ng-template>
@@ -121,8 +130,10 @@
                     </ng-container>
                     {{ '}' }})
                 </code>
+                -->
             </div>
             <div>
+                <!---
                 <button
                     mat-flat-button
                     color="primary"
@@ -131,6 +142,7 @@
                 >
                     Run
                 </button>
+                -->
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {ServiceProperty, ServiceService, FeaturePropertyResult} from '../service.service';
+import {SilaProperty} from '@app/_models';
 
 @Component({
     selector: 'app-service-property',
@@ -8,7 +8,7 @@ import {ServiceProperty, ServiceService, FeaturePropertyResult} from '../service
 })
 export class ServicePropertyComponent implements OnInit {
     @Input()
-    property: ServiceProperty;
+    property: SilaProperty;
     @Input()
     featureIdentifier: string;
     @Input()
@@ -19,31 +19,9 @@ export class ServicePropertyComponent implements OnInit {
     featureVersionMajor: number;
     @Input()
     serviceUUID: string;
-    returnValues: FeaturePropertyResult[] = [];
+    returnValues: [] = [];
     execute = '';
     expand = false;
-
-    constructor(private serviceService: ServiceService) {}
-
     ngOnInit(): void {
-        this.returnValues = [{
-            name: 'test_name',
-            value: '[None]',
-        }];
-    }
-
-    async getProperty(name: string) {
-        console.log('testing 1',
-            this.returnValues = await this.serviceService.getFeatureProperty(
-                this.serviceUUID,
-                this.featureOriginator,
-                this.featureCategory,
-                this.featureIdentifier,
-                this.featureVersionMajor,
-                name
-            )
-        );
-        console.log(this.returnValues);
-        console.log(this.returnValues.find(item => item.name === name.toLowerCase()).value);
     }
 }

@@ -29,10 +29,6 @@
                 <td class="feature_info_text"><div class="feature-description"> {{ feature.feature_version }}</div></td>
               </tr>
               <tr>
-                <td class="feature_info_title"><div class="section-title">Maturity Level:</div></td>
-                <td class="feature_info_text"><div class="feature-description"> {{ feature.maturity_level }}</div></td>
-              </tr>
-              <tr>
                 <td class="feature_info_title"><div class="section-title">Locale:</div></td>
                 <td class="feature_info_text">{{ feature.locale }}</td>
               </tr>
@@ -52,7 +48,6 @@
                         [featureIdentifier]="feature.identifier"
                         [featureOriginator]="feature.originator"
                         [featureCategory]="feature.category"
-                        [featureVersionMajor]=feature.feature_version_major
                         [command]="command"
                     ></app-service-command>
                 </div>
@@ -68,7 +63,6 @@
                         [featureIdentifier]="feature.identifier"
                         [featureOriginator]="feature.originator"
                         [featureCategory]="feature.category"
-                        [featureVersionMajor]=feature.feature_version_major
                         [property]="property"
                     ></app-service-property>
                 </div>
