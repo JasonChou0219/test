@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ServiceFeature } from '../service.service';
+import {SilaFeatureInfo} from '../../../_models';
 
 @Component({
     selector: 'app-service-feature',
@@ -8,7 +8,7 @@ import { ServiceFeature } from '../service.service';
 })
 export class ServiceFeatureComponent implements OnInit {
     @Input()
-    feature: ServiceFeature;
+    feature: SilaFeatureInfo;
     @Input()
     serviceUUID: string;
     expand = false;
