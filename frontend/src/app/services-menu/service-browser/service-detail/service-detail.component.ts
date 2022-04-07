@@ -1,29 +1,23 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {
-    Service,
-    ServiceService,
-    ServiceFeature,
-    ServiceCommand,
-    ServiceProperty,
-    ServiceParameter,
-} from '../service.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
+import {Service, SilaCommand, SilaCommandParameter, SilaFeatureInfo, SilaProperty} from '@app/_models';
+import {ServiceService} from '@app/_services';
 
 interface TreeNode {
     name: string;
     value?: string;
     children?: TreeNode[];
 }
-function buildParameterTree(parameter: ServiceParameter): TreeNode[] {
+function buildParameterTree(parameter: SilaCommandParameter): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: parameter.identifier });
     nodes.push({ name: 'Description', value: parameter.description });
-    nodes.push({ name: 'Type', value: parameter.data_type });
+    nodes.push({ name: 'Type', value: parameter.data_type.type});
     return nodes;
 }
 
-function buildPropertyTree(property: ServiceProperty): TreeNode[] {
+function buildPropertyTree(property: SilaProperty): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: property.identifier });
     nodes.push({ name: 'Description', value: property.description });
@@ -32,14 +26,10 @@ function buildPropertyTree(property: ServiceProperty): TreeNode[] {
     //        name: property.response.name,
     //        children: buildParameterTree(property.response),
     //    });
-    nodes.push({
-        name: 'Response',
-        children: buildParameterTree(property.response),
-    });
     return nodes;
 }
 
-function buildCommandTree(command: ServiceCommand): TreeNode[] {
+function buildCommandTree(command: SilaCommand): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: command.identifier });
     nodes.push({ name: 'Description', value: command.description });
@@ -68,7 +58,7 @@ function buildCommandTree(command: ServiceCommand): TreeNode[] {
     return nodes;
 }
 
-function buildFeatureTree(feature: ServiceFeature): TreeNode[] {
+function buildFeatureTree(feature: SilaFeatureInfo): TreeNode[] {
     const nodes: TreeNode[] = [];
     nodes.push({ name: 'Identifier', value: feature.identifier });
     nodes.push({ name: 'Description', value: feature.description });
@@ -96,10 +86,10 @@ function buildFeatureTree(feature: ServiceFeature): TreeNode[] {
     return nodes;
 }
 
-function buildFeaturesTree(features: ServiceFeature[]): TreeNode[] {
+function buildFeaturesTree(features: SilaFeatureInfo[]): TreeNode[] {
     const nodes: TreeNode[] = [];
     for (const feature of features) {
-        nodes.push({ name: feature.name, children: buildFeatureTree(feature) });
+        nodes.push({ name: feature.identifier, children: buildFeatureTree(feature) });
     }
     return nodes;
 }
@@ -113,11 +103,11 @@ export class ServiceDetailComponent implements OnInit {
     @Input() service: Service;
     treeControl = new NestedTreeControl<TreeNode>((node) => node.children);
     dataSource = new MatTreeNestedDataSource<TreeNode>();
-    features: ServiceFeature[] = [];
+    features: SilaFeatureInfo[] = [];
     constructor(public serviceService: ServiceService) {}
 
     async getFeatures() {
-        this.features = await this.serviceService.getServiceFeatures(
+        this.features = await this.serviceService.browseParsedFeatureDefiniton(
             this.service.uuid
         );
         // this.dataSource.data = buildFeaturesTree(this.features);
