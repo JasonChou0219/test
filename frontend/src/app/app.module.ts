@@ -94,6 +94,9 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
 import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
 import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
+import { ProtocolsMenuAddProtocolComponent } from './protocols-menu/add-protocol/protocols-menu-add-protocol.component';
+import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protocols-menu-overview.component';
+import { ProtocolsMenuUpdateProtocolComponent } from './protocols-menu/update-protocol/protocols-menu-update-protocol.component';
 
 
 @NgModule({
@@ -145,6 +148,9 @@ import {DiscoverServiceComponent} from '@app/services-menu/service-browser/disco
         DatabasesMenuOverviewComponent,
         DatabasesMenuAddDatabaseComponent,
         DatabasesMenuUpdateDatabaseComponent,
+        ProtocolsMenuAddProtocolComponent,
+        ProtocolsMenuOverviewComponent,
+        ProtocolsMenuUpdateProtocolComponent,
     ],
     imports: [
         BrowserModule,

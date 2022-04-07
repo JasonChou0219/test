@@ -176,10 +176,10 @@ export class ServiceService {
     }
     getServiceFeatures(uuid: string): Promise<ServiceFeature[]> {
         return this.http
-            .get<ServiceFeatureList>(
-                this.serverUrl + '/api/serviceFeatures/' + uuid
+            .get<ServiceFeature[]>(
+                this.serverUrl + '/api/v1/functions/browse_features?service_uuid=' + uuid
             )
-            .pipe(map((featureList) => featureList.data))
+            .pipe(map((featureList) => featureList))
             .toPromise();
     }
     getServiceFeaturesDataHandler(uuid: string): Promise<ServiceFeature[]> {

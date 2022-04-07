@@ -12,6 +12,7 @@ from app import crud, models, schemas
 from app.api import deps
 from app.core.config import settings
 from app.api.deps import get_db_workflow_designer_node_red
+from app import scheduler
 
 router = APIRouter()
 
@@ -129,3 +130,29 @@ def delete_scheduled_job(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     scheduled_job = crud.scheduled_job.remove(db=db, id=id)
     return scheduled_job
+
+
+@router.get("/{id}/stop_data_acquisition", response_model=None)
+def stop_data_acquisition_for_job(
+        *,
+        request: Request,
+        db: Session = Depends(deps.get_db),
+        id: int,
+) -> Any:
+    """
+    Stop data acquisition for job specified by id.
+    """
+    query_params = dict(request.query_params.items())
+    for key in ['id']:
+        query_params.pop(key)
+    user = schemas.User(**query_params)
+
+    scheduled_job = crud.scheduled_job.get(db=db, id=id)
+    if not scheduled_job:
+        raise HTTPException(status_code=404, detail="ScheduledJob not found")
+    if not user.is_superuser and (scheduled_job.owner_id != user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    scheduler.stop_data_acquisition_for_job(id)
+
+    return
