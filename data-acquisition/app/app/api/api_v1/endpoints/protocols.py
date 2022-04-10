@@ -459,10 +459,15 @@ def check_protocol(protocol: models.Protocol, user: models.User):
 def execute_commands_and_properties(protocol: models.Protocol):
     for feature in protocol.service.features:
         for command in feature.commands:
-            # TODO make parameters dict of identifier and value
-            parameters = []
+            parameters = {}
             for parameter in command.parameters:
-                parameters.append(parameter.value)
+                parameters[parameter.identifier] = parameter.value
+            # Convert parameters to appropriate types
+            for parameter_name in parameters.keys():
+                if str(parameters[parameter_name]).lower() in ["true", "false"]:
+                    parameters[parameter_name] = True if str(parameters[parameter_name]).lower() == "true" else False
+                if str(parameters[parameter_name]).isdecimal():  # Floats are not supported by REST query parameters
+                    parameters[parameter_name] = int(parameters[parameter_name])
             responses = []
             for response in command.responses:
                 responses.append(response.identifier)
@@ -473,8 +478,8 @@ def execute_commands_and_properties(protocol: models.Protocol):
                                              'feature_identifier': feature.identifier,
                                              'function_identifier': command.identifier,
                                              'is_property': False,
-                                             'response_identifiers': responses,
-                                             'parameters': parameters}))
+                                             'response_identifiers': responses}),
+                                json=jsonable_encoder(parameters))
 
                 if not response:
                     raise HTTPException(status_code=405,
@@ -487,8 +492,6 @@ def execute_commands_and_properties(protocol: models.Protocol):
                 # TODO observables
                 pass
 
-        # TODO also check properties when they are fixed
-        """
         for property in feature.properties:
             if not property.observable:
                 response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
@@ -507,4 +510,3 @@ def execute_commands_and_properties(protocol: models.Protocol):
             else:
                 # TODO observables
                 pass
-        """

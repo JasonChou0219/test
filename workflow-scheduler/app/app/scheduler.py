@@ -96,68 +96,6 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
     # ]
     logging.info(f'Starting job {job.title}')
 
-    logging.info(f'Scanning for protocols and databases')
-    for protocol_and_database in job.list_protocol_and_database:
-        protocol = protocol_and_database[0]
-        database = protocol_and_database[1]
-
-        protocol = crud.protocol.get(db=next(deps.get_db()), id=protocol, job_id=job.job_id)
-        database = crud.database.get(db=next(deps.get_db()), id=database, job_id=job.job_id)
-
-        interval_to_non_meta_and_unobservable_properties_and_commands = {}
-        non_meta_and_observable_commands_and_properties = []
-        meta_and_unobservable_commands_and_properties = []
-        meta_and_observable_commands_and_properties = []
-
-    # TODO observables
-    # TODO save what job and protocol data came from
-        for feature in protocol.service.features:
-            # Separate commands into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
-            for command in feature.commands:
-                if command.meta:
-                    if not command.observable:
-                        meta_and_unobservable_commands_and_properties.append((command, feature.identifier))
-                    else:
-                        meta_and_observable_commands_and_properties.append((command, feature.identifier))
-                elif command.observable:
-                    non_meta_and_observable_commands_and_properties.append((command, feature.identifier))
-                else:
-                    if command.interval not in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
-                        interval_to_non_meta_and_unobservable_properties_and_commands[command.interval] = []
-                    interval_to_non_meta_and_unobservable_properties_and_commands[command.interval].append((command, feature.identifier))
-            for property in feature.properties:
-                # Separate properties into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
-                if property.meta:
-                    if not property.observable:
-                        meta_and_unobservable_commands_and_properties.append((property, feature.identifier))
-                    else:
-                        meta_and_observable_commands_and_properties.append((property, feature.identifier))
-                elif property.observable:
-                    non_meta_and_observable_commands_and_properties.append((property, feature.identifier))
-                else:
-                    if property.interval not in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
-                        interval_to_non_meta_and_unobservable_properties_and_commands[property.interval] = []
-                    interval_to_non_meta_and_unobservable_properties_and_commands[property.interval].append((property, feature.identifier))
-
-        # Run data acquisition for non-meta unobservable commands and properties
-        for interval in interval_to_non_meta_and_unobservable_properties_and_commands.keys():
-            apscheduler_job = scheduler.add_job(save_unobservable_data,
-                                                'interval',
-                                                seconds=interval,
-                                                args=[interval_to_non_meta_and_unobservable_properties_and_commands[interval], job.id, protocol.id, protocol.service.uuid, job.owner_id, database])
-            apscheduler_job.modify(next_run_time=datetime.now())
-            if job.id not in job_id_to_data_acquisition_job:
-                job_id_to_data_acquisition_job[job.id] = []
-            job_id_to_data_acquisition_job[job.id].append(apscheduler_job)
-
-        # Run data acquisition for meta unobservable commands and properties
-        scheduler.add_job(save_unobservable_data,
-                          args=[meta_and_unobservable_commands_and_properties, job.id, protocol.id, protocol.service.uuid, job.owner_id, database])
-
-        # Save custom data
-        scheduler.add_job(save_custom_data,
-                          args=[protocol.custom_data, job.id, protocol.id, job.owner_id, database])
-
     logging.info(f'Scanning for workflows')
     job_workflows = []
     if job.workflows:
@@ -220,6 +158,20 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                     pass
         else:
             logging.warning(f'Job {job.title} does not have any attached workflow!')
+
+    logging.info(f'Scanning for protocols and databases')
+    list_protocol_and_database = []
+    for protocol_and_database in job.list_protocol_and_database:
+        protocol = protocol_and_database[0]
+        database = protocol_and_database[1]
+
+        protocol = crud.protocol.get(db=next(deps.get_db()), id=protocol, job_id=job.job_id)
+        database = crud.database.get(db=next(deps.get_db()), id=database, job_id=job.job_id)
+
+        list_protocol_and_database.append((protocol, database))
+
+    post(f"http://sila2_manager_data-acquisition_1:86/api/v1/data_acquisition/{job.id}/start", params=dict({'owner_id': job.owner_id}), json=jsonable_encoder(list_protocol_and_database))
+
     return
 
 
