@@ -148,7 +148,7 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
 
             points = [point]
 
-            client.write_points(points)
+            client.write_points(points, retention_policy=database.retention_policy)
         except Exception as e:
             print(e)
 
@@ -171,6 +171,6 @@ def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
 
         points = [point]
 
-        client.write_points(points)
+        client.write_points(points, retention_policy=database.retention_policy)
     except Exception as e:
         print(e)
