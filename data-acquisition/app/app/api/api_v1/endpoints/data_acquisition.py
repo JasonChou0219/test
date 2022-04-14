@@ -40,7 +40,6 @@ def start_data_acquisition_for_job(
         meta_and_observable_commands_and_properties = []
 
         # TODO observables
-        # TODO save what job and protocol data came from
         for feature in protocol.service.features:
             # Separate commands into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
             for command in feature.commands:
@@ -91,7 +90,6 @@ def start_data_acquisition_for_job(
     return
 
 
-#TODO retention policy
 def save_unobservable_data(properties_and_commands, job_id, protocol_id, service_uuid, owner_id, database):
     for property_or_command in properties_and_commands:
         parameters = {}
@@ -174,3 +172,21 @@ def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
         client.write_points(points, retention_policy=database.retention_policy)
     except Exception as e:
         print(e)
+
+
+@router.get("/{job_id}/stop_data_acquisition", response_model=None)
+def stop_data_acquisition_for_job(
+        *,
+        request: Request,
+        db: Session = Depends(deps.get_db),
+        job_id: int,
+) -> Any:
+    """
+    Stop data acquisition for job specified by id.
+    """
+    if job_id in job_id_to_data_acquisition_job.keys():
+        for job in job_id_to_data_acquisition_job[job_id]:
+            job.remove()
+    del job_id_to_data_acquisition_job[job_id]
+
+    return

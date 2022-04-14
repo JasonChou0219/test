@@ -22,7 +22,6 @@ from app.util.data_directories import TEMP_DIRECTORY
 
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
-from influxdb import InfluxDBClient
 from requests import post
 
 
@@ -66,8 +65,6 @@ class JobState:
 event_queue = queue.SimpleQueue()
 process_status_queue = queue.SimpleQueue()
 scheduler = BackgroundScheduler()
-
-job_id_to_data_acquisition_job = {}
 
 scheduled_jobs = {}  # Scheduled Jobs that are stored as scheduled jobs
 submitted_jobs = {}  # Scheduled jobs that are submitted to the scheduler
@@ -296,93 +293,6 @@ def schedule_job_now(job: ScheduledJob):
         status=JobStatus.WAITING_FOR_EXECUTION)
     submitted_jobs[job.id] = job.id
     change_job_status(job.id, JobStatus.WAITING_FOR_EXECUTION)
-
-
-def save_unobservable_data(properties_and_commands, job_id, protocol_id, service_uuid, owner_id, database):
-    for property_or_command in properties_and_commands:
-        if isinstance(property_or_command[0], models.Command):
-            # TODO make parameters dict of identifier and value
-            parameters = []
-            for parameter in property_or_command[0].parameters:
-                parameters.append(parameter.value)
-            responses = []
-            for response in property_or_command[0].responses:
-                responses.append(response.identifier)
-
-            # TODO route from settings
-            response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
-                           params=dict({'service_uuid': service_uuid,
-                                        'feature_identifier': property_or_command[1],
-                                        'function_identifier': property_or_command[0].identifier,
-                                        'is_property': False,
-                                        'response_identifiers': responses,
-                                        'parameters': parameters}))
-
-        else:
-            # TODO route from settings
-            response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
-                           params=dict({'service_uuid': service_uuid,
-                                        'feature_identifier': property_or_command[1],
-                                        'function_identifier': property_or_command[0].identifier,
-                                        'is_property': True}))
-
-        try:
-            client = InfluxDBClient(host=database.address,
-                                    port=database.port,
-                                    username=database.username,
-                                    password=database.password,
-                                    database=database.name)
-            client.create_database(database.name)
-            point = {}
-            if isinstance(property_or_command[0], models.Command):
-                # TODO save used parameters
-                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier, 'owner': owner_id}
-            else:
-                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier, 'owner': owner_id}
-            point['measurement'] = 'data-acquisition'
-            point['tags'] = tags
-            point['time'] = datetime.now()
-
-            if not response:
-                point['fields'] = {'error': response.json()['detail']}
-            else:
-                point['fields'] = response.json()['response']
-
-            points = [point]
-
-            client.write_points(points)
-        except Exception as e:
-            logging.error(e)
-
-
-def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
-    try:
-        client = InfluxDBClient(host=database.address,
-                                port=database.port,
-                                username=database.username,
-                                password=database.password,
-                                database=database.name)
-        client.create_database(database.name)
-        point = {}
-        tags = {'job': job_id, 'protocol': protocol_id, 'owner': owner_id}
-        point['measurement'] = 'data-acquisition'
-        point['tags'] = tags
-        point['time'] = datetime.now()
-
-        point['fields'] = custom_data
-
-        points = [point]
-
-        client.write_points(points)
-    except Exception as e:
-        logging.error(e)
-
-
-def stop_data_acquisition_for_job(job_id: int):
-    if job_id in job_id_to_data_acquisition_job.keys():
-        for job in job_id_to_data_acquisition_job[job_id]:
-            job.remove()
-        del job_id_to_data_acquisition_job[job_id]
 
 
 def main():
