@@ -151,6 +151,62 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
             print(e)
 
 
+def save_observable_data(properties_and_commands, job_id, protocol_id, service_uuid, owner_id, database):
+    for property_or_command in properties_and_commands:
+        parameters = {}
+        if isinstance(property_or_command[0], schemas.Command):
+            for parameter in property_or_command[0].parameters:
+                parameters[parameter.identifier] = parameter.value
+            # Convert parameters to appropriate types
+            for parameter_name in parameters.keys():
+                if str(parameters[parameter_name]).lower() in ["true", "false"]:
+                    parameters[parameter_name] = True if str(parameters[parameter_name]).lower() == "true" else False
+                if str(parameters[parameter_name]).isdecimal():  # Floats are not supported by REST query parameters
+                    parameters[parameter_name] = int(parameters[parameter_name])
+
+            # TODO route from settings
+            response = post("http://service-manager:82/api/v1/sm_functions/observable",
+                            params=dict({'service_uuid': service_uuid,
+                                         'feature_identifier': property_or_command[1],
+                                         'function_identifier': property_or_command[0].identifier}),
+                            json=jsonable_encoder(parameters))
+
+        else:
+            return
+            # TODO route from settings
+            response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
+                            params=dict({'service_uuid': service_uuid,
+                                         'feature_identifier': property_or_command[1],
+                                         'function_identifier': property_or_command[0].identifier,
+                                         'is_property': True}))
+
+        try:
+            client = InfluxDBClient(host=database.address,
+                                    port=database.port,
+                                    username=database.username,
+                                    password=database.password,
+                                    database=database.name)
+            client.create_database(database.name)
+            point = {}
+            if isinstance(property_or_command[0], schemas.Command):
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier, 'owner': owner_id, 'parameters': parameters}
+            else:
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier, 'owner': owner_id}
+            point['measurement'] = 'data-acquisition'
+            point['tags'] = tags
+            point['time'] = datetime.now()
+
+            if not response:
+                point['fields'] = {'error': response.json()['detail']}
+                points = [point]
+                client.write_points(points, retention_policy=database.retention_policy)
+            else:
+                websocket_uuid = response.json()
+                # receive data from websocket and save it to database
+        except Exception as e:
+            print(e)
+
+
 def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
     try:
         client = InfluxDBClient(host=database.address,

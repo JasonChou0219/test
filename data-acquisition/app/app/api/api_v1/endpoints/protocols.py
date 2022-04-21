@@ -489,8 +489,19 @@ def execute_commands_and_properties(protocol: models.Protocol):
                                                 + " produced the following error: "
                                                 + response.text))
             else:
-                # TODO observables
-                pass
+                response = post("http://service-manager:82/api/v1/sm_functions/observable",
+                                params=dict({'service_uuid': protocol.service_uuid,
+                                             'feature_identifier': feature.identifier,
+                                             'function_identifier': command.identifier}),
+                                json=jsonable_encoder(parameters))
+
+                if not response:
+                    raise HTTPException(status_code=405,
+                                        detail=("Executing command " + command.identifier
+                                                + " of feature " + feature.identifier
+                                                + " of service " + protocol.service.uuid
+                                                + " produced the following error: "
+                                                + response.text))
 
         for property in feature.properties:
             if not property.observable:
