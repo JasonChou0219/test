@@ -35,7 +35,7 @@ const routes: Routes = [
     {
         path: 'dashboard',
         component: DashboardComponent,
-        //canActivate: [AuLthGuard],
+        // canActivate: [AuLthGuard],
         children: [
             {
                  path: 'workflow_editor',

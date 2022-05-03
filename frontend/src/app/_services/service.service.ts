@@ -120,9 +120,9 @@ export class ServiceService {
 
         let queryParams = new HttpParams();
         queryParams = queryParams.append('client_ip', ip)
-        queryParams = queryParams.append('client_port', port)
-        if (reset) {  queryParams = queryParams.append('reset', reset) }
-        if (encrypted)  { queryParams = queryParams.append('encrypted', encrypted) }
+        queryParams = queryParams.append('client_port', port.toString())
+        if (reset) {  queryParams = queryParams.append('reset', reset.toString()) }
+        if (encrypted)  { queryParams = queryParams.append('encrypted', encrypted.toString()) }
         return this.http
             .get(`${env.apiUrl}/api/v1/functions/connect`, {params: queryParams})
             .toPromise()
