@@ -27,6 +27,7 @@ python-jose = {extras = ["cryptography"], version = "^3.1.0"}
 zeroconf = "0.28.8"
 docker = "^5.0.3"
 APScheduler = "^3.8.1"
+influxdb = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"

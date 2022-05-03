@@ -1,0 +1,129 @@
+<div class="page">
+    <h1>Protocol Creation</h1>
+    <form class="general">
+        <div class="flex-container">
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput [(ngModel)]="protocolInfo.title" name="title" placeholder="Title"/>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Service</mat-label>
+                    <mat-select [(ngModel)]="selectedService" name="service" placeholder="Service" (selectionChange)="selectService()">
+                        <mat-option *ngFor="let service of services" [value]="service">{{service.name}} ({{service.uuid}})</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <h2>Add Command</h2>
+                <div class="multi-select">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Feature</mat-label>
+                        <mat-select [(ngModel)]="selectedFeatureForCommand" name="feature" placeholder="Feature">
+                            <mat-option *ngFor="let availableFeature of availableFeatures" [value]="availableFeature">{{availableFeature.identifier}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field *ngIf="selectedFeatureForCommand !== undefined" appearance="fill">
+                        <mat-label>Command</mat-label>
+                        <mat-select [(ngModel)]="selectedCommand" name="command" placeholder="Command">
+                            <mat-option *ngFor="let availableCommand of selectedFeatureForCommand.commands | keyvalue" [value]="availableCommand.value">{{availableCommand.value.identifier}}  - observable: {{availableCommand.value.observable}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="button">
+                    <button mat-flat-button color="primary" (click)="addCommand()">Add Command</button>
+                </div>
+
+                <h2>Add Property</h2>
+                <div class="multi-select">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Feature</mat-label>
+                        <mat-select [(ngModel)]="selectedFeatureForProperty" name="feature" placeholder="Feature">
+                            <mat-option *ngFor="let availableFeature of availableFeatures" [value]="availableFeature">{{availableFeature.identifier}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field *ngIf="selectedFeatureForProperty !== undefined" appearance="fill">
+                        <mat-label>Property</mat-label>
+                        <mat-select [(ngModel)]="selectedProperty" name="property" placeholder="Property">
+                            <mat-option *ngFor="let availableProperty of selectedFeatureForProperty.properties | keyvalue" [value]="availableProperty.value">{{availableProperty.value.identifier}}  - observable: {{availableProperty.value.observable}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="button">
+                    <button mat-flat-button color="primary" (click)="addProperty()">Add Property</button>
+                </div>
+
+                <h2>Add Custom Data</h2>
+                <div class="multi-select">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Name</mat-label>
+                        <input matInput type="text" [(ngModel)]="customDataKey" name="custom_data_key" placeholder="Name"/>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Value</mat-label>
+                        <input matInput type="text" [(ngModel)]="customDataValue" name="custom_data_value" placeholder="Value"/>
+                    </mat-form-field>
+                </div>
+                <div class="button">
+                    <button mat-flat-button color="primary" (click)="addCustomData()">Add Custom Data</button>
+                </div>
+
+                <div class="button">
+                    <button mat-flat-button color="primary" (click)="createProtocol()">Create Protocol</button>
+                    <button mat-button (click)="cancel()">Cancel</button>
+                </div>
+            </div>
+
+            <div>
+                <h2>Features</h2>
+                <ng-container *ngFor="let feature of protocolInfo.service.features; let featureIndex = index">
+                    <h3>Feature: {{feature.identifier}}</h3>
+                    <ng-container *ngFor="let command of feature.commands; let commandIndex = index">
+                        <h4>Command: {{command.identifier}}</h4>
+                        <button mat-icon-button (click)="deleteCommand(featureIndex, commandIndex)">
+                            <mat-icon matTooltip="Delete this command">delete</mat-icon>
+                        </button>
+                        <div class="multi-select">
+                            <mat-form-field *ngIf="command.observable === false && command.meta === false" appearance="fill">
+                                <mat-label>Interval</mat-label>
+                                <input matInput type="number" [(ngModel)]="command.interval" name="command_interval" placeholder="Interval"/>
+                            </mat-form-field>
+                            <mat-checkbox [(ngModel)]="command.meta" name="command_meta">Meta</mat-checkbox>
+                        </div>
+                        <ng-container *ngFor="let parameter of command.parameters">
+                            <h5>Parameter: {{parameter.identifier}}</h5>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Value</mat-label>
+                                <input matInput [(ngModel)]="parameter.value" name="parameter_value" placeholder="Value"/>
+                            </mat-form-field>
+                        </ng-container>
+                        <ng-container *ngFor="let response of command.responses">
+                            <h5>Response: {{response.identifier}}</h5>
+                        </ng-container>
+                    </ng-container>
+                    <ng-container *ngFor="let property of feature.properties; let propertyIndex = index">
+                        <h4>Property: {{property.identifier}}</h4>
+                        <button mat-icon-button (click)="deleteProperty(featureIndex, propertyIndex)">
+                            <mat-icon matTooltip="Delete this command">delete</mat-icon>
+                        </button>
+                        <div class="multi-select">
+                            <mat-form-field *ngIf="property.observable === false && property.meta === false" appearance="fill">
+                                <mat-label>Interval</mat-label>
+                                <input matInput type="number" [(ngModel)]="property.interval" name="property_interval" placeholder="Interval"/>
+                            </mat-form-field>
+                            <mat-checkbox [(ngModel)]="property.meta" name="property_meta">Meta</mat-checkbox>
+                        </div>
+                    </ng-container>
+                </ng-container>
+
+                <h2>Custom Data</h2>
+                <ng-container *ngFor="let item of protocolInfo.custom_data | keyvalue">
+                    <h4>Data name: {{item.key}} - Data value: {{item.value}}</h4>
+                    <button mat-icon-button (click)="deleteCustomData(item.key)">
+                        <mat-icon matTooltip="Delete this command">delete</mat-icon>
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+    </form>
+</div>

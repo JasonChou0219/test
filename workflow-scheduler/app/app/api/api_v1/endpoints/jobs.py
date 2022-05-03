@@ -20,6 +20,11 @@ workflow_designer_python_service_url = workflow_designer_python_hostname + ":" \
                      + str(settings.WORKFLOW_DESIGNER_PYTHON_UVICORN_PORT) \
                      + str(settings.API_V1_STR) + "/"
 
+data_acquisition_hostname = "http://sila2_manager_data-acquisition_1"  # -> to env var
+data_acquisition_service_url = data_acquisition_hostname + ":" \
+                               + str(settings.DATA_ACQUISITION_UVICORN_PORT) \
+                               + str(settings.API_V1_STR) + "/"
+
 
 @router.get("/", response_model=List[schemas.Job])
 def read_jobs(
@@ -85,7 +90,26 @@ def create_job(
         job = crud.job.create(db=db, obj_in=job_in)
         for workflow in workflows:
             crud.workflow.create_with_owner(db=db, obj_in=workflow, owner_id=job.id)
+        for index in range(len(job_in.list_protocol_and_database)):
+            protocol = job_in.list_protocol_and_database[index][0]
+            database = job_in.list_protocol_and_database[index][1]
 
+            protocol = get(f"{data_acquisition_service_url}protocols/{protocol}",
+                           params=dict(**user_dict))
+            database = get(f"{data_acquisition_service_url}databases/{database}",
+                           params=dict(**user_dict))
+
+            protocol_model = protocol_model_from_schema(schemas.Protocol.parse_obj(protocol.json()))
+            protocol_model.job_id = job.id
+            db.add(protocol_model)
+            db.commit()
+            db.refresh(protocol_model)
+
+            database = crud.database.create_with_owner(db=db, obj_in=database, owner_id=job.id)
+
+            job_in.list_protocol_and_database[index] = (protocol_model.id, database.id)
+        job = crud.job.get(db=db, id=job.id)
+        job = crud.job.update(db=db, db_obj=job, obj_in=job_in)
     except IntegrityError as db_exception:
         raise HTTPException(status_code=452, detail=f"{type(db_exception).__name__}:{db_exception.orig}")
     return job
@@ -165,3 +189,47 @@ def delete_job(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     job = crud.job.remove(db=db, id=id)
     return job
+
+
+# This is necessary because the conversion schema<->model does not work for nested objects
+def protocol_model_from_schema(protocol_in: schemas.Protocol) -> models.Protocol:
+    protocol = models.Protocol(title=protocol_in.title,
+                               custom_data=protocol_in.custom_data,
+                               owner_id=protocol_in.owner_id,
+                               owner=protocol_in.owner)
+    service = models.ProtocolService(uuid=protocol_in.service.uuid)
+    features = []
+    for feature_in in protocol_in.service.features:
+        feature = models.Feature(identifier=feature_in.identifier)
+        commands = []
+        properties = []
+        for command_in in feature_in.commands:
+            command = models.Command(identifier=command_in.identifier,
+                                     observable=command_in.observable,
+                                     meta=command_in.meta,
+                                     interval=command_in.interval)
+            parameters = []
+            responses = []
+            for parameter_in in command_in.parameters:
+                parameter = models.Parameter(identifier=parameter_in.identifier,
+                                             value=parameter_in.value)
+                parameters.append(parameter)
+            for response_in in command_in.responses:
+                response = models.Response(identifier=response_in.identifier)
+                responses.append(response)
+            command.parameters = parameters
+            command.responses = responses
+            commands.append(command)
+        for property_in in feature_in.properties:
+            property = models.Property(identifier=property_in.identifier,
+                                       observable=property_in.observable,
+                                       meta=property_in.meta,
+                                       interval=property_in.interval)
+            properties.append(property)
+        feature.commands = commands
+        feature.properties = properties
+        features.append(feature)
+    service.features = features
+    protocol.service = service
+
+    return protocol

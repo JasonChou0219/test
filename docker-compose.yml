@@ -418,8 +418,6 @@ services:
 
   workflow-executor-node-red:
     image: '${DOCKER_IMAGE_WORKFLOW_EXECUTOR_NODE_RED?Variable not set}:${TAG-latest}'
-    profiles:
-      - "don't start"
     depends_on:
       - db-workflow-designer-node-red
     env_file:
@@ -574,4 +572,3 @@ networks:
   traefik-public:
     # Allow setting it to false for testing
     external: ${TRAEFIK_PUBLIC_NETWORK_IS_EXTERNAL-true}
-    name: traefik-public

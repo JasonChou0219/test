@@ -26,7 +26,10 @@ def connect_client(client_ip: str, client_port: int, user_id: int, user_name: st
             crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
                                                   owner=user_name)
 
-            features = browse_features(service_info.uuid)
+            features = client_controller.browse_features(service_info.uuid)
+            converted = []
+            for feature in features:
+                converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
             for feature in features:
                 crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
@@ -55,14 +58,14 @@ def connect_initial(client_ip: str, client_port: int, user_id: int, user_name: s
             crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
                                                   owner=user_name)
 
-            features = browse_features(service_info.uuid)
+            features = client_controller.browse_features(service_info.uuid)
+            converted = []
+            for feature in features:
+                converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
             for feature in features:
-                crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
+                crud.feature.create_feature_for_uuid(db=db, feature=map_dto_to_db(feature, service_info.uuid))
 
-        service_info = client_controller.connect_initial(client_ip, client_port, reset, encrypted)
-        map_to_db = map_service_info_to_db(service_info, user_name, user_id)
-        info_in_db = create_service_info_entry(map_to_db, user_name, user_id, db)
         return service_info
     except SilaConnectionError as connection_error:
         raise HTTPException(
@@ -95,7 +98,7 @@ def map_service_info_to_db(service_info: schemas.ServiceInfo, user_name: str, us
     return service_info_create
 
 
-def map_dto_to_db(feature: schemas.Feature, owner_uuid: int):
+def map_dto_to_db(feature: schemas.Feature, owner_uuid: str):
     feature_db = SilaFeatureCreate()
     feature_db.owner_uuid = owner_uuid
     feature_db.category = feature.category
@@ -107,9 +110,9 @@ def map_dto_to_db(feature: schemas.Feature, owner_uuid: int):
     feature_db.display_name = feature.display_name
     feature_db.description = feature.description
     feature_db.locale = feature.locale
-    feature_db.commands = {command.identifier: command for command in feature.commands}
-    feature_db.properties = {prop.identifier: prop for prop in feature.properties}
-    feature_db.errors = {err.identifier: err for err in feature.errors}
+    feature_db.commands = {command.identifier if hasattr(command, "identifier") else "": command for command in feature.commands}
+    feature_db.properties = {prop.identifier if hasattr(prop, "identifier") else "": prop for prop in feature.properties}
+    feature_db.errors = {err.identifier if hasattr(err, "identifier") else "": err for err in feature.errors}
 
     return feature_db
 
@@ -219,7 +222,7 @@ def browse_features(service_uuid: str, db: Session = Depends(get_db)):
         features = client_controller.browse_features(service_uuid)
         converted = []
         for feature in features:
-            converted.append(map_dto_to_db(feature, 0).copy(exclude={'owner_uuid': True}))
+            converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
     except ValidationError as validation_error:
         raise HTTPException(

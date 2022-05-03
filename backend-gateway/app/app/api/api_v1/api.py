@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.endpoints import items, login, users, utils, workflows, jobs, scheduled_jobs, databases, dataflows, functions
+from app.api.api_v1.endpoints import items, login, users, utils, workflows, jobs, scheduled_jobs, databases, dataflows, functions, protocols
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["login"])
@@ -13,3 +13,4 @@ api_router.include_router(scheduled_jobs.router, prefix="/scheduled_jobs", tags=
 api_router.include_router(databases.router, prefix="/databases", tags=["databases"])
 api_router.include_router(dataflows.router, prefix="/dataflows", tags=["dataflows"])
 api_router.include_router(functions.router, prefix="/functions", tags=["functions"])
+api_router.include_router(protocols.router, prefix="/protocols", tags=["protocols"])

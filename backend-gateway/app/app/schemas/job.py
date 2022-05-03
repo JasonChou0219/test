@@ -25,6 +25,7 @@ class JobBase(BaseModel):
     owner_id: Optional[int] = None
 
     workflows: Optional[List[Tuple[int, str, datetime]]] = []  # [workflow_id, workflow_type, workflow_execute_at]
+    list_protocol_and_database: Optional[List[Tuple[int, int]]] = []   # [(protocol_id, database_id)]
 
     # data_acquisition_protocol: Optional[Json] = None
     # data_acquisition_protocol_execute_at: Optional[datetime]

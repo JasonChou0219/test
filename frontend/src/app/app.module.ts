@@ -95,6 +95,16 @@ import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
 import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
 
+import {ServiceFeatureComponent} from '@app/services-menu/service-browser/service-feature/service-feature.component';
+import {ServiceCommandComponent} from '@app/services-menu/service-browser/sevice-command/service-command.component';
+import {ServicePropertyComponent} from '@app/services-menu/service-browser/service-property/service-property.component';
+import {ServiceDetailComponent} from '@app/services-menu/service-browser/service-detail/service-detail.component';
+
+import { ProtocolsMenuAddProtocolComponent } from './protocols-menu/add-protocol/protocols-menu-add-protocol.component';
+import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protocols-menu-overview.component';
+import { ProtocolsMenuUpdateProtocolComponent } from './protocols-menu/update-protocol/protocols-menu-update-protocol.component';
+
+
 
 @NgModule({
     declarations: [
@@ -109,6 +119,10 @@ import {DiscoverServiceComponent} from '@app/services-menu/service-browser/disco
         ServiceListComponent,
         AddServiceComponent,
         EditServiceComponent,
+        ServiceFeatureComponent,
+        ServiceCommandComponent,
+        ServicePropertyComponent,
+        ServiceDetailComponent,
         // LogViewComponent,
         // CalendarComponent,
         // AddBookingComponent,
@@ -145,6 +159,9 @@ import {DiscoverServiceComponent} from '@app/services-menu/service-browser/disco
         DatabasesMenuOverviewComponent,
         DatabasesMenuAddDatabaseComponent,
         DatabasesMenuUpdateDatabaseComponent,
+        ProtocolsMenuAddProtocolComponent,
+        ProtocolsMenuOverviewComponent,
+        ProtocolsMenuUpdateProtocolComponent,
     ],
     imports: [
         BrowserModule,
