@@ -2,18 +2,22 @@ from datetime import datetime
 from typing import List, Tuple, Any
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from fastapi import Request, APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from influxdb import InfluxDBClient
 from requests import post
 from sqlalchemy.orm import Session
+import asyncio
+import websockets
 
 from app import crud, models, schemas
 from app.api import deps
 
 router = APIRouter()
 
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(job_defaults={'max_instances': 100},
+                                executors={'default': ThreadPoolExecutor(100), 'processpool': ProcessPoolExecutor(100)})
 scheduler.start()
 
 job_id_to_data_acquisition_job = {}
@@ -83,6 +87,11 @@ def start_data_acquisition_for_job(
         scheduler.add_job(save_unobservable_data,
                           args=[meta_and_unobservable_commands_and_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
 
+        # Run data acquisition for non-meta observable commands and properties
+        scheduler.add_job(save_observable_data,
+                          args=[non_meta_and_observable_commands_and_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
+
+
         # Save custom data
         scheduler.add_job(save_custom_data,
                           args=[protocol.custom_data, job_id, protocol.id, owner_id, database])
@@ -106,7 +115,6 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
             for response in property_or_command[0].responses:
                 responses.append(response.identifier)
 
-            # TODO route from settings
             response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
                             params=dict({'service_uuid': service_uuid,
                                          'feature_identifier': property_or_command[1],
@@ -116,7 +124,6 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
                             json=jsonable_encoder(parameters))
 
         else:
-            # TODO route from settings
             response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
                             params=dict({'service_uuid': service_uuid,
                                          'feature_identifier': property_or_command[1],
@@ -164,7 +171,6 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                 if str(parameters[parameter_name]).isdecimal():  # Floats are not supported by REST query parameters
                     parameters[parameter_name] = int(parameters[parameter_name])
 
-            # TODO route from settings
             response = post("http://service-manager:82/api/v1/sm_functions/observable",
                             params=dict({'service_uuid': service_uuid,
                                          'feature_identifier': property_or_command[1],
@@ -172,8 +178,6 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                             json=jsonable_encoder(parameters))
 
         else:
-            return
-            # TODO route from settings
             response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
                             params=dict({'service_uuid': service_uuid,
                                          'feature_identifier': property_or_command[1],
@@ -202,9 +206,20 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                 client.write_points(points, retention_policy=database.retention_policy)
             else:
                 websocket_uuid = response.json()
-                # receive data from websocket and save it to database
+                scheduler.add_job(start_websocket_handling, args=[websocket_uuid])
         except Exception as e:
             print(e)
+
+
+def start_websocket_handling(websocket_uuid):
+    asyncio.run(handle_websocket_data(websocket_uuid))
+
+
+async def handle_websocket_data(websocket_uuid):
+    async with websockets.connect("ws://localhost:82/api/v1/sm_functions/ws/observable/" + websocket_uuid) as websocket:
+        await websocket.send(websocket_uuid)
+        async for message in websocket:
+            print(message)
 
 
 def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
