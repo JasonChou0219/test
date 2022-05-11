@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import List, Tuple, Any
 
@@ -41,7 +42,8 @@ def start_data_acquisition_for_job(
         interval_to_non_meta_and_unobservable_properties_and_commands = {}
         non_meta_and_observable_commands_and_properties = []
         meta_and_unobservable_commands_and_properties = []
-        meta_and_observable_commands_and_properties = []
+        meta_and_observable_commands = []
+        meta_and_observable_properties = []
 
         # TODO observables
         for feature in protocol.service.features:
@@ -51,7 +53,7 @@ def start_data_acquisition_for_job(
                     if not command.observable:
                         meta_and_unobservable_commands_and_properties.append((command, feature.identifier))
                     else:
-                        meta_and_observable_commands_and_properties.append((command, feature.identifier))
+                        meta_and_observable_commands.append((command, feature.identifier))
                 elif command.observable:
                     non_meta_and_observable_commands_and_properties.append((command, feature.identifier))
                 else:
@@ -64,7 +66,7 @@ def start_data_acquisition_for_job(
                     if not property.observable:
                         meta_and_unobservable_commands_and_properties.append((property, feature.identifier))
                     else:
-                        meta_and_observable_commands_and_properties.append((property, feature.identifier))
+                        meta_and_observable_properties.append((property, feature.identifier))
                 elif property.observable:
                     non_meta_and_observable_commands_and_properties.append((property, feature.identifier))
                 else:
@@ -88,9 +90,16 @@ def start_data_acquisition_for_job(
                           args=[meta_and_unobservable_commands_and_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
 
         # Run data acquisition for non-meta observable commands and properties
-        scheduler.add_job(save_observable_data,
-                          args=[non_meta_and_observable_commands_and_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
+#        scheduler.add_job(save_observable_data,
+#                          args=[non_meta_and_observable_commands_and_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
 
+        # Run data acquisition for meta observable properties
+        scheduler.add_job(save_unobservable_data,
+                          args=[meta_and_observable_properties, job_id, protocol.id, protocol.service.uuid, owner_id, database])
+
+        # Run data acquisition for meta observable commands
+#        scheduler.add_job(save_meta_observable_command_data,
+#                          args=[meta_and_observable_commands, job_id, protocol.id, protocol.service.uuid, owner_id, database])
 
         # Save custom data
         scheduler.add_job(save_custom_data,
@@ -206,20 +215,33 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                 client.write_points(points, retention_policy=database.retention_policy)
             else:
                 websocket_uuid = response.json()
-                scheduler.add_job(start_websocket_handling, args=[websocket_uuid])
+                scheduler.add_job(start_websocket_handling, args=[websocket_uuid, client, point, database.retention_policy])
         except Exception as e:
             print(e)
 
 
-def start_websocket_handling(websocket_uuid):
-    asyncio.run(handle_websocket_data(websocket_uuid))
+def start_websocket_handling(websocket_uuid, client, point, retention_policy):
+    asyncio.run(handle_websocket_data(websocket_uuid, client, point, retention_policy))
 
 
-async def handle_websocket_data(websocket_uuid):
-    async with websockets.connect("ws://localhost:82/api/v1/sm_functions/ws/observable/" + websocket_uuid) as websocket:
+async def handle_websocket_data(websocket_uuid, client, point, retention_policy):
+    async with websockets.connect("ws://service-manager:82/api/v1/sm_functions/ws/observable/" + websocket_uuid) as websocket:
         await websocket.send(websocket_uuid)
         async for message in websocket:
-            print(message)
+            message_as_json = json.loads(message)
+            if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
+                import logging
+                logging.info(message_as_json[next(iter(message_as_json))]['intermediate_response'])
+                print(message_as_json[next(iter(message_as_json))]['intermediate_response'])
+                point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
+            else:
+                import logging
+                logging.info(message_as_json[next(iter(message_as_json))]['response'])
+                print(message_as_json[next(iter(message_as_json))]['response'])
+                point['fields'] = message_as_json[next(iter(message_as_json))]['response']
+            point['time'] = datetime.now()
+            points = [point]
+            client.write_points(points, retention_policy=retention_policy)
 
 
 def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
@@ -245,6 +267,73 @@ def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
         print(e)
 
 
+def save_meta_observable_command_data(commands, job_id, protocol_id, service_uuid, owner_id, database):
+    for command in commands:
+        parameters = {}
+        for parameter in command[0].parameters:
+            parameters[parameter.identifier] = parameter.value
+        # Convert parameters to appropriate types
+        for parameter_name in parameters.keys():
+            if str(parameters[parameter_name]).lower() in ["true", "false"]:
+                parameters[parameter_name] = True if str(parameters[parameter_name]).lower() == "true" else False
+            if str(parameters[parameter_name]).isdecimal():  # Floats are not supported by REST query parameters
+                parameters[parameter_name] = int(parameters[parameter_name])
+
+        response = post("http://service-manager:82/api/v1/sm_functions/observable",
+                        params=dict({'service_uuid': service_uuid,
+                                     'feature_identifier': command[1],
+                                     'function_identifier': command[0].identifier}),
+                        json=jsonable_encoder(parameters))
+
+        try:
+            client = InfluxDBClient(host=database.address,
+                                    port=database.port,
+                                    username=database.username,
+                                    password=database.password,
+                                    database=database.name)
+            client.create_database(database.name)
+            point = {}
+            tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': command[1], 'command': command[0].identifier, 'owner': owner_id, 'parameters': parameters}
+            point['measurement'] = 'data-acquisition'
+            point['tags'] = tags
+            point['time'] = datetime.now()
+
+            if not response:
+                point['fields'] = {'error': response.json()['detail']}
+                points = [point]
+                client.write_points(points, retention_policy=database.retention_policy)
+            else:
+                websocket_uuid = response.json()
+                scheduler.add_job(start_websocket_handling_for_meta_observable_command, args=[websocket_uuid, client, point, database.retention_policy])
+        except Exception as e:
+            print(e)
+
+
+def start_websocket_handling_for_meta_observable_command(websocket_uuid, client, point, retention_policy):
+    asyncio.run(handle_websocket_data_meta_observable_command(websocket_uuid, client, point, retention_policy))
+
+
+async def handle_websocket_data_meta_observable_command(websocket_uuid, client, point, retention_policy):
+    async with websockets.connect("ws://service-manager:82/api/v1/sm_functions/ws/observable/" + websocket_uuid) as websocket:
+        await websocket.send(websocket_uuid)
+        async for message in websocket:
+            message_as_json = json.loads(message)
+            if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
+                import logging
+                logging.info(message_as_json[next(iter(message_as_json))]['intermediate_response'])
+                print(message_as_json[next(iter(message_as_json))]['intermediate_response'])
+                point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
+            else:
+                import logging
+                logging.info(message_as_json[next(iter(message_as_json))]['response'])
+                print(message_as_json[next(iter(message_as_json))]['response'])
+                point['fields'] = message_as_json[next(iter(message_as_json))]['response']
+            await websocket.close()
+            point['time'] = datetime.now()
+            points = [point]
+            client.write_points(points, retention_policy=retention_policy)
+
+
 @router.get("/{job_id}/stop_data_acquisition", response_model=None)
 def stop_data_acquisition_for_job(
         *,
@@ -258,6 +347,6 @@ def stop_data_acquisition_for_job(
     if job_id in job_id_to_data_acquisition_job.keys():
         for job in job_id_to_data_acquisition_job[job_id]:
             job.remove()
-    del job_id_to_data_acquisition_job[job_id]
+        del job_id_to_data_acquisition_job[job_id]
 
     return

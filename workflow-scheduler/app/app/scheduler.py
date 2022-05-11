@@ -19,10 +19,11 @@ from app.schemas import ScheduledJob, ScheduledJobUpdate
 from app.models import ScheduledJob
 from app.util import docker_helper
 from app.util.data_directories import TEMP_DIRECTORY
+from app.core.config import settings
 
 from apscheduler import events
 from apscheduler.schedulers.background import BackgroundScheduler
-from requests import post
+from requests import post, get
 
 
 class ProcessStatusEventType(IntEnum):
@@ -85,6 +86,19 @@ def change_job_status(job_id: int, status: JobStatus):
     updated_scheduled_job.job_status = scheduled_jobs[job_id].status
     crud.scheduled_job.update(db=db, db_obj=original_scheduled_job, obj_in=jsonable_encoder(updated_scheduled_job))
     logging.info('Successfully updated ScheduledJob Status')
+    if status == JobStatus.FINISHED_SUCCESSFUL or status == JobStatus.FINISHED_ERROR or status == JobStatus.FINISHED_MANUALLY:
+        get(f"http://sila2_manager_data-acquisition_1:86/api/v1/data_acquisition/{job_id}/stop_data_acquisition")
+        job = crud.job.get(db=db, id=job_id)
+        if job.dataflow_path is not None:
+            url = "https://" + settings.KNIME_SERVER_HOST + ":" + str(settings.KNIME_SERVER_PORT) \
+                  + "/knime/rest/v4/repository" + job.dataflow_path + ":execution"
+            response = get(
+                url, auth=(settings.KNIME_SERVER_USER, settings.KNIME_SERVER_PASSWORD),
+                verify=False
+            )
+            print('ccc\nccc\nccc')
+            print(response.json())
+            print('ddd\nddd\nddd')
 
 
 def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):

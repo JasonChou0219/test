@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { format } from 'date-fns';
 
-import {JobService, WorkflowEditorService, AccountService, DatabaseService, ProtocolService} from '@app/_services';
+import {JobService, WorkflowEditorService, AccountService, DatabaseService, ProtocolService, DataflowService} from '@app/_services';
 import {JobInfo, DatabaseInfo, WorkflowInfo, ServiceInfo, DataflowInfo, WorkflowInfoList, WorkflowInfoTuple, WorkflowInfoTupleList, ProtocolInfo } from '@app/_models';
 
 // Import mocked data
@@ -19,7 +19,7 @@ export class JobsMenuCreateComponent implements OnInit {
     databases: DatabaseInfo[] = [];
     services: ServiceInfo[] = [];
     workflows: WorkflowInfo[];  // WorkflowInfo
-    dataflows: DataflowInfo[] = [];
+    dataflows = [];
     protocols: ProtocolInfo[] = [];
 
     selectedProtocol: ProtocolInfo;
@@ -33,6 +33,7 @@ export class JobsMenuCreateComponent implements OnInit {
         private accountService: AccountService,
         private databaseService: DatabaseService,
         private protocolService: ProtocolService,
+        private dataflowService: DataflowService,
     ) {
         const now = new Date();
         const today = now.getDate();
@@ -52,6 +53,7 @@ export class JobsMenuCreateComponent implements OnInit {
             workflows: [],  // [Tuple(int, str, datetime)] --> []Tuple(workflow_id, workflow_type, workflow_execute_at)]
             database: '',  // Tuple(int, str, datetime) --> Tuple(database_id, database_type)
             list_protocol_and_database: [],
+            dataflow_path: null,
             // dataflows: {data: null},  // [Tuple(int, str, datetime)] --> [Tuple(dataflow_id, dataflow_type, dataflow_execute_at)]
             // data_protocols: null  // [Tuple(int, str, datetime)] -->
             // [Tuple(data_protocol_id, data_protocol_type, data_protocol_execute_at)]
@@ -95,13 +97,21 @@ export class JobsMenuCreateComponent implements OnInit {
         });
   }
 
+  async getDataflows() {
+        this.dataflows = await (
+            await this.dataflowService.getDataflowList()
+        ).map((dataflowInfo) => {
+            return dataflowInfo
+        });
+  }
+
   async ngOnInit() {
     console.log(this.jobInfo)
     this.services = mockServiceInfoList
-    this.dataflows = mockDataflowInfoList
     await this.getProtocols();
     await this.getDatabases()
     await this.getWorkflows()
+    await this.getDataflows()
   }
 
   addProtocolInfoAndDatabaseInfo() {
