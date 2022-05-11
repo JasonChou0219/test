@@ -96,9 +96,6 @@ def change_job_status(job_id: int, status: JobStatus):
                 url, auth=(settings.KNIME_SERVER_USER, settings.KNIME_SERVER_PASSWORD),
                 verify=False
             )
-            print('ccc\nccc\nccc')
-            print(response.json())
-            print('ddd\nddd\nddd')
 
 
 def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
