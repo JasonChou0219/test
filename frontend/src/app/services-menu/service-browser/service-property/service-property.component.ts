@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {SilaProperty} from '@app/_models';
+import {ServiceService} from '@app/_services';
 
 @Component({
     selector: 'app-service-property',
@@ -19,9 +20,22 @@ export class ServicePropertyComponent implements OnInit {
     featureVersionMajor: number;
     @Input()
     serviceUUID: string;
-    returnValues: [] = [];
+    returnValues = [];
     execute = '';
     expand = false;
+
+    constructor(private serviceService: ServiceService) {}
+
     ngOnInit(): void {
+    }
+
+    async getProperty(propertyIdentifier: string) {
+           const result = await this.serviceService.getFeaturePropertyResponse(
+                this.serviceUUID,
+                this.featureIdentifier,
+                propertyIdentifier
+            )
+
+           this.returnValues.push(result.response[propertyIdentifier])
     }
 }

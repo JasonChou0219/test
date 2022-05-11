@@ -75,6 +75,12 @@ export interface SilaCommandResponse{
     data_type: SilaDataType
 }
 
+export interface SilaFunctionResponse {
+    feature_identifier: string
+    function_identifier: string
+    response: {}
+}
+
 export interface SilaDefinedExecutionError{
     identifier: string
     display_name: string
@@ -101,7 +107,7 @@ export interface Service {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
     uuid?: string;
-    service_uuid: string;
+    server_uuid: string;
     name: string;
     type: string;
     address: string;

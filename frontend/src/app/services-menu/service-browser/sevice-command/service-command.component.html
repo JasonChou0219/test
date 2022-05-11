@@ -38,19 +38,30 @@
                             </div>
                         </div>
                         <div>
-                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Set value</mat-label>
                                 <input
                                     matInput
-                                    type="text"
-                                    [(ngModel)]="paramValues[i].value"
+                                    [(ngModel)]="paramValues[i]"
                                 />
 
-                            </mat-form-field> -->
+                            </mat-form-field>
                         </div>
                     </div>
                 </div>
+                <mat-form-field class="input-json">
+                    <textarea
+                        placeholder="POST JSON"
+                        matInput
+                        matTextareaAutosize
+                        matAutosizeMinRows=3
+                        matAutosizeMaxRows=10
+                        disabled
+                        [(ngModel)]= "inputJSON"
+                    >
+                    </textarea>
+
+                </mat-form-field>
             </div>
             <div class="section-title">Responses</div>
             <div class="section-content">
@@ -61,6 +72,7 @@
                     <div class="params">
                         <div>
                             <div>
+                                <mat-checkbox class="param-response-select" [(ngModel)]=selected[j] color="primary"> </mat-checkbox>
                                 <span class="param-name">{{
                                     response.identifier
                                 }}</span>
@@ -73,7 +85,6 @@
                             </div>
                         </div>
                         <div>
-                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Return value</mat-label>
                                 <input
@@ -81,59 +92,56 @@
                                     disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value="{{this.returnValues[j].value}}"
+                                    value="{{this.returnValues[j]}}"
                                 />
                             </mat-form-field>
-                            -->
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="section-title">Usage</div>
-            <div class="section-content example-code">
-                <!--
-                <code>
-                    response =
-                    <span class="python-object">yourObject</span>.<span
-                        class="python-function"
-                        >call_command</span
-                    >(<span class="python-string"
-                        >"{{ featureIdentifier }}"</span
-                    >,<span class="python-string"
-                        >"{{ command.identifier }}"</span
-                    >,parameters: {{ '{' }}
+            <!-- <div class="section-title">Usage</div>
+                 <div class="section-content example-code">
+                       <code>
+                           response =
+                           <span class="python-object">yourObject</span>.<span
+                               class="python-function"
+                               >call_command</span
+                           >(<span class="python-string"
+                               >"{{ featureIdentifier }}"</span
+                           >,<span class="python-string"
+                               >"{{ command.identifier }}"</span
+                           >,parameters: {{ '{' }}
 
-                    <ng-container
-                        *ngFor="
-                            let param of command.parameters;
-                            index as i;
-                            let last = last
-                        "
-                    >
-                        <span class="python-string"
-                            >"{{ param.identifier }}/{{ param.data_type }}"</span
-                        >:
-                        <ng-container
-                            *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
-                        >
+                           <ng-container
+                               *ngFor="
+                                   let param of command.parameters;
+                                   index as i;
+                                   let last = last
+                               "
+                           >
+                               <span class="python-string"
+                                   >"{{ param.identifier }}/{{ param.data_type }}"</span
+                               >:
+                               <ng-container
+                                   *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
+                               >
 
-                            <span class="python-string">
-                                "{{ paramValues[i].value }}"
-                            </span>
+                                   <span class="python-string">
+                                       "{{ paramValues[i].value }}"
+                                   </span>
 
-                        </ng-container>
+                               </ng-container>
 
-                        <ng-template #noString>
-                            {{ paramValues[i].value }}
-                        </ng-template>
-                        <ng-container *ngIf="!last">, </ng-container>
-                    </ng-container>
-                    {{ '}' }})
-                </code>
-                -->
-            </div>
+                               <ng-template #noString>
+                                   {{ paramValues[i].value }}
+                               </ng-template>
+                               <ng-container *ngIf="!last">, </ng-container>
+                           </ng-container>
+                           {{ '}' }})
+                       </code>
+
+                   </div> -->
             <div>
-                <!---
                 <button
                     mat-flat-button
                     color="primary"
@@ -142,7 +150,6 @@
                 >
                     Run
                 </button>
-                -->
             </div>
         </div>
     </div>

@@ -8,7 +8,7 @@ import {
     Service,
     ServiceFeature,
     ServiceFeatureList,
-    ServiceStatus, SilaCommand, SilaDefinedExecutionError, SilaFeatureInfo, SilaProperty,
+    ServiceStatus, SilaCommand, SilaDefinedExecutionError, SilaFeatureInfo, SilaFunctionResponse, SilaProperty,
     SilaServerInfo,
     SilaServiceInfo
 } from '@app/_models';
@@ -136,9 +136,9 @@ export class ServiceService {
 
         let queryParams = new HttpParams();
         queryParams = queryParams.append('client_ip', ip)
-        queryParams = queryParams.append('client_port', port.toString())
-        if (reset) {  queryParams = queryParams.append('reset', reset.toString()) }
-        if (encrypted)  { queryParams = queryParams.append('encrypted', encrypted.toString()) }
+        queryParams = queryParams.append('client_port', port)
+        if (reset) {  queryParams = queryParams.append('reset', reset) }
+        if (encrypted)  { queryParams = queryParams.append('encrypted', encrypted) }
         return this.http
             .get(`${env.apiUrl}/api/v1/functions/connect`, {params: queryParams})
             .toPromise()
@@ -179,6 +179,7 @@ export class ServiceService {
     async browseFeatureDefinitions(uuid: string) {
         let queryParams = new HttpParams();
         queryParams = queryParams.append('service_uuid', uuid)
+
         return this.http
             .get<[SilaFeatureInfo]>(`${env.apiUrl}/api/v1/functions/browse_features`, {params: queryParams})
             .toPromise()
@@ -187,6 +188,40 @@ export class ServiceService {
     async browseParsedFeatureDefiniton(uuid: string) {
         const result = await this.browseFeatureDefinitions(uuid)
         return this.parseFeatureDefiniton(result);
+    }
+
+    async getFeaturePropertyResponse(uuid: string, featureIdentifier: string, functionIdentifier: string) {
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+        queryParams = queryParams.append('feature_identifier', featureIdentifier)
+        queryParams = queryParams.append('function_identifier', functionIdentifier)
+
+
+        return this.http
+            .post<SilaFunctionResponse>(`${env.apiUrl}/api/v1/functions/unobservable`, {}, {params: queryParams})
+            .toPromise()
+    }
+
+    async getFeatureCommandResponse(uuid: string,
+                                    featureIdentifier: string,
+                                    functionIdentifier: string,
+                                    body: JSON,
+                                    responseIdentifiers?: any) {
+
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+        queryParams = queryParams.append('feature_identifier', featureIdentifier)
+        queryParams = queryParams.append('function_identifier', functionIdentifier)
+
+        if (responseIdentifiers) {
+            for (const responseIdentifier of responseIdentifiers){
+                queryParams.append('response_identifiers', responseIdentifier)
+            }
+        }
+
+        return this.http
+            .post<SilaFunctionResponse>(`${env.apiUrl}/api/v1/functions/unobservable`, body, {params: queryParams})
+            .toPromise()
     }
 
     async getServiceLog(param?: {
