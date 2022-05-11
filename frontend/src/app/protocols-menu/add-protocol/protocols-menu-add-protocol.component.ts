@@ -6,7 +6,7 @@ import {
     Service,
     ServiceCommand,
     ServiceFeature,
-    ServiceProperty, SilaServiceInfo
+    ServiceProperty, SilaFeatureInfo, SilaServiceInfo
 } from '@app/_models';
 import { ProtocolService, ServiceService } from '@app/_services';
 import { Router } from '@angular/router';
@@ -20,7 +20,7 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
     protocolInfo: ProtocolInfo;
     services: SilaServiceInfo[];
     selectedService: SilaServiceInfo;
-    availableFeatures: ServiceFeature[];
+    availableFeatures: SilaFeatureInfo[];
 
     selectedFeatureForCommand: ServiceFeature;
     selectedCommand: ServiceCommand;
@@ -62,7 +62,7 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
     }
 
     async selectService() {
-        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
+        this.availableFeatures = await this.serviceService.browseFeatureDefinitions(this.selectedService.uuid);
         this.protocolInfo.service = {
             uuid: this.selectedService.uuid,
             features: [],
@@ -100,8 +100,8 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
                     observable: this.selectedCommand.observable,
                     meta: false,
                     interval: 1,
-                    parameters: parameters,
-                    responses: responses,
+                    parameters,
+                    responses,
                 }],
                 properties: [],
             })
@@ -112,8 +112,8 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
                 observable: this.selectedCommand.observable,
                 meta: false,
                 interval: 1,
-                parameters: parameters,
-                responses: responses,
+                parameters,
+                responses,
             })
         }
         this.selectedFeatureForCommand = undefined;
@@ -160,14 +160,16 @@ export class ProtocolsMenuAddProtocolComponent implements OnInit {
 
     deleteCommand(featureIndex: number, commandIndex: number) {
         this.protocolInfo.service.features[featureIndex].commands.splice(commandIndex, 1);
-        if (this.protocolInfo.service.features[featureIndex].commands.length === 0 && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
+        if (this.protocolInfo.service.features[featureIndex].commands.length === 0
+            && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
             this.protocolInfo.service.features.splice(featureIndex, 1);
         }
     }
 
     deleteProperty(featureIndex: number, propertyIndex: number) {
         this.protocolInfo.service.features[featureIndex].properties.splice(propertyIndex, 1);
-        if (this.protocolInfo.service.features[featureIndex].commands.length === 0 && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
+        if (this.protocolInfo.service.features[featureIndex].commands.length === 0
+            && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
             this.protocolInfo.service.features.splice(featureIndex, 1);
         }
     }

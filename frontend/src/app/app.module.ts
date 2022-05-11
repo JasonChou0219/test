@@ -99,11 +99,6 @@ import {ServiceCommandComponent} from '@app/services-menu/service-browser/sevice
 import {ServicePropertyComponent} from '@app/services-menu/service-browser/service-property/service-property.component';
 import {ServiceDetailComponent} from '@app/services-menu/service-browser/service-detail/service-detail.component';
 
-import {ServiceFeatureComponent} from '@app/services-menu/service-browser/service-feature/service-feature.component';
-import {ServiceCommandComponent} from '@app/services-menu/service-browser/sevice-command/service-command.component';
-import {ServicePropertyComponent} from '@app/services-menu/service-browser/service-property/service-property.component';
-import {ServiceDetailComponent} from '@app/services-menu/service-browser/service-detail/service-detail.component';
-
 import { ProtocolsMenuAddProtocolComponent } from './protocols-menu/add-protocol/protocols-menu-add-protocol.component';
 import { ProtocolsMenuOverviewComponent } from './protocols-menu/overview/protocols-menu-overview.component';
 import { ProtocolsMenuUpdateProtocolComponent } from './protocols-menu/update-protocol/protocols-menu-update-protocol.component';

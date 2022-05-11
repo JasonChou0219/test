@@ -5,7 +5,7 @@ import {
     Service,
     ServiceCommand,
     ServiceFeature,
-    ServiceProperty, SilaServiceInfo
+    ServiceProperty, SilaFeatureInfo, SilaServiceInfo
 } from '@app/_models';
 import { ProtocolService, ServiceService } from '@app/_services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,7 +21,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     protocolInfo: ProtocolInfo;
     services: SilaServiceInfo[];
     selectedService: SilaServiceInfo;
-    availableFeatures: ServiceFeature[];
+    availableFeatures: SilaFeatureInfo[];
 
     selectedFeatureForCommand: ServiceFeature;
     selectedCommand: ServiceCommand;
@@ -74,7 +74,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
         await this.getMatchingService();
 
         if (! (this.selectedService == null)) {
-            this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
+            this.availableFeatures = await this.serviceService.browseFeatureDefinitions(this.selectedService.uuid);
         }
     }
 
@@ -96,7 +96,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     }
 
     async selectService() {
-        this.availableFeatures = await this.serviceService.getServiceFeatures(this.selectedService.uuid);
+        this.availableFeatures = await this.serviceService.browseParsedFeatureDefiniton(this.selectedService.uuid);
         this.protocolInfo.service = {
             uuid: this.selectedService.uuid,
             features: [],
@@ -194,14 +194,16 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
 
     deleteCommand(featureIndex: number, commandIndex: number) {
         this.protocolInfo.service.features[featureIndex].commands.splice(commandIndex, 1);
-        if (this.protocolInfo.service.features[featureIndex].commands.length === 0 && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
+        if (this.protocolInfo.service.features[featureIndex].commands.length === 0
+            && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
             this.protocolInfo.service.features.splice(featureIndex, 1);
         }
     }
 
     deleteProperty(featureIndex: number, propertyIndex: number) {
         this.protocolInfo.service.features[featureIndex].properties.splice(propertyIndex, 1);
-        if (this.protocolInfo.service.features[featureIndex].commands.length === 0 && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
+        if (this.protocolInfo.service.features[featureIndex].commands.length === 0
+            && this.protocolInfo.service.features[featureIndex].properties.length === 0) {
             this.protocolInfo.service.features.splice(featureIndex, 1);
         }
     }
