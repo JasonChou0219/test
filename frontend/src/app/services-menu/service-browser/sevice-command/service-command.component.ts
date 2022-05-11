@@ -55,6 +55,7 @@ export class ServiceCommandComponent implements OnInit {
 
     async callCommand(functionIdentifier: string) {
 
+        this.returnValues = []
         this.inputJSON = "{" + "\n"
 
         const last = this.command.parameters[this.command.parameters.length - 1]
