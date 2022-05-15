@@ -11,6 +11,7 @@ from requests import post
 from sqlalchemy.orm import Session
 import asyncio
 import websockets
+import logging
 
 from app import crud, models, schemas
 from app.api import deps
@@ -45,7 +46,6 @@ def start_data_acquisition_for_job(
         meta_and_observable_commands = []
         meta_and_observable_properties = []
 
-        # TODO observables
         for feature in protocol.service.features:
             # Separate commands into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
             for command in feature.commands:
@@ -164,7 +164,7 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
 
             client.write_points(points, retention_policy=database.retention_policy)
         except Exception as e:
-            print(e)
+            logging.info(e)
 
 
 def save_observable_data(properties_and_commands, job_id, protocol_id, service_uuid, owner_id, database):
@@ -217,7 +217,7 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                 websocket_uuid = response.json()
                 scheduler.add_job(start_websocket_handling, args=[websocket_uuid, client, point, database.retention_policy])
         except Exception as e:
-            print(e)
+            logging.info(e)
 
 
 def start_websocket_handling(websocket_uuid, client, point, retention_policy):
@@ -230,14 +230,8 @@ async def handle_websocket_data(websocket_uuid, client, point, retention_policy)
         async for message in websocket:
             message_as_json = json.loads(message)
             if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
-                import logging
-                logging.info(message_as_json[next(iter(message_as_json))]['intermediate_response'])
-                print(message_as_json[next(iter(message_as_json))]['intermediate_response'])
                 point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
             else:
-                import logging
-                logging.info(message_as_json[next(iter(message_as_json))]['response'])
-                print(message_as_json[next(iter(message_as_json))]['response'])
                 point['fields'] = message_as_json[next(iter(message_as_json))]['response']
             point['time'] = datetime.now()
             points = [point]
@@ -264,7 +258,7 @@ def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
 
         client.write_points(points, retention_policy=database.retention_policy)
     except Exception as e:
-        print(e)
+        logging.info(e)
 
 
 def save_meta_observable_command_data(commands, job_id, protocol_id, service_uuid, owner_id, database):
@@ -306,7 +300,7 @@ def save_meta_observable_command_data(commands, job_id, protocol_id, service_uui
                 websocket_uuid = response.json()
                 scheduler.add_job(start_websocket_handling_for_meta_observable_command, args=[websocket_uuid, client, point, database.retention_policy])
         except Exception as e:
-            print(e)
+            logging.info(e)
 
 
 def start_websocket_handling_for_meta_observable_command(websocket_uuid, client, point, retention_policy):
@@ -319,14 +313,8 @@ async def handle_websocket_data_meta_observable_command(websocket_uuid, client, 
         async for message in websocket:
             message_as_json = json.loads(message)
             if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
-                import logging
-                logging.info(message_as_json[next(iter(message_as_json))]['intermediate_response'])
-                print(message_as_json[next(iter(message_as_json))]['intermediate_response'])
                 point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
             else:
-                import logging
-                logging.info(message_as_json[next(iter(message_as_json))]['response'])
-                print(message_as_json[next(iter(message_as_json))]['response'])
                 point['fields'] = message_as_json[next(iter(message_as_json))]['response']
             await websocket.close()
             point['time'] = datetime.now()

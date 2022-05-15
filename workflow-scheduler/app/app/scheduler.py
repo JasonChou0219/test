@@ -87,15 +87,22 @@ def change_job_status(job_id: int, status: JobStatus):
     crud.scheduled_job.update(db=db, db_obj=original_scheduled_job, obj_in=jsonable_encoder(updated_scheduled_job))
     logging.info('Successfully updated ScheduledJob Status')
     if status == JobStatus.FINISHED_SUCCESSFUL or status == JobStatus.FINISHED_ERROR or status == JobStatus.FINISHED_MANUALLY:
-        get(f"http://sila2_manager_data-acquisition_1:86/api/v1/data_acquisition/{job_id}/stop_data_acquisition")
-        job = crud.job.get(db=db, id=job_id)
+        try:
+            get(f"http://sila2_manager_data-acquisition_1:86/api/v1/data_acquisition/{job_id}/stop_data_acquisition")
+        except Exception as e:
+            logging.info(e)
+        job = crud.scheduled_job.get(db=db, id=job_id)
         if job.dataflow_path is not None:
             url = "https://" + settings.KNIME_SERVER_HOST + ":" + str(settings.KNIME_SERVER_PORT) \
                   + "/knime/rest/v4/repository" + job.dataflow_path + ":execution"
-            response = get(
-                url, auth=(settings.KNIME_SERVER_USER, settings.KNIME_SERVER_PASSWORD),
-                verify=False
-            )
+            try:
+                get(
+                    url, auth=(settings.KNIME_SERVER_USER, settings.KNIME_SERVER_PASSWORD),
+                    verify=False,
+                    timeout=1
+                )
+            except Exception as e:
+                logging.info(e)
 
 
 def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):

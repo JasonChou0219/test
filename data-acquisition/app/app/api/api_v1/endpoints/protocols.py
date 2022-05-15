@@ -85,8 +85,6 @@ def update_protocol(
     check_protocol(protocol_in, user)
     execute_commands_and_properties(protocol_in)
 
-    # TODO do not allow to modify service?
-
     protocol = crud.protocol.get(db=db, id=id)
     if not protocol:
         raise HTTPException(status_code=404, detail="Protocol not found")
@@ -294,7 +292,6 @@ def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol
 def check_protocol(protocol: models.Protocol, user: models.User):
     user_dict = jsonable_encoder(user)
 
-    # TODO In the future this will be used through the backend gateway, and not directly from the service manager
     response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
 
     if not response:

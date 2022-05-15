@@ -14,20 +14,6 @@ import {
 } from '@app/_models';
 
 
-const test_service_1: Service = {
-    uuid: '0123-2445-22222221-34535235-223423',
-    server_uuid: '1111-22222-3333-4444-5555-666',
-    name: 'Test Service',
-    type: 'Test Type',
-    address: '127.0.0.1',
-    port: 50051,
-    available: true,
-    user: 1,
-    databaseId: 1,
-    dataHandlerActive: false,
-    }
-
-
 const test_service_1_status: ServiceStatus = {
     online: true,
     status: 'Available',
