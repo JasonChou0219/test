@@ -96,7 +96,7 @@ export class ProtocolsMenuUpdateProtocolComponent implements OnInit {
     }
 
     async selectService() {
-        this.availableFeatures = await this.serviceService.browseParsedFeatureDefiniton(this.selectedService.uuid);
+        this.availableFeatures = await this.serviceService.browseParsedFeatureDefinition(this.selectedService.uuid);
         this.protocolInfo.service = {
             uuid: this.selectedService.uuid,
             features: [],

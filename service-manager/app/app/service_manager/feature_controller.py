@@ -1,4 +1,3 @@
-from multiprocessing.pool import ThreadPool
 from typing import List, Dict, Union
 
 from sila2.client import SilaClient
@@ -30,17 +29,24 @@ class FeatureController:
     def get_feature_by_identifier(self, identifier: str):
         return self.features[identifier]
 
+    def get_observable_instance(self,
+                                feature_identifier: str,
+                                function_identifier: str,
+                                parameters: Union[Dict, List] = None):
+        function_object = getattr(vars(self.sila_client)[feature_identifier],
+                                  function_identifier)
+        if parameters:
+            return function_object(**parameters)
+        else:
+            return function_object
+
     def run_function(self,
                      feature_identifier: str,
                      function_identifier: str,
                      response_identifiers: List[str] = None,
                      parameters: Union[Dict, List] = None):
 
-        property_list = []
-        for prop in self.features[feature_identifier].properties:
-            property_list.append(prop.identifier)
-
-        is_property = function_identifier in property_list
+        is_property = self.function_is_property(feature_identifier, function_identifier)
 
         try:
             response = getattr(vars(self.sila_client)[feature_identifier], function_identifier)
@@ -50,12 +56,6 @@ class FeatureController:
         response_values = {}
 
         if is_property:
-            # if is_observable:
-                # how to cancel
-            #    response_stream = response.subscribe()
-             #   for value in response_stream:
-              #      print(value)
-
             if response_identifiers:
                 if response_identifiers is not None:
                     raise ValueError("ExecutionError: SiLA-Property expects no response identifier")
@@ -65,17 +65,6 @@ class FeatureController:
                 command_response = response(**parameters)
             else:
                 command_response = response(*parameters)
-            #if is_observable:
-             #   response_stream = command_response.subscribe_intermediate_responses()
-
-                # might need a flip around for user canceling
-              #  while not command_response.done:
-               #     for value in response_stream:
-                #        print("Value:", value)
-
-                #response_stream.cancel()
-                #command_response = command_response.get_responses()
-
             response_identifier_all = []
 
             for command in self.features[feature_identifier].commands:
@@ -93,38 +82,9 @@ class FeatureController:
 
         return response_values
 
-
-# TODO ObservableTest
-# TODO reimplement with DB
-
-    """
-    pool = ThreadPool()
-    # TODO from Threading, Event, Queue?
-    timer = pool.apply_async(run_function, (client, 'TimerProvider', 'Countdown', False, True,
-                                            ["Timestamp"], [10, "Hello SILA"]))
-    greeting = pool.apply_async(run_function, (client, "GreetingProvider", "SayHello", False, False,
-                                               ["Greeting"], ["World"]))
-    start_year = pool.apply_async(run_function, (client, "GreetingProvider", "StartYear", True, False))
-
-    current_day_time = pool.apply_async(run_function, (client, "TimerProvider", "CurrentTime", True, False))
-
-    current_day_time_sub = pool.apply_async(run_function, (client, "TimerProvider", "CurrentTime", True, True))
-
-    print(f"Server says '{greeting.get()[0]}' and was started in the year {start_year.get()}")
-
-    print(f"Server finished at {timer.get()}")
-
-    print(f"Current DayTime {current_day_time.get()}")
-
-
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future = [executor.submit(run_function, client, 'TimerProvider', 'Countdown', False, True,
-                                 ["Timestamp"], [1000000, "Hello SILA"]),
-        run_function(client, "GreetingProvider", "SayHello", False, False, ["Greeting"], ["World"]),
-        run_function(client, "GreetingProvider", "StartYear", True, False)]
-
-        timestamp = future[0].result()
-        greeting = future[1]
-        start_year = future[2]
-"""
+    def function_is_property(self, feature_identifier, function_identifier):
+        property_list = []
+        for prop in self.features[feature_identifier].properties:
+            property_list.append(prop.identifier)
+        is_property = function_identifier in property_list
+        return is_property

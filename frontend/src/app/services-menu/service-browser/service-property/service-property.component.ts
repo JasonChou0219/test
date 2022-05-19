@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {SilaProperty} from '@app/_models';
 import {ServiceService} from '@app/_services';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-service-property',
@@ -23,6 +24,9 @@ export class ServicePropertyComponent implements OnInit {
     returnValues = [];
     execute = '';
     expand = false;
+    subscription: Subscription
+    isRunning = false;
+
 
     constructor(private serviceService: ServiceService) {}
 
@@ -30,12 +34,38 @@ export class ServicePropertyComponent implements OnInit {
     }
 
     async getProperty(propertyIdentifier: string) {
-           const result = await this.serviceService.getFeaturePropertyResponse(
+        this.returnValues = []
+
+        const result = await this.serviceService.getUnobservableFeaturePropertyResponse(
                 this.serviceUUID,
                 this.featureIdentifier,
                 propertyIdentifier
             )
 
-           this.returnValues.push(result.response[propertyIdentifier])
+        this.returnValues.push(result.response[propertyIdentifier])
+    }
+
+    async toggleObservable(propertyIdentifier: string) {
+        if (this.isRunning) {
+            this.isRunning = false
+            this.subscription.unsubscribe()
+            this.subscription = undefined
+            await this.serviceService.deleteObservable(propertyIdentifier)
+        }
+        else {
+            this.isRunning = true
+            const result = await this.serviceService.startObservable(
+                this.serviceUUID,
+                this.featureIdentifier,
+                propertyIdentifier
+            )
+
+            this.subscription = this.serviceService.createSocket(propertyIdentifier, result).subscribe(
+                data => {
+                    const parsedResponse = JSON.parse(data as string)
+
+                    this.returnValues[0] = parsedResponse[result].property_response.property_responses
+                })
+        }
     }
 }

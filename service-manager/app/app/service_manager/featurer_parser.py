@@ -37,6 +37,7 @@ class ClientFeatureParser:
                 command = Command()
                 command_parameter_list = []
                 command_response_list = []
+                command_intermediate_response_list = []
                 command_error_identifier_list = []
 
                 for command_props in feature_property.getchildren():
@@ -68,7 +69,7 @@ class ClientFeatureParser:
 
                         command_parameter_list.append(command_parameter)
 
-                    if 'Response' in command_props.tag:
+                    if 'Response' in command_props.tag and 'Intermediate' not in command_props.tag:
                         command_response = CommandResponse()
 
                         for command_params in command_props.getchildren():
@@ -86,12 +87,33 @@ class ClientFeatureParser:
                                         data_type.type = data_type_elems.text
                                 command_response.data_type = data_type
                         command_response_list.append(command_response)
+
+                    if 'IntermediateResponse' in command_props.tag:
+                        command_intermediate_response = CommandResponse()
+
+                        for command_params in command_props.getchildren():
+                            if 'Identifier' in command_params.tag:
+                                command_intermediate_response.identifier = command_params.text
+                            if 'DisplayName' in command_params.tag:
+                                command_intermediate_response.display_name = command_params.text
+                            if 'Description' in command_params.tag:
+                                command_intermediate_response.display_name = command_params.text
+                            if 'DataType' in command_params.tag:
+                                data_type = DataType()
+
+                                for data_type_elems in command_params.getchildren():
+                                    if 'Basic' in data_type_elems.tag:
+                                        data_type.type = data_type_elems.text
+                                command_intermediate_response.data_type = data_type
+                        command_intermediate_response_list.append(command_intermediate_response)
+
                     if 'DefinedExecutionErrors' in command_props.tag:
                         for command_error in command_props.getchildren():
                             command_error_identifier_list.append(command_error.text)
 
                 command.parameters = command_parameter_list
                 command.responses = command_response_list
+                command.intermediate_responses = command_intermediate_response_list
                 command.error_identifiers = command_error_identifier_list
                 feature_commands.append(command)
 
