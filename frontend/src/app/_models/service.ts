@@ -50,6 +50,7 @@ export interface SilaCommand {
     observable: boolean
     parameters: [SilaCommandParameter]
     responses: [SilaCommandResponse]
+    intermediate_responses: [SilaCommandResponse]
     error_identifiers: [string]
 }
 

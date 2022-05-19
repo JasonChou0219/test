@@ -65,15 +65,37 @@
             </div>
             <div>
 -->
-
-                <button
-                    mat-flat-button
-                    color="primary"
-                    aria-label="Run"
-                    (click)="getProperty(property.identifier)"
-                >
-                    Run
-                </button>
+            <div>
+                <div *ngIf="property.observable === false, else observable">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Run"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Run
+                    </button>
+                </div>
+                <ng-template #observable>
+                    <button
+                        class = "right-button"
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Get"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Run
+                    </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Start/Stop"
+                        (click)="toggleObservable(property.identifier)"
+                    >
+                        Start/Stop
+                    </button>
+                </ng-template>
+            </div>
         </div>
 
     </div>

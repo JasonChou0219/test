@@ -63,8 +63,44 @@
 
                 </mat-form-field>
             </div>
-            <div class="section-title">Responses</div>
             <div class="section-content">
+              <div *ngIf="command.observable === true">
+                  <div class="section-title">Intermediate Responses</div>
+                  <div
+                    class="param-border"
+                    *ngFor="let response of command.intermediate_responses index as k"
+                >
+                    <div class="params">
+                        <div>
+                            <div>
+                                <mat-checkbox class="param-response-select" [(ngModel)]=intermediateSelected[k] [disabled]="this.intermediateSelected.length === 1" color="primary"> </mat-checkbox>
+                                <span class="param-name">{{
+                                    response.identifier
+                                    }}</span>
+                                <span class="param-type">{{
+                                    response.data_type.type
+                                    }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ response.description }}
+                            </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Return value</mat-label>
+                                <input
+                                    matInput
+                                    disabled
+                                    type="text"
+                                    placeholder="Return value"
+                                    value="{{this.intermediateValues[k]}}"
+                                />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+              </div>
+                <div class="section-title">Responses</div>
                 <div
                     class="param-border"
                     *ngFor="let response of command.responses index as j"
@@ -72,7 +108,7 @@
                     <div class="params">
                         <div>
                             <div>
-                                <mat-checkbox class="param-response-select" [(ngModel)]=selected[j] color="primary"> </mat-checkbox>
+                                <mat-checkbox class="param-response-select" [(ngModel)]=selected[j] color="primary" [disabled]="this.selected.length === 1"> </mat-checkbox>
                                 <span class="param-name">{{
                                     response.identifier
                                 }}</span>
@@ -142,14 +178,36 @@
 
                    </div> -->
             <div>
-                <button
-                    mat-flat-button
-                    color="primary"
-                    aria-label="Run"
-                    (click)="callCommand(command.identifier)"
-                >
-                    Run
-                </button>
+                <div *ngIf="command.observable === false, else observable">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Run"
+                        (click)="callCommand(command.identifier)"
+                    >
+                        Run
+                    </button>
+                </div>
+                <ng-template #observable>
+                        <button
+                                class = "right-button"
+                                mat-flat-button
+                                color="primary"
+                                aria-label="Run new"
+                                (click)="startObservable(command.identifier)"
+                            >
+                            Run new
+                        </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Cancel"
+                        [disabled]="!observableRunning"
+                        (click)="stopObservable(command.identifier)"
+                    >
+                        Cancel
+                    </button>
+                    </ng-template>
             </div>
         </div>
     </div>
