@@ -1,9 +1,13 @@
-from typing import List, Dict, Union
+from datetime import datetime
+from typing import List, Dict, Union, Iterable, NamedTuple
 
+import sila2
 from sila2.client import SilaClient
+from sila2.framework.data_types.date import SilaDateType
 
 from app.schemas.sila_service_feature_dto import Feature
 from app.service_manager.featurer_parser import ClientFeatureParser
+from sila2.framework.abc.composite_message_mappable import CompositeMessageMappable
 
 
 class FeatureController:
@@ -59,7 +63,16 @@ class FeatureController:
             if response_identifiers:
                 if response_identifiers is not None:
                     raise ValueError("ExecutionError: SiLA-Property expects no response identifier")
-            response_values.update({str(function_identifier): response.get()})
+            property_response = response.get()
+            if hasattr(property_response, '_asdict'):
+                for name, value in property_response._asdict().items():
+                    if isinstance(value, list):
+                        for list_entry in value:
+                            if isinstance(list_entry, SilaDateType):
+                                property_response = property_response._replace(**{name:
+                                                                                      {list_entry[0].strftime('%m/%d/%Y'),
+                                                                                       str(list_entry[1])}})
+            response_values.update({str(function_identifier): property_response})
         else:
             if type(parameters) is dict:
                 command_response = response(**parameters)
@@ -78,7 +91,17 @@ class FeatureController:
             for response_id in response_identifiers:
                 if response_id not in response_identifier_all:
                     raise ValueError("ExecutionError: Client has no response identifier matching " + response_id)
-                response_values.update({str(response_id): getattr(command_response, response_id)})
+                sila_command_response = getattr(command_response, response_id)
+                if hasattr(sila_command_response, '_asdict'):
+                    for name, value in sila_command_response._asdict().items():
+                        if isinstance(value, list):
+                            for list_entry in value:
+                                if isinstance(list_entry, SilaDateType):
+                                    sila_command_response = sila_command_response._replace(**{name:
+                                                                                          {list_entry[0].strftime(
+                                                                                              '%m/%d/%Y') +
+                                                                                           str(list_entry[1])}})
+                response_values.update({str(response_id): sila_command_response})
 
         return response_values
 

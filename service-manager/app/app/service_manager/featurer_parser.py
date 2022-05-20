@@ -1,15 +1,20 @@
+import os
 from xml.etree import ElementTree
 from app.schemas import Feature, Command, CommandParameter, DataType, CommandResponse, Property, DefinedExecutionError
+import re
 
 
 class ClientFeatureParser:
     xml_string: str
+
+    data_types_dict = {}
 
     def __init__(self, xml_string: str):
         self.xml_string = xml_string
 
     def parse_xml(self):
         root = ElementTree.fromstring(self.xml_string)
+        ElementTree.register_namespace("", "http://www.sila-standard.org")
 
         feature = Feature()
         feature.feature_version = root.get('FeatureVersion')
@@ -25,6 +30,16 @@ class ClientFeatureParser:
         feature_commands = []
         feature_props_ls = []
         feature_errors = []
+
+        for elem in root.getchildren():
+            if 'DataTypeDefinition' in elem.tag:
+                definition_identifier = ""
+                for definition in elem.getchildren():
+                    if 'Identifier' in definition.tag:
+                        definition_identifier = definition.text
+                    result = self.parse_datatype(definition)
+                    self.data_types_dict.update({definition_identifier: result
+                                                 })
 
         for feature_property in root.getchildren():
             if 'Identifier' in feature_property.tag:
@@ -65,6 +80,11 @@ class ClientFeatureParser:
                                 for data_type_elems in command_params.getchildren():
                                     if 'Basic' in data_type_elems.tag:
                                         data_type.type = data_type_elems.text
+                                    elif 'DataTypeIdentifier' in data_type_elems.tag:
+                                        data_type.type = self.data_types_dict.get(data_type_elems.text)
+                                    else:
+                                        data_type.type = self.parse_datatype(data_type_elems)
+
                                 command_parameter.data_type = data_type
 
                         command_parameter_list.append(command_parameter)
@@ -85,6 +105,9 @@ class ClientFeatureParser:
                                 for data_type_elems in command_params.getchildren():
                                     if 'Basic' in data_type_elems.tag:
                                         data_type.type = data_type_elems.text
+                                    else:
+                                        data_type.type = self.parse_datatype(data_type_elems)
+
                                 command_response.data_type = data_type
                         command_response_list.append(command_response)
 
@@ -104,6 +127,8 @@ class ClientFeatureParser:
                                 for data_type_elems in command_params.getchildren():
                                     if 'Basic' in data_type_elems.tag:
                                         data_type.type = data_type_elems.text
+                                    else:
+                                        data_type.type = self.parse_datatype(data_type_elems)
                                 command_intermediate_response.data_type = data_type
                         command_intermediate_response_list.append(command_intermediate_response)
 
@@ -135,6 +160,8 @@ class ClientFeatureParser:
                         for data_type_elems in feature_props.getchildren():
                             if 'Basic' in data_type_elems.tag:
                                 data_type.type = data_type_elems.text
+                            else:
+                                data_type.type = self.parse_datatype(data_type_elems)
                         sila_property.data_type = data_type
                 feature_props_ls.append(sila_property)
 
@@ -154,3 +181,13 @@ class ClientFeatureParser:
         feature.errors = feature_errors
 
         return {feature.identifier: feature}
+
+    def parse_datatype(self, definition):
+        string = ElementTree.tostring(definition, encoding='unicode') \
+            .replace('<Structure xmlns="http://www.sila-standard.org">', '') \
+            .replace('</Structure>', '') \
+            .replace('xmlns="http://www.sila-standard.org', '')
+        replaced_left = re.sub(r'(<)', r'\n \1', string)
+        replaced_right = re.sub(r'(>)', r'\1 \n', replaced_left)
+        result = os.linesep.join([s for s in replaced_right.splitlines() if s])
+        return result
