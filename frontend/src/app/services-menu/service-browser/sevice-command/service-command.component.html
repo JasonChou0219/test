@@ -28,10 +28,12 @@
                     <div class="params">
                         <div>
                             <div>
-                                <span class="param-name">{{
-                                    param.identifier
-                                }}</span>
-                                <span class="param-type">{{ param.data_type.type }}</span>
+                                <span class="param-name"
+                                               title="{{
+                                    param.data_type.type
+                                }}  ">{{
+                                             param.identifier
+                                             }}</span>
                             </div>
                             <div class="param-desc">
                                 {{ param.description }}
@@ -74,11 +76,11 @@
                         <div>
                             <div>
                                 <mat-checkbox class="param-response-select" [(ngModel)]=intermediateSelected[k] [disabled]="this.intermediateSelected.length === 1" color="primary"> </mat-checkbox>
-                                <span class="param-name">{{
-                                    response.identifier
-                                    }}</span>
-                                <span class="param-type">{{
+                                <span class="param-name"
+                                      title="{{
                                     response.data_type.type
+                                }}  ">{{
+                                    response.identifier
                                     }}</span>
                             </div>
                             <div class="param-desc">
@@ -109,11 +111,11 @@
                         <div>
                             <div>
                                 <mat-checkbox class="param-response-select" [(ngModel)]=selected[j] color="primary" [disabled]="this.selected.length === 1"> </mat-checkbox>
-                                <span class="param-name">{{
-                                    response.identifier
-                                }}</span>
-                                <span class="param-type">{{
+                                <span class="param-name"
+                                title="{{
                                     response.data_type.type
+                                }}  ">{{
+                                    response.identifier
                                 }}</span>
                             </div>
                             <div class="param-desc">

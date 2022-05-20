@@ -1,3 +1,4 @@
+import datetime
 from typing import List, Optional, Union, Dict, Any
 from uuid import UUID
 from queue import Queue
@@ -12,6 +13,7 @@ from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 from pydantic import ValidationError, parse_obj_as
 from sila2.framework import SilaConnectionError
 from sqlalchemy.orm import Session
+from fastapi.encoders import jsonable_encoder
 
 from app import schemas, crud
 from app.api.deps import get_db
@@ -296,6 +298,8 @@ def run_function(service_uuid: str,
                                                            feature_identifier, function_identifier,
                                                            response_identifiers=response_identifiers,
                                                            parameters=params)
+        for elem in response.response.values():
+            elem = jsonable_encoder(elem)
         return response
 
     except ValidationError as validation_error:
@@ -348,9 +352,16 @@ def start_observable(service_uuid: str,
         else:
             i += 1
 
-    return client_controller.register_observable(
-        service_uuid, feature_identifier, function_identifier, named_parameters, response_identifiers, intermediate_identifiers
-    )
+    try:
+        return client_controller.register_observable(
+            service_uuid, feature_identifier, function_identifier, named_parameters, response_identifiers, intermediate_identifiers
+        )
+    except Exception as exception:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exception)
+        )
+
 
 
 class ConnectionManager:
