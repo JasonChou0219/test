@@ -4,6 +4,9 @@ import { FormBuilder } from '@angular/forms'
 import {JobService, ScheduledJobService, AccountService, WorkflowEditorService} from '@app/_services';
 import {JobInfo, JobInfoList, WorkflowInfo} from '@app/_models';
 
+export function convertDateToString(date): string {
+    return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).substr(-2)}-${('0' + (date.getDay() + 1)).substr(-2)}T${('0' + date.getHours()).substr(-2)}:${('0' + date.getMinutes()).substr(-2)}:${('0' + date.getSeconds()).substr(-2)}`
+}
 
 @Component({
   selector: 'app-jobs-menu-scheduler',
@@ -16,7 +19,8 @@ export class JobsMenuSchedulerComponent implements OnInit {
     selectedJob = null;
     jobs: JobInfo[];
     jobsShown: JobInfo[];
-    lastSearchTag: string = '';
+    lastSearchTag = '';
+
   constructor(
       private formBuilder: FormBuilder,
       private jobService: JobService,
@@ -31,7 +35,7 @@ export class JobsMenuSchedulerComponent implements OnInit {
         ]],
       });
       this.newScheduledJobInput = this.formBuilder.group({
-          executeAt: ['', [
+          executeAt: [convertDateToString(new Date()), [
              Validators.required,
              Validators.pattern('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}')
           ]],
@@ -40,8 +44,11 @@ export class JobsMenuSchedulerComponent implements OnInit {
   getSearchTagTitle(): string {
       return this.filterInput.get('searchTagTitle').value
   }
-  getScheduledJobExecutionTime(): Date {
-      return this.newScheduledJobInput.get('executeAt').value
+  getScheduledJobExecutionTime(): string {
+      const executeAt = new Date(this.newScheduledJobInput.get('executeAt').value)
+      const timeZoneOffset = executeAt.getTimezoneOffset();
+      const newExecuteAt = new Date(executeAt.getTime() + timeZoneOffset * 60 * 1000);
+      return convertDateToString(newExecuteAt)
   }
   filter(searchTag: string) {
     this.lastSearchTag = searchTag
