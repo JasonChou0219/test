@@ -139,19 +139,3 @@ def delete_scheduled_job(
             headers=scheduled_job.headers)
     scheduled_job = parse_obj_as(schemas.ScheduledJobInDB, scheduled_job.json())
     return scheduled_job
-
-
-@router.get("/{id}/stop_data_acquisition", response_model=None)
-def stop_data_acquisition_for_job(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: int,
-        current_user: models.User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Stop data acquisition for job specified by id.
-    """
-    target_route = f"{target_service_url}scheduled_jobs/{id}/stop_data_acquisition"
-    crud.scheduled_job.get(db=db, route=target_route, id=id, current_user=current_user)
-
-    return

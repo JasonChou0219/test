@@ -18,6 +18,7 @@ export interface Job {
     dataflows?: Dataflow[];
     // data_protocols?: DataProtocol[];
     list_protocol_and_database?: ProtocolAndDatabaseTuple[];
+    dataflow_path?: string;
 
     execute_at: Date;
     created_at: Date;
@@ -37,6 +38,7 @@ export interface JobInfo {
     dataflows?: DataflowInfoList;
     // data_protocols?: DataProtocolInfoList;
     list_protocol_and_database?: [number, number][];
+    dataflow_path?: string;
 
     execute_at: Date;
     created_at: Date;

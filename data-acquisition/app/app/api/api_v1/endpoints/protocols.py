@@ -85,8 +85,6 @@ def update_protocol(
     check_protocol(protocol_in, user)
     execute_commands_and_properties(protocol_in)
 
-    # TODO do not allow to modify service?
-
     protocol = crud.protocol.get(db=db, id=id)
     if not protocol:
         raise HTTPException(status_code=404, detail="Protocol not found")
@@ -294,7 +292,6 @@ def protocol_schema_from_model(protocol_in: models.Protocol) -> schemas.Protocol
 def check_protocol(protocol: models.Protocol, user: models.User):
     user_dict = jsonable_encoder(user)
 
-    # TODO In the future this will be used through the backend gateway, and not directly from the service manager
     response = get("http://service-manager:82/api/v1/sm_functions/browse_features", params=dict({'service_uuid': protocol.service.uuid}, **user_dict))
 
     if not response:
@@ -459,10 +456,15 @@ def check_protocol(protocol: models.Protocol, user: models.User):
 def execute_commands_and_properties(protocol: models.Protocol):
     for feature in protocol.service.features:
         for command in feature.commands:
-            # TODO make parameters dict of identifier and value
-            parameters = []
+            parameters = {}
             for parameter in command.parameters:
-                parameters.append(parameter.value)
+                parameters[parameter.identifier] = parameter.value
+            # Convert parameters to appropriate types
+            for parameter_name in parameters.keys():
+                if str(parameters[parameter_name]).lower() in ["true", "false"]:
+                    parameters[parameter_name] = True if str(parameters[parameter_name]).lower() == "true" else False
+                if str(parameters[parameter_name]).isdecimal():  # Floats are not supported by REST query parameters
+                    parameters[parameter_name] = int(parameters[parameter_name])
             responses = []
             for response in command.responses:
                 responses.append(response.identifier)
@@ -473,8 +475,8 @@ def execute_commands_and_properties(protocol: models.Protocol):
                                              'feature_identifier': feature.identifier,
                                              'function_identifier': command.identifier,
                                              'is_property': False,
-                                             'response_identifiers': responses,
-                                             'parameters': parameters}))
+                                             'response_identifiers': responses}),
+                                json=jsonable_encoder(parameters))
 
                 if not response:
                     raise HTTPException(status_code=405,
@@ -484,11 +486,21 @@ def execute_commands_and_properties(protocol: models.Protocol):
                                                 + " produced the following error: "
                                                 + response.text))
             else:
-                # TODO observables
                 pass
+#                response = post("http://service-manager:82/api/v1/sm_functions/observable",
+#                                params=dict({'service_uuid': protocol.service.uuid,
+#                                             'feature_identifier': feature.identifier,
+#                                             'function_identifier': command.identifier}),
+#                                json=jsonable_encoder(parameters))
 
-        # TODO also check properties when they are fixed
-        """
+#                if not response:
+#                    raise HTTPException(status_code=405,
+#                                        detail=("Executing command " + command.identifier
+#                                                + " of feature " + feature.identifier
+#                                                + " of service " + protocol.service.uuid
+#                                                + " produced the following error: "
+#                                                + response.text))
+
         for property in feature.properties:
             if not property.observable:
                 response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
@@ -505,6 +517,16 @@ def execute_commands_and_properties(protocol: models.Protocol):
                                                 + " produced the following error: "
                                                 + response.text))
             else:
-                # TODO observables
-                pass
-        """
+                response = post("http://service-manager:82/api/v1/sm_functions/unobservable",
+                                params=dict({'service_uuid': protocol.service.uuid,
+                                             'feature_identifier': feature.identifier,
+                                             'function_identifier': property.identifier,
+                                             'is_property': True}))
+
+                if not response:
+                    raise HTTPException(status_code=405,
+                                        detail=("Executing property " + property.identifier
+                                                + " of feature " + feature.identifier
+                                                + " of service " + protocol.service.uuid
+                                                + " produced the following error: "
+                                                + response.text))

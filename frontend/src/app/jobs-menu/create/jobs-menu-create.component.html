@@ -49,20 +49,13 @@
         <h3>Dataflow</h3>
         <mat-form-field appearance="fill">
           <mat-label>Select Dataflow</mat-label>
-               <mat-select>
-                <mat-option *ngFor="let dataflow of dataflows" [value]="[dataflow.title]">
-                    {{ dataflow.title }}
+               <mat-select [(ngModel)]="jobInfo.dataflow_path" name="dataflow_path">
+                <mat-option *ngFor="let dataflow of dataflows" [value]="dataflow.path">
+                    {{ dataflow.path }}
                 </mat-option>
               </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="fill">
-              <mat-label>Select Database</mat-label>
-               <mat-select [(ngModel)]="jobInfo.database" name="database">
-                <mat-option *ngFor="let database of databases" [value]="database.title">
-                    {{ database.title }}
-                </mat-option>
-              </mat-select>
-        </mat-form-field>
+
         <div class="button">
             <button
                 mat-flat-button

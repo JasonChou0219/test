@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_GATEWAY_CORS_ORIGINS: List[AnyHttpUrl] = []
 
+    KNIME_SERVER_HOST: str
+    KNIME_SERVER_PORT: int
+    KNIME_SERVER_USER: str
+    KNIME_SERVER_PASSWORD: str
+
     @validator("BACKEND_GATEWAY_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
