@@ -28,52 +28,66 @@
                     <div class="params">
                         <div>
                             <div>
-                                <span class="param-name">{{
-                                    param.identifier
-                                }}</span>
-                                <span class="param-type">{{ param.data_type.type }}</span>
+                                <span class="param-name"
+                                               title="{{
+                                    param.data_type.type
+                                }}  ">{{
+                                             param.identifier
+                                             }}</span>
                             </div>
                             <div class="param-desc">
                                 {{ param.description }}
                             </div>
                         </div>
                         <div>
-                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Set value</mat-label>
                                 <input
                                     matInput
-                                    type="text"
-                                    [(ngModel)]="paramValues[i].value"
+                                    [(ngModel)]="paramValues[i]"
                                 />
 
-                            </mat-form-field> -->
+                            </mat-form-field>
                         </div>
                     </div>
                 </div>
+                <mat-form-field class="input-json">
+                    <textarea
+                        placeholder="POST JSON"
+                        matInput
+                        matTextareaAutosize
+                        matAutosizeMinRows=3
+                        matAutosizeMaxRows=10
+                        disabled
+                        [(ngModel)]= "inputJSON"
+                    >
+                    </textarea>
+
+                </mat-form-field>
             </div>
-            <div class="section-title">Responses</div>
             <div class="section-content">
-                <div
+              <div *ngIf="command.observable === true">
+                  <div class="section-title">Intermediate Responses</div>
+                  <div
                     class="param-border"
-                    *ngFor="let response of command.responses index as j"
+                    *ngFor="let response of command.intermediate_responses index as k"
                 >
                     <div class="params">
                         <div>
                             <div>
-                                <span class="param-name">{{
-                                    response.identifier
-                                }}</span>
-                                <span class="param-type">{{
+                                <mat-checkbox class="param-response-select" [(ngModel)]=intermediateSelected[k] [disabled]="this.intermediateSelected.length === 1" color="primary"> </mat-checkbox>
+                                <span class="param-name"
+                                      title="{{
                                     response.data_type.type
-                                }}</span>
+                                }}  ">{{
+                                    response.identifier
+                                    }}</span>
                             </div>
                             <div class="param-desc">
                                 {{ response.description }}
                             </div>
                         </div>
                         <div>
-                            <!--
                             <mat-form-field class="value-field">
                                 <mat-label>Return value</mat-label>
                                 <input
@@ -81,68 +95,121 @@
                                     disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value="{{this.returnValues[j].value}}"
+                                    value="{{this.intermediateValues[k]}}"
                                 />
                             </mat-form-field>
-                            -->
+                        </div>
+                    </div>
+                </div>
+              </div>
+                <div class="section-title">Responses</div>
+                <div
+                    class="param-border"
+                    *ngFor="let response of command.responses index as j"
+                >
+                    <div class="params">
+                        <div>
+                            <div>
+                                <mat-checkbox class="param-response-select" [(ngModel)]=selected[j] color="primary" [disabled]="this.selected.length === 1"> </mat-checkbox>
+                                <span class="param-name"
+                                title="{{
+                                    response.data_type.type
+                                }}  ">{{
+                                    response.identifier
+                                }}</span>
+                            </div>
+                            <div class="param-desc">
+                                {{ response.description }}
+                            </div>
+                        </div>
+                        <div>
+                            <mat-form-field class="value-field">
+                                <mat-label>Return value</mat-label>
+                                <input
+                                    matInput
+                                    disabled
+                                    type="text"
+                                    placeholder="Return value"
+                                    value="{{this.returnValues[j]}}"
+                                />
+                            </mat-form-field>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="section-title">Usage</div>
-            <div class="section-content example-code">
-                <!--
-                <code>
-                    response =
-                    <span class="python-object">yourObject</span>.<span
-                        class="python-function"
-                        >call_command</span
-                    >(<span class="python-string"
-                        >"{{ featureIdentifier }}"</span
-                    >,<span class="python-string"
-                        >"{{ command.identifier }}"</span
-                    >,parameters: {{ '{' }}
+            <!-- <div class="section-title">Usage</div>
+                 <div class="section-content example-code">
+                       <code>
+                           response =
+                           <span class="python-object">yourObject</span>.<span
+                               class="python-function"
+                               >call_command</span
+                           >(<span class="python-string"
+                               >"{{ featureIdentifier }}"</span
+                           >,<span class="python-string"
+                               >"{{ command.identifier }}"</span
+                           >,parameters: {{ '{' }}
 
-                    <ng-container
-                        *ngFor="
-                            let param of command.parameters;
-                            index as i;
-                            let last = last
-                        "
-                    >
-                        <span class="python-string"
-                            >"{{ param.identifier }}/{{ param.data_type }}"</span
-                        >:
-                        <ng-container
-                            *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
-                        >
+                           <ng-container
+                               *ngFor="
+                                   let param of command.parameters;
+                                   index as i;
+                                   let last = last
+                               "
+                           >
+                               <span class="python-string"
+                                   >"{{ param.identifier }}/{{ param.data_type }}"</span
+                               >:
+                               <ng-container
+                                   *ngIf="param.data_type === 'String' || param.data_type === 'constrained/String' ; else noString"
+                               >
 
-                            <span class="python-string">
-                                "{{ paramValues[i].value }}"
-                            </span>
+                                   <span class="python-string">
+                                       "{{ paramValues[i].value }}"
+                                   </span>
 
-                        </ng-container>
+                               </ng-container>
 
-                        <ng-template #noString>
-                            {{ paramValues[i].value }}
-                        </ng-template>
-                        <ng-container *ngIf="!last">, </ng-container>
-                    </ng-container>
-                    {{ '}' }})
-                </code>
-                -->
-            </div>
+                               <ng-template #noString>
+                                   {{ paramValues[i].value }}
+                               </ng-template>
+                               <ng-container *ngIf="!last">, </ng-container>
+                           </ng-container>
+                           {{ '}' }})
+                       </code>
+
+                   </div> -->
             <div>
-                <!---
-                <button
-                    mat-flat-button
-                    color="primary"
-                    aria-label="Run"
-                    (click)="callCommand(command.identifier)"
-                >
-                    Run
-                </button>
-                -->
+                <div *ngIf="command.observable === false, else observable">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Run"
+                        (click)="callCommand(command.identifier)"
+                    >
+                        Run
+                    </button>
+                </div>
+                <ng-template #observable>
+                        <button
+                                class = "right-button"
+                                mat-flat-button
+                                color="primary"
+                                aria-label="Run new"
+                                (click)="startObservable(command.identifier)"
+                            >
+                            Run new
+                        </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Cancel"
+                        [disabled]="!observableRunning"
+                        (click)="stopObservable(command.identifier)"
+                    >
+                        Cancel
+                    </button>
+                    </ng-template>
             </div>
         </div>
     </div>

@@ -94,7 +94,6 @@ import { FooterBarComponent } from './footer-bar/footer-bar.component';
 import { KnimeComponent } from './dataflow-design-menu/knime/knime.component';
 import { MatSortModule } from '@angular/material/sort';
 import {DiscoverServiceComponent} from '@app/services-menu/service-browser/discover-service/discover-service.component';
-
 import {ServiceFeatureComponent} from '@app/services-menu/service-browser/service-feature/service-feature.component';
 import {ServiceCommandComponent} from '@app/services-menu/service-browser/sevice-command/service-command.component';
 import {ServicePropertyComponent} from '@app/services-menu/service-browser/service-property/service-property.component';

@@ -25,15 +25,14 @@
                     <div class="params">
                         <div>
                             <div>
-                                <span class="param-name">{{
-                                    property.identifier
-                                }}</span>
-                                <span class="param-type">{{
+                                <span class="param-name"
+                                      title="{{
                                     property.data_type.type
-                                }}</span>
+                                }}  ">{{
+                                    property.identifier
+                                    }}</span>
                             </div>
                         </div>
-                      <!--
                         <div>
                             <mat-form-field class="value-field">
                                 <mat-label>Return value</mat-label>
@@ -42,12 +41,10 @@
                                     disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value=" {{this.returnValues[0].value}}"
+                                    ngModel=" {{this.returnValues[0]}}"
                                     />
-                                / {{property.response.identifier.toLowerCase()}}"
                             </mat-form-field>
                         </div>
-                        -->
                     </div>
                 </div>
             </div>
@@ -67,16 +64,38 @@
                 </code>
             </div>
             <div>
-
-                <button
-                    mat-flat-button
-                    color="primary"
-                    aria-label="Run"
-                    (click)="getProperty(property.identifier)"
-                >
-                    Run
-                </button>
 -->
+            <div>
+                <div *ngIf="property.observable === false, else observable">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Run"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Run
+                    </button>
+                </div>
+                <ng-template #observable>
+                    <button
+                        class = "right-button"
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Get"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Get
+                    </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Start/Stop"
+                        (click)="toggleObservable(property.identifier)"
+                    >
+                        Start/Stop
+                    </button>
+                </ng-template>
+            </div>
         </div>
 
     </div>

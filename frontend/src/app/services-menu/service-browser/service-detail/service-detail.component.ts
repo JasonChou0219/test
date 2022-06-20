@@ -107,7 +107,7 @@ export class ServiceDetailComponent implements OnInit {
     constructor(public serviceService: ServiceService) {}
 
     async getFeatures() {
-        this.features = await this.serviceService.browseParsedFeatureDefiniton(
+        this.features = await this.serviceService.browseParsedFeatureDefinition(
             this.service.uuid
         );
         // this.dataSource.data = buildFeaturesTree(this.features);

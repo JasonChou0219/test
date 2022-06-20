@@ -50,6 +50,7 @@ export interface SilaCommand {
     observable: boolean
     parameters: [SilaCommandParameter]
     responses: [SilaCommandResponse]
+    intermediate_responses: [SilaCommandResponse]
     error_identifiers: [string]
 }
 
@@ -73,6 +74,12 @@ export interface SilaCommandResponse{
     display_name: string
     description: string
     data_type: SilaDataType
+}
+
+export interface SilaFunctionResponse {
+    feature_identifier: string
+    function_identifier: string
+    response: {}
 }
 
 export interface SilaDefinedExecutionError{
@@ -101,7 +108,7 @@ export interface Service {
     // Todo: Add id which is set by the database for each command. This way, the command (value/interval) can be changed
     //  more rapidly/easily in the backend
     uuid?: string;
-    service_uuid: string;
+    server_uuid: string;
     name: string;
     type: string;
     address: string;
