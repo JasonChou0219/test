@@ -1,9 +1,19 @@
+import datetime
 from typing import List, Optional, Union, Dict, Any
+from uuid import UUID
+from queue import Queue
+from time import sleep
+import json
+import asyncio
 
-from fastapi import APIRouter, Query, HTTPException, Depends, Body
+from fastapi import APIRouter, Query, HTTPException, Depends, Body, WebSocket
+from starlette.websockets import WebSocketDisconnect, WebSocketClose
+from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+
 from pydantic import ValidationError, parse_obj_as
 from sila2.framework import SilaConnectionError
 from sqlalchemy.orm import Session
+from fastapi.encoders import jsonable_encoder
 
 from app import schemas, crud
 from app.api.deps import get_db
@@ -26,7 +36,10 @@ def connect_client(client_ip: str, client_port: int, user_id: int, user_name: st
             crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
                                                   owner=user_name)
 
-            features = browse_features(service_info.uuid)
+            features = client_controller.browse_features(service_info.uuid)
+            converted = []
+            for feature in features:
+                converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
             for feature in features:
                 crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
@@ -55,14 +68,14 @@ def connect_initial(client_ip: str, client_port: int, user_id: int, user_name: s
             crud.service_info.create_service_info(db=db, service_info=db_info, owner_id=user_id,
                                                   owner=user_name)
 
-            features = browse_features(service_info.uuid)
+            features = client_controller.browse_features(service_info.uuid)
+            converted = []
+            for feature in features:
+                converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
             for feature in features:
-                crud.feature.create_feature_for_uuid(db, map_dto_to_db(feature, service_info.uuid))
+                crud.feature.create_feature_for_uuid(db=db, feature=map_dto_to_db(feature, service_info.uuid))
 
-        service_info = client_controller.connect_initial(client_ip, client_port, reset, encrypted)
-        map_to_db = map_service_info_to_db(service_info, user_name, user_id)
-        info_in_db = create_service_info_entry(map_to_db, user_name, user_id, db)
         return service_info
     except SilaConnectionError as connection_error:
         raise HTTPException(
@@ -95,7 +108,7 @@ def map_service_info_to_db(service_info: schemas.ServiceInfo, user_name: str, us
     return service_info_create
 
 
-def map_dto_to_db(feature: schemas.Feature, owner_uuid: int):
+def map_dto_to_db(feature: schemas.Feature, owner_uuid: str):
     feature_db = SilaFeatureCreate()
     feature_db.owner_uuid = owner_uuid
     feature_db.category = feature.category
@@ -107,9 +120,11 @@ def map_dto_to_db(feature: schemas.Feature, owner_uuid: int):
     feature_db.display_name = feature.display_name
     feature_db.description = feature.description
     feature_db.locale = feature.locale
-    feature_db.commands = {command.identifier: command for command in feature.commands}
-    feature_db.properties = {prop.identifier: prop for prop in feature.properties}
-    feature_db.errors = {err.identifier: err for err in feature.errors}
+    feature_db.commands = {command.identifier if hasattr(command, "identifier") else "": command for command in
+                           feature.commands}
+    feature_db.properties = {prop.identifier if hasattr(prop, "identifier") else "": prop for prop in
+                             feature.properties}
+    feature_db.errors = {err.identifier if hasattr(err, "identifier") else "": err for err in feature.errors}
 
     return feature_db
 
@@ -219,7 +234,7 @@ def browse_features(service_uuid: str, db: Session = Depends(get_db)):
         features = client_controller.browse_features(service_uuid)
         converted = []
         for feature in features:
-            converted.append(map_dto_to_db(feature, 0).copy(exclude={'owner_uuid': True}))
+            converted.append(map_dto_to_db(feature, "").copy(exclude={'owner_uuid': True}))
 
     except ValidationError as validation_error:
         raise HTTPException(
@@ -283,6 +298,8 @@ def run_function(service_uuid: str,
                                                            feature_identifier, function_identifier,
                                                            response_identifiers=response_identifiers,
                                                            parameters=params)
+        for elem in response.response.values():
+            elem = jsonable_encoder(elem)
         return response
 
     except ValidationError as validation_error:
@@ -312,14 +329,175 @@ def run_function(service_uuid: str,
         )
 
 
-def create_service_info_entry(service_info: schemas.ServiceInfoCreate, owner: str, owner_id: int,
-                              db: Session):
-    db_service_info = crud.service_info.has_service_info_by_server_uuid(db, uuid=service_info.uuid)
-    create_service = None
-    try:
-        create_service = crud.service_info.create_service_info(db=db, service_info=service_info, owner_id=owner_id,
-                                                               owner=owner)
-    except:
-        return False
+@router.post("/observable/", response_model=str)  # UUID
+def start_observable(service_uuid: str,
+                     feature_identifier: str,
+                     function_identifier: str,
+                     named_parameters: Optional[Dict[str, Any]] = Body(None),
+                     response_identifiers: Optional[List[str]] = Query(None),
+                     intermediate_identifiers: Optional[List[str]] = Query(None)) -> str:  # returns execution  UUID
+    """ Registers observable in observables dict and instantiates SiLA Python client for observable """
+    i = 0
+    while len(list(client_controller.observables_dict.keys())) >= 100:
+        execution_uuid = client_controller.observables_dict.keys()[i]
+        observable_instance = client_controller.observables_dict[execution_uuid][0]
+        if observable_instance.done:
+            client_controller.observables_dict.pop(execution_uuid)
+        elif i == 100:
+            raise HTTPException(
+                status_code=405,
+                detail=str("ClientError: Too many active subscriptions: " + str(
+                    len(list(client_controller.observables_dict.keys()))))
+            )
+        else:
+            i += 1
 
-    return create_service
+    try:
+        return client_controller.register_observable(
+            service_uuid, feature_identifier, function_identifier, named_parameters, response_identifiers, intermediate_identifiers
+        )
+    except Exception as exception:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exception)
+        )
+
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+
+    async def connect(self, execution_uuid: str, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections[execution_uuid] = websocket
+
+    async def delete(self, execution_uuid: str):
+        print(f'Delete websocket entry of {execution_uuid}. Preserve socket.')
+        self.active_connections.pop(execution_uuid)
+
+    async def disconnect_and_delete(self, execution_uuid: str):
+        print(f'Disconnect and delete websocket with execution_uuid {execution_uuid}')
+        await self.active_connections[execution_uuid].close()
+        self.active_connections.pop(execution_uuid)
+
+    async def disconnect(self, execution_uuid: str):
+        print(f'Disconnect websocket with execution_uuid {execution_uuid}')
+        await self.active_connections[execution_uuid].close()
+
+    async def send_response(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+
+manager = ConnectionManager()
+
+
+@router.websocket("/ws/observable/{execution_uuid}")
+async def websocket_endpoint(websocket: WebSocket, execution_uuid: str):
+    if not UUID(execution_uuid) in list(client_controller.observables_dict.keys()):
+        await manager.connect(execution_uuid, websocket)
+        err_msg = {'status_code': 404,
+                   'message': f'No observable with execution_uuid in service_manager {execution_uuid}'}
+        await manager.send_response(json.dumps(err_msg, sort_keys=True, default=str), websocket)
+        await manager.disconnect(execution_uuid)
+        return
+    else:
+        await manager.connect(execution_uuid, websocket)
+    print(f'A client connected to the following websocket: {execution_uuid}', flush=True)
+    try:
+        """ Serve websocket for observable commands """
+        requested_execution_uuid = UUID(await websocket.receive_text())
+
+        if client_controller.observables_dict[requested_execution_uuid][2]:
+
+            if requested_execution_uuid in client_controller.observables_dict.keys():
+                print('Start streaming responses')
+                observable_instance = client_controller.observables_dict[requested_execution_uuid][0]
+                response_queue: Queue = client_controller.observables_dict[requested_execution_uuid][1]
+
+                while True:
+                    if not response_queue.empty():
+                        results = response_queue.get(timeout=1)
+                        response_queue.task_done()
+                        response_dict = dict(results.items())
+
+                        result_obj = {
+                            str(requested_execution_uuid): {
+                                "property_response": response_dict,
+                                "response": None
+                            }
+                        }
+                        await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+                    await asyncio.sleep(0.5)
+
+        else:
+            intermediate_response_identifiers = client_controller.observables_dict[requested_execution_uuid][3]
+            response_identifiers = client_controller.observables_dict[requested_execution_uuid][4]
+            execution_id_response_list = []
+
+            if requested_execution_uuid in client_controller.observables_dict.keys():
+                print('Start streaming responses')
+                observable_instance = client_controller.observables_dict[requested_execution_uuid][0]
+                response_queue: Queue = client_controller.observables_dict[requested_execution_uuid][1]
+
+                while True:
+                    if not response_queue.empty():
+                        # Process intermediate responses
+                        results = response_queue.get(timeout=1)
+                        response_queue.task_done()
+                        response_dict = dict(results.items())
+                        responses = {}
+
+                        for response_identifier in intermediate_response_identifiers:
+                            responses.update(
+                                {response_identifier: getattr(response_dict['intermediate_response'],
+                                                              response_identifier)}
+                            )
+                        result_obj = {
+                            str(requested_execution_uuid): {
+                                "status": response_dict['status'].name,
+                                "progress": response_dict['progress'],
+                                "estimated_remaining_time": str(response_dict['estimated_remaining_time']),
+                                "intermediate_response": responses,
+                                "response": None
+                            }
+                        }
+                        await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+
+                    elif observable_instance.done:
+                        # Send final response
+                        try:
+                            response = observable_instance.get_responses()
+                            responses = {}
+                            for response_identifier in response_identifiers:
+                                responses.update(
+                                    {response_identifier: getattr(response, response_identifier)}
+                                )
+                            result_obj = {
+                                str(requested_execution_uuid): {
+                                    "status": observable_instance.status.name,
+                                    "progress": observable_instance.progress,
+                                    "estimated_remaining_time": str(observable_instance.estimated_remaining_time),
+                                    "intermediate_response": None,
+                                    "response": responses
+                                }
+                            }
+                        except Exception:
+                            result_obj = {"Inside": "Empty"}
+                        await manager.send_response(json.dumps(result_obj, sort_keys=True, default=str), websocket)
+                        break
+                    await asyncio.sleep(0.2)
+    except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
+        await manager.delete(execution_uuid)
+
+
+@router.get("/stop_observable", status_code=204)  # UUID
+def stop_observable(execution_uuid: str):  # returns execution  UUID
+    """ Registers observable in observables dict and instantiates SiLA Python client for observable """
+    try:
+        client_controller.disconnect_websocket(execution_uuid)
+        manager.disconnect_and_delete(execution_uuid)
+    except KeyError:
+        raise HTTPException(status_code=404,
+                            detail=f"Item not found. No registered observable matching with uuid {execution_uuid}")
+    return

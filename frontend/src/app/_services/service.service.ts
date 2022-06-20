@@ -8,11 +8,11 @@ import {
     Service,
     ServiceFeature,
     ServiceFeatureList,
-    ServiceStatus,
+    ServiceStatus, SilaCommand, SilaDefinedExecutionError, SilaFeatureInfo, SilaFunctionResponse, SilaProperty,
     SilaServerInfo,
     SilaServiceInfo
 } from '@app/_models';
-
+import {Observable} from 'rxjs';
 
 const test_service_1_status: ServiceStatus = {
     online: true,
@@ -94,9 +94,49 @@ export interface JobList {
     providedIn: 'root',
 })
 export class ServiceService {
+
+    websocketArray = []
+
+    constructor(private http: HttpClient) {
+    }
     // serverUrl = env.backendHttpUrl;
     serverUrl = env.apiUrl;
-    constructor(private http: HttpClient) {
+
+
+    async parseFeatureDefiniton(result: [SilaFeatureInfo]) {
+        const parsedFeatureInfos: SilaFeatureInfo[] = [];
+        for (const feature of result) {
+            if (feature.commands) {
+                const parsedCommands: SilaCommand[] = [];
+
+                for (const command of Object.keys(feature.commands)) {
+                    parsedCommands.push(feature.commands[command] as SilaCommand);
+                }
+                feature.commands = parsedCommands;
+            }
+
+            if (feature.properties) {
+                const parsedProperties: SilaProperty[] = [];
+
+                for (const property of Object.keys(feature.properties)) {
+                    parsedProperties.push(feature.properties[property] as SilaProperty);
+                }
+                feature.properties = parsedProperties;
+            }
+
+            if (feature.errors) {
+                const parsedErrors: SilaDefinedExecutionError[] = [];
+
+                for (const command of Object.keys(feature.commands)) {
+                    parsedErrors.push(feature.commands[command] as SilaDefinedExecutionError);
+                }
+
+                feature.errors = parsedErrors;
+            }
+            parsedFeatureInfos.push(feature);
+
+        }
+        return parsedFeatureInfos;
     }
     async getServiceList(): Promise<SilaServiceInfo[]> {
         return await this.browseServiceInfo()
@@ -146,36 +186,121 @@ export class ServiceService {
             .toPromise()
     }
 
-    async addService(service: Service) {
+    async browseFeatureDefinitions(uuid: string) {
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+
         return this.http
-            .post(this.serverUrl + '/api/services', service)
-            .toPromise();
+            .get<[SilaFeatureInfo]>(`${env.apiUrl}/api/v1/functions/browse_features`, {params: queryParams})
+            .toPromise()
     }
 
-    async getServiceStatus(uuid: string): Promise<ServiceStatus> {
-    //    // Mock implementation
-        return test_service_1_status
-        // Real implementation
-        // return this.http
-        //     .get<ServiceStatus>(this.serverUrl + '/api/ServiceStatus/' + uuid)
-        //     .toPromise();
+    async browseParsedFeatureDefinition(uuid: string) {
+        const result = await this.browseFeatureDefinitions(uuid)
+        return this.parseFeatureDefiniton(result);
     }
-    getServiceFeatures(uuid: string): Promise<ServiceFeature[]> {
+
+    async getUnobservableFeaturePropertyResponse(uuid: string, featureIdentifier: string, functionIdentifier: string) {
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+        queryParams = queryParams.append('feature_identifier', featureIdentifier)
+        queryParams = queryParams.append('function_identifier', functionIdentifier)
+
+
         return this.http
-            .get<ServiceFeature[]>(
-                this.serverUrl + '/api/v1/functions/browse_features?service_uuid=' + uuid
-            )
-            .pipe(map((featureList) => featureList))
-            .toPromise();
+            .post<SilaFunctionResponse>(`${env.apiUrl}/api/v1/functions/unobservable`, {}, {params: queryParams})
+            .toPromise()
     }
-    getServiceFeaturesDataHandler(uuid: string): Promise<ServiceFeature[]> {
+
+    async getUnobservableFeatureCommandResponse(uuid: string,
+                                                featureIdentifier: string,
+                                                functionIdentifier: string,
+                                                body: JSON,
+                                                responseIdentifiers?: any) {
+
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+        queryParams = queryParams.append('feature_identifier', featureIdentifier)
+        queryParams = queryParams.append('function_identifier', functionIdentifier)
+
+        if (responseIdentifiers) {
+            for (const responseIdentifier of responseIdentifiers){
+                queryParams= queryParams.append('response_identifiers', responseIdentifier)
+            }
+        }
+
         return this.http
-            .get<ServiceFeatureList>(
-                this.serverUrl + '/api/serviceFeaturesDataHandler/' + uuid
-            )
-            .pipe(map((featureList) => featureList.data))
-            .toPromise();
+            .post<SilaFunctionResponse>(`${env.apiUrl}/api/v1/functions/unobservable`, body, {params: queryParams})
+            .toPromise()
     }
+
+    async startObservable(uuid: string,
+                          featureIdentifier: string,
+                          functionIdentifier: string,
+                          body?: JSON,
+                          responseIdentifiers?: any,
+                          intermediateResponseIdentifiers?: any) {
+
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('service_uuid', uuid)
+        queryParams = queryParams.append('feature_identifier', featureIdentifier)
+        queryParams = queryParams.append('function_identifier', functionIdentifier)
+
+        if (responseIdentifiers) {
+            for (const responseIdentifier of responseIdentifiers){
+                queryParams = queryParams.append('response_identifiers', responseIdentifier)
+            }
+        }
+
+        if (intermediateResponseIdentifiers) {
+            for (const intermediateIdentifier of intermediateResponseIdentifiers){
+                queryParams = queryParams.append('intermediate_identifiers', intermediateIdentifier)
+            }
+        }
+
+        return this.http
+            .post<string>(`${env.apiUrl}/api/v1/functions/start_observable`, body, {params: queryParams})
+            .toPromise()
+    }
+
+    createSocket(functionIdentifier: string, url: string){
+
+        const ws = new WebSocket(`${env.websocketUrl}/api/v1/functions/ws/subscribe_observable/` + url)
+
+        ws.addEventListener("add", (ev) => {
+            ws.send(url)
+        })
+
+        this.websocketArray.push({functionIdentifier, ws})
+
+        return new Observable(
+            observer => {
+                ws.onmessage = (event) => observer.next(event.data)
+
+                ws.onerror = (event) => observer.error(event)
+
+                ws.onclose = (event) => observer.complete()
+
+                return() => ws.close( 1000, "User disconnected")
+            }
+        )
+    }
+
+    async deleteObservable(functionIdentifier: string){
+        this.websocketArray.filter(el => el.functionIdentifier === functionIdentifier)
+            .forEach(el => el.ws.close())
+        this.websocketArray.filter(el => el.functionIdentifier === functionIdentifier).pop()
+    }
+
+    async stopObservable(executionUuid: string){
+        let queryParams = new HttpParams();
+        queryParams = queryParams.append('execution_uuid', executionUuid)
+
+        return this.http
+            .get(`${env.apiUrl}/api/v1/functions/stop_observable`, {params: queryParams})
+            .toPromise()
+    }
+
 
     async getServiceLog(param?: {
         from?: Date;

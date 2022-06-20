@@ -17,22 +17,20 @@
             </ng-template>
             <div class="property-description">{{ property.description }}</div>
         </div>
+
         <div class="border" *ngIf="expand">
             <div class="section-title">Response</div>
-            <div class="section-content">
+             <div class="section-content">
                 <div class="param-border">
                     <div class="params">
                         <div>
                             <div>
-                                <span class="param-name">{{
-                                    property.response.identifier
-                                }}</span>
-                                <span class="param-type">{{
-                                    property.response.data_type
-                                }}</span>
-                            </div>
-                            <div class="param-desc">
-                                {{ property.response.description }}
+                                <span class="param-name"
+                                      title="{{
+                                    property.data_type.type
+                                }}  ">{{
+                                    property.identifier
+                                    }}</span>
                             </div>
                         </div>
                         <div>
@@ -43,14 +41,14 @@
                                     disabled
                                     type="text"
                                     placeholder="Return value"
-                                    value=" {{this.returnValues[0].value}}"
+                                    ngModel=" {{this.returnValues[0]}}"
                                     />
-                                <!--/ {{property.response.identifier.toLowerCase()}}"-->
                             </mat-form-field>
                         </div>
                     </div>
                 </div>
             </div>
+            <!--
             <div class="section-title">Usage</div>
             <div class="section-content example-code">
                 <code>
@@ -66,15 +64,39 @@
                 </code>
             </div>
             <div>
-                <button
-                    mat-flat-button
-                    color="primary"
-                    aria-label="Run"
-                    (click)="getProperty(property.identifier)"
-                >
-                    Run
-                </button>
+-->
+            <div>
+                <div *ngIf="property.observable === false, else observable">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Run"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Run
+                    </button>
+                </div>
+                <ng-template #observable>
+                    <button
+                        class = "right-button"
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Get"
+                        (click)="getProperty(property.identifier)"
+                    >
+                        Get
+                    </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        aria-label="Start/Stop"
+                        (click)="toggleObservable(property.identifier)"
+                    >
+                        Start/Stop
+                    </button>
+                </ng-template>
             </div>
         </div>
+
     </div>
 </div>

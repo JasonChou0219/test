@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {ServiceProperty, ServiceService, FeaturePropertyResult} from '../service.service';
+import {SilaProperty} from '@app/_models';
+import {ServiceService} from '@app/_services';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-service-property',
@@ -8,7 +10,7 @@ import {ServiceProperty, ServiceService, FeaturePropertyResult} from '../service
 })
 export class ServicePropertyComponent implements OnInit {
     @Input()
-    property: ServiceProperty;
+    property: SilaProperty;
     @Input()
     featureIdentifier: string;
     @Input()
@@ -19,31 +21,51 @@ export class ServicePropertyComponent implements OnInit {
     featureVersionMajor: number;
     @Input()
     serviceUUID: string;
-    returnValues: FeaturePropertyResult[] = [];
+    returnValues = [];
     execute = '';
     expand = false;
+    subscription: Subscription
+    isRunning = false;
+
 
     constructor(private serviceService: ServiceService) {}
 
     ngOnInit(): void {
-        this.returnValues = [{
-            name: 'test_name',
-            value: '[None]',
-        }];
     }
 
-    async getProperty(name: string) {
-        console.log('testing 1',
-            this.returnValues = await this.serviceService.getFeatureProperty(
+    async getProperty(propertyIdentifier: string) {
+        this.returnValues = []
+
+        const result = await this.serviceService.getUnobservableFeaturePropertyResponse(
                 this.serviceUUID,
-                this.featureOriginator,
-                this.featureCategory,
                 this.featureIdentifier,
-                this.featureVersionMajor,
-                name
+                propertyIdentifier
             )
-        );
-        console.log(this.returnValues);
-        console.log(this.returnValues.find(item => item.name === name.toLowerCase()).value);
+
+        this.returnValues.push(result.response[propertyIdentifier])
+    }
+
+    async toggleObservable(propertyIdentifier: string) {
+        if (this.isRunning) {
+            this.isRunning = false
+            this.subscription.unsubscribe()
+            this.subscription = undefined
+            await this.serviceService.deleteObservable(propertyIdentifier)
+        }
+        else {
+            this.isRunning = true
+            const result = await this.serviceService.startObservable(
+                this.serviceUUID,
+                this.featureIdentifier,
+                propertyIdentifier
+            )
+
+            this.subscription = this.serviceService.createSocket(propertyIdentifier, result).subscribe(
+                data => {
+                    const parsedResponse = JSON.parse(data as string)
+
+                    this.returnValues[0] = parsedResponse[result].property_response.property_responses
+                })
+        }
     }
 }

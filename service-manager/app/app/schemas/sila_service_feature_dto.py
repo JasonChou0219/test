@@ -45,6 +45,7 @@ class Command(BaseModel):
     observable: Optional[bool] = False
     parameters: Optional[List[CommandParameter]] = []
     responses: Optional[List[CommandResponse]] = []
+    intermediate_responses: Optional[List[CommandResponse]]
     error_identifiers: Optional[List[str]] = []
 
     class Config:
