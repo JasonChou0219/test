@@ -17,4 +17,4 @@ class Protocol(Base):
     custom_data = Column(JSON, index=False)
     owner = Column(String, index=True)
     owner_id = Column(String, index=True)
-    job_id = Column(Integer, ForeignKey("job.id"))
+    job_id = Column(Integer, index=False)

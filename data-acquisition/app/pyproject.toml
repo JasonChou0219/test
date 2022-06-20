@@ -26,6 +26,8 @@ pytest = "^5.4.1"
 python-jose = {extras = ["cryptography"], version = "^3.1.0"}
 zeroconf = "0.28.8"
 influxdb = "^5.3.1"
+APScheduler = "^3.9.1"
+asyncio = "^3.4.3"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"

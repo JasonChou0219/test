@@ -150,11 +150,19 @@ def read_database_status(
         # Attempt to create a database, which checks both that the connection details are correct
         # and that the user has admin privileges
         client.create_database(database.name)
-        # Attempt to create a retention policy, which checks that the specified retention policy is valid
-        client.create_retention_policy(name=database.retention_policy,
-                                       duration=database.retention_policy,
-                                       replication='1',
-                                       database=database.name)
+        # Check if the specified retention policy exists
+        client.switch_database(database.name)
+        retention_policies = client.get_list_retention_policies()
+        retention_policy_exists = False
+        for retention_policy in retention_policies:
+            if retention_policy['name'] == database.retention_policy:
+                retention_policy_exists = True
+        # If retention policy does not exist, attempt to create a new one
+        if not retention_policy_exists:
+            client.create_retention_policy(name=database.retention_policy,
+                                           duration=database.retention_policy,
+                                           replication='1',
+                                           database=database.name)
     # Timeout, meaning the database cannot be reached
     except ConnectionError:
         return schemas.DatabaseStatus(online=False, status='Database not found for connection details')
@@ -179,11 +187,19 @@ def check_database_details(database: schemas.Database) -> None:
         # Attempt to create a database, which checks both that the connection details are correct
         # and that the user has admin privileges
         client.create_database(database.name)
-        # Attempt to create a retention policy, which checks that the specified retention policy is valid
-        client.create_retention_policy(name=database.retention_policy,
-                                       duration=database.retention_policy,
-                                       replication='1',
-                                       database=database.name)
+        # Check if the specified retention policy exists
+        client.switch_database(database.name)
+        retention_policies = client.get_list_retention_policies()
+        retention_policy_exists = False
+        for retention_policy in retention_policies:
+            if retention_policy['name'] == database.retention_policy:
+                retention_policy_exists = True
+        # If retention policy does not exist, attempt to create a new one
+        if not retention_policy_exists:
+            client.create_retention_policy(name=database.retention_policy,
+                                           duration=database.retention_policy,
+                                           replication='1',
+                                           database=database.name)
     # Timeout, meaning the database cannot be reached
     except ConnectionError:
         raise HTTPException(status_code=404, detail="Database not found for connection details")
