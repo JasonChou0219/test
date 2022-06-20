@@ -14,6 +14,11 @@ import {
 } from '@app/_models';
 import {Observable} from 'rxjs';
 
+const test_service_1_status: ServiceStatus = {
+    online: true,
+    status: 'Available',
+}
+
 export enum LogLevel {
     INFO = 0,
     WARNING = 1,

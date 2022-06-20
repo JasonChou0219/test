@@ -28,6 +28,7 @@ export interface ScheduledJob {
     dataflows?: Dataflow[];
     // data_protocols?: DataProtocol[];
     list_protocol_and_database?: ProtocolAndDatabaseTuple[];
+    dataflow_path?: string;
     // database: string;
 
     execute_at: Date;
@@ -49,6 +50,7 @@ export interface ScheduledJobInfo {
     dataflows?: DataflowInfoList;
     // data_protocols?: DataProtocolInfoList;
     list_protocol_and_database?: [number, number][];
+    dataflow_path?: string;
     // database?: string;
 
     execute_at: Date;

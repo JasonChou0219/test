@@ -109,7 +109,8 @@ def create_job(
 
             job_in.list_protocol_and_database[index] = (protocol_model.id, database.id)
         job = crud.job.get(db=db, id=job.id)
-        job = crud.job.update(db=db, db_obj=job, obj_in=job_in)
+        job_update = schemas.JobUpdate(list_protocol_and_database=job_in.list_protocol_and_database)
+        job = crud.job.update(db=db, db_obj=job, obj_in=job_update)
     except IntegrityError as db_exception:
         raise HTTPException(status_code=452, detail=f"{type(db_exception).__name__}:{db_exception.orig}")
     return job
