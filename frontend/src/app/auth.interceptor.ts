@@ -24,15 +24,14 @@ export class AuthInterceptor implements HttpInterceptor {
         if(request.url.startsWith("./assets/")){
            return next.handle(request);
         }
-        if(request.url.startsWith("${env.apiUrl}:4200/assets/")){
+        if(request.url.startsWith(`${env.apiUrl}:4200/assets/`)){
            return next.handle(request);
         }
-        if(request.url.startsWith("${env.apiUrl}:/assets/")){
+        if(request.url.startsWith(`${env.apiUrl}:/assets/`)){
            return next.handle(request);
         }
-
-        if(request.url.startsWith("http://localhost/api/v1/login")){
-            console.log('intercepted request')
+        if(request.url.startsWith(`${env.apiUrl}/api/v1/login`)){
+            console.log('intercepted request 2')
             console.log(request.url)
            return next.handle(request);
         }
