@@ -47,7 +47,8 @@ def start_data_acquisition_for_job(
         meta_and_observable_properties = []
 
         for feature in protocol.service.features:
-            # Separate commands into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
+            # Separate commands into meta and unobservable, meta and observable, non-meta and observable,
+            # non-meta and unobservable
             for command in feature.commands:
                 if command.meta:
                     if not command.observable:
@@ -61,7 +62,8 @@ def start_data_acquisition_for_job(
                         interval_to_non_meta_and_unobservable_properties_and_commands[command.interval] = []
                     interval_to_non_meta_and_unobservable_properties_and_commands[command.interval].append((command, feature.identifier))
             for property in feature.properties:
-                # Separate properties into meta and unobservable, meta and observable, non-meta and observable, non-meta and unobservable
+                # Separate properties into meta and unobservable, meta and observable, non-meta and observable,
+                # non-meta and unobservable
                 if property.meta:
                     if not property.observable:
                         meta_and_unobservable_commands_and_properties.append((property, feature.identifier))
@@ -146,23 +148,25 @@ def save_unobservable_data(properties_and_commands, job_id, protocol_id, service
                                     password=database.password,
                                     database=database.name)
             client.create_database(database.name)
-            point = {}
             if isinstance(property_or_command[0], schemas.Command):
-                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier, 'owner': owner_id, 'parameters': parameters}
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid,
+                        'feature': property_or_command[1], 'command': property_or_command[0].identifier,
+                        'owner': owner_id, 'parameters': parameters}
             else:
                 tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier, 'owner': owner_id}
-            point['measurement'] = 'data-acquisition'
-            point['tags'] = tags
-            point['time'] = datetime.now()
 
             if not response:
-                point['fields'] = {'error': response.json()['detail']}
+                response = {'error': response.json()['detail']}
             else:
-                point['fields'] = response.json()['response']
+                response = response.json()['response']
+            point = [{
+                "measurement": "data_acquisition",
+                "tags": tags,
+                "time": datetime.now(),
+                "fields": response
+            }]
 
-            points = [point]
-
-            client.write_points(points, retention_policy=database.retention_policy)
+            client.write_points(point, retention_policy=database.retention_policy)
         except Exception as e:
             logging.info(e)
 
@@ -192,7 +196,6 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                                          'feature_identifier': property_or_command[1],
                                          'function_identifier': property_or_command[0].identifier,
                                          'is_property': True}))
-
         try:
             client = InfluxDBClient(host=database.address,
                                     port=database.port,
@@ -200,19 +203,23 @@ def save_observable_data(properties_and_commands, job_id, protocol_id, service_u
                                     password=database.password,
                                     database=database.name)
             client.create_database(database.name)
-            point = {}
             if isinstance(property_or_command[0], schemas.Command):
-                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'command': property_or_command[0].identifier, 'owner': owner_id, 'parameters': parameters}
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid,
+                        'feature': property_or_command[1], 'command': property_or_command[0].identifier,
+                        'owner': owner_id, 'parameters': parameters}
             else:
-                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': property_or_command[1], 'property': property_or_command[0].identifier, 'owner': owner_id}
-            point['measurement'] = 'data-acquisition'
-            point['tags'] = tags
-            point['time'] = datetime.now()
-
+                tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid,
+                        'feature': property_or_command[1], 'property': property_or_command[0].identifier,
+                        'owner': owner_id}
+            point = [{
+                "measurement": "data_acquisition",
+                "tags": tags,
+                "time": datetime.now(),
+                "fields": {}
+            }]
             if not response:
-                point['fields'] = {'error': response.json()['detail']}
-                points = [point]
-                client.write_points(points, retention_policy=database.retention_policy)
+                point[0]['fields'] = response = {'error': response.json()['detail']}
+                client.write_points(point, retention_policy=database.retention_policy)
             else:
                 websocket_uuid = response.json()
                 scheduler.add_job(start_websocket_handling, args=[websocket_uuid, client, point, database.retention_policy])
@@ -230,12 +237,12 @@ async def handle_websocket_data(websocket_uuid, client, point, retention_policy)
         async for message in websocket:
             message_as_json = json.loads(message)
             if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
-                point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
+                point[0]['tags']['is_intermediate_response'] = True
+                point[0]['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
             else:
-                point['fields'] = message_as_json[next(iter(message_as_json))]['response']
-            point['time'] = datetime.now()
-            points = [point]
-            client.write_points(points, retention_policy=retention_policy)
+                point[0]['tags']['is_intermediate_response'] = False
+                point[0]['fields'] = message_as_json[next(iter(message_as_json))]['response']
+            client.write_points(point, retention_policy=retention_policy)
 
 
 def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
@@ -246,17 +253,15 @@ def save_custom_data(custom_data, job_id, protocol_id, owner_id, database):
                                 password=database.password,
                                 database=database.name)
         client.create_database(database.name)
-        point = {}
         tags = {'job': job_id, 'protocol': protocol_id, 'owner': owner_id}
-        point['measurement'] = 'data-acquisition'
-        point['tags'] = tags
-        point['time'] = datetime.now()
+        point = [{
+            "measurement": "data_acquisition",
+            "tags": tags,
+            "time": datetime.now(),
+            "fields": custom_data
+        }]
 
-        point['fields'] = custom_data
-
-        points = [point]
-
-        client.write_points(points, retention_policy=database.retention_policy)
+        client.write_points(point, retention_policy=database.retention_policy)
     except Exception as e:
         logging.info(e)
 
@@ -286,16 +291,17 @@ def save_meta_observable_command_data(commands, job_id, protocol_id, service_uui
                                     password=database.password,
                                     database=database.name)
             client.create_database(database.name)
-            point = {}
             tags = {'job': job_id, 'protocol': protocol_id, 'service': service_uuid, 'feature': command[1], 'command': command[0].identifier, 'owner': owner_id, 'parameters': parameters}
-            point['measurement'] = 'data-acquisition'
-            point['tags'] = tags
-            point['time'] = datetime.now()
+            point = [{
+                "measurement": "data_acquisition",
+                "tags": tags,
+                "time": datetime.now(),
+                "fields": {}
+            }]
 
             if not response:
-                point['fields'] = {'error': response.json()['detail']}
-                points = [point]
-                client.write_points(points, retention_policy=database.retention_policy)
+                point[0]['fields'] = {'error': response.json()['detail']}
+                client.write_points(point, retention_policy=database.retention_policy)
             else:
                 websocket_uuid = response.json()
                 scheduler.add_job(start_websocket_handling_for_meta_observable_command, args=[websocket_uuid, client, point, database.retention_policy])
@@ -313,13 +319,13 @@ async def handle_websocket_data_meta_observable_command(websocket_uuid, client, 
         async for message in websocket:
             message_as_json = json.loads(message)
             if message_as_json[next(iter(message_as_json))]['intermediate_response'] is not None:
-                point['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
+                point[0]['tags']['is_intermediate_response'] = True
+                point[0]['fields'] = message_as_json[next(iter(message_as_json))]['intermediate_response']
             else:
-                point['fields'] = message_as_json[next(iter(message_as_json))]['response']
+                point[0]['tags']['is_intermediate_response'] = False
+                point[0]['fields'] = message_as_json[next(iter(message_as_json))]['response']
             await websocket.close()
-            point['time'] = datetime.now()
-            points = [point]
-            client.write_points(points, retention_policy=retention_policy)
+            client.write_points(point, retention_policy=retention_policy)
 
 
 @router.get("/{job_id}/stop_data_acquisition", response_model=None)
