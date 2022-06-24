@@ -27,13 +27,13 @@ class Pump:
                                      params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DeviceService',
                                              'function_identifier': 'GetChannelAddressing',
                                              'response_identifiers': "ChannelAddressing"},
-                                     data=json.dumps({"Address": self.address})
+                                     json={"Address": self.address}
                                      ).json()['response']['ChannelAddressing']
         if is_channel_addressing is False:
             post(self.route,
                  params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DeviceService',
                          'function_identifier': 'SetChannelAddressing'},
-                 data=json.dumps({"Address": self.address, "ChannelAddressing": True})
+                 json={"Address": self.address, "ChannelAddressing": True}
                  )
 
     def adjust_pump_settings(self):
@@ -42,7 +42,7 @@ class Pump:
                                  params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DeviceService',
                                          'function_identifier': 'GetEventMessages',
                                          'response_identifiers': "EventMessages"},
-                                 data=json.dumps({"Address": self.address})
+                                 json={"Address": self.address}
                                  ).json()['response']['EventMessages']
         if is_event_messages:
             # event_messages_set = pump_client.DeviceService.SetEventMessages(Address=1,
@@ -51,16 +51,14 @@ class Pump:
                                                           'feature_identifier': 'DeviceService',
                                                           'function_identifier': 'SetEventMessages',
                                                           'response_identifiers': "EventMessagesSet"},
-                                      data=json.dumps({"Address": self.address,
-                                                       "EventMessages": False,
-                                                       })
+                                      json={"Address": self.address, "EventMessages": False}
                                       ).json()['response']['EventMessagesSet']
             print(f'Event messages are enabled. Disabled event messages: {event_messages_set}')
             is_event_messages = post(self.route, params={'service_uuid': self.pump['uuid'],
                                                          'feature_identifier': 'DeviceService',
                                                          'function_identifier': 'GetEventMessages',
                                                          'response_identifiers': "EventMessages"},
-                                     data=json.dumps({"Address": self.address})
+                                     json={"Address": self.address}
                                      ).json()['response']['EventMessages']
             print(f'{"Event messages disabled" if not is_event_messages else "Event messages not disabled!"}')
 
@@ -84,14 +82,14 @@ class Pump:
                                                          'feature_identifier': 'ParameterController',
                                                          'function_identifier': 'GetFlowRateAtModes',
                                                          'response_identifiers': "CurrentFlowRate"},
-                                     data=json.dumps({"Channel": channel})
+                                     json={"Channel": channel}
                                      ).json()['response']['CurrentFlowRate']
             print(f'Flow rate at mode is: {flow_rate_at_mode}')
             flow_rate_at_mode = False
             if flow_rate_at_mode is False:
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                          'function_identifier': 'SetFlowRateMode'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
 
         # If flow rate was not defined, max calibrated values are used
@@ -104,7 +102,7 @@ class Pump:
                                                       'feature_identifier': 'ParameterController',
                                                       'function_identifier': 'GetMaximumFlowRateWithCalibration',
                                                       'response_identifiers': "MaximumFlowRateWithCalibration"},
-                                              data=json.dumps({"Channel": channel})
+                                              json={"Channel": channel}
                                               ).json()['response']['MaximumFlowRateWithCalibration']
                 print(f'Max flow rate with calibration is: {max_flow_rate_with_cal}', flush=True)
                 flow_rate.append(max_flow_rate_with_cal)
@@ -118,28 +116,24 @@ class Pump:
                                              'feature_identifier': 'ParameterController',
                                              'function_identifier': 'GetMode',
                                              'response_identifiers': "CurrentPumpMode"},
-                                     data=json.dumps({"Channel": channel})
+                                     json={"Channel": channel}
                                      ).json()['response']['CurrentPumpMode']
             print(f'Current pump mode is: {current_pump_mode}', flush=True)
             if current_pump_mode != 'O':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                          'function_identifier': 'SetVolumeRateMode'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
             # The volume to dispense is set according to the setting in the head of the function (in mL)
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                      'function_identifier': 'SetVolume'},
-                 data=json.dumps({"Channel": channel,
-                                  "Volume": volume[i]
-                                  })
+                 json={"Channel": channel, "Volume": volume[i]}
                  )
             # The flow rate is set according to the setting in the head of the function (in mL/min). Must be LESS or
             # EQUAL to the max. flow rate of the channel
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                      'function_identifier': 'SetFlowRate'},
-                 data=json.dumps({"Channel": channel,
-                                  "SetFlowRate": flow_rate[i]
-                                })
+                 json={"Channel": channel, "SetFlowRate": flow_rate[i]}
                  )
             # Gets the current direction direction of the channel and compares to the desired setting. If the settings
             # do not match, the sets it to counter-clockwise ...
@@ -147,13 +141,13 @@ class Pump:
                                                       'feature_identifier': 'DriveController',
                                                       'function_identifier': 'GetPumpDirection',
                                                       'response_identifiers': "PumpDirection"},
-                                  data=json.dumps({"Channel": channel})
+                                  json={"Channel": channel}
                                   ).json()['response']['PumpDirection']
             logging.info(f'Pump direction is: {pump_direction}')
             if pump_direction != direction[i] and direction[i] == 'K':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                          'function_identifier': 'SetDirectionCounterClockwise'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info(f'Set pump direction to CounterClockwise: K')
             # ... or clockwise rotation direction
@@ -161,7 +155,7 @@ class Pump:
             elif pump_direction != direction[i] and direction[i] == 'J':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                          'function_identifier': 'SetDirectionClockwise'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info(f'Set pump direction to Clockwise: J')
 
@@ -169,7 +163,7 @@ class Pump:
             # Starts pumping. The channel will stop as soon as the volume is dispensed
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                      'function_identifier': 'StartPump'},
-                 data=json.dumps({"Channel": channel})
+                 json={"Channel": channel}
                  )
             msg = f'Volume at Rate mode on channel {channel} for volume {volume[i]} mL at rate {flow_rate[i]} ' \
                          f'mL/min set \n'
@@ -205,14 +199,14 @@ class Pump:
                                                             'feature_identifier': 'ParameterController',
                                                             'function_identifier': 'GetFlowRateAtModes',
                                                             'response_identifiers': "CurrentFlowRate"},
-                                        data=json.dumps({"Channel": channel})
+                                        json={"Channel": channel}
                                         ).json()['response']['CurrentFlowRate']
             logging.info(f'Pump is at flow rate mode: {is_at_flow_rate_mode}')
             if is_at_flow_rate_mode is False:
 
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                          'function_identifier': 'SetFlowRateMode'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info(f'Pump switched to flow rate mode!')
 
@@ -225,7 +219,7 @@ class Pump:
                                                       'feature_identifier': 'ParameterController',
                                                       'function_identifier': 'GetMaximumFlowRateWithCalibration',
                                                       'response_identifiers': "MaximumFlowRateWithCalibration"},
-                                              data=json.dumps({"Channel": channel})
+                                              json={"Channel": channel}
                                               ).json()['response']['MaximumFlowRateWithCalibration']
                 flow_rate.append(max_flow_rate_with_cal)
             logging.info('Calibrated maximum flow rate used: ', flow_rate)
@@ -238,29 +232,27 @@ class Pump:
                                              'feature_identifier': 'ParameterController',
                                              'function_identifier': 'GetMode',
                                              'response_identifiers': "CurrentPumpMode"},
-                                     data=json.dumps({"Channel": channel})
+                                     json={"Channel": channel}
                                      ).json()['response']['CurrentPumpMode']
             logging.info('Current pump mode is: ', current_pump_mode)
             current_pump_mode = 'O'
             if current_pump_mode != 'N':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                          'function_identifier': 'SetTimeMode'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info('Pump mode not "N". Switching pump mode!')
             # The time duration to dispense is set according to the setting in the head of the function (in seconds with
             # max. 1 decimal place)
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                      'function_identifier': 'SetCurrentRunTime'},
-                 data=json.dumps({"Channel": channel,
-                                  "RunTime": runtime[i]})
+                 json={"Channel": channel, "RunTime": runtime[i]}
             )
             # The flow rate is set according to the setting in the head of the function (in mL/min). Must be LESS or
             # EQUAL to the max. flow rate of the channel
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                      'function_identifier': 'SetFlowRate'},
-                 data=json.dumps({"Channel": channel,
-                                  "SetFlowRate": flow_rate[i]})
+                 json={"Channel": channel, "SetFlowRate": flow_rate[i]}
             )
             # Gets the current rotation direction of the channel and compares to the desired setting. If the settings do
             # not match, the sets it to counter-clockwise ...
@@ -268,13 +260,13 @@ class Pump:
                                                       'feature_identifier': 'DriveController',
                                                       'function_identifier': 'GetPumpDirection',
                                                       'response_identifiers': "PumpDirection"},
-                                  data=json.dumps({"Channel": channel})
+                                  json={"Channel": channel}
                                   ).json()['response']['PumpDirection']
             logging.info(f'Pump direction is: {pump_direction}')
             if pump_direction != direction[i] and direction[i] == 'K':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                          'function_identifier': 'SetDirectionCounterClockwise'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info(f'Set pump direction to CounterClockwise: K')
             # ... or clockwise rotation direction
@@ -282,7 +274,7 @@ class Pump:
             elif pump_direction != direction[i] and direction[i] == 'J':
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                          'function_identifier': 'SetDirectionClockwise'},
-                     data=json.dumps({"Channel": channel})
+                     json={"Channel": channel}
                      )
                 logging.info(f'Set pump direction to Clockwise: J')
 
@@ -290,7 +282,7 @@ class Pump:
             # Starts pumping. The channel will stop as soon as the volume is dispensed
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                      'function_identifier': 'StartPump'},
-                 data=json.dumps({"Channel": channel})
+                 json={"Channel": channel}
                  )
             msg = f'Time mode on channel {channel} for time {runtime[i]} seconds at rate {flow_rate[i]} ' \
                   f'mL/min set \n\n'
@@ -311,7 +303,7 @@ class Pump:
         for channel in channels:
             post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                      'function_identifier': 'StopPump'},
-                 data=json.dumps({"Channel": channel})
+                 json={"Channel": channel}
                  )
             msg = f'Channel {channel} stopped \n\n'
             logging.info(msg)
@@ -328,7 +320,7 @@ class Pump:
         return_val = post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DeviceService',
                                               'function_identifier': 'GetPumpStatus',
                                               'response_identifiers': "CurrentPumpStatus"},
-                          data=json.dumps({"Address": self.address})
+                          json={"Address": self.address}
                           ).json()['response']['CurrentPumpStatus']
         logging.info(return_val)
         return return_val
