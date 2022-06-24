@@ -74,7 +74,7 @@ class Pump:
         If several channels are used, there must be same number of values in each other parameter, except for pump
         and return_val.
         """
-        return_val = ''
+        msg = ''
         start_time0 = time()
         self.enable_channel_addressing()
 
@@ -87,7 +87,7 @@ class Pump:
                                      data=json.dumps({"Channel": channel})
                                      ).json()['response']['CurrentFlowRate']
             print(f'Flow rate at mode is: {flow_rate_at_mode}')
-            flow_rate_at_mode=False
+            flow_rate_at_mode = False
             if flow_rate_at_mode is False:
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'ParameterController',
                                          'function_identifier': 'SetFlowRateMode'},
@@ -162,7 +162,7 @@ class Pump:
                 post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
                                          'function_identifier': 'SetDirectionClockwise'},
                      data=json.dumps({"Channel": channel})
-                    )
+                     )
                 logging.info(f'Set pump direction to Clockwise: J')
 
         for i, channel in enumerate(channels):
@@ -171,10 +171,15 @@ class Pump:
                                      'function_identifier': 'StartPump'},
                  data=json.dumps({"Channel": channel})
                  )
-            return_val = f'Volume at Rate mode on channel {channel} for volume {volume[i]} mL at rate {flow_rate[i]} ' \
+            msg = f'Volume at Rate mode on channel {channel} for volume {volume[i]} mL at rate {flow_rate[i]} ' \
                          f'mL/min set \n'
         # logging.info('--- Total execution time: %s seconds ---' %((time.time()-start_time0)))
-        return return_val
+
+        # calculate maximum pump duration
+        pump_duration = []
+        for i, v in enumerate(volume):
+            pump_duration.append(v/flow_rate[i])
+        return msg, pump_duration
 
     def pump_time_at_flow_rate(self, flow_rate=None, channels=[1, 2], runtime=['10.5', '5.3'],
                                direction=['K', 'K']):
@@ -187,7 +192,7 @@ class Pump:
         If several channels are used, there must be same number of values in each other parameter, except for pump and
         return_val.
         """
-        return_val = ''
+        msg = ''
 
         # Channel addressing (ability to "speak" to each separate channel) and event messaging (pump reports on what is
         # going on) are being set to 1 (on).
@@ -287,16 +292,17 @@ class Pump:
                                      'function_identifier': 'StartPump'},
                  data=json.dumps({"Channel": channel})
                  )
-            return_val = f'Time mode on channel {channel} for time {runtime[i]} seconds at rate {flow_rate[i]} ' \
-                         f'mL/min set \n\n'
-            logging.info(return_val)
-        return return_val
+            msg = f'Time mode on channel {channel} for time {runtime[i]} seconds at rate {flow_rate[i]} ' \
+                  f'mL/min set \n\n'
+            logging.info(msg)
+
+        return msg, [float(t) for t in runtime]
 
     def pump_stop(self, channels=[1, 2]):
         """
         Method to stop the channel(s).
         """
-        return_val = ''
+        msg = ''
         # Channel addressing (ability to "speak" to each separate channel) and event messaging (pump reports on what is
         # going on) are being set to 1 (on).
         # If it is already enabled, then the command are skipped
@@ -307,9 +313,9 @@ class Pump:
                                      'function_identifier': 'StopPump'},
                  data=json.dumps({"Channel": channel})
                  )
-            return_val = f'Channel {channel} stopped \n\n'
-            logging.info(return_val)
-        return return_val
+            msg = f'Channel {channel} stopped \n\n'
+            logging.info(msg)
+        return msg
 
     def pump_status(self):
         """
