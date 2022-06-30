@@ -104,6 +104,17 @@ class DASGIP:
     def start_stirrer(self):
         return run_command(service_uuid=self.uuid, feature_identifier='AgitationServicer', function_identifier='SetCmd',
                            parameters={"UnitID": self.unit, "Cmd": 2}, response_identifier="CmdSet")['CmdSet']
+
+    # Gassing control
+
+    def stop_aeration(self):
+        return run_command(service_uuid=self.uuid, feature_identifier='GassingServicer', function_identifier='SetCmd',
+                           parameters={"UnitID": self.unit, "Cmd": 1}, response_identifier="CmdSet")['CmdSet']
+
+    def start_aeration(self):
+        return run_command(service_uuid=self.uuid, feature_identifier='GassingServicer', function_identifier='SetCmd',
+                           parameters={"UnitID": self.unit, "Cmd": 2}, response_identifier="CmdSet")['CmdSet']
+
     # Level sensor
 
     def get_level_sensor(self):
