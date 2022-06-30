@@ -308,6 +308,25 @@ class Pump:
             logging.info(msg)
         return msg
 
+    def pump_start(self, channels=[1, 2]):
+        """
+        Method to stop the channel(s).
+        """
+        msg = ''
+        # Channel addressing (ability to "speak" to each separate channel) and event messaging (pump reports on what is
+        # going on) are being set to 1 (on).
+        # If it is already enabled, then the command are skipped
+        self.enable_channel_addressing()
+
+        for channel in channels:
+            post(self.route, params={'service_uuid': self.pump['uuid'], 'feature_identifier': 'DriveController',
+                                     'function_identifier': 'StartPump'},
+                 json={"Channel": channel}
+                 )
+            msg = f'Channel {channel} started \n\n'
+            logging.info(msg)
+        return msg
+
     def pump_status(self):
         """
         Method to check whether the pump is currently running (+) or not (-).
