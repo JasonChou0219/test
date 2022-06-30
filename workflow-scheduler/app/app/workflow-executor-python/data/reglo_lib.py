@@ -6,7 +6,6 @@
 # Tel: 09377920344
 # E-Mail: http://www.ismatec.de/download/documents/IDX1798-PD-IS_lr.pdf
 import logging
-import json
 from requests import post
 from time import time
 
