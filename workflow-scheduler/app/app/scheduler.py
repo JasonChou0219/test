@@ -130,6 +130,8 @@ def start_job(job: ScheduledJob, status_queue: queue.SimpleQueue):
                     #  The workflow start time may deviate from the job start time
                     services = 'None'
                     container_name = job.title + '_' + str(job.id) + '-' + workflow.title + '_' + str(workflow.id)
+                    # Remove spaces in name. Docker doesn't allow spaces
+                    container_name = container_name.replace(" ", "_")
                     container = docker_helper.create_python_workflow_container(
                         docker_client,
                         image_name,
