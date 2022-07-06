@@ -2,7 +2,7 @@ from uuid import UUID
 from requests import post, get
 
 # Default settings
-target_service_hostname = "http://10.152,248.14"  # -> to env var
+target_service_hostname = "http://10.152.248.14"  # -> to env var
 target_service_port = '80'  # settings.BACKEND_GATEWAY_UVICORN_PORT  # -> to env var
 target_service_api_version = "/api/v1"  # settings.API_V1_STR  # -> to env var
 target_service_url = f'{target_service_hostname}{target_service_api_version}/'
