@@ -22,18 +22,41 @@ def _get_route_connect_initial():
 
 def run_command(service_uuid: UUID, feature_identifier: str, function_identifier: str, parameters: dict = None,
                 response_identifier: str = None):
-    try:
-        res = post(_get_route_unobservable(),
-                   params={'service_uuid': service_uuid,
-                           'feature_identifier': feature_identifier,
-                           'function_identifier': function_identifier,
-                           'response_identifiers': response_identifier
-                           },
-                   json=parameters
-                   ).json()['response']
-        return res
-    except KeyError:
-        return "KeyError: Provided params do not match SiLA service specification."
+    retries = 3
+    i = 0
+    while True:
+        if i == 3:
+            print('Max retries exceeded! Aborting...')
+            break
+        try:
+            res = post(_get_route_unobservable(),
+                       params={'service_uuid': service_uuid,
+                               'feature_identifier': feature_identifier,
+                               'function_identifier': function_identifier,
+                               'response_identifiers': response_identifier
+                               },
+                       json=parameters
+                       )
+            if res.status_code == 404:
+                print('Encountered Error 404')
+                raise Exception
+            elif res.status_code == 500:
+                print('Encountered Error 500')
+                raise Exception
+            else:
+                print('Status_code:')
+                print(res.status_code)
+                print(res, flush=True)
+                response = res.json()['response']
+            return response
+        except KeyError:
+            return "KeyError: Provided params do not match SiLA service specification."
+        except Exception as e:
+            print(e, flush=True)
+            i += 1
+            print(f'Retry: {i}', flush=True)
+            continue
+    return None
 
 
 def instantiate_sila_client(address: str, port: int):
@@ -83,7 +106,7 @@ class DASGIP:
                            parameters={"UnitID": self.unit, "Cmd": 1}, response_identifier="CmdSet")['CmdSet']
 
     def enable_temperature_control(self):
-        return run_command(service_uuid=self.uuid, feature_identifier='PHServicer', function_identifier='SetCmd',
+        return run_command(service_uuid=self.uuid, feature_identifier='TemperatureServicer', function_identifier='SetCmd',
                            parameters={"UnitID": self.unit, "Cmd": 2}, response_identifier="CmdSet")['CmdSet']
     # pH control
 
